@@ -50,6 +50,60 @@
   min-width: 140px;
 }
 
+.combobox {
+  position: relative;
+  min-width: 220px;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 220px;
+  overflow-y: auto;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--mm-space-2);
+  width: 100%;
+  padding: var(--mm-space-2) var(--mm-space-3);
+  border: none;
+  border-bottom: 1px solid var(--mm-gray-100);
+  background: transparent;
+  color: var(--mm-gray-900);
+  font: inherit;
+  font-size: var(--mm-font-size-sm);
+  text-align: left;
+  cursor: pointer;
+}
+
+.dropdownItem:hover,
+.dropdownItem:focus-visible {
+  background: var(--mm-gray-50);
+}
+
+.dropdownAddNew {
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-color-primary-700, #1d4ed8);
+  background: var(--mm-gray-50);
+}
+
+.dropdownMeta {
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-500);
+}
+
 .button {
   padding: var(--mm-space-2) var(--mm-space-3);
   border: 1px solid var(--mm-gray-300);

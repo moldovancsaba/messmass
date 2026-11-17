@@ -7,12 +7,101 @@
 // added. A decision is stored with who and when, wins over later deliveries, reaches the report figures on the next
 // Fanmass publish run, and teaches the whole system: Fanmass applies it to every later analysis.
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ensureCsrfToken } from '@/lib/apiClient';
 import type { BrandEvidenceDoc } from '@/lib/fanmassEvidence';
 import styles from './page.module.css';
 
 type Row = BrandEvidenceDoc & { id: string };
+type Candidate = { name: string; kind: 'brand' | 'club' };
+
+function foldSearch(value: string): string {
+  return value.normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function PredictiveEntityInput({
+  value,
+  kind,
+  candidates,
+  onChange,
+  onSelect,
+  required = false,
+}: {
+  value: string;
+  kind: 'brand' | 'club';
+  candidates: Candidate[];
+  onChange: (nextName: string) => void;
+  onSelect: (nextName: string, nextKind: 'brand' | 'club') => void;
+  required?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const matches = useMemo(() => {
+    const q = foldSearch(value);
+    const list = q
+      ? candidates.filter((c) => foldSearch(c.name).includes(q))
+      : candidates;
+    return [...list]
+      .sort((a, b) => {
+        if (a.kind !== b.kind) return a.kind === kind ? -1 : 1;
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 30);
+  }, [candidates, value, kind]);
+
+  const trimmed = value.trim();
+  const hasExactMatch = trimmed.length > 0 && candidates.some((c) => c.name.toLowerCase() === trimmed.toLowerCase() && c.kind === kind);
+
+  return (
+    <div className={styles.combobox}>
+      <input
+        className={styles.input}
+        value={value}
+        required={required}
+        placeholder="Type to search or add new…"
+        onFocus={() => setOpen(true)}
+        onBlur={() => setTimeout(() => setOpen(false), 150)}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setOpen(true);
+        }}
+      />
+      {open && (matches.length > 0 || (trimmed.length > 0 && !hasExactMatch)) && (
+        <div className={styles.dropdown} role="listbox">
+          {trimmed.length > 0 && !hasExactMatch && (
+            <button
+              type="button"
+              className={`${styles.dropdownItem} ${styles.dropdownAddNew}`}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onSelect(trimmed, kind);
+                setOpen(false);
+              }}
+            >
+              <span>+ Add new “{trimmed}”</span>
+              <span className={styles.dropdownMeta}>{kind}</span>
+            </button>
+          )}
+          {matches.map((item) => (
+            <button
+              key={`${item.kind}|${item.name}`}
+              type="button"
+              className={styles.dropdownItem}
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onSelect(item.name, item.kind);
+                setOpen(false);
+              }}
+            >
+              <span>{item.name}</span>
+              <span className={styles.dropdownMeta}>{item.kind}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const FILTERS: Array<[string, string]> = [
   ['needs_review', 'Needs review (weakest first)'],
@@ -63,6 +152,18 @@ export default function SzrtEvidenceReviewPage() {
   const [adding, setAdding] = useState(false);
   const [form, setForm] = useState({ name: '', kind: 'brand', origin: 'szrt', sport: '', readText: '', note: '' });
   const [file, setFile] = useState<File | null>(null);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+
+  useEffect(() => {
+    fetch('/api/admin/fanmass-evidence/candidates', { cache: 'no-store' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.success && Array.isArray(data.candidates)) {
+          setCandidates(data.candidates);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -103,7 +204,18 @@ export default function SzrtEvidenceReviewPage() {
         : data?.error?.message || 'Could not save.',
     );
     setEditing(null);
-    if (ok) await load();
+    if (ok) {
+      if (body.action === 'correct' && typeof body.name === 'string' && body.name.trim()) {
+        const nextName = body.name.trim();
+        const nextKind: 'brand' | 'club' = body.kind === 'club' ? 'club' : 'brand';
+        setCandidates((prev) =>
+          prev.some((c) => c.name.toLowerCase() === nextName.toLowerCase() && c.kind === nextKind)
+            ? prev
+            : [...prev, { name: nextName, kind: nextKind }].sort((a, b) => a.name.localeCompare(b.name)),
+        );
+      }
+      await load();
+    }
   };
 
   const remove = async (row: Row) => {
@@ -168,7 +280,14 @@ export default function SzrtEvidenceReviewPage() {
           <p className={styles.hint}>Add a proof yourself: a picture that shows the brand or club, and its name. It counts as proof once added.</p>
           <div className={styles.inline}>
             <label className={styles.field}>Name
-              <input className={styles.input} required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              <PredictiveEntityInput
+                value={form.name}
+                kind={form.kind === 'club' ? 'club' : 'brand'}
+                candidates={candidates}
+                required
+                onChange={(nextName) => setForm({ ...form, name: nextName })}
+                onSelect={(nextName, nextKind) => setForm({ ...form, name: nextName, kind: nextKind })}
+              />
             </label>
             <label className={styles.field}>Kind
               <select className={styles.input} value={form.kind} onChange={(e) => setForm({ ...form, kind: e.target.value })}>
@@ -229,7 +348,13 @@ export default function SzrtEvidenceReviewPage() {
                   {editing === row.id ? (
                     <div className={styles.inline}>
                       <label className={styles.field}>Correct name
-                        <input className={styles.input} value={draft.name} onChange={(e) => setDraft({ ...draft, name: e.target.value })} />
+                        <PredictiveEntityInput
+                          value={draft.name}
+                          kind={draft.kind === 'club' ? 'club' : 'brand'}
+                          candidates={candidates}
+                          onChange={(nextName) => setDraft({ ...draft, name: nextName })}
+                          onSelect={(nextName, nextKind) => setDraft({ ...draft, name: nextName, kind: nextKind })}
+                        />
                       </label>
                       <label className={styles.field}>Kind
                         <select className={styles.input} value={draft.kind} onChange={(e) => setDraft({ ...draft, kind: e.target.value })}>
