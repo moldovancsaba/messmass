@@ -183,13 +183,13 @@ export interface ChartConfiguration {
 /**
  * DYNAMIC VARIABLE SYSTEM - KYC as Single Source of Truth
  * 
- * WHAT: Variables are stored in MongoDB variables_metadata collection (92 variables)
+ * WHAT: Variables are stored in MongoDB variables_metadata collection (system, Camera, Fanmass, and custom variables)
  * WHY: Enable dynamic variable creation without code changes, support white-label customization
  * HOW: Chart system fetches variables from /api/variables-config (KYC system)
  * 
  * BREAKING CHANGE v7.0.0:
  * - Removed hardcoded AVAILABLE_VARIABLES array (was only 37 variables)
- * - All variables now fetched dynamically from KYC/variables_metadata (92 variables)
+ * - All variables now fetched dynamically from KYC/variables_metadata
  * - Chart Configurator loads variables via API, not code imports
  */
 

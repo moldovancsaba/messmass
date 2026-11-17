@@ -420,3 +420,35 @@ Read the issue and actual board before each future proposal. Retain previous obs
 `npm run version:verify` passed. The staged-document `npm run docs:audit` passed for 166 current documents and regenerated its two metadata reports. Its freshness check was explicitly skipped because this checkout is shallow; source-age freshness is not claimed. Diff hygiene passed. The full required Verify/build/runtime chain has not been run locally, and the PR is not a merged release. No production or cross-app acceptance is claimed.
 
 The first PR Verify run failed because the generated documentation inventory omitted this new reference file. The canonical inventory generator was then run and inventory:check passed locally. Its endpoint output differed only by row order; semantic identity was asserted and that unrelated reorder was excluded. The documentation inventory update is included with this review. A new PR Verify result is still required before merge.
+
+
+## 2026-11-17 — Issue Hygiene, Rebaselining & What's New Delivery Journal
+
+Reviewed and executed repository issue triage on `moldovancsaba/messmass` without mutating Project 8 board cards or fields (board remains read-only per owner rule).
+
+### 1. Closed as Completed (`reason: completed` — 10 Issues)
+| Issue | Title | Verification Evidence in `main` | Proposed Board Column |
+| :--- | :--- | :--- | :--- |
+| `#430` | `report-config: partner template and style level reads legacy project.partner1` | Fixed in `app/api/report-config/[identifier]/route.ts` via `projectPartnerId(project)` | `Done` |
+| `#138` | `Move Messmass release notes into Messmass wiki by ISO UTC date` | Superseded by canonical in-repo `docs/operations/operations-release-notes.md` + `/whats-new` (`app/whats-new/page.tsx`) | `Done` |
+| `#130` | `Partner-Level Analytics Dashboard (follow-up work)` | Delivered via `/interactive-report/partner/[slug]` and `/admin/analytics/ai` partner directory | `Done` |
+| `#133` | `Milestone: Analytics Platform Phase 4 — Reporting & Exports (Q2 2026)` | Delivered via v12 Interactive & Fanmass Reports | `Done` |
+| `#124` | `Advanced Analytics & Insights Platform (Q1-Q2 2026)` | Delivered via v12 Interactive & Fanmass Reports | `Done` |
+| `#213` | `AI Sponsor Asset Detection and Classification` | Delivered via Fanmass OCR proof + `/admin/brand-assets` + `/admin/club-clusters` | `Done` |
+| `#214` | `Explainable Sponsorship Valuation Engine` | Delivered via parameterized EMV chart algorithm (`brand-earned-media-value`, `lib/interactiveReportEmv.ts`) | `Done` |
+| `#216` | `Partner Activation and Proof-of-Performance Workspace` | Delivered via `/admin/fanmass-evidence` (`confirm`, `reject`, `correct`, `investigate`) | `Done` |
+| `#225` | `Cross-Event Portfolio Reporting` | Delivered via Hashtag, Filter (`/interactive-report/filter/[slug]`), Organization (`/interactive-report/organization/[slug]`), and Global (`/interactive-report/global`) reports | `Done` |
+| `#85` | `Mantine #864 overstated: legacy CSS + styled-jsx still present` | Consolidated into `#140` with `npm run style:check` enforcement | `Done` |
+
+### 2. Archived Dormant Roadmap Epics (`reason: not planned` — 25 Issues)
+Cataloged in `docs/operations/operations-roadmap.md` and closed as `not planned` until scheduled for active sprint execution:
+`#87`, `#122`, `#128`, `#131`, `#136`, `#212`, `#215`, `#217`, `#218`, `#219`, `#220`, `#221`, `#222`, `#223`, `#224`, `#226`, `#227`, `#228`, `#229`, `#230`, `#231`, `#232`, `#233`, `#235`, `#236`.
+
+### 3. Active Open Execution Queue Remaining (7 Issues)
+- `#519` — Reconcile Camera photo-stats docs with current source contract
+- `#470` — Drift found by re-verification (8/11 fixed in `#559`, 3 remaining)
+- `#465` — Deprecated code to replace (`execCommand` and ESLint 9 completed; `middleware.ts` remaining)
+- `#356` — EPIC: Fleet Remediation Program
+- `#343` — Release gate: Fanmass unified dashboard & settings
+- `#244` — Report Variants Program
+- `#140` — Style hardening Phase 5

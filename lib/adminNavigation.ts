@@ -111,6 +111,13 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.success,
       },
       {
+        label: 'Club Clusters',
+        path: '/admin/club-clusters',
+        icon: 'groups',
+        description: 'Consolidate duplicate club and team detections into canonical partner records.',
+        accentColor: navAccent.secondary,
+      },
+      {
         label: 'Global Report',
         path: '/admin/global/reports',
         icon: 'public',
@@ -320,6 +327,13 @@ export const adminNavSections: AdminNavSection[] = [
         icon: 'menu_book',
         description: 'Read in-product guidance for operators, guests, and admins.',
         accentColor: navAccent.neutral,
+      },
+      {
+        label: "What's New",
+        path: '/whats-new',
+        icon: 'new_releases',
+        description: 'Browse chronological release notes, newly shipped capabilities, and platform fixes.',
+        accentColor: navAccent.primary,
       },
     ],
   },

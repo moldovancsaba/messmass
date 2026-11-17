@@ -113,12 +113,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 256 | `lib/` |
+| **Utility Modules** | 257 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 87 | `app/**/page.tsx` |
-| **API routes** | 248 | `app/api/**/route.ts` |
+| **App routes (pages)** | 88 | `app/**/page.tsx` |
+| **API routes** | 250 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (87)
+### Pages (88)
 
 | Route | File |
 |-------|------|
@@ -1088,8 +1088,9 @@ shows up here on the next regeneration, which is the point.
 | `/report/[slug]` | `app/report/[slug]/page.tsx` |
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
+| `/whats-new` | `app/whats-new/page.tsx` |
 
-### API routes (248)
+### API routes (250)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1113,6 +1114,7 @@ means the route calls none — public by construction, or a gap.
 | `/api/admin/email-selftest` | GET | `requireSession` |
 | `/api/admin/fanmass-evidence` | GET, POST | `getAdminUser, requireAdmin` |
 | `/api/admin/fanmass-evidence/[id]` | PATCH, DELETE | `getAdminUser, requireAdmin` |
+| `/api/admin/fanmass-evidence/candidates` | GET | `requireAdmin` |
 | `/api/admin/fanmass/commands` | POST | `getAdminUser` |
 | `/api/admin/fanmass/events` | GET | `getAdminUser` |
 | `/api/admin/fanmass/events/[eventId]` | GET, POST | `getAdminUser` |
@@ -1281,6 +1283,12 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/client-error` | POST | — |
+
+#### `/api/club-clusters`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/club-clusters` | GET, POST | `requireSession` |
 
 #### `/api/contact`
 

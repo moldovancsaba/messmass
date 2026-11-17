@@ -6,8 +6,8 @@
 //
 // A name only a model recalled (`model_identified`) is stored and counted but never shown as proof.
 //
-// A person can review every sample (lib/fanmassEvidenceReview.ts): confirm, reject, correct or add one. A reviewed
-// sample is never overwritten by a later delivery, a rejected one is never shown, and a person's own sample is proof.
+// A person can review every sample (lib/fanmassEvidenceReview.ts): confirm, reject, correct, send back for investigation, or add one. A reviewed
+// sample is never overwritten by a later delivery, a rejected or needs_investigation one is never shown, and a person's own sample is proof.
 
 import { createHash } from 'node:crypto';
 import { storeMedia } from './mediaStorage';

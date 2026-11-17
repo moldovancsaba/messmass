@@ -18,8 +18,8 @@ import styles from './ChartAlgorithmManager.module.css';
 /**
  * DYNAMIC VARIABLE SYSTEM - KYC as Single Source of Truth
  * 
- * WHAT: Fetch all 92 variables from KYC /api/variables-config
- * WHY: Chart configurator must show ALL variables, not hardcoded 37
+ * WHAT: Fetch all variables from KYC /api/variables-config (system, Camera, Fanmass, and custom variables)
+ * WHY: Chart configurator must show all registered variables and support [PARAM:*] / [MANUAL:*] tokens
  * HOW: Load on component mount, cache for session
  */
 

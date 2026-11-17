@@ -1,6 +1,7 @@
 // Human-in-the-loop review of the global evidence library: the proof behind every brand and club figure Fanmass
 // produces, for any project or event. Optional to use, always possible: a person can read every sample (including
-// weak ones and rejected ones), confirm it, reject it, correct the name or kind it was matched to, add a sample of
+// weak ones and rejected ones), confirm it, reject it, correct the name or kind it was matched to (via predictive
+// entity selection or adding a new name), send it back for further investigation with a note, add a sample of
 // their own, or delete one they added. Every decision is also training data for the whole system:
 // `listTrainingRules` turns them into rules Fanmass applies to every later analysis, whatever the project.
 //

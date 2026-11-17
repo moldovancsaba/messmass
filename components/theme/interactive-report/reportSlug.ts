@@ -3,8 +3,9 @@ import { InteractiveReportData } from './types';
 /**
  * Slug understood by /interactive-report/[partnerSlug] and /api/interactive-report/[partnerSlug].
  *
- * Those routes read a bare slug as a partner, so hashtag and event scopes must carry their
- * prefix ("hashtag-<name>", "event-<slug>"); a bare hashtag would resolve to the wrong scope.
+ * Those routes read a bare slug as a partner, so filter, organization, hashtag, and event scopes
+ * carry their prefix ("filter-<slug>", "organization-<slug>", "hashtag-<name>", "event-<slug>");
+ * a bare hashtag or filter would resolve to the wrong scope.
  * Returns null when the data carries no slug at all, so callers can hide the link instead of
  * pointing it at a made-up scope.
  */

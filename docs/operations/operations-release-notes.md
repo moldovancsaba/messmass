@@ -1,10 +1,20 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-15T19:00:00.000Z
-Canonical: No
+Last Updated: 2026-11-17T23:59:00.000Z
+Canonical: Yes
 Owner: Operations
 
-## Unreleased — 2026-11-15 — Opt-in headline from photo records, Camera proof and months in the Fanmass report, no SZRT figure in the global report
+## Unreleased — 2026-11-17 — EMV chart algorithms, multi-brand weighting, club clustering, organization reports, evidence investigation & What's New
+
+- **Added (What's New & Release Notes API):** `/whats-new` (`app/whats-new/page.tsx`, `app/whats-new/WhatsNewClient.tsx`) and `GET /api/release-notes` (`lib/releaseNotesParser.ts`) render a searchable, categorized release timeline matching SalesLeadGenerator (`All`, `New Features`, `Improvements`, `Fixes`, `Security & Privacy`, `Docs & Guides`).
+- **Added (interactive chart algorithms & EMV, `lib/interactiveReportEmv.ts`):** registered all 11 interactive and Fanmass calculations in `chart_configurations` (`/admin/charts`), including parameterized **Brand Earned Media Value (EMV)** (`([fanmassBrandAppearances] * [PARAM:impressionsPerAppearance] * [PARAM:cpmEur]) / 1000`, defaulting to `4.6` × `€22 CPM`), photo opt-in rate, vetting approval rate, consent share, journey completion rate, smiling rate, gender split, age distribution, brand/club exposure, merchandise detections, and content safety. Added editable `[PARAM:...]` parameter inputs to `ChartAlgorithmManager.tsx`.
+- **Added (multi-brand per-photo weighting, `lib/hashtagReport/cameraProof.ts`, `lib/fanmassPhotoAnalyses.ts`):** every detected brand and club now carries `appearances`, `weightedCount` (fractional presence share per photo: $\sum \text{sightings}(b,p) / \text{totalSightings}(p)$), `soloPhotos`, `coOccurrencePhotos`, and `avgSharePct` across `cameraProof`, `ai_analysis_summaries.brandPresenceWeights`, and `HashtagReportView.tsx`.
+- **Added (club clustering & deduplication, `/admin/club-clusters`, `/api/club-clusters`):** added `normalizeClubClusterKey`, `mergeClubVariants`, and `suggestClubClusters` in `lib/brandEntityClustering.ts` with an admin console and API to merge duplicate detected club/team variants into `club_canonical_mappings` and link them to Messmass Partners.
+- **Added (organization interactive reports, `/interactive-report/organization/[slug]`):** extended `ScopeType` with `'organization'` across `lib/interactiveReportAggregator.ts`, `lib/reportSnapshotManager.ts`, `SzrtHeader.tsx`, and `next.config.js` (`/report/organization/:slug*`), aggregating all events and partners belonging to an organization (such as EuroLeague Women).
+- **Added (evidence review investigation & predictive entity selector, `/admin/fanmass-evidence`):** added an **Investigate** (`needs_investigation`) action and filter requiring a reviewer note (`lib/fanmassEvidenceReview.ts`, `lib/fanmassEvidence.ts`), plus a predictive brand/club combobox (`/api/admin/fanmass-evidence/candidates`) with `+ Add new` support so similar teams (`Sopron KC` vs `Soproni KC`) can be selected or added to train Fanmass back.
+- **Changed (AI Analytics user journey, `/admin/analytics/ai`):** added a top navigation hub to the Global AI Report (`/interactive-report/global`), Global Report Sharing, Fanmass Proof Review, Partners, Organizations, and Club Clusters; enriched event cards with clickable Partner and Organization chips, sample proof thumbnails, 0-photo/preview filters, and direct links to Interactive Reports and Reports Workspaces.
+
+## [v12.3.49] — 2026-11-15 — Opt-in headline from photo records, Camera proof and months in the Fanmass report, no SZRT figure in the global report
 
 - **Changed (map library, dependabot #520):** MapLibre GL 4.7.1 → 6.4.1. Version 6 is ES modules only and cannot find its worker inside a bundle, so `scripts/copy-maplibre-worker.mjs` copies `maplibre-gl-worker.mjs` and `maplibre-gl-shared.mjs` to `public/maplibre/dist/` before `next dev` and `next build` (`predev`, `prebuild`; ignored by git) and the territory map points `setWorkerUrl` at it, as MapLibre documents for Next.js. Clicking a cluster now zooms in (the callback form of `getClusterExpansionZoom` had stopped working with version 4); the label fields use expressions. WebGL 2 is required. Checked with a production build: tiles, pins, cluster count labels and cluster zoom draw.
 - **Changed (opt-in headline, owner answer 512):** every Fanmass report (hashtag, filter, `/report/global`) headlines **Photos with opt-in**: the drive photos and Camera photo results with a stored per-photo `optIn` record, as a share with its two counts, or **Not measured** when no photo has a record (`calculated.photoOptInShare`, `lib/hashtagReport/calculated.ts`). A marketing opt-in typed for a campaign is not part of it.
