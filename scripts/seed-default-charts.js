@@ -201,11 +201,25 @@ const DEFAULT_CHARTS = [
     elements: [
       {
         id: 'emv-value',
-        label: 'Earned Media Value (€22 CPM)',
-        formula: '([fanmassBrandAppearances] * 4.6 * 22) / 1000',
+        label: 'Earned Media Value',
+        formula: '([fanmassBrandAppearances] * [PARAM:impressionsPerAppearance] * [PARAM:cpmEur]) / 1000',
         color: CHART_COLOR.green,
-        description: 'Empirical calculation of in-stadium authentic brand exposure value: Brand Appearances × 4.6 in-stadium peer impressions × €22 CPM / 1000. Target audience: Brand sponsors, media buyers, rights holders.',
-        formatting: { rounded: true, prefix: '€', suffix: '' }
+        description: 'Empirical calculation of in-stadium authentic brand exposure value: Brand Appearances × Peer Impressions × CPM / 1000. Target audience: Brand sponsors, media buyers, rights holders.',
+        formatting: { rounded: true, prefix: '€', suffix: '' },
+        parameters: {
+          impressionsPerAppearance: {
+            value: 4.6,
+            label: 'Peer Impressions / Appearance',
+            description: 'Average in-stadium peer impressions per detected brand appearance',
+            unit: 'impressions'
+          },
+          cpmEur: {
+            value: 22,
+            label: 'CPM Rate',
+            description: 'Cost per 1,000 impressions in EUR',
+            unit: 'EUR'
+          }
+        }
       }
     ]
   }

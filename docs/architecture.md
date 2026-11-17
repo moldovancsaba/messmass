@@ -113,11 +113,11 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 129 | `components/` |
-| **Utility Modules** | 255 | `lib/` |
+| **Utility Modules** | 256 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 85 | `app/**/page.tsx` |
+| **App routes (pages)** | 87 | `app/**/page.tsx` |
 | **API routes** | 248 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -125,17 +125,17 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 129 | 201 |
-| `lib/mongodb.ts` | 112 | 112 |
-| `lib/auth.ts` | 97 | 118 |
+| `lib/config.ts` | 130 | 201 |
+| `lib/mongodb.ts` | 113 | 112 |
+| `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
-| `lib/apiGuards.ts` | 87 | 390 |
+| `lib/apiGuards.ts` | 88 | 390 |
 | `lib/fanmassIntegration.ts` | 45 | 331 |
 | `components/ColoredCard.tsx` | 43 | 52 |
+| `lib/apiClient.ts` | 42 | 258 |
 | `lib/db.ts` | 42 | 17 |
-| `lib/apiClient.ts` | 41 | 258 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 26 | 192 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 144 |
 | `lib/report-calculator.ts` | 19 | 935 |
@@ -997,7 +997,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (85)
+### Pages (87)
 
 | Route | File |
 |-------|------|
@@ -1022,6 +1022,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/charts` | `app/admin/charts/page.tsx` |
 | `/admin/clear-session` | `app/admin/clear-session/page.tsx` |
 | `/admin/clicker-manager` | `app/admin/clicker-manager/page.tsx` |
+| `/admin/club-clusters` | `app/admin/club-clusters/page.tsx` |
 | `/admin/content-library` | `app/admin/content-library/page.tsx` |
 | `/admin/cookie-test` | `app/admin/cookie-test/page.tsx` |
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` |
@@ -1077,6 +1078,7 @@ shows up here on the next regeneration, which is the point.
 | `/interactive-report/filter/[slug]` | `app/interactive-report/filter/[slug]/page.tsx` |
 | `/interactive-report/global` | `app/interactive-report/global/page.tsx` |
 | `/interactive-report/hashtag/[hashtag]` | `app/interactive-report/hashtag/[hashtag]/page.tsx` |
+| `/interactive-report/organization/[slug]` | `app/interactive-report/organization/[slug]/page.tsx` |
 | `/interactive-report/partner/[slug]` | `app/interactive-report/partner/[slug]/page.tsx` |
 | `/organization-edit/[id]` | `app/organization-edit/[id]/page.tsx` |
 | `/organization-report/[id]` | `app/organization-report/[id]/page.tsx` |

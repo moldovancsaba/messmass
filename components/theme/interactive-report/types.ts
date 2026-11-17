@@ -155,7 +155,7 @@ export interface VisionProgressData {
 }
 
 export interface ScopeHeader {
-  type: 'hashtag' | 'partner' | 'event' | 'global' | 'filter';
+  type: 'hashtag' | 'partner' | 'event' | 'global' | 'filter' | 'organization';
   id: string;
   name: string;
   viewSlug?: string;

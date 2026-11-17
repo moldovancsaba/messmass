@@ -330,6 +330,94 @@ export function mergeBrandVariants<T extends { brand: string; count: number; log
 }
 
 /**
+ * Normalize a club/team string to a comparison key for clustering near-duplicates
+ * (strips accents, punctuation, and generic club suffixes like FC/KC/TC/SE/KK/VSC/SC).
+ */
+export function normalizeClubClusterKey(rawName: string): string {
+  const ascii = String(rawName || '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .trim();
+  const tokens = ascii
+    .split(/\s+/)
+    .filter((t) => t && !['fc', 'kc', 'tc', 'se', 'sc', 'bc', 'kk', 'vsc', 'ksc', 'fk', 'ac', 'as'].includes(t));
+  return (tokens.length > 0 ? tokens.join(' ') : ascii).trim();
+}
+
+/**
+ * Merges a club list by canonical club name (directory + optional DB alias map), summing counts.
+ */
+export function mergeClubVariants<T extends { name: string; count: number; emvEur?: number; logoUrl?: string }>(
+  clubs: T[],
+  aliasMap?: Record<string, string>,
+): T[] {
+  const map = new Map<string, T>();
+  for (const club of clubs) {
+    if (!club?.name) continue;
+    const low = club.name.toLowerCase().trim();
+    const mapped = aliasMap?.[low] || canonicalizeClub(club.name)?.canonicalName || club.name.trim();
+    const key = mapped.toLowerCase();
+    const existing = map.get(key);
+    if (existing) {
+      existing.count += club.count;
+      if (typeof club.emvEur === 'number') {
+        existing.emvEur = Math.round(((existing.emvEur ?? 0) + club.emvEur) * 100) / 100;
+      }
+      if (!existing.logoUrl && club.logoUrl) existing.logoUrl = club.logoUrl;
+    } else {
+      map.set(key, { ...club, name: mapped });
+    }
+  }
+  return Array.from(map.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+}
+
+export interface ClubClusterSuggestion {
+  clusterKey: string;
+  suggestedTarget: string;
+  variants: Array<{ name: string; count: number }>;
+  totalCount: number;
+}
+
+/**
+ * Group club names that share a canonical franchise or normalized club root so admins
+ * can review and merge multi-variant club names in one click.
+ */
+export function suggestClubClusters(
+  items: Array<{ name: string; count: number }>,
+  aliasMap?: Record<string, string>,
+): ClubClusterSuggestion[] {
+  const groups = new Map<string, { suggestedTarget: string; variants: Map<string, number> }>();
+  for (const item of items) {
+    const raw = String(item.name || '').trim();
+    if (!raw) continue;
+    const low = raw.toLowerCase();
+    const canon = aliasMap?.[low] || canonicalizeClub(raw)?.canonicalName;
+    const key = canon ? canon.toLowerCase() : normalizeClubClusterKey(raw);
+    if (!key) continue;
+    const bucket = groups.get(key) ?? { suggestedTarget: canon || raw, variants: new Map() };
+    if (canon) bucket.suggestedTarget = canon;
+    bucket.variants.set(raw, (bucket.variants.get(raw) ?? 0) + (item.count || 0));
+    groups.set(key, bucket);
+  }
+  const out: ClubClusterSuggestion[] = [];
+  for (const [clusterKey, bucket] of groups.entries()) {
+    if (bucket.variants.size < 2) continue;
+    const variants = [...bucket.variants.entries()]
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+    out.push({
+      clusterKey,
+      suggestedTarget: bucket.suggestedTarget,
+      variants,
+      totalCount: variants.reduce((sum, v) => sum + v.count, 0),
+    });
+  }
+  return out.sort((a, b) => b.totalCount - a.totalCount || a.suggestedTarget.localeCompare(b.suggestedTarget));
+}
+
+/**
  * Checks whether an entity is a sport franchise / club.
  */
 export function isSportFranchise(rawName: string): boolean {

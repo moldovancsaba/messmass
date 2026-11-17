@@ -17,6 +17,11 @@ export function getReportSlug(
     return scope.id ? `filter-${scope.id}` : null;
   }
 
+  if (scope?.type === 'organization') {
+    const key = scope.viewSlug || scope.id;
+    return key ? `organization-${key}` : null;
+  }
+
   if (scope?.type === 'hashtag') {
     return scope.id ? `hashtag-${scope.id}` : null;
   }

@@ -1,0 +1,150 @@
+.page {
+  min-height: 100vh;
+  background: var(--mm-bg-primary, var(--mm-gray-50));
+  padding-bottom: 3rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 240px;
+  padding: 0.65rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--mm-border-color, var(--mm-gray-300));
+  background: var(--mm-white);
+  font-size: 0.95rem;
+}
+
+.primaryBtn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--mm-border-color, var(--mm-gray-300));
+  background: var(--mm-white);
+  color: var(--mm-text-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.successBanner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--mm-success-light);
+  color: var(--mm-success-dark, var(--mm-text-primary));
+  margin-bottom: 1rem;
+}
+
+.errorBanner {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--mm-error-light);
+  color: var(--mm-error-dark, var(--mm-text-primary));
+  margin-bottom: 1rem;
+}
+
+.loadingState {
+  padding: 2rem;
+  text-align: center;
+  color: var(--mm-text-secondary);
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.mergeBar {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.partnerPicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.partnerChip {
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--mm-border-color, var(--mm-gray-300));
+  background: var(--mm-white);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--mm-border-color, var(--mm-gray-200));
+  background: var(--mm-white);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.aliasList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.aliasChip {
+  padding: 0.25rem 0.55rem;
+  border-radius: 6px;
+  background: var(--mm-gray-100);
+  font-size: 0.8rem;
+}
+
+.suggestionNote {
+  font-size: 0.8rem;
+  color: var(--mm-text-secondary);
+}

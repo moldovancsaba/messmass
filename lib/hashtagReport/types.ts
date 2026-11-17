@@ -53,8 +53,16 @@ export interface HashtagEvent {
   joinedBy: 'hashtag' | 'photos';
 }
 
-/** A brand or club read from the pictures, with the number of photos it was read in. */
-export interface NamedCount { name: string; count: number }
+/** A brand or club read from the pictures, with photo counts and multi-brand weighting metadata. */
+export interface NamedCount {
+  name: string;
+  count: number;
+  appearances?: number;
+  weightedCount?: number;
+  soloPhotos?: number;
+  coOccurrencePhotos?: number;
+  avgSharePct?: number;
+}
 
 /**
  * Drive photos Fanmass tagged with the hashtag or placed in the hashtag's events (the SZRT drive library carries no event of its own; every photo was

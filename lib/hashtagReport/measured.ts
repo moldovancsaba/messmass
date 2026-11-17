@@ -188,8 +188,17 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   photos.withOptIn = withOptIn;
   photos.tagged = tag === null ? 0 : await db.collection('fanmass_camera_photo_analyses').countDocuments({ hashtags: tag, tombstone: { $ne: true }, status: 'completed' });
   // Only names read from the picture count (the rollups' names are model guesses, lib/hashtagReport/mergeSummaries.ts)
-  photos.brands = cameraProof.filter((entry) => entry.kind === 'brand').map((entry) => ({ name: entry.name, count: entry.photos }));
-  photos.clubs = cameraProof.filter((entry) => entry.kind === 'club').map((entry) => ({ name: entry.name, count: entry.photos }));
+  const toNamedCount = (entry: (typeof cameraProof)[number]) => ({
+    name: entry.name,
+    count: entry.photos,
+    ...(entry.appearances !== undefined ? { appearances: entry.appearances } : {}),
+    ...(entry.weightedCount !== undefined ? { weightedCount: entry.weightedCount } : {}),
+    ...(entry.soloPhotos !== undefined ? { soloPhotos: entry.soloPhotos } : {}),
+    ...(entry.coOccurrencePhotos !== undefined ? { coOccurrencePhotos: entry.coOccurrencePhotos } : {}),
+    ...(entry.avgSharePct !== undefined ? { avgSharePct: entry.avgSharePct } : {}),
+  });
+  photos.brands = cameraProof.filter((entry) => entry.kind === 'brand').map(toNamedCount);
+  photos.clubs = cameraProof.filter((entry) => entry.kind === 'club').map(toNamedCount);
   return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
 }
 

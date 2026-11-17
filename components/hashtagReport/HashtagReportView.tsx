@@ -60,7 +60,34 @@ function Bars({ title, counts, note }: { title: string; counts: Record<string, n
 
 function Names({ title, list, note }: { title: string; list: NamedCount[]; note: string }) {
   if (list.length === 0) return null;
-  return <Bars title={title} counts={Object.fromEntries(list.slice(0, 12).map((row) => [row.name, row.count]))} note={note} />;
+  const rows = list.slice(0, 12);
+  const top = Math.max(...rows.map((r) => r.count), 1);
+  return (
+    <section className={styles.card}>
+      <h3 className={styles.cardTitle}>{title}</h3>
+      {note && <p className={styles.cardNote}>{note}</p>}
+      {rows.map((row) => (
+        <div
+          className={styles.barRow}
+          key={row.name}
+          title={
+            row.weightedCount !== undefined
+              ? `${fmt(row.count)} photos · ${row.weightedCount} weighted · ${fmt(row.appearances ?? row.count)} sightings · ${row.avgSharePct ?? 100}% avg share`
+              : undefined
+          }
+        >
+          <div className={styles.barHead}>
+            <span>{row.name}</span>
+            <strong>
+              {fmt(row.count)}
+              {row.weightedCount !== undefined && row.coOccurrencePhotos ? ` (${row.weightedCount}w)` : ''}
+            </strong>
+          </div>
+          <div className={styles.track}><div className={styles.fill} style={{ width: `${Math.round((row.count / top) * 100)}%` }} /></div>
+        </div>
+      ))}
+    </section>
+  );
 }
 
 /** `embedded`: inside the interactive dashboard's Figures tab, which already shows the title and the header figures. */

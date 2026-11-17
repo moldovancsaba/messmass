@@ -24,14 +24,17 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const isHashtag = scope?.type === 'hashtag';
   const isEvent = scope?.type === 'event';
   const isFilter = scope?.type === 'filter';
+  const isOrganization = scope?.type === 'organization';
 
   const badgeText = fanmass ? '🤖 Fanmass report' : isFilter
     ? 'Hashtag Filter Report'
-    : isHashtag
-      ? `Campaign Hashtag #${scope?.id}`
-      : isEvent
-        ? 'Event Activation Report'
-        : 'Interactive Analytics Report';
+    : isOrganization
+      ? 'Organization Report'
+      : isHashtag
+        ? `Campaign Hashtag #${scope?.id}`
+        : isEvent
+          ? 'Event Activation Report'
+          : 'Interactive Analytics Report';
 
   const subBadgeText = isFilter
     ? (scope?.hashtags && scope.hashtags.length > 0

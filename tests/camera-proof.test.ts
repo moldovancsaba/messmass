@@ -26,15 +26,34 @@ describe('the proof of a name in Camera photos', () => {
       { photo: 'p2', eventId: 'e2', name: 'MTK Budapest', kind: 'club', readText: 'MTK', ocrConfidence: 0.9, match: 'exact' },
     ], names);
     expect(proof).toEqual([
-      { kind: 'brand', name: 'Veolia', photos: 2, samples: [
+      { kind: 'brand', name: 'Veolia', photos: 2, appearances: 3, weightedCount: 2, soloPhotos: 2, coOccurrencePhotos: 0, avgSharePct: 100, samples: [
         { readText: 'VEOLIA', ocrConfidence: 0.95, match: 'exact', event: 'MTK x DVSC' },
         { readText: 'veolia', ocrConfidence: 0.8, match: 'exact', event: 'Camera Night' },
       ] },
-      { kind: 'club', name: 'MTK Budapest', photos: 1, samples: [{ readText: 'MTK', ocrConfidence: 0.9, match: 'exact', event: 'Camera Night' }] },
+      { kind: 'club', name: 'MTK Budapest', photos: 1, appearances: 1, weightedCount: 1, soloPhotos: 1, coOccurrencePhotos: 0, avgSharePct: 100, samples: [{ readText: 'MTK', ocrConfidence: 0.9, match: 'exact', event: 'Camera Night' }] },
     ]);
     expect(findCameraProof(proof, 'brand', 'veolia')?.photos).toBe(2);
     expect(findCameraProof(proof, 'club', 'Veolia')).toBeNull();
     expect(proofNameKey('Ferencvárosi TC')).toBe('ferencvarositc');
+  });
+
+  it('computes fractional multi-brand weighting when multiple brands share a photo', () => {
+    const proof = readCameraProof([
+      { photo: 'p1', eventId: 'e1', name: 'Tippmix', kind: 'brand', readText: 'TIPPMIX', ocrConfidence: 0.95, match: 'exact' },
+      { photo: 'p1', eventId: 'e1', name: 'Tippmix', kind: 'brand', readText: 'TIPPMIX', ocrConfidence: 0.9, match: 'exact' },
+      { photo: 'p1', eventId: 'e1', name: 'Nike', kind: 'brand', readText: 'NIKE', ocrConfidence: 0.92, match: 'exact' },
+      { photo: 'p2', eventId: 'e1', name: 'Tippmix', kind: 'brand', readText: 'TIPPMIX', ocrConfidence: 0.96, match: 'exact' },
+    ], names);
+    const tippmix = findCameraProof(proof, 'brand', 'Tippmix');
+    const nike = findCameraProof(proof, 'brand', 'Nike');
+    expect(tippmix?.photos).toBe(2);
+    expect(tippmix?.appearances).toBe(3);
+    expect(tippmix?.soloPhotos).toBe(1);
+    expect(tippmix?.coOccurrencePhotos).toBe(1);
+    expect(tippmix?.weightedCount).toBe(1.67);
+    expect(nike?.photos).toBe(1);
+    expect(nike?.coOccurrencePhotos).toBe(1);
+    expect(nike?.weightedCount).toBe(0.33);
   });
 
   it('takes no reading without its confidence and no row without a name', () => {
@@ -88,7 +107,10 @@ describe('every event together, with Camera proof, opt-ins and months', () => {
 
   it('lists the names proven in Camera photos with their proof', async () => {
     const report = await buildAllEventsReport(db);
-    expect(report.measured.photos.brands).toEqual([{ name: 'Tippmix', count: 1 }, { name: 'Veolia', count: 1 }]);
+    expect(report.measured.photos.brands).toEqual([
+      { name: 'Tippmix', count: 1, appearances: 1, weightedCount: 1, soloPhotos: 1, coOccurrencePhotos: 0, avgSharePct: 100 },
+      { name: 'Veolia', count: 1, appearances: 1, weightedCount: 1, soloPhotos: 1, coOccurrencePhotos: 0, avgSharePct: 100 },
+    ]);
     expect(report.measured.cameraProof.map((entry) => [entry.name, entry.samples[0].event])).toEqual([['Tippmix', 'Camera Night'], ['Veolia', 'Camera Night']]);
   });
 

@@ -298,6 +298,7 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
   const brands = new Map<string, number>();
   const clubs = new Map<string, number>();
   const brandRegionNames = new Map<string, number>();
+  const brandWeightAccum = new Map<string, { photos: number; appearances: number; weightedSum: number; soloPhotos: number; coOccurrencePhotos: number }>();
   let measuredPeople = 0;
   let personBoxes = 0;
   let faceBoxes = 0;
@@ -330,6 +331,35 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     countMapAdd(merchandise, summary.merchandiseCounts);
     namedCountsAdd(brands, summary.brandMentions);
     namedCountsAdd(clubs, summary.clubMentions);
+    const photoBrandCounts = new Map<string, number>();
+    const rawRegions = Array.isArray(boxes.brandRegions) ? boxes.brandRegions : [];
+    for (const region of rawRegions) {
+      const r = record(region);
+      const shortName = typeof r?.shortName === 'string' ? r.shortName.trim() : '';
+      if (!shortName) continue;
+      photoBrandCounts.set(shortName, (photoBrandCounts.get(shortName) ?? 0) + 1);
+    }
+    if (photoBrandCounts.size === 0 && Array.isArray(summary.brandMentions)) {
+      for (const m of summary.brandMentions) {
+        const item = record(m);
+        const bName = typeof item?.name === 'string' ? item.name.trim() : '';
+        const bCount = number(item?.count);
+        if (bName && bCount > 0) photoBrandCounts.set(bName, (photoBrandCounts.get(bName) ?? 0) + bCount);
+      }
+    }
+    const totalPhotoBrandSightings = [...photoBrandCounts.values()].reduce((sum, v) => sum + v, 0);
+    const distinctPhotoBrands = photoBrandCounts.size;
+    if (totalPhotoBrandSightings > 0) {
+      for (const [bName, bCount] of photoBrandCounts.entries()) {
+        const cur = brandWeightAccum.get(bName) ?? { photos: 0, appearances: 0, weightedSum: 0, soloPhotos: 0, coOccurrencePhotos: 0 };
+        cur.photos += 1;
+        cur.appearances += bCount;
+        cur.weightedSum += bCount / totalPhotoBrandSightings;
+        if (distinctPhotoBrands <= 1) cur.soloPhotos += 1;
+        else cur.coOccurrencePhotos += 1;
+        brandWeightAccum.set(bName, cur);
+      }
+    }
     for (const [key, value] of Object.entries(record(summary.brandRegionTypes) || {})) {
       if (typeof value === 'number' && Number.isFinite(value) && value > 0) {
         brandRegionTypes[key] = (brandRegionTypes[key] || 0) + Math.round(value);
@@ -408,6 +438,17 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
     humanConfirmedPhotos,
     humanCorrectedPhotos,
     brandMentions: namedCounts(brands),
+    brandPresenceWeights: [...brandWeightAccum.entries()]
+      .sort((a, b) => b[1].weightedSum - a[1].weightedSum || a[0].localeCompare(b[0]))
+      .map(([name, acc]) => ({
+        name,
+        photos: acc.photos,
+        appearances: acc.appearances,
+        weightedCount: Math.round(acc.weightedSum * 100) / 100,
+        soloPhotos: acc.soloPhotos,
+        coOccurrencePhotos: acc.coOccurrencePhotos,
+        avgSharePct: acc.photos > 0 ? Math.round((acc.weightedSum / acc.photos) * 1000) / 10 : 0,
+      })),
     clubMentions: namedCounts(clubs),
     demographicPeopleMeasured: demographicSample,
     moderationPhotosReviewed,

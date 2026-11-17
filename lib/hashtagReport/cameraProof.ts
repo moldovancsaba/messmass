@@ -18,11 +18,16 @@ export interface CameraProofSample {
   event: string;
 }
 
-/** A brand or club proven in Camera photos: in how many photos, and the strongest proofs (one per photo). */
+/** A brand or club proven in Camera photos: in how many photos, multi-brand weighting metadata, and the strongest proofs. */
 export interface CameraProofEntry {
   kind: 'brand' | 'club';
   name: string;
   photos: number;
+  appearances?: number;
+  weightedCount?: number;
+  soloPhotos?: number;
+  coOccurrencePhotos?: number;
+  avgSharePct?: number;
   samples: CameraProofSample[];
 }
 
@@ -66,9 +71,18 @@ export function cameraProofPipeline(match: Record<string, unknown>): Array<Recor
 
 type ProofRow = { photo?: unknown; eventId?: unknown; name?: unknown; kind?: unknown; readText?: unknown; ocrConfidence?: unknown; match?: unknown };
 
-/** The proof rows as one entry per name: photos counted once each, the strongest reading of each photo kept. */
+/** The proof rows as one entry per name: photos counted once each, multi-brand weighting computed per photo, strongest reading kept. */
 export function readCameraProof(rows: ProofRow[], eventName: (eventId: string) => string): CameraProofEntry[] {
-  const byName = new Map<string, { kind: 'brand' | 'club'; names: Map<string, number>; photos: Map<string, CameraProofSample> }>();
+  const byName = new Map<string, {
+    kind: 'brand' | 'club';
+    names: Map<string, number>;
+    photos: Map<string, CameraProofSample>;
+    photoSightings: Map<string, number>;
+    appearances: number;
+  }>();
+  const totalSightingsPerPhotoByKind = new Map<string, number>();
+  const distinctEntitiesPerPhotoByKind = new Map<string, Set<string>>();
+
   for (const row of rows) {
     const name = typeof row.name === 'string' ? row.name.trim() : '';
     const key = proofNameKey(name);
@@ -77,9 +91,18 @@ export function readCameraProof(rows: ProofRow[], eventName: (eventId: string) =
     // The clubs, leagues and federations of the Fanmass dictionary are clubs here; every other name is a brand
     const kind: 'brand' | 'club' = ['club', 'federation', 'league', 'nationalTeam'].includes(String(row.kind)) ? 'club' : 'brand';
     const id = `${kind}|${key}`;
-    const entry = byName.get(id) ?? { kind, names: new Map(), photos: new Map() };
+    const entry = byName.get(id) ?? { kind, names: new Map(), photos: new Map(), photoSightings: new Map(), appearances: 0 };
     entry.names.set(name, (entry.names.get(name) ?? 0) + 1);
+    entry.appearances += 1;
     const photo = String(row.photo ?? '');
+    entry.photoSightings.set(photo, (entry.photoSightings.get(photo) ?? 0) + 1);
+
+    const photoKindKey = `${kind}|${photo}`;
+    totalSightingsPerPhotoByKind.set(photoKindKey, (totalSightingsPerPhotoByKind.get(photoKindKey) ?? 0) + 1);
+    const entitySet = distinctEntitiesPerPhotoByKind.get(photoKindKey) ?? new Set<string>();
+    entitySet.add(id);
+    distinctEntitiesPerPhotoByKind.set(photoKindKey, entitySet);
+
     const sample: CameraProofSample = {
       readText: typeof row.readText === 'string' && row.readText.trim() ? row.readText.trim().slice(0, 120) : name,
       ocrConfidence: confidence,
@@ -91,15 +114,36 @@ export function readCameraProof(rows: ProofRow[], eventName: (eventId: string) =
     byName.set(id, entry);
   }
   return [...byName.values()]
-    .map((entry) => ({
-      kind: entry.kind,
-      // The spelling Fanmass used most often
-      name: [...entry.names.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0],
-      photos: entry.photos.size,
-      samples: [...entry.photos.values()]
-        .sort((a, b) => b.ocrConfidence - a.ocrConfidence || a.readText.localeCompare(b.readText))
-        .slice(0, CAMERA_PROOF_SAMPLE_LIMIT),
-    }))
+    .map((entry) => {
+      let weightedSum = 0;
+      let soloPhotos = 0;
+      let coOccurrencePhotos = 0;
+      for (const [photo, sightingsInPhoto] of entry.photoSightings.entries()) {
+        const photoKindKey = `${entry.kind}|${photo}`;
+        const totalInPhoto = totalSightingsPerPhotoByKind.get(photoKindKey) || sightingsInPhoto;
+        weightedSum += sightingsInPhoto / totalInPhoto;
+        const distinctCount = distinctEntitiesPerPhotoByKind.get(photoKindKey)?.size ?? 1;
+        if (distinctCount <= 1) soloPhotos += 1;
+        else coOccurrencePhotos += 1;
+      }
+      const photoCount = entry.photos.size;
+      const weightedCount = Math.round(weightedSum * 100) / 100;
+      const avgSharePct = photoCount > 0 ? Math.round((weightedSum / photoCount) * 1000) / 10 : 0;
+      return {
+        kind: entry.kind,
+        // The spelling Fanmass used most often
+        name: [...entry.names.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))[0][0],
+        photos: photoCount,
+        appearances: entry.appearances,
+        weightedCount,
+        soloPhotos,
+        coOccurrencePhotos,
+        avgSharePct,
+        samples: [...entry.photos.values()]
+          .sort((a, b) => b.ocrConfidence - a.ocrConfidence || a.readText.localeCompare(b.readText))
+          .slice(0, CAMERA_PROOF_SAMPLE_LIMIT),
+      };
+    })
     .sort((a, b) => b.photos - a.photos || a.name.localeCompare(b.name));
 }
 

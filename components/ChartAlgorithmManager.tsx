@@ -6,7 +6,7 @@ import ColoredCard from './ColoredCard';
 import FormModal from './modals/FormModal';
 import MaterialIcon from './MaterialIcon';
 import { getIconForEmoji } from '@/lib/iconMapping';
-import { ChartConfiguration, type AvailableVariable, type HeroBlockSettings, type BlockAlignmentSettings } from '@/lib/chartConfigTypes';
+import { ChartConfiguration, type ChartElement, type AvailableVariable, type HeroBlockSettings, type BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { validateFormula, testFormula, extractVariablesFromFormula } from '@/lib/formulaEngine';
 import { isContentSlot } from '@/lib/contentSlots';
 import { CHART_COLOR, CHART_ELEMENT_COLORS } from '@/lib/theme/chartPalette';
@@ -43,6 +43,7 @@ interface ChartConfigFormData {
     color: string;
     description?: string;
     formatting?: { rounded: boolean; prefix?: string; suffix?: string; }; // WHAT: New flexible formatting
+    parameters?: ChartElement['parameters'];
   }[];
   icon?: string; // WHAT: Material Icon name (v10.4.0)
   iconVariant?: 'outlined' | 'rounded'; // WHAT: Icon variant (v10.4.0)
@@ -923,7 +924,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     setFormData({ ...formData, elements: newElements });
   };
 
-  const validateFormula = (elementIndex: number, formula: string) => {
+  const validateFormula = (elementIndex: number, formula: string, parameters?: ChartElement['parameters']) => {
     // SAFETY: formula may be undefined/null → coerce to string before .trim()
     if (!formula || !String(formula).trim()) {
       setFormulaValidation(prev => ({ ...prev, [elementIndex]: { isValid: true } }));
@@ -931,7 +932,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     }
     
     try {
-      const testResult = testConfigurationFormula(formula);
+      const targetParams = parameters ?? formData.elements[elementIndex]?.parameters;
+      const testResult = testConfigurationFormula(formula, targetParams);
       if (testResult?.error) {
         setFormulaValidation(prev => ({ 
           ...prev, 
@@ -989,7 +991,7 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
   const variableCategories = ['All', ...Array.from(new Set(availableVariables.map(v => v.category)))];
   
   // Test function for formulas (moved to component scope)
-  const testConfigurationFormula = (formula: string) => {
+  const testConfigurationFormula = (formula: string, parameters?: ChartElement['parameters']) => {
     if (!formula || !String(formula).trim()) return null;
     
     // WHAT: Handle both bracketed and simple field name formats
@@ -997,8 +999,8 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
     // HOW: Check for bracketed format first, then simple field name format
     const variables: string[] = [];
     
-    // Check for bracketed variables like [stats.female] or [reportImage2]
-    const variablePattern = /\[([a-zA-Z0-9_.]+)\]/g;
+    // Check for bracketed variables like [stats.female], [reportImage2], or [PARAM:cpmEur]
+    const variablePattern = /\[([a-zA-Z0-9_.:-]+)\]/g;
     let match;
     while ((match = variablePattern.exec(formula)) !== null) {
       variables.push(match[1]);
@@ -1071,6 +1073,12 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       
       // Replace variables with sample values for complex formulas
       variables.forEach(variable => {
+        if (variable.startsWith('PARAM:')) {
+          const paramKey = variable.substring(6);
+          const paramValue = parameters?.[paramKey]?.value ?? 1;
+          testFormula = testFormula.replace(new RegExp(`\\[PARAM:${paramKey}\\]`, 'g'), String(paramValue));
+          return;
+        }
         const normVar = variable.startsWith('stats.') ? variable.substring(6) : variable;
         let value = sampleData[normVar] || sampleData[variable] || sampleData[`stats.${variable}`] || 1;
         
@@ -1084,7 +1092,10 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
       // WHAT: Evaluate the formula safely using formulaEngine
       try {
         const { evaluateFormula } = require('@/lib/formulaEngine');
-        const result = evaluateFormula(testFormula, sampleData);
+        const numericParams = parameters
+          ? Object.fromEntries(Object.entries(parameters).map(([k, v]) => [k, v.value]))
+          : undefined;
+        const result = evaluateFormula(testFormula, sampleData, numericParams);
         
         const formattedResult = typeof result === 'number' 
           ? Math.round(result * 100) / 100 
@@ -1643,6 +1654,42 @@ function ChartConfigurationEditor({ config, availableVariables, onSave, onUpdate
                     </div>
                     )}
                   </div>
+
+                  {element.parameters && Object.keys(element.parameters).length > 0 && (
+                    <div className="formatting-section" style={{ marginTop: '0.75rem' }}>
+                      <h5 className="formatting-group-title">⚙️ Tunable Parameters ([PARAM:...])</h5>
+                      <div className="element-fields">
+                        {Object.entries(element.parameters).map(([paramKey, paramDef]) => (
+                          <div key={paramKey} className="field-group">
+                            <label className="field-label">
+                              {paramDef.label} ([PARAM:{paramKey}]{paramDef.unit ? ` · ${paramDef.unit}` : ''})
+                            </label>
+                            <input
+                              type="number"
+                              step="any"
+                              value={paramDef.value}
+                              onChange={(e) => {
+                                const parsed = parseFloat(e.target.value);
+                                const nextParams = {
+                                  ...(element.parameters || {}),
+                                  [paramKey]: {
+                                    ...paramDef,
+                                    value: Number.isFinite(parsed) ? parsed : 0,
+                                  },
+                                };
+                                const newElements = [...formData.elements];
+                                newElements[index] = { ...element, parameters: nextParams };
+                                setFormData({ ...formData, elements: newElements });
+                                validateFormula(index, element.formula, nextParams);
+                              }}
+                              className="form-input"
+                              title={paramDef.description}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   
                   {/* WHAT: Show image preview if it's an image chart and has a valid formula (URL) */}
                   {formData.type === 'image' && element.formula && element.formula.length > 5 && (

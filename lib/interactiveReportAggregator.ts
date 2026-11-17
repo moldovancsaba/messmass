@@ -67,7 +67,7 @@ export function isSzrtScopeIdentifier(identifier: string): boolean {
   );
 }
 
-export type ScopeType = 'hashtag' | 'partner' | 'event' | 'global' | 'filter';
+export type ScopeType = 'hashtag' | 'partner' | 'event' | 'global' | 'filter' | 'organization';
 
 /**
  * The vision analysis document (szrt_vision_progress) belongs to the SZRT campaign only.
@@ -1151,6 +1151,14 @@ export async function getInteractiveReportData(
     });
   }
 
+  // 1c. Organization scope detection
+  if (lower.startsWith('organization-')) {
+    return getScopedInteractiveReportData({
+      type: 'organization',
+      identifier: lower.replace(/^organization-/, ''),
+    });
+  }
+
   // 2. Event scope detection
   if (lower.startsWith('event-')) {
     return getScopedInteractiveReportData({
@@ -1470,6 +1478,86 @@ export async function resolveScopeProjectIds(
         hashtags: cleanTags,
       };
     }
+  } else if (scopeType === "organization") {
+    const orgSlugRegex = new RegExp(`^${escapeRegex(scopeIdentifier)}$`, "i");
+    const orgNormalizedRegex = new RegExp(`^${escapeRegex(scopeIdentifier.replace(/-/g, " "))}$`, "i");
+    const orgQuery: any = {
+      $or: [
+        { slug: orgSlugRegex },
+        { viewSlug: orgSlugRegex },
+        { name: orgSlugRegex },
+        { name: orgNormalizedRegex },
+        ...(ObjectId.isValid(scopeIdentifier) ? [{ _id: new ObjectId(scopeIdentifier) }] : []),
+      ],
+    };
+    const orgDoc = await db.collection("organizations").findOne(orgQuery);
+    if (!orgDoc) {
+      return {
+        scopeType,
+        identifier: scopeIdentifier,
+        organizationId,
+        resolvedEventIds: [],
+        scopeMetadata: {
+          title: `Organization: ${scopeIdentifier}`,
+          description: "Organization not found.",
+          totalEvents: 0,
+        },
+        partner: null,
+        campaignProjects: [],
+        scopeHeader: {
+          type: "organization",
+          id: scopeIdentifier,
+          name: scopeIdentifier,
+          viewSlug: scopeIdentifier,
+          emoji: "🏛️",
+          subtitle: "Organization not found.",
+          organizationId,
+        },
+      };
+    }
+
+    const orgId = orgDoc._id;
+    const orgIdStr = String(orgId);
+    const orgPartners = await db
+      .collection("partners")
+      .find(
+        { $or: [{ organizationId: orgId }, { organizationId: orgIdStr }] },
+        { projection: { _id: 1 } },
+      )
+      .toArray();
+    const orgPartnerIds = orgPartners.map((p: any) => p._id);
+    const orgPartnerIdStrs = orgPartners.map((p: any) => String(p._id));
+
+    const projectFilter: any = {
+      $or: [
+        { organizationId: orgId },
+        { organizationId: orgIdStr },
+        ...(orgPartnerIds.length > 0
+          ? [
+              { partner1Id: { $in: orgPartnerIds } },
+              { partner2Id: { $in: orgPartnerIds } },
+              { partner1Id: { $in: orgPartnerIdStrs } },
+              { partner2Id: { $in: orgPartnerIdStrs } },
+            ]
+          : []),
+      ],
+    };
+
+    campaignProjects = await db
+      .collection("projects")
+      .find(projectFilter, { projection: REPORT_PROJECT_FIELDS })
+      .sort({ eventDate: 1 })
+      .toArray();
+
+    scopeHeader = {
+      type: "organization",
+      id: orgIdStr,
+      name: String(orgDoc.name || scopeIdentifier),
+      viewSlug: String(orgDoc.slug || orgDoc.viewSlug || scopeIdentifier),
+      emoji: String(orgDoc.emoji || "🏛️"),
+      subtitle: `Consolidated interactive analytics across all partners and events belonging to ${orgDoc.name || scopeIdentifier}.`,
+      organizationId: orgIdStr,
+    };
   } else if (scopeType === "partner") {
     if (organizationId) {
       partner = await db.collection("partners").findOne({
