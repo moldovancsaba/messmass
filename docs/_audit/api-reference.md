@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (248 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (251 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 248 of 248 routes documented, enforced by
+Coverage: 251 of 251 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -38,6 +38,9 @@ Every request passes through, in order: rate limiting, CSRF protection, CORS. CS
 |---|---|---|---|---|---|
 | /api/admin/variables/merge | POST | getAdminUser + admin/superadmin role | `{sourceId,targetId}` | `{success,merged}` | rewrites variable references, deletes the source |
 | /api/admin/variables/merge-candidates | GET | getAdminUser + admin/superadmin role | — | `{success,candidates[]}` | reads variable registry |
+| /api/admin/fanmass-evidence/candidates | GET | requireAdmin | — | `{success,candidates[]}` | reads distinct brand/club names from `partners`, `brand_assets`, `fanmass_evidence`, and franchise directory |
+| /api/club-clusters | GET, POST | requireSession | `{sourceClubs[],targetClub,partnerId?}` | `{success,rawClubs,suggestions,mappings,partners}` | reads/upserts `club_canonical_mappings` and folds `szrt_vision_progress.aggregates.topClubs` |
+| /api/release-notes | GET | requireSession | `?category=&q=&limit=` | `{success,notes[]}` | parses `docs/operations/operations-release-notes.md` for `/whats-new` |
 | /api/admin/auth | GET | getAdminUser | — | `{success,user}` | none |
 | /api/admin/clear-cache | POST | getAdminUser | `{type}` | `{success,message}` | clears in-process caches |
 | /api/admin/clear-cookies | GET, POST | none (public-by-design) | — | `{success,message}` | deletes caller's own `admin-session` cookie |
@@ -389,10 +392,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **213** |
+| Fully guarded (every method) | **216** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **248** |
+| **Total** | **251** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

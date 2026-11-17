@@ -35,6 +35,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Events': ['user', 'admin', 'superadmin'],
   'Project Partners': ['admin', 'superadmin'],
   'Brand Logos': ['admin', 'superadmin'],
+  'Club Clusters': ['admin', 'superadmin'],
   'Global Report': ['superadmin'],
   'Fanmass Proof Review': ['admin', 'superadmin'],
   
@@ -74,6 +75,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Main Page': ['admin', 'superadmin'],
   'Cache': ['superadmin'],
   'Help': ['guest', 'user', 'admin', 'superadmin'],
+  "What's New": ['guest', 'user', 'admin', 'superadmin'],
 };
 
 /**

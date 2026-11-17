@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/apiGuards';
 import { getReleaseNotes, type ReleaseCategoryFilter } from '@/lib/releaseNotesParser';
 
 export const dynamic = 'force-dynamic';
@@ -6,6 +7,9 @@ export const dynamic = 'force-dynamic';
 const VALID_CATEGORIES = new Set<ReleaseCategoryFilter>(['all', 'new', 'fix', 'changed', 'security', 'doc']);
 
 export async function GET(request: NextRequest) {
+  const authError = await requireSession();
+  if (authError) return authError;
+
   const sp = new URL(request.url).searchParams;
   const rawCategory = (sp.get('category') || 'all').toLowerCase() as ReleaseCategoryFilter;
   const category: ReleaseCategoryFilter = VALID_CATEGORIES.has(rawCategory) ? rawCategory : 'all';

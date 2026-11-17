@@ -222,7 +222,7 @@
   {"path": "/api/public/partners/[id]/events", "methods": ["GET", "OPTIONS"], "file": "app/api/public/partners/[id]/events/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/public/partners/[id]", "methods": ["GET", "OPTIONS"], "file": "app/api/public/partners/[id]/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/public/partners", "methods": ["GET", "OPTIONS"], "file": "app/api/public/partners/route.ts", "auth_markers": [], "no_auth_marker": true},
-  {"path": "/api/release-notes", "methods": ["GET"], "file": "app/api/release-notes/route.ts", "auth_markers": [], "no_auth_marker": true},
+  {"path": "/api/release-notes", "methods": ["GET"], "file": "app/api/release-notes/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/report-config/[identifier]", "methods": ["GET"], "file": "app/api/report-config/[identifier]/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/report-styles/[id]", "methods": ["GET"], "file": "app/api/report-styles/[id]/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/report-styles", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/report-styles/route.ts", "auth_markers": [], "no_auth_marker": true},

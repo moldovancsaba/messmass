@@ -1,57 +1,49 @@
 # Camera Photo Counters - Variables and Mapping
 Status: Active
-Last Updated: 2026-10-12T00:00:00.000Z
+Last Updated: 2026-11-18T00:00:00.000Z
 Canonical: Yes
 Owner: Product
 
-**What this is**: the counters the camera service measures for an event (photos, the people a reviewer marked in them, the journey of the capture page) and how they arrive in messmass: under their own `camera_` names, next to the variables messmass already holds. Use this page to build report templates and charts from them.
+**What this is**: the event-level operational counters the Camera service measures for an event (photo lifecycle, vetting latency, consent acceptance, tracked source attribution, review-queue age buckets, rejection reasons, and capture-page Journey metrics) and how they arrive in Messmass under their own `camera_` namespace (`lib/cameraPhotoStats.ts`).
 
-**Status of the feed**: messmass can receive them (`POST /api/integrations/camera/events/{messmassEventId}/photo-stats`, `lib/cameraPhotoStats.ts`). Camera's sending is switched off until the owner decides, so no event holds a `camera_` value yet.
+**Distinct from per-photo Fanmass analytics**: `camera_*` counters are **event aggregates only** — no guest identity, photo binary, bounding box, AI detection, or manual person/gender/age/emotion/merchandise annotation is sent through this feed. Per-photo people, demographic, emotion, merchandise, and OCR-proven brand/club detections belong to the separate Fanmass per-photo contract (`POST /api/integrations/fanmass/events/{messmassEventId}/photos/{cameraPhotoId}`, `lib/fanmassPhotoAnalyses.ts`) and are reviewed on `/admin/analytics/ai` and `/admin/fanmass-evidence` (see also [camera#801](https://github.com/moldovancsaba/camera/issues/801)).
+
+**Activation & runtime state**: Messmass's receiver (`POST /api/integrations/camera/events/{messmassEventId}/photo-stats`) is active. In Camera (`lib/analytics/counters.ts`), outbound sending is controlled by the global `messmassCountersEnabled` setting (off unless explicitly enabled). Enabling the setting does not backfill historical events immediately; a subsequent live trigger (new submission, review decision other than approval-email retry, or saved Journey batch) triggers a push. Production configuration state must be verified in the live environment rather than inferred from source.
 
 ---
 
 ## How they arrive
 
-- **Whole totals, written as they are.** Camera sends the running total of each counter for the whole event. `stats.camera_gender_female` is, at the end, how many women were counted across all annotated photos of the event. A repeated or late push changes nothing and a lost one is repaired by the next. There is no baseline and no addition to a value typed in: the names belong to camera alone.
-- **Only the `camera_` namespace.** Every name must match `^camera_[a-z0-9_]{1,80}$`. One name that does not match refuses the whole request and nothing is written, so `female`, `scarf`, `approvedImages`, the `fanmass*` family or any other variable can never be touched by this route. No key is ever removed.
-- **Totals, and averages if ever sent.** A total is a whole number from 0 to 1,000,000,000. The route also accepts an average (a number with at most four decimals, stored as it is), but **camera sends totals only**: no average is sent, because reports that add events together would show a sum. A name is in one of the two, never both. At most 300 names per push.
-- **Where they are stored.** `projects.stats.<name>` (one `$set` per push, never the whole `stats` object) and an audit copy of what was received in `projects.cameraPhotoStats` (`totals`, `averages`, `updatedAt`).
-- **The variable catalog.** The first time a name is received it is added to `variables_metadata` (admin: `/admin/kyc`): category **Camera**, label from camera or "Camera: gender female", type `count` (totals) or `numeric` (averages), not derived, **not offered in the clicker and not editable in manual mode** (the flags are off, like `fanmassStatus`), not a system variable. The entry is created once and never overwritten, so an administrator can relabel it, move it to another category or change its flags and a later push leaves it as it is. The response says `catalog: 'registered'` or `'failed'`; a catalog failure never undoes the stats write, and the next push registers again. The catalog list refreshes within five minutes (the cache of `/api/variables-config`).
-- **In reports.** A catalog entry does not put anything into an existing report by itself. Add a chart or KPI that uses the token, for example `[camera_gender_female]`, or `[camera_gender_female]/[camera_people_total]*100` for a share (tokens may contain underscores). A counter that has not been received reads as 0.
+- **Whole event totals, written as replacements.** Camera sends the current running total for the event in `totals` (with labels in `labels`). Repeated snapshots overwrite the same `stats.camera_*` keys rather than incrementing them. Outbound delivery is best-effort with an atomic attempt throttle and process-local coalescing (`pushedAt` records the attempt/claim timestamp, not a guaranteed delivery receipt).
+- **Only the `camera_` namespace.** Every key must match `^camera_[a-z0-9_]{1,80}$`. Any key outside `camera_` rejects the entire request (`400`), so `female`, `scarf`, `approvedImages`, and `fanmass*` variables can never be overwritten by this endpoint.
+- **Totals only from current Camera builder.** The receiver schema accepts `totals` (integers `0..1,000,000,000`) and optional `averages` (up to 4 decimals), at most 300 keys per push. Camera's `buildCounters` (`lib/analytics/counters.ts`) emits **totals only** so multi-event reports can sum them safely.
+- **Omission rule (never zero for unmeasured families).** A counter family that has no underlying record is omitted, never sent as `0`:
+  - An event with no recorded Journey (`isRecorded(journey) === false`) sends no `camera_journey_*`, `camera_upload_*`, or `camera_users_*` counters.
+  - An event with no decided photo (`timeToFirstDecision.count === 0`) omits `camera_images_decided` and `camera_vetting_seconds_total`.
+  - An event with no rejected photo (`photos.rejected === 0`) omits `camera_rejected_*` and `camera_images_rejected_no_reason`.
+- **Storage and variable catalog.** Written to `projects.stats.<name>` with an audit snapshot in `projects.cameraPhotoStats` (`totals`, `averages`, `updatedAt`). First-seen keys are registered once in `variables_metadata` (`category: 'Camera'`, `visibleInClicker: false`, `editableInManual: false`, `isSystem: false`).
 
-## Mapping to the existing variables
+---
 
-The camera counters measure the same things from different data (the people reviewers marked in the photos of the event), so they are separate variables, not replacements. Choose in each report which one to show; do not add a camera counter to the variable it resembles.
+## Fixed and dynamic counters emitted by Camera (`lib/analytics/counters.ts`)
 
-| Existing variable | Camera counter | Note |
+| Family | Counter keys | When emitted / notes |
 |---|---|---|
-| `female`, `male` | `camera_gender_female`, `camera_gender_male`, `camera_gender_unsure` | Counts of people marked in annotated photos. `camera_gender_unsure` (people marked as unsure) has no existing counterpart. |
-| `genAlpha`, `genYZ`, `genX`, `boomer` | `camera_age_kid`, `camera_age_young`, `camera_age_adult`, `camera_age_old` | **Not the same buckets.** Camera uses age bands: child about 0-12, young about 13-24, adult about 25-59, senior 60+. They are not generation buckets: do not add them to the four generation variables and do not read one as the other. |
-| `jersey`, `scarf`, `flags`, `baseballCap` | `camera_merch_jersey`, `camera_merch_scarf`, `camera_merch_flag`, `camera_merch_cap` | Items marked on people in photos. |
-| `merched` | `camera_people_with_merch` | People with at least one item. |
-| `approvedImages`, `rejectedImages` | `camera_images_approved`, `camera_images_rejected` | Photos approved and declined now, counted by camera. |
-| fanmass AI percentages (`fanmassGenderFemalePct`, `fanmassGenderMalePct`, `fanmassAgeAdultsPct`, `fanmassEmotionHappyPct`, ...) | `camera_gender_*`, `camera_age_*`, `camera_emotion_*` | Camera sends **counts, not percentages**. Derive a percentage in the report: `[camera_emotion_happy]/[camera_people_total]*100`. |
+| Photo lifecycle & consent | `camera_images_taken`, `camera_images_approved`, `camera_images_rejected`, `camera_images_shown_on_slideshow`, `camera_consents_accepted` | Always emitted on every counter push. |
+| Vetting latency | `camera_images_decided`, `camera_vetting_seconds_total` | Emitted once at least one photo has a first vetting decision (`camera_vetting_seconds_total / camera_images_decided` gives mean vetting time). |
+| Tracked sources | `camera_source_visits`, `camera_source_photo_submissions`, plus dynamic per-placement `camera_source_<slug>_visits` and `camera_source_<slug>_photos` | Emitted when a `SourcesReport` is present (`<slug>` normalized to `[a-z0-9_]`, up to 32 chars). |
+| Review queue age buckets | `camera_review_queue_<bucket>` | One dynamic total per waiting-age bucket in `report.photos.waitingAgeBuckets`. |
+| Rejection reasons | `camera_rejected_<reason_key>`, `camera_images_rejected_no_reason` | Emitted only when `report.photos.rejected > 0`. Includes active `reject_reason` vocabulary keys and any historical key with count `> 0`. |
+| Journey core | `camera_journey_opens`, `camera_journeys_completed`, `camera_journeys_finished`, `camera_permission_denied`, `camera_retakes`, `camera_consents_abandoned`, `camera_shares`, `camera_downloads` | Emitted only when `isRecorded(journey)` is true. |
+| Journey duration & CTA | `camera_journey_completed_duration_ms_total`, `camera_journey_completed_duration_samples`, `camera_journey_cta_page_visits`, `camera_journey_cta_clicks`, `camera_journey_cta_external`, `camera_journey_cta_continue`, `camera_journey_cta_returns` | Emitted when `isRecorded(journey)` is true. |
+| Journey steps, transitions & SSO | `camera_journey_step_reach_<step>`, `camera_journey_transition_<from>_to_<to>`, `camera_journey_auth_<outcome>` | Dynamic totals per recorded step, transition, and SSO callback outcome when `isRecorded(journey)` is true. |
+| Device/method uploads | `camera_upload_<group>_started`, `camera_upload_<group>_succeeded`, `camera_upload_<group>_failed`, `camera_upload_<group>_duration_<bucket>` | Dynamic totals per upload device/method group and duration bucket when `isRecorded(journey)` is true. |
+| Aggregate event users | `camera_users_identifiable`, `camera_users_returning`, `camera_users_new` | Aggregate repeat-user counts emitted when `isRecorded(journey)` is true. Never contains a person or identifier. |
 
-## The names camera sends
+---
 
-| Group | Names |
-|---|---|
-| Photos | `camera_images_taken`, `camera_images_approved`, `camera_images_rejected`, `camera_images_shown_on_slideshow`, `camera_images_annotated`, `camera_images_with_people`, `camera_images_no_people`, `camera_images_one_person`, `camera_images_group` |
-| Vetting time | `camera_images_decided`, `camera_vetting_seconds_total` (the average vetting time is the second divided by the first, in a formula) |
-| Consent and journey | `camera_consents_accepted`, `camera_consents_abandoned`, `camera_journey_opens`, `camera_journeys_completed`, `camera_permission_denied`, `camera_retakes`, `camera_shares`, `camera_downloads` |
-| People | `camera_people_total`, `camera_people_with_merch` (people per image is `camera_people_total` divided by `camera_images_annotated`) |
-| Gender | `camera_gender_female`, `camera_gender_male`, `camera_gender_unsure` |
-| Age band | `camera_age_kid`, `camera_age_young`, `camera_age_adult`, `camera_age_old` |
-| Emotion | `camera_emotion_happy`, `camera_emotion_neutral`, `camera_emotion_sad`, `camera_emotion_angry`, `camera_emotion_unamused` (and `camera_emotion_excited`, `camera_emotion_surprised` when camera switches them on) |
-| Merchandise | `camera_merch_jersey`, `camera_merch_scarf`, `camera_merch_cap`, `camera_merch_flag` (and `camera_merch_face_paint`, `camera_merch_banner` when switched on); an event may add its own option, `camera_merch_<option>` |
-| Declined, by reason | `camera_rejected_offensive_gesture`, `camera_rejected_nudity`, `camera_rejected_alcohol`, `camera_rejected_forbidden`, `camera_rejected_violence`, `camera_rejected_hate`, `camera_rejected_drugs`, `camera_rejected_competitor_brand`, `camera_rejected_political`, `camera_rejected_poor_quality`, `camera_rejected_spam_test`, `camera_rejected_other`, `camera_images_rejected_no_reason` |
+## Using `camera_*` counters vs Fanmass per-photo variables in reports
 
-A counter that camera cannot count (for example the journey counters of an event with no journey recording) is not sent at all, so it keeps its last value or stays unset; it is never sent as a zero.
-
-## Things to know when building reports
-
-- **Camera sends no averages, only totals.** Reports that add events together (a partner report, an organisation report, a filter report by hashtag combination) sum every numeric stat, which is correct for a total. For a mean across events use a ratio of totals, for example `[camera_people_total]/[camera_images_annotated]` for people per image, or `[camera_vetting_seconds_total]/[camera_images_decided]` for the average vetting time.
-- **Some pages do not add the camera counters at all.** The hashtag report (`/api/hashtags/[hashtag]`) and the hashtag filter report (`/api/hashtags/filter`) add a fixed list of variables, and the camera counters are not in it: those pages read them as 0. The partner report, the organisation report and the filter report by slug (`/api/hashtags/filter-by-slug/[slug]`) add every numeric stat, so counts add up correctly there.
-- **They are visible wherever the event's stats are.** `/api/projects/stats/{slug}` returns the whole `stats` object to anyone who can open the event report (the report link, behind its password when it has one), and the event CSV exports list every stat, so `camera_` counters (aggregate counts, never a person) appear in both. The audit copy `cameraPhotoStats` is not returned there.
-- **Events linked to a Google Sheet.** The sheet sync (`/api/cron/google-sheets-sync`, partner Pull, event Pull) replaces the whole `stats` object of such an event with what the sheet holds, so a `camera_` value on it is lost at the next sync until camera's next push writes it again.
-- **The merge console never offers them.** `/admin/kyc` merge candidates and the merge itself skip and refuse the `camera_` namespace (`lib/variableMerge.ts`), so a camera counter is not folded into `female`, `scarf` or another variable.
+- **Operational funnel & vetting (`camera_*`)**: Use `camera_images_taken`, `camera_images_approved`, `camera_images_rejected`, `camera_consents_accepted`, `camera_journey_opens`, and `camera_journeys_completed` for capture funnel, consent rate, approval rate, and vetting speed charts (`/admin/charts` and `lib/hashtagReport/calculated.ts`).
+- **Visual intelligence & audience demographics (`fanmass*`)**: Use `fanmassPeopleDetections`, `fanmassGender*`, `fanmassAge*`, `fanmassEmotion*`, `fanmassSmilingCount`, `fanmassMerchandise*`, `fanmassBrandAppearances`, and `fanmassClubAppearances` (`lib/fanmassAnalyticsVariables.ts`) for image-derived audience and sponsor metrics.
+- **Variable merge protection**: `/admin/kyc` variable merge (`lib/variableMerge.ts`) skips and refuses the `camera_` namespace so operational counters cannot be merged into manual clicker or Fanmass variables.
