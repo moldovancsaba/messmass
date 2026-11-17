@@ -1,10 +1,28 @@
 import { ObjectId } from 'mongodb';
 import { getDb } from './fanmassIntegration';
 
+export interface AiPartnerSummary {
+  id: string;
+  name: string;
+  emoji?: string;
+  viewSlug?: string;
+  eventCount?: number;
+}
+
+export interface AiOrganizationSummary {
+  id: string;
+  name: string;
+  slug?: string;
+}
+
 export interface AiPhotoEventRow {
   eventId: string;
   eventName: string;
   eventDate: string | null;
+  viewSlug: string | null;
+  partners: AiPartnerSummary[];
+  organization: AiOrganizationSummary | null;
+  previewUrls: string[];
   sources?: string[];
   photoResultsReceived: number;
   peopleDetections: number;
@@ -45,6 +63,8 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   total: number;
   totals: AiPhotoAnalyticsTotals;
   sourceCounts: { all: number; camera: number; local_storage: number };
+  partners: AiPartnerSummary[];
+  organizations: AiOrganizationSummary[];
 }> {
   const db = await getDb();
   const toNumber = (input: unknown) => ({
@@ -148,18 +168,94 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   const projectDocs = eventIds.length
     ? await db.collection('projects').find(
       { _id: { $in: eventIds } },
-      { projection: { eventName: 1, eventDate: 1 } },
+      { projection: { eventName: 1, eventDate: 1, viewSlug: 1, slug: 1, partner1Id: 1, partner2Id: 1, organizationId: 1 } },
     ).toArray()
     : [];
   const projects = new Map(projectDocs.map((doc) => [String(doc._id), doc]));
 
+  const partnerIdSet = new Set<string>();
+  const orgIdSet = new Set<string>();
+  for (const doc of projectDocs) {
+    for (const rawPid of [doc.partner1Id, doc.partner2Id]) {
+      const pid = rawPid ? String(rawPid) : '';
+      if (ObjectId.isValid(pid)) partnerIdSet.add(pid);
+    }
+    const oid = doc.organizationId ? String(doc.organizationId) : '';
+    if (ObjectId.isValid(oid)) orgIdSet.add(oid);
+  }
+
+  const evidenceOrigins = grouped.map((row) => `camera-${String(row._id)}`);
+  const [partnerDocs, orgDocs, evidenceSamples] = await Promise.all([
+    partnerIdSet.size > 0
+      ? db.collection('partners')
+          .find({ _id: { $in: [...partnerIdSet].map((id) => new ObjectId(id)) } }, { projection: { name: 1, emoji: 1, viewSlug: 1, organizationId: 1 } })
+          .toArray()
+      : Promise.resolve([]),
+    orgIdSet.size > 0
+      ? db.collection('organizations')
+          .find({ _id: { $in: [...orgIdSet].map((id) => new ObjectId(id)) } }, { projection: { name: 1, slug: 1, viewSlug: 1 } })
+          .toArray()
+      : Promise.resolve([]),
+    evidenceOrigins.length > 0
+      ? db.collection('fanmass_evidence')
+          .find({ origin: { $in: evidenceOrigins }, 'review.status': { $nin: ['rejected', 'needs_investigation'] } }, { projection: { origin: 1, cropUrl: 1, photoUrl: 1 } })
+          .limit(600)
+          .toArray()
+      : Promise.resolve([]),
+  ]);
+
+  const partnersMap = new Map<string, AiPartnerSummary>(
+    partnerDocs.map((p: any) => [
+      String(p._id),
+      { id: String(p._id), name: String(p.name || ''), emoji: p.emoji ? String(p.emoji) : undefined, viewSlug: p.viewSlug ? String(p.viewSlug) : undefined },
+    ]),
+  );
+  const orgsMap = new Map<string, AiOrganizationSummary>(
+    orgDocs.map((o: any) => [
+      String(o._id),
+      { id: String(o._id), name: String(o.name || ''), slug: o.slug ? String(o.slug) : o.viewSlug ? String(o.viewSlug) : undefined },
+    ]),
+  );
+  const previewsByEvent = new Map<string, string[]>();
+  for (const ev of evidenceSamples as any[]) {
+    const originStr = String(ev.origin || '');
+    const eid = originStr.startsWith('camera-') ? originStr.slice(7) : '';
+    const url = String(ev.cropUrl || ev.photoUrl || '').trim();
+    if (!eid || !url) continue;
+    const list = previewsByEvent.get(eid) ?? [];
+    if (list.length < 3 && !list.includes(url)) {
+      list.push(url);
+      previewsByEvent.set(eid, list);
+    }
+  }
+
+  const partnerDirectoryMap = new Map<string, AiPartnerSummary>();
+
   const events = grouped.map((row): AiPhotoEventRow => {
     const eventId = String(row._id);
-    const project = projects.get(eventId);
+    const project = projects.get(eventId) as any;
+    const eventPartners: AiPartnerSummary[] = [];
+    for (const rawPid of [project?.partner1Id, project?.partner2Id]) {
+      const pid = rawPid ? String(rawPid) : '';
+      const p = partnersMap.get(pid);
+      if (p && !eventPartners.some((ep) => ep.id === p.id)) {
+        eventPartners.push(p);
+        const dirEntry = partnerDirectoryMap.get(p.id) ?? { ...p, eventCount: 0 };
+        dirEntry.eventCount = (dirEntry.eventCount ?? 0) + 1;
+        partnerDirectoryMap.set(p.id, dirEntry);
+      }
+    }
+    const oid = project?.organizationId ? String(project.organizationId) : '';
+    const org = orgsMap.get(oid) ?? null;
+
     return {
       eventId,
       eventName: String(project?.eventName || 'Unlinked Messmass event'),
       eventDate: project?.eventDate ? String(project.eventDate) : null,
+      viewSlug: project?.viewSlug ? String(project.viewSlug) : project?.slug ? String(project.slug) : null,
+      partners: eventPartners,
+      organization: org,
+      previewUrls: previewsByEvent.get(eventId) ?? [],
       sources: Array.isArray(row.sources) ? row.sources : undefined,
       photoResultsReceived: finiteNumber(row.photoResultsReceived),
       peopleDetections: finiteNumber(row.peopleDetections),
@@ -198,5 +294,12 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
     moderationFlaggedPhotos: 0,
   });
 
-  return { events: events.slice(0, Math.min(Math.max(limit, 1), 500)), total: events.length, totals, sourceCounts };
+  return {
+    events: events.slice(0, Math.min(Math.max(limit, 1), 500)),
+    total: events.length,
+    totals,
+    sourceCounts,
+    partners: [...partnerDirectoryMap.values()].sort((a, b) => (b.eventCount ?? 0) - (a.eventCount ?? 0) || a.name.localeCompare(b.name)),
+    organizations: [...orgsMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
+  };
 }
