@@ -31,8 +31,8 @@ import { storeMedia } from './mediaStorage';
 export const REVIEW_PAGE_LIMIT = 100;
 export const MAX_OVERRIDES = 5000;
 
-export type ReviewFilter = 'needs_review' | 'confirmed' | 'rejected' | 'corrected' | 'human' | 'all';
-export type ReviewAction = 'confirm' | 'reject' | 'correct' | 'restore';
+export type ReviewFilter = 'needs_review' | 'needs_investigation' | 'confirmed' | 'rejected' | 'corrected' | 'human' | 'all';
+export type ReviewAction = 'confirm' | 'reject' | 'correct' | 'investigate' | 'restore';
 
 type Cursor = { sort: (s: unknown) => Cursor; skip: (n: number) => Cursor; limit: (n: number) => Cursor; toArray: () => Promise<unknown[]> };
 type ReviewCollection = {
@@ -46,8 +46,8 @@ type ReviewCollection = {
 export type ReviewDb = { collection: (name: string) => ReviewCollection };
 
 const KINDS = new Set(['brand', 'club']);
-const REVIEW_FILTERS = new Set(['needs_review', 'confirmed', 'rejected', 'corrected', 'human', 'all']);
-const ACTIONS = new Set(['confirm', 'reject', 'correct', 'restore']);
+const REVIEW_FILTERS = new Set(['needs_review', 'needs_investigation', 'confirmed', 'rejected', 'corrected', 'human', 'all']);
+const ACTIONS = new Set(['confirm', 'reject', 'correct', 'investigate', 'restore']);
 
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -98,11 +98,14 @@ export async function reviewEvidence(
   now: () => string = () => new Date().toISOString(),
 ): Promise<BrandEvidenceDoc> {
   const body = record(input) ?? invalid(400, 'INVALID_EVIDENCE_REVIEW', 'A JSON object is required.');
-  const action = typeof body.action === 'string' && ACTIONS.has(body.action) ? (body.action as ReviewAction) : invalid(400, 'INVALID_EVIDENCE_REVIEW', 'action must be confirm, reject, correct or restore.');
+  const action = typeof body.action === 'string' && ACTIONS.has(body.action) ? (body.action as ReviewAction) : invalid(400, 'INVALID_EVIDENCE_REVIEW', 'action must be confirm, reject, correct, investigate or restore.');
   const collection = db.collection(FANMASS_EVIDENCE_COLLECTION);
   const doc = (await collection.findOne({ _id: id })) as BrandEvidenceDoc | null;
   if (!doc) invalid(404, 'EVIDENCE_NOT_FOUND', 'No such sample.');
   const note = text(body.note, 300);
+  if (action === 'investigate' && !note) {
+    invalid(400, 'INVALID_EVIDENCE_REVIEW', 'A note explaining what to investigate is required.');
+  }
   const stamp = { by, at: now(), note };
 
   let update: Record<string, unknown>;
@@ -116,7 +119,8 @@ export async function reviewEvidence(
     const review: EvidenceReview = { status: 'corrected', ...stamp, original };
     update = { $set: { name, nameKey: evidenceNameKey(name), entityKind, review } };
   } else {
-    const review: EvidenceReview = { status: action === 'confirm' ? 'confirmed' : 'rejected', ...stamp, ...(doc.review?.original ? { original: doc.review.original } : {}) };
+    const status = action === 'confirm' ? 'confirmed' : action === 'investigate' ? 'needs_investigation' : 'rejected';
+    const review: EvidenceReview = { status, ...stamp, ...(doc.review?.original ? { original: doc.review.original } : {}) };
     update = { $set: { review } };
   }
   await collection.updateOne({ _id: id }, update);
@@ -191,7 +195,7 @@ export interface ReviewOverride {
   /** The Fanmass region the decision is about; empty for a sample a person added. */
   regionId: string;
   source: 'fanmass' | 'human';
-  status: 'confirmed' | 'rejected' | 'corrected';
+  status: 'confirmed' | 'rejected' | 'corrected' | 'needs_investigation';
   name: string;
   kind: EvidenceKind;
 }

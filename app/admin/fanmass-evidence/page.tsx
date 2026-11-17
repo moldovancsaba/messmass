@@ -16,6 +16,7 @@ type Row = BrandEvidenceDoc & { id: string };
 
 const FILTERS: Array<[string, string]> = [
   ['needs_review', 'Needs review (weakest first)'],
+  ['needs_investigation', 'Needs investigation'],
   ['confirmed', 'Confirmed'],
   ['corrected', 'Corrected'],
   ['rejected', 'Rejected'],
@@ -88,8 +89,19 @@ export default function SzrtEvidenceReviewPage() {
   }, [load]);
 
   const act = async (row: Row, body: Record<string, unknown>) => {
-    const { ok, data } = await call(`/api/admin/fanmass-evidence/${encodeURIComponent(row.id)}`, 'PATCH', { ...body, note: notes[row.id] ?? '' });
-    setMessage(ok ? 'Saved. The report figures follow on the next publish run (within 20 minutes).' : data?.error?.message || 'Could not save.');
+    const noteText = (notes[row.id] ?? '').trim();
+    if (body.action === 'investigate' && !noteText) {
+      setMessage('Add a note explaining what needs investigation before sending it back.');
+      return;
+    }
+    const { ok, data } = await call(`/api/admin/fanmass-evidence/${encodeURIComponent(row.id)}`, 'PATCH', { ...body, note: noteText });
+    setMessage(
+      ok
+        ? body.action === 'investigate'
+          ? 'Sent back for further investigation.'
+          : 'Saved. The report figures follow on the next publish run (within 20 minutes).'
+        : data?.error?.message || 'Could not save.',
+    );
     setEditing(null);
     if (ok) await load();
   };
@@ -230,10 +242,11 @@ export default function SzrtEvidenceReviewPage() {
                     </div>
                   ) : (
                     <div className={styles.actions}>
-                      <input className={styles.input} aria-label="Note" placeholder="Note (optional)" value={notes[row.id] ?? ''} onChange={(e) => setNotes({ ...notes, [row.id]: e.target.value })} />
+                      <input className={styles.input} aria-label="Note" placeholder="Note (required to send back)" value={notes[row.id] ?? ''} onChange={(e) => setNotes({ ...notes, [row.id]: e.target.value })} />
                       {review?.status !== 'confirmed' && review?.status !== 'corrected' && !human && <button type="button" className={styles.button} onClick={() => act(row, { action: 'confirm' })}>Confirm</button>}
                       {review?.status !== 'rejected' && <button type="button" className={`${styles.button} ${styles.danger}`} onClick={() => act(row, { action: 'reject' })}>Reject</button>}
                       <button type="button" className={styles.button} onClick={() => { setEditing(row.id); setDraft({ name: row.name, kind: row.entityKind, note: '' }); }}>Correct…</button>
+                      {review?.status !== 'needs_investigation' && <button type="button" className={styles.button} onClick={() => act(row, { action: 'investigate' })}>Investigate</button>}
                       {review && !human && <button type="button" className={styles.button} onClick={() => act(row, { action: 'restore' })}>Restore to automatic</button>}
                       {human && review?.status === 'rejected' && <button type="button" className={styles.button} onClick={() => act(row, { action: 'confirm' })}>Bring back</button>}
                       {human && <button type="button" className={`${styles.button} ${styles.danger}`} onClick={() => remove(row)}>Delete</button>}

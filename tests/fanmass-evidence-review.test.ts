@@ -242,3 +242,24 @@ describe('training: what the decisions teach the whole system', () => {
     expect(trainingTextKey('Fc-Porto  1')).toBe('fcporto1');
   });
 });
+
+describe('sending a sample back for further investigation', () => {
+  it('requires a note, sets needs_investigation status, hides from proof, and skips training rules', async () => {
+    const sample = doc({ _id: 'szrt|hydro#1', readText: '•Hydro', name: 'Hydro', nameKey: 'hydro', entityKind: 'brand', tier: 'text_read' });
+    const { db } = memory([sample]);
+
+    await expect(reviewEvidence(db, sample._id, { action: 'investigate', note: '   ' }, 'owner@messmass.com', now)).rejects.toMatchObject({ status: 400 });
+
+    const updated = await reviewEvidence(db, sample._id, { action: 'investigate', note: 'not visible because of the pixelation' }, 'owner@messmass.com', now);
+    expect(updated.review?.status).toBe('needs_investigation');
+    expect(updated.review?.note).toBe('not visible because of the pixelation');
+    expect(isProof(updated)).toBe(false);
+
+    const listed = await listEvidenceForReview(db, { status: 'needs_investigation' });
+    expect(listed.rows.map((r) => r.id)).toEqual(['szrt|hydro#1']);
+
+    const { deny, alias } = await listTrainingRules(db);
+    expect(deny).toEqual([]);
+    expect(alias).toEqual([]);
+  });
+});

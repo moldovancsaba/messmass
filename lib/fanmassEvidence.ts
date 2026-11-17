@@ -20,7 +20,7 @@ export const EVIDENCE_MEDIA_FOLDER = 'fanmass-evidence';
 
 export type EvidenceKind = 'brand' | 'club';
 export type EvidenceTier = 'text_read' | 'model_identified' | 'human';
-export type ReviewStatus = 'confirmed' | 'rejected' | 'corrected';
+export type ReviewStatus = 'confirmed' | 'rejected' | 'corrected' | 'needs_investigation';
 export type EvidenceSource = 'fanmass' | 'human';
 
 /** A person's decision on one sample. `original` keeps what Fanmass delivered when the name or kind was corrected. */
@@ -332,15 +332,15 @@ export async function storeEvidenceBatch(
   return { stored, skipped, replaced };
 }
 
-/** Proof: the name was read from the picture, or a person confirmed, corrected or added it. A rejected sample never is. */
+/** Proof: the name was read from the picture, or a person confirmed, corrected or added it. A rejected or needs_investigation sample never is. */
 export function isProof(doc: Pick<BrandEvidenceDoc, 'tier' | 'review' | 'source'>): boolean {
-  if (doc.review?.status === 'rejected') return false;
+  if (doc.review?.status === 'rejected' || doc.review?.status === 'needs_investigation') return false;
   return doc.tier === 'text_read' || doc.tier === 'human' || doc.source === 'human' || doc.review?.status === 'confirmed' || doc.review?.status === 'corrected';
 }
 
 /** The Mongo filter that selects the same rows as `isProof`. */
 export const PROOF_FILTER = {
-  'review.status': { $ne: 'rejected' },
+  'review.status': { $nin: ['rejected', 'needs_investigation'] },
   $or: [{ tier: 'text_read' }, { tier: 'human' }, { source: 'human' }, { 'review.status': { $in: ['confirmed', 'corrected'] } }],
 } as const;
 
