@@ -33,20 +33,26 @@ export async function GET(
     }
 
     await connectV3();
-    const organization = await V3Organization.findById(orgId).lean();
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(orgId);
+    const organization = isObjectId
+      ? (await V3Organization.findById(orgId).lean()) ||
+        (await V3Organization.findOne({ slug: orgId }).lean())
+      : await V3Organization.findOne({ slug: orgId }).lean();
     if (!organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
+    const resolvedOrgId = organization._id.toString();
+
     // 1. Resolve report layout specifically for this organization
-    const resolution = await V3ReportResolver.resolveForOrganization(orgId);
+    const resolution = await V3ReportResolver.resolveForOrganization(resolvedOrgId);
     if (!resolution) {
       return NextResponse.json({ success: false, error: 'Failed to resolve report layout' }, { status: 500 });
     }
     const { report, resolvedFrom, source } = resolution;
 
     // 2. Fetch all top-level entities (partners) belonging to the organization
-    const entities = await V3Entity.find({ organizationId: orgId, parentEntityId: null })
+    const entities = await V3Entity.find({ organizationId: resolvedOrgId, parentEntityId: null })
       .select('name type status metadata')
       .sort({ name: 1 })
       .lean();

@@ -80,7 +80,7 @@ const db = client.db(config.dbName);
     // Fetch all report-eligible events associated with this partner
     // WHAT: partner1 / partner1Id represent the local-home side in existing builders
     // WHY: Some partner reports should aggregate only local-home appearances
-    const allEvents = await db
+    let allEvents = await db
       .collection('projects')
       .find(eventQuery)
       .sort({ eventDate: -1 }) // Most recent events first
@@ -98,6 +98,40 @@ const db = client.db(config.dbName);
         // HOW: Remove field-specific projection and include entire stats object
       })
       .toArray();
+
+    // If a league/umbrella partner has no direct partner1/partner2 events because
+    // events are stored under its parent organization (e.g. EuroLeague Women),
+    // aggregate the organization's events when the partner name matches the organization.
+    if (allEvents.length === 0 && (partner as any).organizationId) {
+      const parentOrgId = ObjectId.isValid(String((partner as any).organizationId))
+        ? new ObjectId(String((partner as any).organizationId))
+        : null;
+      if (parentOrgId) {
+        const parentOrg = await db.collection('organizations').findOne({ _id: parentOrgId });
+        if (
+          parentOrg &&
+          typeof parentOrg.name === 'string' &&
+          parentOrg.name.trim().toLowerCase() === String(partner.name || '').trim().toLowerCase()
+        ) {
+          allEvents = await db
+            .collection('projects')
+            .find({ organizationId: parentOrgId })
+            .sort({ eventDate: -1 })
+            .project({
+              _id: 1,
+              eventName: 1,
+              eventDate: 1,
+              viewSlug: 1,
+              hashtags: 1,
+              categorizedHashtags: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              stats: 1,
+            })
+            .toArray();
+        }
+      }
+    }
 
     const events = allEvents.filter((event) => isEventDateInPeriod(event.eventDate, resolvedVariant.period));
 

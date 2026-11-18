@@ -183,17 +183,21 @@ export async function GET(
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(id).lean();
+    const v3Organization = ObjectId.isValid(id)
+      ? (await V3Organization.findById(id).lean()) ||
+        (await V3Organization.findOne({ slug: id }).lean())
+      : await V3Organization.findOne({ slug: id }).lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    const resolution = await V3ReportResolver.resolveForOrganization(id);
+    const v3OrgId = v3Organization._id.toString();
+    const resolution = await V3ReportResolver.resolveForOrganization(v3OrgId);
     if (!resolution?.report) {
       throw new Error('Failed to resolve organization report');
     }
 
-    const entities = await V3Entity.find({ organizationId: id, parentEntityId: null })
+    const entities = await V3Entity.find({ organizationId: v3OrgId, parentEntityId: null })
       .select('name type metadata')
       .sort({ name: 1 })
       .lean();

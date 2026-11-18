@@ -84,16 +84,20 @@ export async function GET(
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(id).lean();
+    const v3Organization = ObjectId.isValid(id)
+      ? (await V3Organization.findById(id).lean()) ||
+        (await V3Organization.findOne({ slug: id }).lean())
+      : await V3Organization.findOne({ slug: id }).lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
 
-    const ownedActivities = await V3Activity.find({ organizationId: id }).lean();
+    const v3OrgId = v3Organization._id.toString();
+    const ownedActivities = await V3Activity.find({ organizationId: v3OrgId }).lean();
     const ownedIds = ownedActivities.map((activity) => activity._id.toString());
 
     const participantRecords = await V3ActivityParticipant.find({
-      organizationId: id,
+      organizationId: v3OrgId,
       activityId: { $nin: ownedIds.map((activityId) => new mongoose.Types.ObjectId(activityId)) },
     }).select('activityId').lean();
 
