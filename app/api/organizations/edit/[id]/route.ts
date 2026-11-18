@@ -200,7 +200,11 @@ export async function GET(
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(id).lean();
+    const isObjectId = ObjectId.isValid(id);
+    const v3Organization = isObjectId
+      ? (await V3Organization.findById(id).lean()) ||
+        (await V3Organization.findOne({ slug: id }).lean())
+      : await V3Organization.findOne({ slug: id }).lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
@@ -319,7 +323,11 @@ export async function PUT(
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(id).lean();
+    const isObjectId = ObjectId.isValid(id);
+    const v3Organization = isObjectId
+      ? (await V3Organization.findById(id).lean()) ||
+        (await V3Organization.findOne({ slug: id }).lean())
+      : await V3Organization.findOne({ slug: id }).lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
@@ -330,7 +338,7 @@ export async function PUT(
     }
 
     const updatedOrganization = await V3Organization.findByIdAndUpdate(
-      id,
+      v3Organization._id,
       {
         $set: {
           metadata,

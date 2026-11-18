@@ -1,6 +1,6 @@
 # Documentation Index
 Status: Active
-Last Updated: 2026-08-14T15:00:00.000Z
+Last Updated: 2026-11-18T12:00:00.000Z
 Canonical: Yes
 Owner: Documentation
 
@@ -61,6 +61,7 @@ Task-oriented, end-user tutorials for creating and managing the core objects and
 - [design-report-layout-v2-contract.md](design/design-report-layout-v2-contract.md) — LayoutV2 contract between Admin config and renderer.
 
 ## Features
+- [What's New (2026-11-18)](features/whats-new-2026-11-18.md) — Fleet-wide hierarchy reorganization, federation 3-variant report model, zero/empty chart hiding, and Serie A league classification.
 - [features-overview.md](features/features-overview.md) — Canonical entrypoint for subsystem feature docs.
 - [2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md](2026-03-06_ADMIN_TOTALFANS_PARTNER_CARD_EDIT_HOTFIX.md) — Production hotfix notes for admin `totalFans` consistency and partner card-view report-edit actions.
 - [2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md](2026-03-06_PARTNER_REPORT_DELETE_HOTFIX.md) — Production hotfix notes for partner report total-fans cards and admin delete-project failure handling.

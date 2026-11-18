@@ -78,7 +78,11 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(orgId).lean();
+    const isObjectId = ObjectId.isValid(orgId);
+    const v3Organization = isObjectId
+      ? (await V3Organization.findById(orgId).lean()) ||
+        (await V3Organization.findOne({ slug: orgId }).lean())
+      : await V3Organization.findOne({ slug: orgId }).lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }
@@ -158,7 +162,11 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     await connectV3();
-    const v3Organization = await V3Organization.findById(orgId).select('name slug').lean();
+    const isObjectId = ObjectId.isValid(orgId);
+    const v3Organization = isObjectId
+      ? (await V3Organization.findById(orgId).select('name slug').lean()) ||
+        (await V3Organization.findOne({ slug: orgId }).select('name slug').lean())
+      : await V3Organization.findOne({ slug: orgId }).select('name slug').lean();
     if (!v3Organization) {
       return NextResponse.json({ success: false, error: 'Organization not found' }, { status: 404 });
     }

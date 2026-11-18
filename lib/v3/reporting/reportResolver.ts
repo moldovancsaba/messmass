@@ -79,7 +79,11 @@ export class V3ReportResolver {
   static async resolveForOrganization(orgId: string) {
     await connectV3();
     
-    const org = await V3Organization.findOne({ _id: orgId }).lean();
+    const isObjectId = ObjectId.isValid(orgId);
+    const org = isObjectId
+      ? (await V3Organization.findById(orgId).lean()) ||
+        (await V3Organization.findOne({ slug: orgId }).lean())
+      : await V3Organization.findOne({ slug: orgId }).lean();
     if (!org) throw new Error('Organization not found');
 
     const metadata = org.metadata || {};
@@ -106,6 +110,7 @@ export class V3ReportResolver {
   }
 
   private static async getReportById(reportId: string) {
+    if (!ObjectId.isValid(reportId)) return null;
     const client = await clientPromise;
     const db = client.db(config.dbName);
     const report = await db.collection('reports').findOne({ _id: new ObjectId(reportId) });

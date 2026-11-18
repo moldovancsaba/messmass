@@ -132,6 +132,16 @@ If you later try to add a fifth unit to either block, the save is rejected until
 
 **The default flag is unique.** Setting any template as default clears the previous default automatically — there is always exactly one.
 
+## Automatic zero & empty chart hiding
+
+Messmass automatically hides empty and zero-value charts to prevent reports from looking sparse or uninformative when specific metrics are not tracked for an event:
+
+- **KPI Cards**: Any KPI card calculating to `0`, `'0%'`, `'NA'`, or `null` is automatically suppressed from rendering (unless `allowNA: true` is explicitly configured on the chart definition).
+- **Bar Charts**: Any individual bars with `value: 0` or missing counts are stripped from category breakdowns, ensuring only populated segments are displayed.
+- **Empty Blocks**: If all charts within a data block are suppressed due to zero values, the entire block is omitted from the grid layout seamlessly without creating blank gaps.
+- **Dynamic 6-Unit Default Layout**: Default templates support modern 6-unit desktop grids (`desktop: 6`, `tablet: 3`, `mobile: 2`) configured across 3 balanced blocks (Photo Capture & Vetting Overview, Fan Demographics & Age Distribution, Merchandise & Apparel Insights).
+- **Inherited Theme Colors**: Events rendering under the system default template inherit brand styles and colors from their assigned partner or parent organization (`styleId`), ensuring consistent visual identity across all match reports.
+
 ## Gotchas & good practice
 
 - **Blocks are shared until you copy.** A data block belongs to whichever template(s) reference it. If you want an isolated variant, **copy the template** (which clones its blocks) rather than editing a block that another template also uses.

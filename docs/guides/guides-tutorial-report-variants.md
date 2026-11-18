@@ -1,16 +1,31 @@
 # Tutorial: Report variants
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-18T13:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
-> Audience: Internal operators & implementation partners · Prerequisites: A partner or organisation that already has a working report · Related: [guides-tutorial-reports.md](guides-tutorial-reports.md), [guides-tutorial-report-themes.md](guides-tutorial-report-themes.md), [guides-tutorial-sharing-access.md](guides-tutorial-sharing-access.md)
+> Audience: Internal operators & implementation partners · Prerequisites: A partner or organisation that already has a working report · Related: [guides-tutorial-reports.md](guides-tutorial-reports.md), [guides-tutorial-report-themes.md](guides-tutorial-report-themes.md), [guides-tutorial-organisations.md](guides-tutorial-organisations.md), [guides-tutorial-sharing-access.md](guides-tutorial-sharing-access.md)
 
 ## What it is & why it matters
 
-A **report variant** is a saved, time-scoped version of one owner's report. The same partner or organisation can publish several: an all-time overview, a "this year" cut, a "last 30 days" snapshot, or a custom date range for one campaign — each with its own shareable link.
+A **report variant** is a saved, scoped version of one owner's report. The same partner or organisation can publish several views: an all-time overview, a "this year" cut, a "last 30 days" snapshot, or a competition scope (such as **National Games** vs **Club Games**) — each with its own shareable link and accessible via an interactive switcher.
 
-Without variants you would have one report per owner and would have to re-filter it by hand every time someone asked for a different window. Variants let you prepare each cut once, publish it, and hand out a stable URL.
+Without variants you would have one report per owner and would have to re-filter it by hand every time someone asked for a different cut. Variants let you prepare each cut once, publish it, and offer viewers an immediate pill switcher directly on the live report.
+
+### Two Dimensions of Scoping
+1. **Time Scoping (`periodPreset`):** All Time, This Month, Last 30 Days, This Year, Last Year, or Custom Date Range.
+2. **Competition Scoping (`eventScope`):**
+   - **All Games (`all`):** Full rollup across all associated events.
+   - **National Games (`national_games`):** Isolates international fixtures and national team activations.
+   - **Club Games (`club_games`):** Isolates domestic club competitions and league activations.
+
+### The Federation 3-Variant Standard
+Every national federation organisation (e.g. MLSZ, MKOSZ, MKSZ, SIHF, PZPN, ZPRP, FIBA) publishes **three default variants**:
+- **All Games** (`slug: 'default'`): Combines national team matches and domestic league events.
+- **National Games** (`slug: 'national-games'`): Scoped to national team games only.
+- **Club Games** (`slug: 'club-games'`): Scoped to domestic club league matches only.
+
+Viewers can toggle between these variants instantly using the pill bar at the top of the report without leaving the page.
 
 Every variant belongs to an **owner**. In the model an owner is an organisation, a partner, a hashtag, or a filter. The two places you actively manage variants are:
 

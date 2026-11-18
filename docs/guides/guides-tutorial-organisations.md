@@ -1,19 +1,29 @@
 # Tutorial: Organisations
 Status: Active
-Last Updated: 2026-07-20T00:00:00.000Z
+Last Updated: 2026-11-18T13:30:00.000Z
 Canonical: Yes
 Owner: Documentation
 
-> Audience: Superadmins · Prerequisites: Superadmin role, at least one Partner to assign · Related: [Getting started](guides-tutorial-getting-started.md) · [Partners](guides-tutorial-partners.md) · [Camera app](guides-tutorial-camera-app.md)
+> Audience: Superadmins · Prerequisites: Superadmin role, at least one Partner to assign · Related: [Getting started](guides-tutorial-getting-started.md) · [Partners](guides-tutorial-partners.md) · [Report variants](guides-tutorial-report-variants.md) · [Camera app](guides-tutorial-camera-app.md)
 
 ## What it is & why it matters
 
 An **organisation** is the top-level grouping in messmass. It sits above partners and provides org-scoped tenancy: a named container that groups the **Partners** who actually own events and reports.
 
+Release v12.3.50 standardizes organisations into three distinct types:
+
+1. **Federations (`federation`):** National or international governing bodies (e.g. MLSZ, MKOSZ, MKSZ, SIHF, UEFA, FIBA). A federation governs both **National Team Partners** (such as Hungary Men's Basketball) and **Child League Organisations** (such as domestic leagues).
+2. **Leagues (`league`):** Domestic club championships or multi-club tournaments (e.g. OTP Bank Liga, Tippmix NB I. A, Serie A - Lega Serie A, CHL). Leagues group the **Club Partners** who compete in the league.
+3. **Sponsors (`sponsor`):** Commercial partners and title sponsors (e.g. Szerencsejáték Zrt. Tippmix, MOL Group) that sponsor events across multiple leagues and sports.
+
 You use organisations to:
 
-- Group related partners under one parent (a league, federation, or holding brand).
-- Produce an **organisation report** that aggregates every member partner's stats and events into one aggregate view.
+- Group related partners and child leagues under one parent federation or league.
+- Produce an **organisation report** that aggregates member partner stats, events, and sub-league activations into unified or scoped dashboards.
+- Provide federations with **3 default report views** via an interactive variant switcher:
+  - **All Games (`default`):** Aggregate view of national team and domestic club league events.
+  - **National Games (`national-games`):** Scoped strictly to national team fixtures and qualifiers (`eventScope: 'national_games'`).
+  - **Club Games (`club-games`):** Scoped to domestic club matches under member leagues (`eventScope: 'club_games'`).
 - Keep reporting multi-tenant — non-superadmin users can be scoped to specific organisation IDs.
 
 Organisations do not own events directly. They group **Partners**, and the partners own the activity. Membership is the link between them.
