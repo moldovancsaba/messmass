@@ -7,7 +7,7 @@ import { ObjectId } from 'mongodb';
 import config from '@/lib/config';
 import { error as logError } from '@/lib/logger';
 import { addDerivedMetrics } from '@/lib/projectStatsUtils';
-import { resolveReportVariant } from '@/lib/reportVariants';
+import { resolveReportVariant, filterEventsByReportVariant } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
 
@@ -89,6 +89,10 @@ const db = client.db(config.dbName);
         eventName: 1,
         eventDate: 1,
         viewSlug: 1,
+        organizationId: 1,
+        federationOrganizationId: 1,
+        competitionType: 1,
+        isSyntheticRollup: 1,
         hashtags: 1,
         categorizedHashtags: 1,
         createdAt: 1,
@@ -122,6 +126,10 @@ const db = client.db(config.dbName);
               eventName: 1,
               eventDate: 1,
               viewSlug: 1,
+              organizationId: 1,
+              federationOrganizationId: 1,
+              competitionType: 1,
+              isSyntheticRollup: 1,
               hashtags: 1,
               categorizedHashtags: 1,
               createdAt: 1,
@@ -133,7 +141,8 @@ const db = client.db(config.dbName);
       }
     }
 
-    const events = allEvents.filter((event) => isEventDateInPeriod(event.eventDate, resolvedVariant.period));
+    const scopedEvents = filterEventsByReportVariant(allEvents, resolvedVariant.variant);
+    const events = scopedEvents.filter((event) => isEventDateInPeriod(event.eventDate, resolvedVariant.period));
 
     const useLegacyAllTimeAggregation = !variantSlug && resolvedVariant.isVirtualDefault && resolvedVariant.period.periodPreset === 'all_time';
     const aggregatedStats: Record<string, number | string> = useLegacyAllTimeAggregation
@@ -187,6 +196,13 @@ const db = client.db(config.dbName);
         ...resolvedVariant.variant,
         period: resolvedVariant.period,
       },
+      availableVariants: (resolvedVariant.availableVariants || []).map((v) => ({
+        _id: v._id,
+        name: v.name,
+        slug: v.slug,
+        isDefault: v.isDefault,
+        eventScope: v.eventScope,
+      })),
       report: resolvedVariant.runtimeReport.report,
       resolvedFrom: resolvedVariant.runtimeReport.resolvedFrom,
       source: resolvedVariant.runtimeReport.source,

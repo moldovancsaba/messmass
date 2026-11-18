@@ -6,11 +6,13 @@ import V3Activity from '@/lib/models/v3/Activity';
 import V3ActivityParticipant from '@/lib/models/v3/ActivityParticipant';
 import V3Organization from '@/lib/models/v3/Organization';
 import mongoose from 'mongoose';
-import { resolveReportVariant } from '@/lib/reportVariants';
+import { resolveReportVariant, resolveOrganizationReportScope } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 type OrganizationRecord = {
   _id: ObjectId;
+  slug?: string;
+  metadata?: Record<string, unknown>;
 };
 
 export const dynamic = 'force-dynamic';
@@ -32,37 +34,8 @@ export async function GET(
 
     if (organization) {
       const organizationId = organization._id;
-      const partners = await db
-        .collection('partners')
-        .find({ organizationId }, { projection: { _id: 1 } })
-        .toArray();
-
-      const partnerIds = partners.map((partner) => partner._id);
-      const matchConditions: any[] = [{ organizationId }];
-      if (partnerIds.length > 0) {
-        matchConditions.push(
-          { partner1: { $in: partnerIds } },
-          { partner2: { $in: partnerIds } },
-          { partner1Id: { $in: partnerIds } },
-          { partner2Id: { $in: partnerIds } }
-        );
-      }
-
-      const projects = await db
-        .collection('projects')
-        .find({ $or: matchConditions })
-        .sort({ eventDate: -1 })
-        .project({
-          _id: 1,
-          eventName: 1,
-          eventDate: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          viewSlug: 1,
-        })
-        .toArray();
-
       const resolvedVariant = await resolveReportVariant(db, 'organization', organizationId.toString(), variantSlug);
+      const { projects } = await resolveOrganizationReportScope(db, organization, resolvedVariant.variant);
       const filteredProjects = projects.filter((project) =>
         isEventDateInPeriod(project.eventDate, resolvedVariant.period)
       );

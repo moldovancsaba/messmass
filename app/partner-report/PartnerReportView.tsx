@@ -14,6 +14,7 @@ import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
 import { ReportCalculator } from '@/lib/report-calculator';
 import { PublicReportShell, PublicReportState } from '@/components/reports/PublicReportShell';
+import entityStyles from '@/app/organization-report/OrganizationEntityList.module.css';
 import styles from '@/app/styles/report-page.module.css';
 
 export interface PartnerReportViewProps {
@@ -29,6 +30,8 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
   const stats = partnerData?.aggregatedStats || null;
   const report = partnerData?.report || null;
   const reportVariant = (partnerData as any)?.reportVariant;
+  const availableVariants: Array<{ _id: string; name: string; slug: string; isDefault: boolean }> =
+    (partnerData as any)?.availableVariants || [];
   const blocks = useMemo(() => (report?.layout?.blocks || []).sort((a, b) => a.order - b.order), [report]);
   const gridSettings = useMemo(() => ({
     desktop: report?.layout?.gridColumns?.desktop || 3,
@@ -136,6 +139,28 @@ export function PartnerReportView({ slug, variant }: PartnerReportViewProps) {
             onExportPDF={handlePDFExport}
           />
         </div>
+        {availableVariants.length > 1 && (
+          <nav className={entityStyles.variantBar} aria-label="Report scope variants">
+            {availableVariants.map((item) => {
+              const isActive =
+                (reportVariant?.slug && reportVariant.slug === item.slug) ||
+                (!reportVariant?.slug && item.isDefault);
+              const href =
+                item.slug === 'default'
+                  ? `/partner-report/${encodeURIComponent(slug)}`
+                  : `/partner-report/${encodeURIComponent(slug)}?variant=${encodeURIComponent(item.slug)}`;
+              return (
+                <Link
+                  key={item._id || item.slug}
+                  href={href}
+                  className={`${entityStyles.variantPill} ${isActive ? entityStyles.variantPillActive : ''}`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         <div id="report-content">
           <ReportContent blocks={blocks} chartResults={chartResults} gridSettings={gridSettings} />
         </div>

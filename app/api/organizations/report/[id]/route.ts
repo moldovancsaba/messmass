@@ -5,7 +5,7 @@ import connectV3 from '@/lib/mongoose-v3';
 import V3Organization from '@/lib/models/v3/Organization';
 import V3Entity from '@/lib/models/v3/Entity';
 import { V3ReportResolver } from '@/lib/v3/reporting/reportResolver';
-import { resolveReportVariant } from '@/lib/reportVariants';
+import { resolveReportVariant, resolveOrganizationReportScope } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
 
 type OrganizationRecord = {
@@ -24,15 +24,6 @@ type OrganizationRecord = {
   };
   createdAt?: string;
   updatedAt?: string;
-};
-
-type PartnerRecord = {
-  _id: ObjectId;
-  name: string;
-  emoji?: string;
-  logoUrl?: string;
-  organizationId?: ObjectId;
-  stats?: Record<string, number | string>;
 };
 
 export const dynamic = 'force-dynamic';
@@ -71,8 +62,6 @@ export async function GET(
 
     const db = await getDb();
     const organizations = db.collection<OrganizationRecord>('organizations');
-    const partnersCollection = db.collection<PartnerRecord>('partners');
-    const projectsCollection = db.collection('projects');
     const organization = ObjectId.isValid(id)
       ? (await organizations.findOne({ _id: new ObjectId(id) })) ||
         (await organizations.findOne({ slug: id }))
@@ -82,42 +71,15 @@ export async function GET(
       const orgId = organization._id;
       const orgIdStr = orgId.toString();
 
-      const assignedPartners = await partnersCollection
-        .find({ organizationId: orgId })
-        .sort({ name: 1 })
-        .toArray();
-
-      const partnerIds = assignedPartners.map((partner) => partner._id);
-      const matchConditions: any[] = [{ organizationId: orgId }];
-      if (partnerIds.length > 0) {
-        matchConditions.push(
-          { partner1: { $in: partnerIds } },
-          { partner2: { $in: partnerIds } },
-          { partner1Id: { $in: partnerIds } },
-          { partner2Id: { $in: partnerIds } }
-        );
-      }
-
-      const allProjects = await projectsCollection
-        .find({ $or: matchConditions })
-        .sort({ eventDate: -1 })
-        .project({
-          _id: 1,
-          eventName: 1,
-          eventDate: 1,
-          viewSlug: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          stats: 1,
-        })
-        .toArray();
-
       const resolvedVariant = await resolveReportVariant(db, 'organization', orgIdStr, variantSlug);
       if (!resolvedVariant.runtimeReport.report) {
         throw new Error('Failed to resolve organization report');
       }
 
-      const projects = allProjects.filter((project) =>
+      const { partners: assignedPartners, projects: scopedProjects } =
+        await resolveOrganizationReportScope(db, organization, resolvedVariant.variant);
+
+      const projects = scopedProjects.filter((project) =>
         isEventDateInPeriod(project.eventDate, resolvedVariant.period)
       );
 
@@ -141,6 +103,7 @@ export async function GET(
       };
 
       const aggregatedStats: Record<string, number | string> = {
+        ...((baseMetadata.stats || {}) as Record<string, number | string>),
         ...((variant.statsOverrides || {}) as Record<string, number | string>),
       };
 
@@ -167,6 +130,7 @@ export async function GET(
           metadata: {
             emoji: partner.emoji || '🤝',
             logoUrl: partner.logoUrl,
+            viewSlug: partner.viewSlug,
           },
         })),
         report: resolvedVariant.runtimeReport.report,
@@ -176,6 +140,13 @@ export async function GET(
           ...variant,
           period: resolvedVariant.period,
         },
+        availableVariants: (resolvedVariant.availableVariants || []).map((v) => ({
+          _id: v._id,
+          name: v.name,
+          slug: v.slug,
+          isDefault: v.isDefault,
+          eventScope: v.eventScope,
+        })),
         aggregatedStats,
         totalEntities: assignedPartners.length,
         totalEvents: projects.length,

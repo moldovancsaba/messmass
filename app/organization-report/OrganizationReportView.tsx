@@ -6,10 +6,12 @@
  * WHY: High-level stakeholders need to see metrics across all their sub-entities
  */
 import React, { useMemo } from 'react';
+import Link from 'next/link';
 import ReportHero from '@/app/report/[slug]/ReportHero';
 import ReportContent from '@/app/report/[slug]/ReportContent';
 import OrganizationEntityList from './OrganizationEntityList';
 import OrganizationActivitiesList from './OrganizationActivitiesList';
+import entityStyles from './OrganizationEntityList.module.css';
 import { useOrganizationReportData } from '@/hooks/useReportData';
 import { useReportStyle } from '@/hooks/useReportStyle';
 import { useReportExport } from '@/hooks/useReportExport';
@@ -25,6 +27,8 @@ export default function OrganizationReportView({ id, variant }: { id: string; va
   const charts = useMemo(() => orgData?.charts || [], [orgData?.charts]);
   const reportConfig = orgData?.report;
   const reportVariant = orgData?.reportVariant;
+  const availableVariants: Array<{ _id: string; name: string; slug: string; isDefault: boolean }> =
+    orgData?.availableVariants || [];
 
   // WHAT: Resolve layout from API-provided config
   // WHY: Unified reporting uses DB-driven templates
@@ -115,6 +119,29 @@ export default function OrganizationReportView({ id, variant }: { id: string; va
             onExportPDF={handlePDFExport}
           />
         </div>
+
+        {availableVariants.length > 1 && (
+          <nav className={entityStyles.variantBar} aria-label="Report scope variants">
+            {availableVariants.map((item) => {
+              const isActive =
+                (reportVariant?.slug && reportVariant.slug === item.slug) ||
+                (!reportVariant?.slug && item.isDefault);
+              const href =
+                item.slug === 'default'
+                  ? `/organization-report/${encodeURIComponent(organization.slug || id)}`
+                  : `/organization-report/${encodeURIComponent(organization.slug || id)}?variant=${encodeURIComponent(item.slug)}`;
+              return (
+                <Link
+                  key={item._id || item.slug}
+                  href={href}
+                  className={`${entityStyles.variantPill} ${isActive ? entityStyles.variantPillActive : ''}`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
+        )}
         
         <div id="report-content">
           <ReportContent blocks={blocks} chartResults={chartResults} gridSettings={gridSettings} />

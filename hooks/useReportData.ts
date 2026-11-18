@@ -283,10 +283,12 @@ export function usePartnerReportData(slug: string | null, variantSlug?: string |
         events: partnerData.events || [],
         aggregatedStats: partnerData.aggregatedStats || {},
         report: partnerData.report,
+        reportVariant: partnerData.reportVariant,
+        availableVariants: partnerData.availableVariants || [],
         charts: chartsData.configurations || chartsData.charts || [], // WHAT: chart-config/public returns 'configurations', fallback to 'charts' for backward compatibility
         resolvedFrom: partnerData.resolvedFrom,
         source: partnerData.source
-      });
+      } as any);
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load partner report data';

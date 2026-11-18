@@ -115,3 +115,38 @@
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
 }
+
+.variantBar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mm-space-3);
+  padding: var(--mm-space-4) var(--mm-space-6);
+  background: var(--chartBackground, var(--mm-white));
+  border-bottom: 1px solid var(--chartBorder, var(--mm-gray-200));
+}
+
+.variantPill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-2) var(--mm-space-4);
+  border-radius: var(--mm-radius-full);
+  border: 1px solid var(--chartBorder, var(--mm-gray-300));
+  background: var(--chartBackground, var(--mm-white));
+  color: var(--chartTitleColor, var(--mm-gray-700));
+  font-size: var(--mm-font-size-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.variantPill:hover {
+  border-color: var(--exportButtonBackground, var(--mm-color-primary-600));
+}
+
+.variantPillActive {
+  background: var(--exportButtonBackground, var(--mm-color-primary-600));
+  border-color: var(--exportButtonBackground, var(--mm-color-primary-600));
+  color: var(--exportButtonText, var(--mm-white));
+}
