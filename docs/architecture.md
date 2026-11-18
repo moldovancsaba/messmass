@@ -118,7 +118,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 88 | `app/**/page.tsx` |
-| **API routes** | 250 | `app/api/**/route.ts` |
+| **API routes** | 251 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -129,7 +129,7 @@ largest, and the ones to read first:
 | `lib/mongodb.ts` | 113 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
-| `lib/apiGuards.ts` | 89 | 390 |
+| `lib/apiGuards.ts` | 90 | 390 |
 | `lib/fanmassIntegration.ts` | 46 | 331 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/apiClient.ts` | 42 | 258 |
@@ -137,7 +137,7 @@ largest, and the ones to read first:
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 27 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 144 |
+| `lib/permissions.ts` | 19 | 146 |
 | `lib/report-calculator.ts` | 19 | 935 |
 | `hooks/useAdminAuth.ts` | 18 | 65 |
 
@@ -1090,7 +1090,7 @@ shows up here on the next regeneration, which is the point.
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 | `/whats-new` | `app/whats-new/page.tsx` |
 
-### API routes (250)
+### API routes (251)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1557,6 +1557,12 @@ means the route calls none — public by construction, or a gap.
 | `/api/public/partners` | GET, OPTIONS | — |
 | `/api/public/partners/[id]` | GET, OPTIONS | — |
 | `/api/public/partners/[id]/events` | GET, OPTIONS | — |
+
+#### `/api/release-notes`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/release-notes` | GET | `requireSession` |
 
 #### `/api/report-config`
 
