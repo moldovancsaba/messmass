@@ -15,6 +15,18 @@ export interface AiOrganizationSummary {
   slug?: string;
 }
 
+export interface SzrtCampaignProgressSummary {
+  status: string;
+  processedCount: number;
+  totalImages: number;
+  peopleDetected: number;
+  provenBrands: number;
+  provenClubs: number;
+  drivePhotosPlaced: number;
+  eventsWithDrivePhotos: number;
+  updatedAt: string | null;
+}
+
 export interface AiPhotoEventRow {
   eventId: string;
   eventName: string;
@@ -25,6 +37,7 @@ export interface AiPhotoEventRow {
   previewUrls: string[];
   sources?: string[];
   photoResultsReceived: number;
+  drivePhotosPlaced?: number;
   peopleDetections: number;
   personBoxes: number;
   faceBoxes: number;
@@ -65,6 +78,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   sourceCounts: { all: number; camera: number; local_storage: number };
   partners: AiPartnerSummary[];
   organizations: AiOrganizationSummary[];
+  szrtProgress: SzrtCampaignProgressSummary | null;
 }> {
   const db = await getDb();
   const toNumber = (input: unknown) => ({
@@ -185,7 +199,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   }
 
   const evidenceOrigins = grouped.map((row) => `camera-${String(row._id)}`);
-  const [partnerDocs, orgDocs, evidenceSamples] = await Promise.all([
+  const [partnerDocs, orgDocs, evidenceSamples, szrtDoc, driveByEventRows] = await Promise.all([
     partnerIdSet.size > 0
       ? db.collection('partners')
           .find({ _id: { $in: [...partnerIdSet].map((id) => new ObjectId(id)) } }, { projection: { name: 1, emoji: 1, viewSlug: 1, organizationId: 1 } })
@@ -202,7 +216,36 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
           .limit(600)
           .toArray()
       : Promise.resolve([]),
+    db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any }),
+    db.collection('fanmass_event_drive_photos')
+      .aggregate<{ _id: string; count: number; updatedAt: string | null }>([
+        { $match: { eventId: { $type: 'string', $ne: '' } } },
+        { $group: { _id: '$eventId', count: { $sum: 1 }, updatedAt: { $max: '$updatedAt' } } },
+      ])
+      .toArray(),
   ]);
+
+  const driveCountByEvent = new Map<string, { count: number; updatedAt: string | null }>();
+  let totalDrivePlaced = 0;
+  for (const row of driveByEventRows) {
+    const c = finiteNumber(row.count);
+    totalDrivePlaced += c;
+    driveCountByEvent.set(String(row._id), { count: c, updatedAt: typeof row.updatedAt === 'string' ? row.updatedAt : null });
+  }
+
+  const szrtProgress: SzrtCampaignProgressSummary | null = szrtDoc
+    ? {
+        status: String(szrtDoc.status || 'running'),
+        processedCount: finiteNumber(szrtDoc.processedCount),
+        totalImages: finiteNumber(szrtDoc.totalImages),
+        peopleDetected: finiteNumber(szrtDoc.aggregates?.totalPeople),
+        provenBrands: Array.isArray(szrtDoc.aggregates?.topBrands) ? szrtDoc.aggregates.topBrands.length : 0,
+        provenClubs: Array.isArray(szrtDoc.aggregates?.topClubs) ? szrtDoc.aggregates.topClubs.length : 0,
+        drivePhotosPlaced: totalDrivePlaced,
+        eventsWithDrivePhotos: driveByEventRows.length,
+        updatedAt: typeof szrtDoc.updatedAt === 'string' ? szrtDoc.updatedAt : typeof szrtDoc.lastUpdated === 'string' ? szrtDoc.lastUpdated : null,
+      }
+    : null;
 
   const partnersMap = new Map<string, AiPartnerSummary>(
     partnerDocs.map((p: any) => [
@@ -248,6 +291,13 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
     const oid = project?.organizationId ? String(project.organizationId) : '';
     const org = orgsMap.get(oid) ?? null;
 
+    const driveInfo = driveCountByEvent.get(eventId);
+    const rawLast = typeof row.lastAnalyzedAt === 'string' ? row.lastAnalyzedAt : null;
+    const latestAt =
+      driveInfo?.updatedAt && (!rawLast || driveInfo.updatedAt > rawLast)
+        ? driveInfo.updatedAt
+        : rawLast;
+
     return {
       eventId,
       eventName: String(project?.eventName || 'Unlinked Messmass event'),
@@ -258,6 +308,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
       previewUrls: previewsByEvent.get(eventId) ?? [],
       sources: Array.isArray(row.sources) ? row.sources : undefined,
       photoResultsReceived: finiteNumber(row.photoResultsReceived),
+      ...(driveInfo ? { drivePhotosPlaced: driveInfo.count } : {}),
       peopleDetections: finiteNumber(row.peopleDetections),
       personBoxes: finiteNumber(row.personBoxes),
       faceBoxes: finiteNumber(row.faceBoxes),
@@ -266,7 +317,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
       merchandiseDetections: finiteNumber(row.merchandiseDetections),
       moderationPhotosReviewed: finiteNumber(row.moderationPhotosReviewed),
       moderationFlaggedPhotos: finiteNumber(row.moderationFlaggedPhotos),
-      lastAnalyzedAt: typeof row.lastAnalyzedAt === 'string' ? row.lastAnalyzedAt : null,
+      lastAnalyzedAt: latestAt,
     };
   }).sort((a, b) => (b.lastAnalyzedAt || '').localeCompare(a.lastAnalyzedAt || ''));
 
@@ -301,5 +352,6 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
     sourceCounts,
     partners: [...partnerDirectoryMap.values()].sort((a, b) => (b.eventCount ?? 0) - (a.eventCount ?? 0) || a.name.localeCompare(b.name)),
     organizations: [...orgsMap.values()].sort((a, b) => a.name.localeCompare(b.name)),
+    szrtProgress,
   };
 }
