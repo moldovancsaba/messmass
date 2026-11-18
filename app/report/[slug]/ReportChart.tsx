@@ -139,26 +139,56 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
   }
 
   // WHAT: Check if chart has valid displayable data
-  // WHY: Don't render placeholders for empty/NA values
+  // WHY: Don't render placeholders for empty/NA/0 values
   // HOW: Type-specific validation matching ReportCalculator.hasValidData()
   const hasData = (() => {
     switch (result.type) {
       case 'text':
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0'
+        );
       
       case 'image':
         return (
           typeof result.kpiValue === 'string' &&
-          result.kpiValue.length > 0 &&
-          result.kpiValue !== 'NA' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0' &&
           !result.kpiValue.includes('/placeholders/image-missing.svg')
         );
       
       case 'table':
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0'
+        );
       
-      case 'kpi':
-        return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
+      case 'kpi': {
+        if (allowNA) {
+          return result.kpiValue !== undefined && result.kpiValue !== null;
+        }
+        if (result.kpiValue === undefined || result.kpiValue === null || result.kpiValue === 'NA') {
+          return false;
+        }
+        if (typeof result.kpiValue === 'number') {
+          return Number.isFinite(result.kpiValue) && result.kpiValue > 0;
+        }
+        if (typeof result.kpiValue === 'string') {
+          const trimmed = result.kpiValue.trim();
+          if (!trimmed || trimmed === 'NA' || trimmed === 'N/A') return false;
+          const numericCleaned = trimmed.replace(/^[$€£¥+\s]+|[%\s,]+$/g, '').replace(/,/g, '');
+          if (numericCleaned.length > 0 && /^-?\d+(\.\d+)?$/.test(numericCleaned)) {
+            return Number(numericCleaned) > 0;
+          }
+          return true;
+        }
+        return false;
+      }
       
       case 'pie':
       case 'bar':
@@ -166,12 +196,23 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         return (
           Array.isArray(result.elements) &&
           result.elements.length > 0 &&
-          (allowNA || result.elements.some((el) => typeof el.value === 'number' && el.value > 0))
+          (allowNA || result.elements.some((el) => typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0))
         );
       
       case 'valuechain':
-        // Always show valuechain when it has icon + 2 elements (title + description); content can be empty
-        return !!(result.elements && result.elements.length >= 2);
+        return !!(
+          result.elements &&
+          result.elements.length >= 2 &&
+          (allowNA ||
+            result.elements.some(
+              (el) =>
+                el.value !== undefined &&
+                el.value !== null &&
+                String(el.value).trim().length > 0 &&
+                String(el.value).trim() !== 'NA' &&
+                String(el.value).trim() !== '0'
+            ))
+        );
       
       default:
         return false;
@@ -378,7 +419,11 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
     return <div className={styles.chart}>No pie data</div>;
   }
   
-  const elements = result.elements ?? [];
+  const rawElements = result.elements ?? [];
+  const positivePieElements = rawElements.filter(
+    (el) => typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0
+  );
+  const elements = positivePieElements.length > 0 ? positivePieElements : rawElements;
   const total = elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   
   // WHAT: Read pie slice colors with accessible multi-slice palette support
@@ -739,11 +784,16 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
   if (!result.elements || result.elements.length === 0) {
     return <div className={styles.chart}>No bar data</div>;
   }
+
+  const positiveBarElements = result.elements.filter(
+    (el) => typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0
+  );
+  const displayElements = positiveBarElements.length > 0 ? positiveBarElements : result.elements;
   
   // WHAT: Use CSS variable references so bar colors always reflect the current report style
   // WHY: Style is injected asynchronously; passing var(--barColor1) etc. lets the browser resolve when style loads
-  const maxValue = Math.max(...result.elements.map(el => typeof el.value === 'number' ? el.value : 0));
-  const totalValue = result.elements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
+  const maxValue = Math.max(...displayElements.map(el => typeof el.value === 'number' ? el.value : 0));
+  const totalValue = displayElements.reduce((sum, el) => sum + (typeof el.value === 'number' ? el.value : 0), 0);
   const barColorVar = (idx: number) => `var(--barColor${(idx % 5) + 1})`;
 
   return (
@@ -755,7 +805,7 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       {/* WHAT: Chart body ref for height calculation (P1 1.4 Phase 2) */}
       <div ref={chartBodyRef} className={styles.chartBody}>
         <div className={styles.barStackList}>
-          {result.elements.map((element, idx) => {
+          {displayElements.map((element, idx) => {
             const numValue = typeof element.value === 'number' ? element.value : 0;
             const widthPercent = maxValue > 0 ? (numValue / maxValue) * 100 : 0;
             const sharePercent = totalValue > 0 ? Math.round((numValue / totalValue) * 100) : 0;

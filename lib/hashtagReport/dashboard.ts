@@ -140,9 +140,9 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
   return {
     success: true,
     scope: base?.scope
-      ? { ...base.scope, subtitle: `What Fanmass measured for ${label}: the photos it analysed, the brands and clubs read from them, the people and the events. Nothing in this report is typed in by hand.` }
+      ? { ...base.scope, subtitle: `Visual analytics across ${label}: analysed photos, detected brand presence, club affiliations, and audience engagement.` }
       : { type: report.scope.type === 'all' ? 'global' : report.scope.type, id: report.scope.id, name: label },
-    partner: base?.partner ?? { id: '', name: label, viewSlug: '', emoji: '🤖' },
+    partner: base?.partner ?? { id: '', name: label, viewSlug: '', emoji: '📊' },
     style: base?.style ?? { name: 'default', heroBackground: '', pieColor1: '', pieColor2: '' },
     summary: { ...EMPTY_SUMMARY, totalMatches: report.coverage.events },
     timeline: [],

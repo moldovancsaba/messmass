@@ -837,19 +837,51 @@ export class ReportCalculator {
     switch (result.type) {
       case 'text':
         // Text valid if non-empty string
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0'
+        );
 
       case 'image':
         // Image valid if URL present
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0' &&
+          !result.kpiValue.includes('/placeholders/image-missing.svg')
+        );
 
       case 'table':
         // Table valid if non-empty string (markdown table content)
-        return typeof result.kpiValue === 'string' && result.kpiValue.length > 0;
+        return (
+          typeof result.kpiValue === 'string' &&
+          result.kpiValue.trim().length > 0 &&
+          result.kpiValue.trim() !== 'NA' &&
+          result.kpiValue.trim() !== '0'
+        );
 
-      case 'kpi':
-        // KPI valid if not NA (0 is valid)
-        return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
+      case 'kpi': {
+        // KPI valid only when positive and non-NA (0 is hidden)
+        if (result.kpiValue === undefined || result.kpiValue === null || result.kpiValue === 'NA') {
+          return false;
+        }
+        if (typeof result.kpiValue === 'number') {
+          return Number.isFinite(result.kpiValue) && result.kpiValue > 0;
+        }
+        if (typeof result.kpiValue === 'string') {
+          const trimmed = result.kpiValue.trim();
+          if (!trimmed || trimmed === 'NA' || trimmed === 'N/A') return false;
+          const numericCleaned = trimmed.replace(/^[$€£¥+\s]+|[%\s,]+$/g, '').replace(/,/g, '');
+          if (numericCleaned.length > 0 && /^-?\d+(\.\d+)?$/.test(numericCleaned)) {
+            return Number(numericCleaned) > 0;
+          }
+          return true;
+        }
+        return false;
+      }
 
       case 'pie':
       case 'bar':
@@ -859,9 +891,23 @@ export class ReportCalculator {
           return false;
         }
         const total = result.elements.reduce((sum, el) => {
-          return sum + (typeof el.value === 'number' ? el.value : 0);
+          return sum + (typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0 ? el.value : 0);
         }, 0);
         return total > 0;
+
+      case 'valuechain':
+        return !!(
+          result.elements &&
+          result.elements.length >= 2 &&
+          result.elements.some(
+            (el) =>
+              el.value !== undefined &&
+              el.value !== null &&
+              String(el.value).trim().length > 0 &&
+              String(el.value).trim() !== 'NA' &&
+              String(el.value).trim() !== '0'
+          )
+        );
 
       default:
         return false;

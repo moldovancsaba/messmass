@@ -230,7 +230,7 @@ export function createAiEventsAdapter(handlers: AiEventRowHandlers): AdminPageAd
     defaultView: 'list',
     searchFields: ['eventName'],
     emptyStateMessage: 'No events match the current filter.',
-    emptyStateIcon: '🤖',
+    emptyStateIcon: '📊',
     listConfig: {
       columns: [
         {

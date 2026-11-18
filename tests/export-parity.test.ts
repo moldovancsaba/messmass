@@ -42,6 +42,26 @@ describe('A-R-10 Phase 2: CSV Export Parity', () => {
       expect(hasValidChartData(result)).toBe(false);
     });
 
+    it('should filter out KPI charts with 0 or 0% values', () => {
+      expect(
+        hasValidChartData({
+          chartId: 'test-chart',
+          type: 'kpi',
+          title: 'Test Chart',
+          kpiValue: 0
+        })
+      ).toBe(false);
+
+      expect(
+        hasValidChartData({
+          chartId: 'test-chart',
+          type: 'kpi',
+          title: 'Test Chart',
+          kpiValue: '0%'
+        })
+      ).toBe(false);
+    });
+
     it('should include valid KPI charts', () => {
       const result: ChartResult = {
         chartId: 'test-chart',

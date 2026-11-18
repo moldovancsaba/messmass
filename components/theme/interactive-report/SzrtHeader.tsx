@@ -26,23 +26,19 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const isFilter = scope?.type === 'filter';
   const isOrganization = scope?.type === 'organization';
 
-  const badgeText = fanmass ? '🤖 Fanmass report' : isFilter
-    ? 'Hashtag Filter Report'
-    : isOrganization
-      ? 'Organization Report'
-      : isHashtag
-        ? `Campaign Hashtag #${scope?.id}`
+  const badgeText = isOrganization
+    ? 'Organization Report'
+    : isHashtag
+      ? 'Campaign Analytics Report'
+      : isFilter
+        ? 'Campaign Filter Report'
         : isEvent
           ? 'Event Activation Report'
           : 'Interactive Analytics Report';
 
-  const subBadgeText = isFilter
-    ? (scope?.hashtags && scope.hashtags.length > 0
-        ? scope.hashtags.map((h) => `#${h}`).join(' ')
-        : 'FILTER Scope')
-    : scope?.type
-      ? `${scope.type.toUpperCase()} Scope`
-      : null;
+  const subBadgeText = isFilter && scope?.hashtags && scope.hashtags.length > 0
+    ? scope.hashtags.map((h) => `#${h.replace(/^#/, '')}`).join(' ')
+    : null;
 
   const titleText = scope?.name || partner.name;
   const descriptionText =
@@ -81,21 +77,21 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
   const visionLabel =
     vision && vision.totalImages > 0
-      ? `Fanmass AI Vision (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
-      : 'Fanmass AI Vision';
+      ? `Visual Analytics (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
+      : 'Visual Analytics';
 
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
     // The Fanmass report: what the local AI measured only; the clicker tabs live in the clicker report. The overview
     // carries the victory podiums and the demographics quadrant (vision data); its clicker parts hide without data.
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
-    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
+    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     ...(data.demographics ? [{ id: 'demographics' as const, label: 'Audience Demographics', icon: '👥' }] : []),
     { id: 'figures', label: 'Figures and events', icon: '📋' },
   ] : [
     { id: 'overview', label: 'Executive Overview', icon: '📊' },
     // The vision tab only exists for scopes that have vision data.
-    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '🤖' }] : []),
+    ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     { id: 'bubble', label: 'Match Explorer', icon: '🫧' },
     { id: 'funnel', label: 'Marketing Funnel', icon: '📈' },
@@ -156,7 +152,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
           <div className={styles.kpiGrid}>
             {[
               { label: 'Photos', value: fanmass.measured.drive.photos + fanmass.measured.photos.analysed, text: fanmass.measured.drive.placed > 0 ? `${fanmass.measured.drive.placed.toLocaleString()} placed in an event` : null },
-              { label: 'Analysed by Fanmass', value: fanmass.measured.drive.analysed + fanmass.measured.photos.analysed, text: null },
+              { label: 'AI Analysed Photos', value: fanmass.measured.drive.analysed + fanmass.measured.photos.analysed, text: null },
               { label: 'People seen', value: fanmass.measured.drive.people + fanmass.measured.photos.people.measured, text: null },
               { label: 'Brands read', value: brandsRead.length, text: brandsRead[0] ? `Most seen: ${brandsRead[0].name}` : null },
               { label: 'Events', value: fanmass.coverage.events, text: null },

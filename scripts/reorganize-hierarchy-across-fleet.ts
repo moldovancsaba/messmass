@@ -42,7 +42,7 @@ const ORG_IDS = {
   EUROLEAGUE_WOMEN: new ObjectId('6af1b292aba7ef5227678119'),
   CHL: new ObjectId('69eb65379539a431fc3b8265'),
   MOL_EHF: new ObjectId('6a155ba15eec356c8f24f189'),
-  AS_ROMA: new ObjectId('6a5e7c5396099ffc8fdcf567'),
+  SERIE_A: new ObjectId('6a5e7c5396099ffc8fdcf567'),
   MOTOGP: new ObjectId('6a5e7c4a96099ffc8fdcf55b'),
 
   // Sponsors
@@ -702,9 +702,9 @@ async function reorganizeCluster(cluster: { name: string; uri: string; hasCamera
       styleId: UEFA_STYLE_ID,
     },
     {
-      _id: ORG_IDS.AS_ROMA,
-      name: 'AS Roma (Serie A)',
-      slug: 'as-roma',
+      _id: ORG_IDS.SERIE_A,
+      name: 'Serie A - Lega Serie A',
+      slug: 'serie-a',
       emoji: '⚽',
       orgType: 'league',
       leagueTag: 'serie_a',
@@ -1061,9 +1061,9 @@ async function reorganizeCluster(cluster: { name: string; uri: string; hasCamera
       cat.scope = ['national_games'];
       cat.sport = addUniqueTag(cat.sport, 'handball');
     }
-    // 14. AS Roma (Serie A)
-    else if (p1Name === 'AS Roma' || currentOrgStr === ORG_IDS.AS_ROMA.toString()) {
-      targetOrgId = ORG_IDS.AS_ROMA;
+    // 14. Serie A - Lega Serie A (AS Roma matches)
+    else if (p1Name === 'AS Roma' || currentOrgStr === ORG_IDS.SERIE_A.toString()) {
+      targetOrgId = ORG_IDS.SERIE_A;
       competitionType = 'domestic_league';
       cat.league = addUniqueTag(cat.league, 'serie_a');
       cat.scope = ['club_games'];

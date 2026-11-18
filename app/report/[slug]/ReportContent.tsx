@@ -24,9 +24,30 @@ import {
   type LayoutV2BlockRow
 } from '@/lib/layoutV2BlockCalculator';
 
+function isPositiveKpiValue(kpiValue: unknown): boolean {
+  if (kpiValue === undefined || kpiValue === null || kpiValue === 'NA') {
+    return false;
+  }
+  if (typeof kpiValue === 'number') {
+    return Number.isFinite(kpiValue) && kpiValue > 0;
+  }
+  if (typeof kpiValue === 'string') {
+    const trimmed = kpiValue.trim();
+    if (!trimmed || trimmed === 'NA' || trimmed === 'N/A') {
+      return false;
+    }
+    const numericCleaned = trimmed.replace(/^[$€£¥+\s]+|[%\s,]+$/g, '').replace(/,/g, '');
+    if (numericCleaned.length > 0 && /^-?\d+(\.\d+)?$/.test(numericCleaned)) {
+      return Number(numericCleaned) > 0;
+    }
+    return true;
+  }
+  return false;
+}
+
 /**
  * WHAT: Check if a chart result has valid displayable data (v11.48.0)
- * WHY: Filter out empty charts before grid calculations
+ * WHY: Filter out empty or 0 charts before grid calculations
  * HOW: Type-specific validation matching ReportChart.hasData logic
  */
 function hasValidChartData(result: ChartResult | undefined): boolean {
@@ -35,35 +56,57 @@ function hasValidChartData(result: ChartResult | undefined): boolean {
   
   switch (result.type) {
     case 'text':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0'
+      );
     
     case 'image':
       return (
         typeof result.kpiValue === 'string' &&
-        result.kpiValue.length > 0 &&
-        result.kpiValue !== 'NA' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0' &&
         !result.kpiValue.includes('/placeholders/image-missing.svg')
       );
     
     case 'table':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0'
+      );
     
     case 'kpi':
-      return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
+      return isPositiveKpiValue(result.kpiValue);
     
     case 'pie':
     case 'bar':
     case 'value':
-      // Valid if it has elements defined and at least one non-zero value
+      // Valid if it has elements defined and at least one positive value
       return (
         Array.isArray(result.elements) &&
         result.elements.length > 0 &&
-        result.elements.some((el) => typeof el.value === 'number' && el.value > 0)
+        result.elements.some((el) => typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0)
       );
     
     case 'valuechain':
-      // Show valuechain whenever it has the required structure (2 elements); content can be empty
-      return !!(result.elements && result.elements.length >= 2);
+      // Show valuechain only when at least one element has non-empty, non-zero content
+      return !!(
+        result.elements &&
+        result.elements.length >= 2 &&
+        result.elements.some(
+          (el) =>
+            el.value !== undefined &&
+            el.value !== null &&
+            String(el.value).trim().length > 0 &&
+            String(el.value).trim() !== 'NA' &&
+            String(el.value).trim() !== '0'
+        )
+      );
     
     default:
       return false;
@@ -565,9 +608,13 @@ function ReportBlock({ block, chartResults, charts, allowNA = false, showBlockTi
         .map(chart => {
           const result = chartResults.get(String(chart.chartId));
           if (!result || result.type !== 'bar' || !result.elements) return null;
+          const positiveElements = result.elements.filter(
+            (el) => typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0
+          );
+          const displayElements = positiveElements.length > 0 ? positiveElements : result.elements;
           return {
             chartId: chart.chartId,
-            labels: result.elements.map(el => el.label)
+            labels: displayElements.map(el => el.label)
           };
         })
         .filter((chart): chart is { chartId: string; labels: string[] } => chart !== null);

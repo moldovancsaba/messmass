@@ -33,9 +33,30 @@ export interface ChartDataValidationResult {
   issues: ChartDataValidationIssue[];
 }
 
+function isPositiveKpiValue(kpiValue: unknown): boolean {
+  if (kpiValue === undefined || kpiValue === null || kpiValue === 'NA') {
+    return false;
+  }
+  if (typeof kpiValue === 'number') {
+    return Number.isFinite(kpiValue) && kpiValue > 0;
+  }
+  if (typeof kpiValue === 'string') {
+    const trimmed = kpiValue.trim();
+    if (!trimmed || trimmed === 'NA' || trimmed === 'N/A') {
+      return false;
+    }
+    const numericCleaned = trimmed.replace(/^[$€£¥+\s]+|[%\s,]+$/g, '').replace(/,/g, '');
+    if (numericCleaned.length > 0 && /^-?\d+(\.\d+)?$/.test(numericCleaned)) {
+      return Number(numericCleaned) > 0;
+    }
+    return true;
+  }
+  return false;
+}
+
 /**
  * WHAT: Validates if a chart result has displayable data
- * WHY: Used by rendered report to filter out empty/invalid charts
+ * WHY: Used by rendered report to filter out empty/invalid/zero charts
  * HOW: Type-specific validation matching ReportChart.hasData logic
  * 
  * NOTE: This function must match the logic in app/report/[slug]/ReportContent.tsx:hasValidChartData()
@@ -46,25 +67,56 @@ export function hasValidChartData(result: ChartResult | undefined): boolean {
   
   switch (result.type) {
     case 'text':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0'
+      );
     
     case 'image':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0' &&
+        !result.kpiValue.includes('/placeholders/image-missing.svg')
+      );
     
     case 'table':
-      return typeof result.kpiValue === 'string' && result.kpiValue.length > 0 && result.kpiValue !== 'NA';
+      return (
+        typeof result.kpiValue === 'string' &&
+        result.kpiValue.trim().length > 0 &&
+        result.kpiValue.trim() !== 'NA' &&
+        result.kpiValue.trim() !== '0'
+      );
     
     case 'kpi':
-      return result.kpiValue !== undefined && result.kpiValue !== null && result.kpiValue !== 'NA';
+      return isPositiveKpiValue(result.kpiValue);
     
     case 'pie':
     case 'bar':
-    case 'value':
+    case 'value': {
       if (!result.elements || result.elements.length === 0) return false;
       const total = result.elements.reduce((sum, el) => 
-        sum + (typeof el.value === 'number' ? el.value : 0), 0
+        sum + (typeof el.value === 'number' && Number.isFinite(el.value) && el.value > 0 ? el.value : 0), 0
       );
       return total > 0;
+    }
+
+    case 'valuechain':
+      return !!(
+        result.elements &&
+        result.elements.length >= 2 &&
+        result.elements.some(
+          (el) =>
+            el.value !== undefined &&
+            el.value !== null &&
+            String(el.value).trim().length > 0 &&
+            String(el.value).trim() !== 'NA' &&
+            String(el.value).trim() !== '0'
+        )
+      );
     
     default:
       return false;

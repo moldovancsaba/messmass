@@ -80,6 +80,8 @@ async function resolveReportTemplate(
     };
   }
 
+  let fallbackStyleId: ObjectId | string | null = null;
+
   // ==========================================
   // LEVEL 1: Project-Specific Template
   // ==========================================
@@ -109,6 +111,20 @@ async function resolveReportTemplate(
         // UUID v4 format - lookup by viewSlug (secure)
         project = await projectsCollection.findOne({ viewSlug: identifier });
       }
+
+      const eventPartnerId = project ? projectPartnerId(project) : null;
+      const partner = eventPartnerId ? await partnersCollection.findOne({ _id: eventPartnerId }) : null;
+      const orgIdRaw = project?.organizationId || partner?.organizationId;
+      const orgObjectId = orgIdRaw && ObjectId.isValid(String(orgIdRaw)) ? new ObjectId(String(orgIdRaw)) : null;
+      const organization = orgObjectId ? await db.collection('v3_organizations').findOne({ _id: orgObjectId }) : null;
+
+      const inheritedStyleId =
+        project?.styleIdEnhanced ||
+        project?.styleId ||
+        partner?.styleId ||
+        organization?.metadata?.styleId ||
+        null;
+      fallbackStyleId = inheritedStyleId;
       
       if (project?.reportTemplateId) {
         const templateId = typeof project.reportTemplateId === 'string' && ObjectId.isValid(project.reportTemplateId)
@@ -120,12 +136,11 @@ async function resolveReportTemplate(
           logInfo('Using project-specific template', { context: 'report-config', templateName: template.name, projectId: identifier });
           const populated = await populateDataBlocks(template);
           
-          // WHAT: Project's styleIdEnhanced takes precedence over template styleId
-          // WHY: Event-specific branding should override template defaults
-          // HOW: Use project.styleIdEnhanced first, then fall back to template.styleId
+          // WHAT: Style resolution hierarchy: project > partner > organization > template
+          // WHY: Event/partner/org branding should apply even when using Default Event Report
           const finalTemplate = {
             ...populated,
-            styleId: project.styleIdEnhanced || populated.styleId || null
+            styleId: inheritedStyleId || populated.styleId || null
           };
           
           logDebug('StyleId resolution (project-level)', { context: 'report-config', templateStyleId: populated.styleId, projectStyleId: project.styleIdEnhanced, finalStyleId: finalTemplate.styleId });
@@ -141,37 +156,28 @@ async function resolveReportTemplate(
       // ==========================================
       // LEVEL 2: Partner Template (via project's partner)
       // ==========================================
-      // WHAT: The event's partner is its home team: partner1Id, else the legacy partner1 field.
-      // WHY: Projects store partner1Id; only older documents and /admin/project-partners carry partner1 (messmass#430).
-      const eventPartnerId = projectPartnerId(project);
-      if (project && eventPartnerId) {
-        const partner = await partnersCollection.findOne({ _id: eventPartnerId });
-        if (partner?.reportTemplateId) {
-          const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
-            ? new ObjectId(partner.reportTemplateId)
-            : partner.reportTemplateId;
+      if (project && partner?.reportTemplateId) {
+        const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
+          ? new ObjectId(partner.reportTemplateId)
+          : partner.reportTemplateId;
+        
+        const template = await templatesCollection.findOne({ _id: templateId });
+        if (template) {
+          logInfo('Using partner template', { context: 'report-config', templateName: template.name, partnerName: partner.name, projectId: identifier });
+          const populated = await populateDataBlocks(template);
           
-          const template = await templatesCollection.findOne({ _id: templateId });
-          if (template) {
-            logInfo('Using partner template', { context: 'report-config', templateName: template.name, partnerName: partner.name, projectId: identifier });
-            const populated = await populateDataBlocks(template);
-            
-            // WHAT: Style resolution hierarchy: project.styleIdEnhanced > partner.styleId > template.styleId
-            // WHY: Event-specific style overrides partner style, which overrides template default
-            // HOW: Check each level in order of precedence
-            const finalTemplate = {
-              ...populated,
-              styleId: project.styleIdEnhanced || partner.styleId || populated.styleId || null
-            };
-            
-            logDebug('StyleId resolution (partner-level)', { context: 'report-config', templateStyleId: populated.styleId, partnerStyleId: partner.styleId, projectStyleId: project.styleIdEnhanced, finalStyleId: finalTemplate.styleId });
-            
-            return {
-              template: finalTemplate as ReportTemplate,
-              resolvedFrom: 'partner',
-              source: partner.name || partner._id.toString()
-            };
-          }
+          const finalTemplate = {
+            ...populated,
+            styleId: inheritedStyleId || populated.styleId || null
+          };
+          
+          logDebug('StyleId resolution (partner-level)', { context: 'report-config', templateStyleId: populated.styleId, partnerStyleId: partner.styleId, projectStyleId: project.styleIdEnhanced, finalStyleId: finalTemplate.styleId });
+          
+          return {
+            template: finalTemplate as ReportTemplate,
+            resolvedFrom: 'partner',
+            source: partner.name || partner._id.toString()
+          };
         }
       }
     } catch (error) {
@@ -190,6 +196,9 @@ async function resolveReportTemplate(
       }
 
       const partner = await findPartnerByIdentifier(db, identifier);
+      if (partner?.styleId) {
+        fallbackStyleId = partner.styleId;
+      }
       if (partner?.reportTemplateId) {
         const templateId = typeof partner.reportTemplateId === 'string' && ObjectId.isValid(partner.reportTemplateId)
           ? new ObjectId(partner.reportTemplateId)
@@ -261,12 +270,18 @@ async function resolveReportTemplate(
   // LEVEL 3: Default Template
   // ==========================================
   try {
-    const defaultTemplate = await templatesCollection.findOne({ isDefault: true });
+    const preferredType = entityType === 'partner' ? 'partner' : 'event';
+    const defaultTemplate =
+      (await templatesCollection.findOne({ type: preferredType, isDefault: true })) ||
+      (await templatesCollection.findOne({ isDefault: true }));
     if (defaultTemplate) {
       logInfo('Using default template', { context: 'report-config', templateName: defaultTemplate.name });
       const populated = await populateDataBlocks(defaultTemplate);
       return {
-        template: populated as ReportTemplate,
+        template: {
+          ...populated,
+          styleId: fallbackStyleId || populated.styleId || null,
+        } as ReportTemplate,
         resolvedFrom: 'default',
         source: entityType === 'hashtag' ? `hashtag:${identifier}` : entityType === 'filter' ? `filter:${identifier}` : 'system-default'
       };

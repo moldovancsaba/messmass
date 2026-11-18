@@ -149,6 +149,15 @@ export async function resolveRuntimeReportById(
   const normalizedId = normalizeObjectId(id);
 
   if (normalizedId) {
+    const template = await templatesCollection.findOne({ _id: normalizedId });
+    if (template) {
+      return {
+        report: await convertTemplateToRuntimeReport(db, template),
+        resolvedFrom: 'template',
+        source: template.name,
+      };
+    }
+
     const legacyReport = await reportsCollection.findOne({ _id: normalizedId });
     if (legacyReport) {
       return {
@@ -161,15 +170,17 @@ export async function resolveRuntimeReportById(
         source: legacyReport.name || legacyReport._id.toString(),
       };
     }
+  }
 
-    const template = await templatesCollection.findOne({ _id: normalizedId });
-    if (template) {
-      return {
-        report: await convertTemplateToRuntimeReport(db, template),
-        resolvedFrom: 'template',
-        source: template.name,
-      };
-    }
+  const defaultTemplate =
+    (await templatesCollection.findOne({ type: defaultType, isDefault: true })) ||
+    (await templatesCollection.findOne({ isDefault: true }));
+  if (defaultTemplate) {
+    return {
+      report: await convertTemplateToRuntimeReport(db, defaultTemplate),
+      resolvedFrom: 'default',
+      source: defaultTemplate.name,
+    };
   }
 
   const defaultLegacyReport = await reportsCollection.findOne({ type: defaultType, isDefault: true });
@@ -182,15 +193,6 @@ export async function resolveRuntimeReportById(
       } as Report,
       resolvedFrom: 'default',
       source: defaultLegacyReport.name || 'system-default',
-    };
-  }
-
-  const defaultTemplate = await templatesCollection.findOne({ isDefault: true });
-  if (defaultTemplate) {
-    return {
-      report: await convertTemplateToRuntimeReport(db, defaultTemplate),
-      resolvedFrom: 'default',
-      source: defaultTemplate.name,
     };
   }
 
