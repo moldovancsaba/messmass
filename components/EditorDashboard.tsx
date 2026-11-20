@@ -58,6 +58,7 @@ import {
 import Image from 'next/image';
 import styles from '@/app/styles/editor-states.module.css';
 import reportStyles from './ReportContentManager.module.css';
+import relStyles from './EditorRelationshipModal.module.css';
 
 // WHAT: Variable config type loaded from /api/variables-config to control Editor UI visibility.
 // WHY: Admin decides which variables appear in clicker vs. manual; we respect flags at render-time.
@@ -82,6 +83,11 @@ interface Project {
   categorizedHashtags?: { [categoryName: string]: string[] };
   partner1?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
   partner2?: { _id: string; name: string; emoji: string; logoUrl?: string; clickerSetId?: string };
+  partner1Id?: string | null;
+  partner2Id?: string | null;
+  organizationId?: string | null;
+  organization?: { _id: string; name: string; slug: string; logoUrl?: string | null } | null;
+  competitionType?: string | null;
   googleSheetUuid?: string;
   partnerId?: string;
   stats: {
@@ -1279,6 +1285,110 @@ export default function EditorDashboard({
   const [saveQueue, setSaveQueue] = useState<SaveQueue<EditorSavePayload> | null>(null);
   const [editMode, setEditMode] = useState<'clicker' | 'manual' | 'builder'>('clicker'); // Edit mode: clicker, manual, or builder
 
+  // Relationship / Organization management state
+  const [showRelationshipModal, setShowRelationshipModal] = useState<boolean>(false);
+  const [availableOrgs, setAvailableOrgs] = useState<{ _id: string; name: string; slug: string }[]>([]);
+  const [availablePartners, setAvailablePartners] = useState<{ _id: string; name: string }[]>([]);
+  const [relOrgId, setRelOrgId] = useState<string>(
+    project.organization?._id || project.organizationId || ''
+  );
+  const [relCompType, setRelCompType] = useState<string>(project.competitionType || '');
+  const [relPartner1Id, setRelPartner1Id] = useState<string>(
+    project.partner1?._id || project.partner1Id || ''
+  );
+  const [relPartner2Id, setRelPartner2Id] = useState<string>(
+    project.partner2?._id || project.partner2Id || ''
+  );
+  const [relSaving, setRelSaving] = useState<boolean>(false);
+  const [relMessage, setRelMessage] = useState<string | null>(null);
+  const [relError, setRelError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const [orgsRes, partnersRes] = await Promise.all([
+          fetch('/api/organizations', { cache: 'no-store' }),
+          fetch('/api/admin/partners', { cache: 'no-store' }),
+        ]);
+        const orgsData = await orgsRes.json().catch(() => null);
+        const partnersData = await partnersRes.json().catch(() => null);
+        if (active) {
+          if (orgsData?.success && Array.isArray(orgsData.organizations)) {
+            setAvailableOrgs(orgsData.organizations);
+          }
+          if (partnersData?.success && Array.isArray(partnersData.partners)) {
+            setAvailablePartners(partnersData.partners);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load organization/partner options:', err);
+      }
+    })();
+    return () => { active = false; };
+  }, []);
+
+  const handleSaveRelationships = useCallback(async () => {
+    try {
+      setRelSaving(true);
+      setRelMessage(null);
+      setRelError(null);
+
+      // Compute auto-generated event name if both partners are selected
+      let finalName = project.eventName;
+      const p1 = availablePartners.find(p => p._id === relPartner1Id);
+      const p2 = availablePartners.find(p => p._id === relPartner2Id);
+      if (p1 && p2) {
+        finalName = `${p1.name} x ${p2.name}`;
+      }
+
+      const payload: Record<string, any> = {
+        projectId: project._id,
+        eventName: finalName,
+        organizationId: relOrgId || null,
+        competitionType: relCompType || null,
+        partner1Id: relPartner1Id || null,
+        partner2Id: relPartner2Id || null,
+      };
+
+      const res = await fetch(`/api/projects/${project._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => null);
+
+      if (data?.success) {
+        const selectedOrg = availableOrgs.find(o => o._id === relOrgId);
+        setProject(prev => ({
+          ...prev,
+          eventName: finalName,
+          organizationId: relOrgId || null,
+          organization: selectedOrg ? { _id: selectedOrg._id, name: selectedOrg.name, slug: selectedOrg.slug } : null,
+          competitionType: relCompType || null,
+          partner1Id: relPartner1Id || null,
+          partner2Id: relPartner2Id || null,
+          partner1: p1 ? { _id: p1._id, name: p1.name, emoji: (p1 as any).emoji || '🏒' } : prev.partner1,
+          partner2: p2 ? { _id: p2._id, name: p2.name, emoji: (p2 as any).emoji || '🏒' } : (relPartner2Id ? prev.partner2 : undefined),
+        }));
+
+        const orgName = selectedOrg ? selectedOrg.name : 'Standalone Partner Game';
+        setRelMessage(`Relationships updated successfully! Event is now: ${orgName}`);
+        setTimeout(() => {
+          setShowRelationshipModal(false);
+          setRelMessage(null);
+        }, 1500);
+      } else {
+        setRelError(data?.error || 'Failed to update relationships');
+      }
+    } catch (err) {
+      console.error('Failed to save relationships:', err);
+      setRelError('Network error while saving relationships');
+    } finally {
+      setRelSaving(false);
+    }
+  }, [availableOrgs, availablePartners, project._id, project.eventName, relCompType, relOrgId, relPartner1Id, relPartner2Id]);
+
   // WHAT: The newest local data, written synchronously on every change.
   // WHY: React state only catches up on the next render. Handlers and the save
   //     queue read this so a change always builds on the previous one, even when
@@ -2393,6 +2503,50 @@ export default function EditorDashboard({
             <h1 className="admin-title">{project.eventName}</h1>
             <p className="admin-subtitle">Record Stats - {new Date(project.eventDate).toLocaleDateString()}</p>
             
+            {/* Governing Organization, Competition & Partner Hierarchy */}
+            <div className={relStyles.badgesRow}>
+              {project.organization ? (
+                <span className={relStyles.orgBadge}>
+                  🏆 Org: <strong>{project.organization.name}</strong>
+                </span>
+              ) : (
+                <span className={relStyles.standaloneBadge}>
+                  🏟️ Standalone Partner Game (No Organization)
+                </span>
+              )}
+              {project.competitionType && (
+                <span className={relStyles.compBadge}>
+                  🏅 {project.competitionType.replace('_', ' ').toUpperCase()}
+                </span>
+              )}
+              {project.partner1 && (
+                <span className={relStyles.p1Badge}>
+                  {project.partner1.emoji || '🏒'} Home: {project.partner1.name}
+                </span>
+              )}
+              {project.partner2 && (
+                <span className={relStyles.p2Badge}>
+                  {project.partner2.emoji || '🏒'} Away: {project.partner2.name}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => {
+                  setRelOrgId(project.organization?._id || project.organizationId || '');
+                  setRelCompType(project.competitionType || '');
+                  setRelPartner1Id(project.partner1?._id || project.partner1Id || '');
+                  setRelPartner2Id(project.partner2?._id || project.partner2Id || '');
+                  setRelMessage(null);
+                  setRelError(null);
+                  setShowRelationshipModal(true);
+                }}
+                className={relStyles.editButton}
+                title="Edit relationships between events, partners, and organizations"
+              >
+                ⚙️ Edit Hierarchy &amp; Relationships
+              </button>
+            </div>
+            
             {/* Beautiful hashtag display - showing all hashtags including categorized ones */}
             {allHashtagRepresentations.length > 0 && (
               <div className="centered-pill-row mt-2">
@@ -2799,6 +2953,142 @@ export default function EditorDashboard({
           accessBlocked={accessBlocked}
           onRetryNow={saveNow}
         />
+      )}
+
+      {/* Hierarchy & Relationship CRUD Modal */}
+      {showRelationshipModal && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="rel-modal-title"
+          className={relStyles.overlay}
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !relSaving) setShowRelationshipModal(false);
+          }}
+        >
+          <div className={relStyles.modal}>
+            <div className={relStyles.header}>
+              <h2 id="rel-modal-title" className={relStyles.title}>
+                ⚙️ Event Hierarchy &amp; Relationships
+              </h2>
+              <button
+                type="button"
+                onClick={() => setShowRelationshipModal(false)}
+                disabled={relSaving}
+                className={relStyles.closeButton}
+                aria-label="Close"
+              >
+                &times;
+              </button>
+            </div>
+
+            {relMessage && (
+              <div className={relStyles.successMessage}>
+                ✅ {relMessage}
+              </div>
+            )}
+
+            {relError && (
+              <div className={relStyles.errorMessage}>
+                ⚠️ {relError}
+              </div>
+            )}
+
+            <div className={relStyles.fieldGroup}>
+              <label className={relStyles.label}>
+                Governing Organization / League
+              </label>
+              <select
+                value={relOrgId}
+                onChange={(e) => setRelOrgId(e.target.value)}
+                className={relStyles.selectInput}
+              >
+                <option value="">— None (Standalone Partner Event — Not part of CHL or any organization) —</option>
+                {availableOrgs.map((o) => (
+                  <option key={o._id} value={o._id}>
+                    🏆 {o.name}
+                  </option>
+                ))}
+              </select>
+              <p className={relStyles.helpText}>
+                💡 Select <strong>Champions Hockey League (CHL)</strong> to include this game in CHL reports, or select <strong>None</strong> if this is not part of the CHL event, but strictly a game for partner Fribourg-Gottéron.
+              </p>
+            </div>
+
+            <div className={relStyles.fieldGroup}>
+              <label className={relStyles.label}>
+                Competition Classification
+              </label>
+              <select
+                value={relCompType}
+                onChange={(e) => setRelCompType(e.target.value)}
+                className={relStyles.selectInput}
+              >
+                <option value="">— Inherited / Default —</option>
+                <option value="international_club">International Club (e.g. CHL, UEFA Champions League)</option>
+                <option value="domestic_league">Domestic League (e.g. SIHF, Serie A, NB I)</option>
+                <option value="cup">Domestic / Regional Cup</option>
+                <option value="friendly">Friendly / Exhibition Match</option>
+                <option value="standalone">Standalone Club Event</option>
+              </select>
+            </div>
+
+            <div className={relStyles.fieldGroup}>
+              <label className={relStyles.label}>
+                Partner 1 (Home Club / Organizer)
+              </label>
+              <select
+                value={relPartner1Id}
+                onChange={(e) => setRelPartner1Id(e.target.value)}
+                className={relStyles.selectInput}
+              >
+                <option value="">— None / Unlinked —</option>
+                {availablePartners.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={relStyles.fieldGroup}>
+              <label className={relStyles.label}>
+                Partner 2 (Away Club / Opponent)
+              </label>
+              <select
+                value={relPartner2Id}
+                onChange={(e) => setRelPartner2Id(e.target.value)}
+                className={relStyles.selectInput}
+              >
+                <option value="">— None (Single Club Event) —</option>
+                {availablePartners.map((p) => (
+                  <option key={p._id} value={p._id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className={relStyles.actions}>
+              <button
+                type="button"
+                onClick={() => setShowRelationshipModal(false)}
+                className={relStyles.cancelButton}
+                disabled={relSaving}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveRelationships}
+                className={relStyles.saveButton}
+                disabled={relSaving}
+              >
+                {relSaving ? 'Saving…' : 'Save Relationships'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

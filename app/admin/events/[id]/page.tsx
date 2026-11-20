@@ -39,6 +39,9 @@ interface EventProject {
   partner2Id?: string;
   partner1?: PartnerBrief;
   partner2?: PartnerBrief;
+  organizationId?: string | null;
+  organization?: { _id?: string; name?: string; slug?: string; logoUrl?: string };
+  competitionType?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -293,6 +296,61 @@ export default function EventDetailPage() {
             ) : (
               <p className={styles.emptyText}>No hashtags assigned</p>
             )}
+          </div>
+        </div>
+
+        {/* Card: Organization & Hierarchy */}
+        <div className={styles.card}>
+          <div className={styles.cardHeader}>
+            <h2 className={styles.cardTitle}>
+              <MaterialIcon name="account_tree" />
+              <span>Organization &amp; League</span>
+            </h2>
+          </div>
+
+          <div className={styles.partnerStack}>
+            {project.organization ? (
+              <div className={styles.partnerBox}>
+                <span className={styles.partnerEmoji}>🏆</span>
+                <div className={styles.partnerInfo}>
+                  <span className={styles.partnerName}>{project.organization.name}</span>
+                  <span className={styles.partnerRole}>
+                    {project.competitionType
+                      ? `Competition: ${project.competitionType.replace('_', ' ').toUpperCase()}`
+                      : 'Governing League / Organization'}
+                  </span>
+                </div>
+                {project.organization.slug && (
+                  <Link
+                    href={`/interactive-report/organization/${project.organization.slug}`}
+                    target="_blank"
+                    className={styles.copyBtn}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    View Org
+                  </Link>
+                )}
+              </div>
+            ) : (
+              <div className={styles.partnerBox}>
+                <span className={styles.partnerEmoji}>🏟️</span>
+                <div className={styles.partnerInfo}>
+                  <span className={styles.partnerName}>Standalone Partner Game</span>
+                  <span className={styles.partnerRole}>Not part of any organization or league</span>
+                </div>
+              </div>
+            )}
+            <div className={styles.orgFooter}>
+              <a
+                href={`/edit/${project.editSlug || project._id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${styles.copyBtn} ${styles.orgLink}`}
+              >
+                <MaterialIcon name="edit" />
+                <span>Change Hierarchy in Editor</span>
+              </a>
+            </div>
           </div>
         </div>
 

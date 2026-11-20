@@ -232,8 +232,28 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
 
     const result: any = {
       ...project,
-      _id: project._id.toString()
+      _id: project._id.toString(),
+      organizationId: (project as any).organizationId ? String((project as any).organizationId) : null,
+      competitionType: (project as any).competitionType || null,
+      partner1Id: (project as any).partner1Id ? String((project as any).partner1Id) : null,
+      partner2Id: (project as any).partner2Id ? String((project as any).partner2Id) : null,
     };
+
+    // WHAT: Populate organization data if organization ID exists
+    if ((project as any).organizationId && ObjectId.isValid(String((project as any).organizationId))) {
+      const org = await db.collection('organizations').findOne(
+        { _id: new ObjectId(String((project as any).organizationId)) },
+        { projection: { name: 1, slug: 1, logoUrl: 1 } }
+      );
+      if (org) {
+        result.organization = {
+          _id: org._id.toString(),
+          name: org.name,
+          slug: org.slug,
+          logoUrl: org.logoUrl || null,
+        };
+      }
+    }
 
     // Add partner1 data if available
     if ((project as any).partner1Id) {
@@ -340,8 +360,28 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
 
     const result: any = {
       ...project,
-      _id: project._id.toString()
+      _id: project._id.toString(),
+      organizationId: (project as any).organizationId ? String((project as any).organizationId) : null,
+      competitionType: (project as any).competitionType || null,
+      partner1Id: (project as any).partner1Id ? String((project as any).partner1Id) : null,
+      partner2Id: (project as any).partner2Id ? String((project as any).partner2Id) : null,
     };
+
+    // WHAT: Populate organization data if organization ID exists
+    if ((project as any).organizationId && ObjectId.isValid(String((project as any).organizationId))) {
+      const org = await db.collection('organizations').findOne(
+        { _id: new ObjectId(String((project as any).organizationId)) },
+        { projection: { name: 1, slug: 1, logoUrl: 1 } }
+      );
+      if (org) {
+        result.organization = {
+          _id: org._id.toString(),
+          name: org.name,
+          slug: org.slug,
+          logoUrl: org.logoUrl || null,
+        };
+      }
+    }
 
     // Add partner1 data if available
     if ((project as any).partner1Id) {

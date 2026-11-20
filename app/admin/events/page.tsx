@@ -34,6 +34,7 @@ export default function ProjectsPageUnified() {
   const [availableStyles, setAvailableStyles] = useState<{ _id: string; name: string }[]>([]);
   const [availableTemplates, setAvailableTemplates] = useState<{ _id: string; name: string; type: string }[]>([]);
   const [availablePartners, setAvailablePartners] = useState<{ _id: string; name: string }[]>([]);
+  const [availableOrganizations, setAvailableOrganizations] = useState<{ _id: string; name: string; slug: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   
@@ -60,7 +61,9 @@ export default function ProjectsPageUnified() {
     hashtags: [] as string[],
     categorizedHashtags: {} as { [categoryName: string]: string[] },
     styleId: '' as string | null,
-    reportTemplateId: '' as string | null
+    reportTemplateId: '' as string | null,
+    organizationId: '' as string | null,
+    competitionType: '' as string | null
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [createResult, setCreateResult] = useState<{
@@ -81,7 +84,9 @@ export default function ProjectsPageUnified() {
     styleId: '' as string | null,
     reportTemplateId: '' as string | null,
     partner1Id: '' as string | null,
-    partner2Id: '' as string | null
+    partner2Id: '' as string | null,
+    organizationId: '' as string | null,
+    competitionType: '' as string | null
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
@@ -99,6 +104,8 @@ export default function ProjectsPageUnified() {
       categorizedHashtags: {},
       styleId: '',
       reportTemplateId: '',
+      organizationId: '',
+      competitionType: '',
     });
     setShowNewProjectForm(false);
   }, []);
@@ -116,6 +123,8 @@ export default function ProjectsPageUnified() {
       reportTemplateId: '',
       partner1Id: '',
       partner2Id: '',
+      organizationId: '',
+      competitionType: '',
     });
   }, []);
   
@@ -280,6 +289,19 @@ export default function ProjectsPageUnified() {
           console.error('Failed to load partners', e);
         }
       })();
+
+      // Load available organizations
+      (async () => {
+        try {
+          const res = await fetch('/api/organizations');
+          const data = await res.json();
+          if (data.success) {
+            setAvailableOrganizations(data.organizations.map((o: any) => ({ _id: o._id, name: o.name, slug: o.slug })));
+          }
+        } catch (e) {
+          console.error('Failed to load organizations', e);
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]); // Only run when user changes, not when loadProjects changes
@@ -358,7 +380,9 @@ export default function ProjectsPageUnified() {
         categorizedHashtags: newProjectData.categorizedHashtags,
         stats: defaultStats,
         styleId: newProjectData.styleId || null,
-        reportTemplateId: newProjectData.reportTemplateId || null
+        reportTemplateId: newProjectData.reportTemplateId || null,
+        organizationId: newProjectData.organizationId || null,
+        competitionType: newProjectData.competitionType || null,
       };
       
       console.log('📤 [CREATE EVENT] Sending payload:', {
@@ -411,6 +435,8 @@ export default function ProjectsPageUnified() {
     // HOW: Check both partner object (_id) and direct partnerId field for backward compatibility
     const partner1Id = (project as any).partner1?._id || (project as any).partner1Id || '';
     const partner2Id = (project as any).partner2?._id || (project as any).partner2Id || '';
+    const organizationId = (project as any).organization?._id || (project as any).organizationId || '';
+    const competitionType = (project as any).competitionType || '';
     
     setEditProjectData({
       eventName: project.eventName,
@@ -420,7 +446,9 @@ export default function ProjectsPageUnified() {
       styleId: project.styleIdEnhanced || '',
       reportTemplateId: (project as any).reportTemplateId || '',
       partner1Id,
-      partner2Id
+      partner2Id,
+      organizationId,
+      competitionType
     });
     setShowEditProjectForm(true);
   }, []);
@@ -473,21 +501,36 @@ export default function ProjectsPageUnified() {
         styleId: editProjectData.styleId || null,
         reportTemplateId: editProjectData.reportTemplateId || null,
         partner1Id: editProjectData.partner1Id || null,
-        partner2Id: editProjectData.partner2Id || null
+        partner2Id: editProjectData.partner2Id || null,
+        organizationId: editProjectData.organizationId || null,
+        competitionType: editProjectData.competitionType || null,
       };
       
       console.log('📤 [UPDATE EVENT] Sending payload:', {
         projectId: payload.projectId,
         styleId: payload.styleId,
-        reportTemplateId: payload.reportTemplateId
+        reportTemplateId: payload.reportTemplateId,
+        organizationId: payload.organizationId,
+        competitionType: payload.competitionType,
       });
       
       const result = await apiPut('/api/projects', payload);
       
       if (result.success) {
+        const selectedOrg = availableOrganizations.find(o => o._id === editProjectData.organizationId);
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
-            ? { ...p, eventName: finalEventName, eventDate: editProjectData.eventDate, hashtags: editProjectData.hashtags, categorizedHashtags: editProjectData.categorizedHashtags, styleIdEnhanced: editProjectData.styleId || null }
+            ? {
+                ...p,
+                eventName: finalEventName,
+                eventDate: editProjectData.eventDate,
+                hashtags: editProjectData.hashtags,
+                categorizedHashtags: editProjectData.categorizedHashtags,
+                styleIdEnhanced: editProjectData.styleId || null,
+                organizationId: editProjectData.organizationId || null,
+                competitionType: editProjectData.competitionType || null,
+                organization: selectedOrg ? { _id: selectedOrg._id, name: selectedOrg.name, slug: selectedOrg.slug } : null,
+              }
             : p
         ));
         
@@ -503,7 +546,7 @@ export default function ProjectsPageUnified() {
     } finally {
       setIsUpdatingProject(false);
     }
-  }, [availablePartners, editProjectData, editingProject, resetEditProjectForm]);
+  }, [availablePartners, availableOrganizations, editProjectData, editingProject, resetEditProjectForm]);
 
   const handleEditProjectSubmit = useCallback(async () => {
     if (editProjectStep === 1) {
@@ -854,6 +897,39 @@ export default function ProjectsPageUnified() {
                 onChange={(e) => setNewProjectData(prev => ({ ...prev, eventDate: e.target.value }))}
               />
             </div>
+
+            <div className="form-group mb-4">
+              <label className="form-label-block">Organization (Hierarchy &amp; League)</label>
+              <select
+                className="form-input"
+                value={newProjectData.organizationId || ''}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, organizationId: e.target.value || null }))}
+              >
+                <option value="">— None (Standalone Partner Event) —</option>
+                {availableOrganizations.map(o => (
+                  <option key={o._id} value={o._id}>🏆 {o.name}</option>
+                ))}
+              </select>
+              <p className="form-hint">
+                💡 Select an organization (e.g. Champions Hockey League), or None for a partner-only match.
+              </p>
+            </div>
+
+            <div className="form-group mb-4">
+              <label className="form-label-block">Competition Type</label>
+              <select
+                className="form-input"
+                value={newProjectData.competitionType || ''}
+                onChange={(e) => setNewProjectData(prev => ({ ...prev, competitionType: e.target.value || null }))}
+              >
+                <option value="">— Select Competition Type —</option>
+                <option value="international_club">International Club (e.g. CHL, Champions League)</option>
+                <option value="domestic_league">Domestic League (e.g. SIHF, Serie A, NB I)</option>
+                <option value="cup">Domestic / Regional Cup</option>
+                <option value="friendly">Friendly / Exhibition Match</option>
+                <option value="standalone">Standalone Club Event</option>
+              </select>
+            </div>
             
             <div className="form-group mb-4">
               <label className="form-label-block">Hashtags</label>
@@ -1000,6 +1076,42 @@ export default function ProjectsPageUnified() {
                 return null;
               })()}
               
+              <div className="form-group">
+                <label>Organization (Hierarchy &amp; League)</label>
+                <select
+                  className="form-input"
+                  value={editProjectData.organizationId || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, organizationId: e.target.value || null }))}
+                >
+                  <option value="">— None (Standalone Partner-Only Game) —</option>
+                  {availableOrganizations.map(o => (
+                    <option key={o._id} value={o._id}>🏆 {o.name}</option>
+                  ))}
+                </select>
+                <p className="form-hint">
+                  💡 Select an organization (e.g. Champions Hockey League, Swiss Ice Hockey), or select &quot;None&quot; if this match is not part of an organization but strictly a game for the partner.
+                </p>
+              </div>
+
+              <div className="form-group">
+                <label>Competition Type</label>
+                <select
+                  className="form-input"
+                  value={editProjectData.competitionType || ''}
+                  onChange={(e) => setEditProjectData(prev => ({ ...prev, competitionType: e.target.value || null }))}
+                >
+                  <option value="">— Default / Inherited —</option>
+                  <option value="international_club">International Club (e.g. CHL, Champions League)</option>
+                  <option value="domestic_league">Domestic League (e.g. SIHF, Serie A, NB I)</option>
+                  <option value="cup">Domestic / Regional Cup</option>
+                  <option value="friendly">Friendly / Exhibition Match</option>
+                  <option value="standalone">Standalone Club Event</option>
+                </select>
+                <p className="form-hint">
+                  💡 Competition classification level for analytics and reporting rollups.
+                </p>
+              </div>
+
               <div className="form-group">
                 <label>Event Date *</label>
                 <input

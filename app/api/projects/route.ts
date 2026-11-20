@@ -214,7 +214,7 @@ function fieldLevelStatsUpdate(
 //     aggregates) stay with admins. The route drops these for every other
 //     caller on its own, whatever the shared EVENT_EDITOR_WRITABLE_FIELDS list
 //     says, so the rule cannot drift away from this handler.
-const ADMIN_ONLY_PROJECT_FIELDS = ['eventName', 'eventDate', 'styleId', 'reportTemplateId', 'partner1Id', 'partner2Id'] as const;
+const ADMIN_ONLY_PROJECT_FIELDS = ['eventName', 'eventDate', 'styleId', 'reportTemplateId', 'partner1Id', 'partner2Id', 'organizationId', 'competitionType'] as const;
 
 // WHAT: Case-insensitive exact match for one hashtag value. On an array field
 //     it matches when any element matches (same idiom as lib/cameraPartnerSync.ts).
@@ -377,14 +377,40 @@ export async function GET(request: NextRequest) {
         );
       }
       
-      // WHAT: Format response to match expected structure from KYC page
+      // WHAT: Populate partner and organization details for single project
+      const partner1 = project.partner1Id && ObjectId.isValid(project.partner1Id)
+        ? await db.collection('partners').findOne({ _id: new ObjectId(project.partner1Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
+        : null;
+      const partner2 = project.partner2Id && ObjectId.isValid(project.partner2Id)
+        ? await db.collection('partners').findOne({ _id: new ObjectId(project.partner2Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
+        : null;
+      const organization = project.organizationId && ObjectId.isValid(project.organizationId)
+        ? await db.collection('organizations').findOne({ _id: new ObjectId(project.organizationId) }, { projection: { name: 1, slug: 1, logoUrl: 1 } })
+        : null;
+
+      // WHAT: Format response to match expected structure
       return NextResponse.json({
         success: true,
         project: {
           _id: project._id.toString(),
           eventName: project.eventName,
           eventDate: project.eventDate,
+          hashtags: project.hashtags || [],
+          categorizedHashtags: project.categorizedHashtags || {},
           stats: project.stats,
+          viewSlug: project.viewSlug,
+          editSlug: project.editSlug,
+          styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
+          reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
+          organizationId: project.organizationId ? project.organizationId.toString() : null,
+          organization: organization ? { _id: organization._id.toString(), name: organization.name, slug: organization.slug, logoUrl: organization.logoUrl || null } : null,
+          competitionType: project.competitionType || null,
+          partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
+          partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
+          partner1: partner1 ? { _id: partner1._id.toString(), name: partner1.name, emoji: partner1.emoji, logoUrl: partner1.logoUrl || null } : null,
+          partner2: partner2 ? { _id: partner2._id.toString(), name: partner2.name, emoji: partner2.emoji, logoUrl: partner2.logoUrl || null } : null,
+          createdAt: project.createdAt,
+          updatedAt: project.updatedAt,
         },
       });
     }
@@ -554,21 +580,34 @@ export async function GET(request: NextRequest) {
       const results = first.results || [];
       const totalMatched = (first.totalCount?.[0]?.count as number) || 0;
 
-      // WHAT: Populate partner data for Sports Match projects (sort/search mode)
-      // WHY: Frontend needs partner logos and emojis for display
+      // WHAT: Populate partner and organization data for projects (sort/search mode)
+      // WHY: Frontend needs partner logos, emojis, and organization info for display
       const partnersCollection = db.collection('partners');
+      const organizationsCollection = db.collection('organizations');
       const partnerIds = results
         .map((p: any) => [p.partner1Id, p.partner2Id])
         .flat()
         .filter((id: any) => id && ObjectId.isValid(id))
         .map((id: any) => new ObjectId(id));
       
+      const orgIds = results
+        .map((p: any) => p.organizationId)
+        .filter((id: any) => id && ObjectId.isValid(id))
+        .map((id: any) => new ObjectId(id));
+
       const partnersData = partnerIds.length > 0
         ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+        : [];
+
+      const orgsData = orgIds.length > 0
+        ? await organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
         : [];
       
       const partnersMap = new Map(
         partnersData.map(p => [p._id.toString(), p])
+      );
+      const orgsMap = new Map(
+        orgsData.map(o => [o._id.toString(), o])
       );
 
       const formatted = results.map((project: any) => {
@@ -585,10 +624,27 @@ export async function GET(request: NextRequest) {
           editSlug: project.editSlug,
           styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
           reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
+          organizationId: project.organizationId ? project.organizationId.toString() : null,
+          competitionType: project.competitionType || null,
+          partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
+          partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
           externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
           createdAt: project.createdAt,
           updatedAt: project.updatedAt
         };
+
+        // Add organization data if available
+        if (project.organizationId) {
+          const org = orgsMap.get(project.organizationId.toString());
+          if (org) {
+            result.organization = {
+              _id: org._id.toString(),
+              name: org.name,
+              slug: org.slug,
+              logoUrl: org.logoUrl || null
+            };
+          }
+        }
         
         // Add partner data if available
         if (project.partner1Id) {
@@ -661,21 +717,34 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .toArray();
 
-    // WHAT: Populate partner data for Sports Match projects
-    // WHY: Frontend needs partner logos and emojis for display
+    // WHAT: Populate partner and organization data for projects
+    // WHY: Frontend needs partner logos, emojis, and organization info for display
     const partnersCollection = db.collection('partners');
+    const organizationsCollection = db.collection('organizations');
     const partnerIds = projects
       .map(p => [p.partner1Id, p.partner2Id])
       .flat()
+      .filter(id => id && ObjectId.isValid(id))
+      .map(id => new ObjectId(id));
+
+    const orgIds = projects
+      .map(p => p.organizationId)
       .filter(id => id && ObjectId.isValid(id))
       .map(id => new ObjectId(id));
     
     const partnersData = partnerIds.length > 0
       ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
       : [];
+
+    const orgsData = orgIds.length > 0
+      ? await organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
+      : [];
     
     const partnersMap = new Map(
       partnersData.map(p => [p._id.toString(), p])
+    );
+    const orgsMap = new Map(
+      orgsData.map(o => [o._id.toString(), o])
     );
     
     const formatted = projects.map(project => {
@@ -696,6 +765,10 @@ export async function GET(request: NextRequest) {
         editSlug: project.editSlug,
         styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null, // Project-specific style reference
         reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null, // Project-specific report template
+        organizationId: project.organizationId ? project.organizationId.toString() : null,
+        competitionType: project.competitionType || null,
+        partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
+        partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
         externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
         createdAt: project.createdAt,
         updatedAt: project.updatedAt,
@@ -708,6 +781,19 @@ export async function GET(request: NextRequest) {
           missingRequired: validation.missingRequired
         }
       };
+
+      // Add organization data if available
+      if (project.organizationId) {
+        const org = orgsMap.get(project.organizationId.toString());
+        if (org) {
+          result.organization = {
+            _id: org._id.toString(),
+            name: org.name,
+            slug: org.slug,
+            logoUrl: org.logoUrl || null
+          };
+        }
+      }
       
       // Add partner data if available
       if (project.partner1Id) {
@@ -906,7 +992,7 @@ export async function PUT(request: NextRequest) {
     //     save (see EditorSavePayload in components/EditorDashboard.tsx). A
     //     field it does not send must not be reset: before, a body without
     //     hashtags stored [] and one without stats stored empty totals.
-    let { eventName, eventDate, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, partner1Id, partner2Id } = writable;
+    let { eventName, eventDate, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, partner1Id, partner2Id, organizationId, competitionType } = writable;
     const statsChanges = parseEventStatsChanges(writable);
     if (!statsChanges.ok) {
       return NextResponse.json({ success: false, error: statsChanges.error }, { status: 400 });
@@ -1092,6 +1178,27 @@ export async function PUT(request: NextRequest) {
       // Set specific partner2Id (Type 2 - Sports Match)
       setData.partner2Id = new ObjectId(partner2Id);
       logDebug('Setting partner2Id', { context: 'projects', projectId, partner2Id, method: 'PUT' });
+    }
+
+    // WHAT: Handle organizationId assignment/removal
+    // WHY: Support CRUD relationship between events and organizations (e.g., CHL, SIHF, or standalone)
+    if (organizationId === null || organizationId === '' || organizationId === 'null' || organizationId === 'none') {
+      unsetData.organizationId = '';
+      unsetData.federationOrganizationId = '';
+      logDebug('Removing organizationId and federationOrganizationId', { context: 'projects', projectId, method: 'PUT' });
+    } else if (organizationId && organizationId !== undefined && ObjectId.isValid(organizationId)) {
+      setData.organizationId = new ObjectId(organizationId);
+      logDebug('Setting organizationId', { context: 'projects', projectId, organizationId, method: 'PUT' });
+    }
+
+    // WHAT: Handle competitionType assignment/removal
+    // WHY: Support competition classification (e.g., international_club, domestic_league, cup, friendly, standalone)
+    if (competitionType === null || competitionType === '' || competitionType === 'null' || competitionType === 'none') {
+      unsetData.competitionType = '';
+      logDebug('Removing competitionType', { context: 'projects', projectId, method: 'PUT' });
+    } else if (competitionType && competitionType !== undefined && typeof competitionType === 'string') {
+      setData.competitionType = competitionType.trim();
+      logDebug('Setting competitionType', { context: 'projects', projectId, competitionType, method: 'PUT' });
     }
     
     // WHAT: The write, conditional on no newer save from the same editor tab

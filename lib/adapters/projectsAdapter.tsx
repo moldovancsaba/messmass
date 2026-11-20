@@ -222,6 +222,23 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                   <div className="w-10 h-10 shrink-0" />
                 ) : null}
               </div>
+
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                {project.organization ? (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                    🏆 {project.organization.name}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                    🏟️ Partner Only
+                  </span>
+                )}
+                {project.competitionType && (
+                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-normal bg-indigo-50 text-indigo-700 border border-indigo-200">
+                    {project.competitionType}
+                  </span>
+                )}
+              </div>
               
               <div className="flex flex-wrap gap-2 mt-2">
                 {project.hashtags?.map((hashtag) => (
@@ -304,6 +321,12 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
     primaryField: 'eventName',
     secondaryField: (project) => new Date(project.eventDate).toLocaleDateString(),
     metaFields: [
+      {
+        key: 'organization',
+        label: 'Organization',
+        icon: '🏆',
+        render: (project) => project.organization?.name || 'Standalone Partner Event',
+      },
       {
         key: 'stats',
         label: 'Total Images',

@@ -385,3 +385,16 @@
   gap: var(--mm-space-2);
   margin-top: var(--mm-space-2);
 }
+
+.orgFooter {
+  margin-top: var(--mm-space-2);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.orgLink {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--mm-space-1);
+}

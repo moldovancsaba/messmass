@@ -47,8 +47,8 @@ export async function GET() {
     if (!admin) {
       return NextResponse.json({ success: false, error: 'Admin authentication required' }, { status: 401 });
     }
-    if (!hasMinimumRole(admin.role, 'superadmin')) {
-      return NextResponse.json({ success: false, error: 'Superadmin access required' }, { status: 403 });
+    if (!hasMinimumRole(admin.role, 'admin')) {
+      return NextResponse.json({ success: false, error: 'Admin access required' }, { status: 403 });
     }
 
     const db = await getDb();

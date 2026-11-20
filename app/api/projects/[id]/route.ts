@@ -53,6 +53,14 @@ export async function GET(
         { projection: { name: 1, emoji: 1, logoUrl: 1 } }
       );
     }
+
+    // Populate organization details if present as ID
+    if (project.organizationId && !project.organization && ObjectId.isValid(String(project.organizationId))) {
+      project.organization = await db.collection('organizations').findOne(
+        { _id: new ObjectId(String(project.organizationId)) },
+        { projection: { name: 1, slug: 1, logoUrl: 1 } }
+      );
+    }
     
     return NextResponse.json({
       success: true,
@@ -109,15 +117,66 @@ export async function PUT(
     const { addDerivedMetrics } = await import('@/lib/projectStatsUtils');
     const statsWithDerived = addDerivedMetrics(updatedStats);
 
+    const setFields: Record<string, any> = {
+      ...updateData,
+      stats: statsWithDerived,
+      updatedAt: new Date()
+    };
+    const unsetFields: Record<string, any> = {};
+
+    // Normalize organizationId
+    if ('organizationId' in updateData) {
+      const orgId = updateData.organizationId;
+      if (orgId === null || orgId === '' || orgId === 'null' || orgId === 'none') {
+        delete setFields.organizationId;
+        unsetFields.organizationId = '';
+        unsetFields.federationOrganizationId = '';
+      } else if (ObjectId.isValid(String(orgId))) {
+        setFields.organizationId = new ObjectId(String(orgId));
+      }
+    }
+
+    // Normalize competitionType
+    if ('competitionType' in updateData) {
+      const ct = updateData.competitionType;
+      if (ct === null || ct === '' || ct === 'null' || ct === 'none') {
+        delete setFields.competitionType;
+        unsetFields.competitionType = '';
+      } else if (typeof ct === 'string') {
+        setFields.competitionType = ct.trim();
+      }
+    }
+
+    // Normalize partner1Id
+    if ('partner1Id' in updateData) {
+      const p1 = updateData.partner1Id;
+      if (p1 === null || p1 === '' || p1 === 'null' || p1 === 'none') {
+        delete setFields.partner1Id;
+        unsetFields.partner1Id = '';
+      } else if (ObjectId.isValid(String(p1))) {
+        setFields.partner1Id = new ObjectId(String(p1));
+      }
+    }
+
+    // Normalize partner2Id
+    if ('partner2Id' in updateData) {
+      const p2 = updateData.partner2Id;
+      if (p2 === null || p2 === '' || p2 === 'null' || p2 === 'none') {
+        delete setFields.partner2Id;
+        unsetFields.partner2Id = '';
+      } else if (ObjectId.isValid(String(p2))) {
+        setFields.partner2Id = new ObjectId(String(p2));
+      }
+    }
+
+    const updateOps: Record<string, any> = { $set: setFields };
+    if (Object.keys(unsetFields).length > 0) {
+      updateOps.$unset = unsetFields;
+    }
+
     const result = await collection.updateOne(
       { _id: new ObjectId(id) },
-      { 
-        $set: { 
-          ...updateData,
-          stats: statsWithDerived,
-          updatedAt: new Date()
-        }
-      }
+      updateOps
     )
     
     if (result.matchedCount === 0) {

@@ -107,6 +107,16 @@ export interface ProjectDTO {
     showEmoji?: boolean;
     logoUrl?: string;
   } | null;
+  organizationId?: string | null;
+  organization?: {
+    _id: string;
+    name: string;
+    slug: string;
+    logoUrl?: string | null;
+  } | null;
+  competitionType?: string | null;
+  partner1Id?: string | null;
+  partner2Id?: string | null;
   stats: {
     remoteImages: number;
     hostessImages: number;

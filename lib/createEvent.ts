@@ -29,13 +29,15 @@ export interface NewEventInput {
   partner1Id?: string;
   partner2Id?: string;
   reportTemplateId?: string | null;
+  organizationId?: string | null;
+  competitionType?: string | null;
 }
 
 export async function insertEvent(
   db: Db,
   input: NewEventInput,
 ): Promise<{ insertedId: ObjectId; project: Record<string, any>; validation: ValidationResult }> {
-  const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId } = input;
+  const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId, organizationId, competitionType } = input;
   if (!eventName || !eventDate || !stats) throw new EventCreateError(400, 'Missing required fields: eventName, eventDate, stats');
 
   // Same hashtag shape rule as PUT (lib/eventSaveRules.ts): a malformed list
@@ -112,6 +114,19 @@ export async function insertEvent(
   }
   if (partner2Id && ObjectId.isValid(partner2Id)) {
     project.partner2Id = new ObjectId(partner2Id);
+  }
+
+  // WHAT: Add organizationId if provided
+  // WHY: Allow linking event directly to an organization (e.g. CHL)
+  if (organizationId && organizationId !== '' && organizationId !== 'null' && ObjectId.isValid(organizationId)) {
+    project.organizationId = new ObjectId(organizationId);
+    logDebug('Setting organizationId', { context: 'projects', organizationId, method: 'POST' });
+  }
+
+  // WHAT: Add competitionType if provided
+  if (competitionType && typeof competitionType === 'string' && competitionType.trim()) {
+    project.competitionType = competitionType.trim();
+    logDebug('Setting competitionType', { context: 'projects', competitionType, method: 'POST' });
   }
   
   // WHAT: Add reportTemplateId if provided

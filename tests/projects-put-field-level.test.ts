@@ -480,6 +480,8 @@ describe('PUT /api/projects - a grant holder cannot change admin fields', () => 
     reportTemplateId: String(new ObjectId()),
     partner1Id: String(new ObjectId()),
     partner2Id: null,
+    organizationId: String(new ObjectId()),
+    competitionType: 'international_club',
   });
 
   it.each([
@@ -498,6 +500,8 @@ describe('PUT /api/projects - a grant holder cannot change admin fields', () => 
     expect(stored).not.toHaveProperty('styleIdEnhanced');
     expect(stored).not.toHaveProperty('reportTemplateId');
     expect(stored).not.toHaveProperty('partner1Id');
+    expect(stored).not.toHaveProperty('organizationId');
+    expect(stored).not.toHaveProperty('competitionType');
     expect(stored.stats.female).toBe(11);
     const bitly = await import('@/lib/bitly-recalculator');
     expect(bitly.recalculateProjectLinks).not.toHaveBeenCalled();
@@ -530,6 +534,8 @@ describe('PUT /api/projects - a grant holder cannot change admin fields', () => 
     expect(stored.styleIdEnhanced).toBe(fields.styleId);
     expect(String(stored.reportTemplateId)).toBe(fields.reportTemplateId);
     expect(String(stored.partner1Id)).toBe(fields.partner1Id);
+    expect(String(stored.organizationId)).toBe(fields.organizationId);
+    expect(stored.competitionType).toBe(fields.competitionType);
     // Legacy body: stats replaced whole, as before.
     expect(stored.stats).toEqual({ female: 3, allImages: 0, remoteFans: 0, totalFans: 0 });
     const bitly = await import('@/lib/bitly-recalculator');
@@ -545,6 +551,33 @@ describe('PUT /api/projects - a grant holder cannot change admin fields', () => 
     expect(res.status).toBe(200);
     expect(fake.projects[0].eventName).toBe('Renamed');
     expect(fake.projects[0].stats.fanmassFans).toBe(100);
+  });
+
+  it('an admin session can detach an organization to make the event partner-only', async () => {
+    const orgId = new ObjectId();
+    const fake = makeFakeDb({
+      projects: [
+        eventDoc({
+          organizationId: orgId,
+          federationOrganizationId: orgId,
+          competitionType: 'international_club',
+        }),
+      ],
+    });
+    mockRouteDependencies(fake, 'session');
+
+    const res = await callPut({
+      projectId: id,
+      statsChanges: { female: 11 },
+      organizationId: null,
+      competitionType: null,
+    });
+
+    expect(res.status).toBe(200);
+    const stored = fake.projects[0];
+    expect(stored).not.toHaveProperty('organizationId');
+    expect(stored).not.toHaveProperty('federationOrganizationId');
+    expect(stored).not.toHaveProperty('competitionType');
   });
 });
 
