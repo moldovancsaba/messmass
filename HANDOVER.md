@@ -1,6 +1,19 @@
 # Session Handover — messmass
 
-Last verified: 2026-11-06 (v12.3.47: structural editorial report redesign, 6-unit LayoutV2 grid, StyleGuardian, and complete Cloudflare R2 image recovery).
+Last verified: 2026-11-20 (v12.3.51: fleet lockstep, Project 8 milestone 16 governance, Level 0 schema ground truth, canonical charts suite, architecture and KYC rewrite).
+
+**2026-11-20 (v12.3.51): Fleet Documentation, SSOT & Architecture Remediation**
+1. **Done (merged, verified across fleet):**
+   - **Fleet Version Lockstep (`v12.3.51`):** Synchronized `messmass`, `camera`, `fanmass`, and `savetheworld` to `12.3.51` in lockstep. Updated 26 internal documentation version headers, operations release notes, and [fleet-version-policy.md](docs/_audit/fleet-version-policy.md). Passed `npm run version:verify`.
+   - **Project Board 8 Governance:** Re-aligned GitHub Project 8 (`{messmass} - From IDEA to LIVE`) by archiving old sprint packs and establishing Milestone 16 (`Dedicated Admin Workspaces & Setup Architecture`) with issues `#565`–`#574`. Documented in [project-board-movement-log.md](docs/operations/project-board-movement-log.md).
+   - **Level 0 Ground Truth Contracts:** Added canonical JSON schemas in `planetbrain/Architecture/schemas/` (`fanmass/photo-analysis-v2.json`, `messmass/report-style.json`, `messmass/entity-hierarchy.json`). Certified 0 schema drift via `./scripts/diff-schema.sh`.
+   - **Canonical Charts & Layout Suite:** Published comprehensive documentation in `docs/charts/`:
+     - [charts-overview.md](docs/charts/charts-overview.md): All 8 chart types (`kpi`, `pie`, `bar`, `text`, `image`, `table`, `value`, `valuechain`).
+     - [charts-formula-engine-specification.md](docs/charts/charts-formula-engine-specification.md): Two-stage evaluation, AST grammar, percentage auto-averaging, value formatting.
+     - [charts-theme-and-styling-guide.md](docs/charts/charts-theme-and-styling-guide.md): `useReportStyle`, CSS tokens, Material Icon badges, monochrome and multi-slice color ramps.
+     - [charts-layout-v2-grid-system.md](docs/charts/charts-layout-v2-grid-system.md): 6-unit grid, content-driven row heights, block coalescing, zero-data suppression.
+   - **Architecture & KYC Modernization:** Updated [docs/architecture.md](docs/architecture.md) detailing dual-cluster MongoDB (`camaraclastar` vs `messmass-cluster`), single-entity CRUD, and cache invalidation policies. Published [kyc-formula-architecture.md](docs/architecture/kyc-formula-architecture.md), [algorithms-and-derived-metrics.md](docs/architecture/algorithms-and-derived-metrics.md), and [privacy-zero-trace-erasure.md](docs/architecture/privacy-zero-trace-erasure.md).
+   - **Verification:** Ran 160 test suites (1,409 passing tests) and `tsc --noEmit` clean.
 
 **2026-11-06:**
 1. **Done (merged, deployed to `messmass.com`):**
