@@ -627,10 +627,15 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       const chartContainer = chartBodyRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
       if (!chartContainer) return;
       
+      let lastBodyHeight = 0;
+      let isUpdating = false;
+
       const measureAndSetHeight = () => {
+        if (isUpdating) return;
         // WHAT: Get container height from offsetHeight (actual rendered height)
         // WHY: Container height is set via --block-height from row
         const containerHeight = chartContainer.offsetHeight;
+        if (containerHeight === 0) return;
         
         // WHAT: Find title and subtitle zones within CellWrapper
         // WHY: Subtract header heights from container to get body height
@@ -652,9 +657,14 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
         const bodyHeight = containerHeight - titleHeight - subtitleHeight;
         
         // WHAT: Set CSS custom property for body zone height on chart container
-        // WHY: P1 1.4 Phase 2 - explicit height cascade
-        if (bodyHeight > 0) {
-          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        // WHY: P1 1.4 Phase 2 - explicit height cascade (with hysteresis to prevent resize loops)
+        if (bodyHeight > 0 && Math.abs(bodyHeight - lastBodyHeight) >= 2) {
+          lastBodyHeight = bodyHeight;
+          isUpdating = true;
+          requestAnimationFrame(() => {
+            chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+            isUpdating = false;
+          });
         }
       };
       
@@ -662,7 +672,9 @@ function BarChart({ result, className }: { result: ChartResult; className?: stri
       // WHY: Heights may change on resize or content changes
       measureAndSetHeight();
       
-      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndSetHeight);
+      });
       resizeObserver.observe(chartContainer);
       
       return () => {
@@ -870,10 +882,15 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
   // A-03.1: Enhanced to measure actual content height and ensure no clipping
   useEffect(() => {
     if (textChartRef.current && textContentWrapperRef.current && typeof window !== 'undefined') {
+      let lastContentHeight = 0;
+      let isUpdating = false;
+
       const measureAndSetHeight = () => {
+        if (isUpdating) return;
         // WHAT: Get chart container height from offsetHeight (actual rendered height)
         // WHY: Container height is set via --block-height from row
         const containerHeight = textChartRef.current?.offsetHeight || 0;
+        if (containerHeight === 0) return;
         
         // WHAT: Find title wrapper within chart container
         // WHY: Subtract title height from container to get content height
@@ -886,28 +903,19 @@ function TextChart({ result, unifiedTextFontSize, className }: { result: ChartRe
         
         // WHAT: Calculate text content height: container - title
         // WHY: Explicit height calculation instead of flex growth
-        let contentHeight = containerHeight - titleHeight;
-        
-        // WHAT: A-03.1 - Measure actual rendered content height to prevent clipping
-        // WHY: Multi-line text might exceed calculated height, causing clipping
-        // HOW: Measure the actual scrollHeight of content wrapper and ensure container accommodates it
-        const contentElement = textContentWrapperRef.current?.querySelector('[class*="textContent"]') as HTMLElement;
-        if (contentElement) {
-          // WHAT: Get actual content height (including all lines)
-          // WHY: scrollHeight includes all content even if it overflows
-          const actualContentHeight = contentElement.scrollHeight;
-          
-          // WHAT: Account for padding in content wrapper (var(--mm-space-2) = 8px top + 8px bottom = 16px)
-          // WHY: Padding reduces available space for content
-          const contentWrapperPadding = 16; // 2 × var(--mm-space-2)
-          const availableContentHeight = contentHeight - contentWrapperPadding;
-          
-        }
+        const contentHeight = containerHeight - titleHeight;
         
         // WHAT: Set CSS custom property for text content height on chart container
-        // WHY: P1 1.4 Phase 4 - explicit height cascade
-        if (contentHeight > 0 && textChartRef.current) {
-          textChartRef.current.style.setProperty('--text-content-height', `${contentHeight}px`);
+        // WHY: P1 1.4 Phase 4 - explicit height cascade (with hysteresis to prevent runaway loops)
+        if (contentHeight > 0 && Math.abs(contentHeight - lastContentHeight) >= 2 && textChartRef.current) {
+          lastContentHeight = contentHeight;
+          isUpdating = true;
+          requestAnimationFrame(() => {
+            if (textChartRef.current) {
+              textChartRef.current.style.setProperty('--text-content-height', `${contentHeight}px`);
+            }
+            isUpdating = false;
+          });
         }
       };
       
@@ -1092,7 +1100,11 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
     const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
     if (!chartContainer) return;
 
+    let lastHeightPx = 0;
+    let isApplying = false;
+
     const applyContentDrivenHeight = () => {
+      if (isApplying) return;
       const tableEl = tableContentRef.current?.querySelector('table');
       if (!tableEl) return;
       const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
@@ -1105,6 +1117,9 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       const minHeight = 200;
       const heightPx = Math.max(minHeight, Math.ceil(requiredHeight));
 
+      if (Math.abs(heightPx - lastHeightPx) < 2) return;
+      lastHeightPx = heightPx;
+
       let rowEl: HTMLElement | null = chartContainer.parentElement;
       while (rowEl) {
         const blockHeight = rowEl.style.getPropertyValue('--block-height');
@@ -1112,8 +1127,14 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
         rowEl = rowEl.parentElement;
       }
       if (rowEl) {
-        rowEl.style.setProperty('--block-height', `${heightPx}px`);
-        rowEl.style.setProperty('--row-height', `${heightPx}px`);
+        isApplying = true;
+        requestAnimationFrame(() => {
+          if (rowEl) {
+            rowEl.style.setProperty('--block-height', `${heightPx}px`);
+            rowEl.style.setProperty('--row-height', `${heightPx}px`);
+          }
+          isApplying = false;
+        });
       }
     };
 
@@ -1136,21 +1157,33 @@ function TableChart({ result, className }: { result: ChartResult; className?: st
       const chartContainer = tableContentRef.current.closest('[class*="cellWrapper"]') as HTMLElement;
       if (!chartContainer) return;
 
+      let lastBodyHeight = 0;
+      let isMeasuring = false;
+
       const measureAndSetHeight = () => {
+        if (isMeasuring) return;
         const containerHeight = chartContainer.offsetHeight;
+        if (containerHeight === 0) return;
         const titleZone = chartContainer.querySelector('[class*="titleZone"]') as HTMLElement;
         const subtitleZone = chartContainer.querySelector('[class*="subtitleZone"]') as HTMLElement;
         let titleHeight = 0, subtitleHeight = 0;
         if (titleZone) titleHeight = titleZone.offsetHeight;
         if (subtitleZone) subtitleHeight = subtitleZone.offsetHeight;
         const bodyHeight = containerHeight - titleHeight - subtitleHeight;
-        if (bodyHeight > 0) {
-          chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+        if (bodyHeight > 0 && Math.abs(bodyHeight - lastBodyHeight) >= 2) {
+          lastBodyHeight = bodyHeight;
+          isMeasuring = true;
+          requestAnimationFrame(() => {
+            chartContainer.style.setProperty('--chart-body-height', `${bodyHeight}px`);
+            isMeasuring = false;
+          });
         }
       };
 
       measureAndSetHeight();
-      const resizeObserver = new ResizeObserver(measureAndSetHeight);
+      const resizeObserver = new ResizeObserver(() => {
+        requestAnimationFrame(measureAndSetHeight);
+      });
       resizeObserver.observe(chartContainer);
       return () => resizeObserver.disconnect();
     }

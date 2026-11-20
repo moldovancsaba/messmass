@@ -556,13 +556,27 @@ export class ReportCalculator {
       value = this.evaluateFormula(formulaToEvaluate);
     }
     
+    // Defensive formatting: if a text chart evaluated a numeric formula (especially with showPercentages),
+    // format it cleanly rather than dumping an unrounded float string.
+    let formattedKpiValue: string = '';
+    if (typeof value === 'number' && !isNaN(value)) {
+      if (chart.showPercentages) {
+        const pctValue = Math.abs(value) <= 1 && value !== 0 ? value * 100 : value;
+        formattedKpiValue = `${pctValue.toFixed(1)}%`;
+      } else {
+        formattedKpiValue = String(value);
+      }
+    } else if (typeof value === 'string' && value !== 'NA') {
+      formattedKpiValue = value;
+    }
+
     return {
       chartId: chart.chartId,
       type: 'text',
       title: chart.title,
       icon: chart.icon,
       iconVariant: chart.iconVariant,
-      kpiValue: typeof value === 'string' && value !== 'NA' ? value : (typeof value === 'number' ? String(value) : ''),
+      kpiValue: formattedKpiValue,
       showTitle: chart.showTitle,
       preset: chart.preset
     };

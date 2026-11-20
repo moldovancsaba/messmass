@@ -2250,7 +2250,7 @@ export default function VisualizationPage() {
                             .map(c => `${normalizeUnitSize(c.unitSize ?? c.width)}fr`)
                             .join(' ')} !important;
                           justify-items: stretch !important;
-                          align-items: start;
+                          align-items: stretch;
                         }
                         /* Tablet: Auto-wrap with 300px minimum width per chart */
                         @media (max-width: 1023px) {
