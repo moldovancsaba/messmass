@@ -1,6 +1,6 @@
 # Project Management & SSOT Guidelines
 
-**Owner clarification, 2026-11-15:** project boards are the owner's historical source of truth and are read-only. Inspect the board and update repository issues/documentation only. Never add, move, remove or reorder cards, or change statuses/fields/options. Record discrepancies and proposed manual actions in [the movement journal](operations/project-board-movement-log.md). This supersedes the older board-write steps and CLI mutation examples below; do not execute them.
+**Current Active Milestone (2026-11-20):** Milestone 16 (`Dedicated Admin Workspaces & Setup Architecture`) tracking issues `#565`–`#574` on [Project 8](https://github.com/users/moldovancsaba/projects/8). Record all state transitions, verification evidence, and discrepancies in [the movement journal](operations/project-board-movement-log.md). All delivery items must strictly follow GDS#81.
 
 **Purpose:** This document defines how {messmass} delivery work is tracked and how SSOT updates must happen.
 **Audience:** Product Owner, agents, and developers working in this repo.

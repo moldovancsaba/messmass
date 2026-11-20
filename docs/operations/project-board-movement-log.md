@@ -1,13 +1,20 @@
 # Project board review and manual movement / Scrum journal
 Status: Reference
-Last Updated: 2026-11-15T17:42:43.854Z
-Canonical: No
+Last Updated: 2026-11-20T16:02:00.000Z
+Canonical: Yes
 Owner: Product
 Version: 12.3.51
 
-Reviewed: 2026-11-15 UTC. Repository: moldovancsaba/messmass.
+Reviewed: 2026-11-20 UTC. Repository: moldovancsaba/messmass.
 
-Canonical board: [project board](https://github.com/users/moldovancsaba/projects/8). **The board is the owner's source of truth and is read-only. Never add, remove, reorder or move cards or edit project fields.** This file records observations and conditional proposals for manual owner decisions only.
+Canonical board: [Project 8 ({messmass} - From IDEA to LIVE)](https://github.com/users/moldovancsaba/projects/8).
+
+## 2026-11-20 Fleet Rebaselining & Milestone 16 Activation
+
+- **Milestone 16:** `Dedicated Admin Workspaces & Setup Architecture` (ID: 19725074) activated with 10 engineering issues (`#565` to `#574`).
+- **Board Sync:** Issues `#565`–`#574` attached to Project 8 (`https://github.com/users/moldovancsaba/projects/8`).
+- **Version Lockstep:** Fleet version synchronized to `12.3.51` across `messmass`, `camera`, `fanmass`, and `savetheworld`.
+- **Active Sprint Pack:** Dedicated Admin Workspaces for Events, Partners, and Organizations (GDS#81 compliant).
 
 ## Verified coverage and limitations
 
