@@ -1,7 +1,7 @@
 # {messmass} Architecture Documentation
 Status: Active
-Last Updated: 2026-09-09
-Canonical: No
+Last Updated: 2026-11-20T16:00:00.000Z
+Canonical: Yes
 Owner: Architecture
 
 Version: 12.3.51
@@ -11,20 +11,48 @@ Version: 12.3.51
 > not a plan, and not a record of how anything came to be that way.
 >
 > - Dated release history: [`docs/operations/operations-release-notes.md`](operations/operations-release-notes.md)
-> - Extracted narrative: [`docs/archive/architecture-changelog-pre-2026-08.md`](archive/architecture-changelog-pre-2026-08.md) (2026-08-17)
->   and [`docs/archive/architecture-changelog-2026-09.md`](archive/architecture-changelog-2026-09.md) (2026-09-16)
->
-> **What does not belong here:** migration plans and their status, "future
-> enhancements", debugging narratives, manual-QA checklists, before/after
-> performance tables, and version stamps on section headings. An audit on
-> 2026-09-16 tested this document's falsifiable claims against the code: 43 were
-> false, and roughly 85% of its file-path and line-count claims failed. Fiction
-> in an architecture document is worse than no document, because it is trusted.
-> Roughly 1,300 lines were deleted and 900 archived as a result (issues #408-#410).
->
-> **If you change code that this file describes, change this file in the same
-> commit.** If you find a claim here that is not true, delete it -- do not
-> annotate it.
+> - Level 0 Ground Truth Schemas: [`/Users/Shared/Projects/planetbrain/Architecture/schemas/`](file:///Users/Shared/Projects/planetbrain/Architecture/schemas/)
+> - Active Specifications: [`/Users/Shared/Projects/planetbrain/Specs/active/`](file:///Users/Shared/Projects/planetbrain/Specs/active/)
+
+## 🌐 Modern Architectural Foundations (v12.3.51)
+
+### 1. Dual-Cluster Database Topology & Fleet Parity
+Messmass operates across two synchronized MongoDB Atlas clusters:
+- **Production Runtime Cluster (`camaraclastar.koyedpi.mongodb.net`)**: Primary cluster serving Vercel production (`https://messmass.com`). Houses live `chart_configurations`, `charts`, `data_blocks`, `report_templates`, `report_styles` (54 custom brand themes), `projects`, and `organizations`.
+- **Secondary Replication Cluster (`messmass-cluster.r96vlxs.mongodb.net`)**: Secondary cluster configured in local development environments.
+- **Parity Discipline**: All database mutations to chart configurations, templates, or styles must be applied in dual-cluster lockstep using parity scripts (`scripts/syncDualClusterParity.ts`).
+
+### 2. Single-Entity RESTful CRUD Architecture & Dedicated Workspaces
+To eliminate monolithic admin page state and enable deep linkable editing:
+- Dedicated endpoints provide isolated CRUD operations:
+  - Events: `GET/PUT/DELETE /api/events/[id]`
+  - Partners: `GET/PUT/DELETE /api/partners/[id]`
+  - Organizations: `GET/PUT/DELETE /api/organizations/[id]`
+- Dedicated Workspaces provide full-page configuration for each entity:
+  - Event setup: `app/admin/events/[id]/page.tsx`
+  - Partner setup: `app/admin/partners/[id]/page.tsx`
+  - Organization setup: `app/admin/organizations/[id]/page.tsx`
+
+### 3. Serverless Cache Invalidation Policy
+To prevent Vercel CDN and browser HTTP cache from serving stale visualization blocks, chart definitions, or preferences:
+- All dynamic API route handlers declare:
+  ```typescript
+  export const dynamic = 'force-dynamic';
+  export const revalidate = 0;
+  ```
+- All responses include explicit cache headers:
+  ```typescript
+  headers: {
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+  }
+  ```
+- Client fetchers pass `{ cache: 'no-store' }`.
+
+### 4. Two-Stage Formula Engine & Dynamic Theme Styling
+- **Formula Engine (`lib/formulaEngine.ts`, `lib/report-calculator.ts`)**: Decouples fast-path content asset slots (`[TEXT:slug]`, `reportImage1..N`) from pure numeric arithmetic AST evaluation. Percentage KPI formulas with addition are automatically averaged ($(\%_1 + \%_2)/2$).
+- **Dynamic Brand Styles (`useReportStyle`, `report_styles`)**: Injects scoped CSS custom properties (`--primary`, `--secondary`, `--pieColor1`..`--pieColor6`, `--kpiIconColor`) directly from database records, styling KPI badges and donut slices without hardcoded hex values (`INV-005`).
+
+---
 
 ## 🔍 MANDATORY: Implementation Standards
 

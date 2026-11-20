@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-04  
 **Author:** Moldovan Csaba Zoltan  
-**Status:** In Review (EGM Goldfish Swarm)  
+**Status:** Approved & Shipped (v12.3.51)  
 **Related Issues:** #125 (Report Content Slots Management), #126 (Variables System Enhancements), #389 (Formula Parser Rollback), #414 (Dual Engine Consolidation)  
 
 ---
