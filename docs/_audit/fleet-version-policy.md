@@ -5,8 +5,7 @@ shared version and bump together from here. This is the "same version from now
 on" foundation.
 
 ## The unified version
-`12.3.42` — fleet release 2026-10-11 (messmass, camera, fanmass, try-on,
-savetheworld).
+`12.3.51` — fleet release 2026-11-20 (messmass, camera, fanmass, savetheworld).
 
 History: `12.2.0` was adopted by all four on 2026-08-20, but the apps then
 bumped independently (messmass reached 12.3.27, camera 12.2.24, fanmass and
@@ -27,6 +26,11 @@ it (highest wins); camera carries the work of 2026-10-01 to 2026-10-10, the othe
 are version only.
 12.3.42 (2026-10-11) is the next fleet release: camera carries the work of 2026-10-10 to
 2026-10-11, the others are version only.
+12.3.47 through 12.3.50 (2026-11-06 to 2026-11-18) were feature and hierarchy
+releases in messmass and camera. On 2026-11-20, all four SEYU applications
+(messmass, camera, fanmass, and savetheworld) re-synchronized in lockstep to `12.3.51`
+(highest-wins reconciliation). SSO remains an independent authentication service
+maintaining semantic versioning (currently `v5.44.x`).
 
 Rationale: messmass was already the furthest ahead (12.1.95) and its
 `version:verify` gate enforces a monotonic-forward guarantee, so the only

@@ -1,8 +1,15 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-18T13:30:00.000Z
+Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Operations
+
+## [v12.3.51] — 2026-11-20 — Fleet version lockstep synchronization, visualization cache invalidation, and popup-ctr2 KPI card restoration
+
+- **Fixed (KPI card rendering & schema parity across dual clusters, `popup-ctr2`):** converted `popup-ctr2` from unstyled `text` to `kpi` with `icon: 'ads_click'`, `iconVariant: 'outlined'`, `aspectRatio: '1:1'`, formula `([ventCtaPopup]/[uniqueUsers])*100`, and percentage formatting `{ rounded: false, prefix: '', suffix: '%' }` across both `camaraclastar.koyedpi.mongodb.net` and `messmass-cluster.r96vlxs.mongodb.net`. Restores executive visual alignment (top-left title, top-right brand-colored badge, bottom-left bold tabular numeral) matching companion KPI cards.
+- **Fixed (cache invalidation & live client delivery):** enforced `export const dynamic = 'force-dynamic'`, `export const revalidate = 0`, and `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate` across `/api/chart-config/public`, `/api/chart-configs`, `/api/data-blocks`, and `/api/user-preferences`. Added explicit `{ cache: 'no-store' }` to visualization editor client fetchers to prevent stale chart definitions.
+- **Changed (fleet-wide lockstep version synchronization):** re-aligned all four SEYU fleet applications (`messmass`, `camera`, `fanmass`, `savetheworld`) in lockstep to unified version `12.3.51`, resolving drift where sibling services were stranded at intermediate version stamps.
+- **Added (event hierarchy & relationship CRUD, `app/admin/events/[id]`):** added event-level hierarchy management allowing operators to assign or modify parent organization and partner associations directly on event detail views.
 
 ## [v12.3.50] — 2026-11-18 — Fleet-wide hierarchy reorganization, federation 3-variant report model, zero/empty chart hiding, and Serie A league classification
 
