@@ -1,6 +1,20 @@
 # Session Handover — messmass
 
-Last verified: 2026-11-20 (v12.3.51: fleet lockstep, Project 8 milestone 16 governance, Level 0 schema ground truth, canonical charts suite, architecture and KYC rewrite).
+Last verified: 2026-11-21 (v12.3.51: sports venue capacities, match outcomes, weather analytics engine, and interactive report suite).
+
+**2026-11-21 (v12.3.51): Sports Venue Capacities, Match Outcomes & Weather Analytics Engine**
+1. **Done (delivered, tested, verified across dual clusters):**
+   - **Level 0 Contract Alignment:** Integrated `planetbrain/Architecture/schemas/messmass/matchday-analytics.json` and `venue-directory.json`. Created `data/venue-directory.json` with 30 canonical Hungarian sports stadiums and indoor arenas (capacities, geo-coordinates, indoor tags, aliases).
+   - **Open-Meteo Integration & Venue Catalog:** Built `lib/weather/openMeteoClient.ts` for historical hourly weather retrieval with caching and indoor indicators (`Outside: X°C · Indoor 🏟️`). Built `lib/sports/venueCatalog.ts` with multi-sport disambiguation (DVTK, FTC, UTE, DEAC, Sopron, Győr).
+   - **Matchday Ingestion & Cluster Parity:** Built `scripts/enrich-matchday-analytics.ts` and enriched 76 projects in `camaraclastar` (456,316 total seat capacity, 223,200 attendance) and 74 projects in `messmass-cluster` (619,817 capacity, 270,881 attendance).
+   - **Formula Engine & Aggregation:** Added `stadiumCapacity`, `capacityUtilizationRate`, `visualCaptureRate`, `totalVenueCapacity`, `homeWinRate`, `visitorWinRate`, and `drawRate` to `lib/formulaEngine.ts` and `lib/interactiveReportAggregator.ts`.
+   - **GDS#81 Frontend Components:**
+     - `ExecutiveHeroKpis.tsx`: Added Stadium Capacity, Visual Capture Rate, Win Rate, and Matchday Climate cards.
+     - `MatchOutcomesChart.tsx`: Added Home vs Draw vs Visitor outcome distribution bar.
+     - `StadiumCapacityChart.tsx`: Added venue capacity leaderboard with fill rate progress and kickoff weather badges.
+     - `MatchesTable.tsx`: Added Venue & Capacity, Result / Score outcome badges, Gate Attendance & Fill Rate %, and Weather indicators.
+     - `OverviewTab.tsx` and `SzrtHeader.tsx`: Integrated new visualizations and match data tab.
+   - **Verification:** Ran 160 test suites (1,409 passing tests) and `tsc --noEmit` clean.
 
 **2026-11-20 (v12.3.51): Fleet Documentation, SSOT & Architecture Remediation**
 1. **Done (merged, verified across fleet):**

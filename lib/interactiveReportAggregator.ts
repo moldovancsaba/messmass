@@ -366,7 +366,15 @@ export async function getScopedInteractiveReportData(
         cleanName,
         date,
         partnerName,
-        venue,
+        venue: p.venue?.name || cpStats.venueName || venue,
+        venueCapacity: p.venue?.capacity || cpStats.stadiumCapacity || undefined,
+        attendance: cpStats.eventAttendees || p.match?.attendance || undefined,
+        homeScore: cpStats.eventResultHome ?? p.match?.homeScore ?? null,
+        visitorScore: cpStats.eventResultVisitor ?? p.match?.visitorScore ?? null,
+        outcome: cpStats.matchOutcome || p.match?.outcome || undefined,
+        weather: p.weather || cpStats.weather || undefined,
+        capacityUtilizationRate: cpStats.capacityUtilizationRate || undefined,
+        visualCaptureRate: cpStats.visualCaptureRate || undefined,
         sport,
         submitted,
         approved,
@@ -420,7 +428,15 @@ export async function getScopedInteractiveReportData(
         cleanName,
         date,
         partnerName,
-        venue: '',
+        venue: p.venue?.name || s.venueName || '',
+        venueCapacity: p.venue?.capacity || s.stadiumCapacity || undefined,
+        attendance: s.eventAttendees || p.match?.attendance || undefined,
+        homeScore: s.eventResultHome ?? p.match?.homeScore ?? null,
+        visitorScore: s.eventResultVisitor ?? p.match?.visitorScore ?? null,
+        outcome: s.matchOutcome || p.match?.outcome || undefined,
+        weather: p.weather || s.weather || undefined,
+        capacityUtilizationRate: s.capacityUtilizationRate || undefined,
+        visualCaptureRate: s.visualCaptureRate || undefined,
         sport,
         submitted,
         approved,
@@ -577,7 +593,47 @@ export async function getScopedInteractiveReportData(
     { count: number; photos: number; approved: number; hostess: number }
   > = {};
 
+  // Matchday & sports analytics aggregation
+  let totalVenueCapacity = 0;
+  let totalGateAttendance = 0;
+  let capacityUtilizationSum = 0;
+  let capacityUtilizationCount = 0;
+  let visualCaptureSum = 0;
+  let visualCaptureCount = 0;
+  let homeWins = 0;
+  let draws = 0;
+  let awayWins = 0;
+  let tempSum = 0;
+  let tempCount = 0;
+  let outdoorMatchesCount = 0;
+  let indoorMatchesCount = 0;
+
   for (const m of matchesList) {
+    if (m.venueCapacity && m.venueCapacity > 0) {
+      totalVenueCapacity += m.venueCapacity;
+    }
+    if (m.attendance && m.attendance > 0) {
+      totalGateAttendance += m.attendance;
+    }
+    if (m.capacityUtilizationRate !== undefined && m.capacityUtilizationRate !== null) {
+      capacityUtilizationSum += m.capacityUtilizationRate;
+      capacityUtilizationCount++;
+    }
+    if (m.visualCaptureRate !== undefined && m.visualCaptureRate !== null) {
+      visualCaptureSum += m.visualCaptureRate;
+      visualCaptureCount++;
+    }
+    if (m.outcome === 'home_win') homeWins++;
+    else if (m.outcome === 'draw') draws++;
+    else if (m.outcome === 'away_win') awayWins++;
+
+    if (m.weather) {
+      tempSum += m.weather.tempC;
+      tempCount++;
+      if (m.weather.isIndoor) indoorMatchesCount++;
+      else outdoorMatchesCount++;
+    }
+
     if (!sportsMap[m.sport]) {
       sportsMap[m.sport] = { count: 0, photos: 0, approved: 0, hostess: 0 };
     }
@@ -586,6 +642,23 @@ export async function getScopedInteractiveReportData(
     sportsMap[m.sport].approved += m.approved;
     sportsMap[m.sport].hostess += m.hostess;
   }
+
+  const completedMatches = homeWins + draws + awayWins;
+  const matchdayAnalytics = {
+    totalVenueCapacity,
+    totalGateAttendance,
+    avgCapacityUtilization: capacityUtilizationCount > 0 ? Math.round((capacityUtilizationSum / capacityUtilizationCount) * 10) / 10 : (totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0),
+    avgVisualCaptureRate: visualCaptureCount > 0 ? Math.round((visualCaptureSum / visualCaptureCount) * 10) / 10 : 0,
+    homeWins,
+    draws,
+    awayWins,
+    homeWinRate: completedMatches > 0 ? Math.round((homeWins / completedMatches) * 1000) / 10 : 0,
+    drawRate: completedMatches > 0 ? Math.round((draws / completedMatches) * 1000) / 10 : 0,
+    awayWinRate: completedMatches > 0 ? Math.round((awayWins / completedMatches) * 1000) / 10 : 0,
+    avgTemperatureC: tempCount > 0 ? Math.round((tempSum / tempCount) * 10) / 10 : null,
+    outdoorMatchesCount,
+    indoorMatchesCount,
+  };
 
   const sportsBreakdown = Object.entries(sportsMap).map(([sport, d]) => ({
     sport,
@@ -1046,6 +1119,7 @@ export async function getScopedInteractiveReportData(
     funnel: funnelSteps,
     demographics,
     vision,
+    matchdayAnalytics,
   };
 
   // Cache snapshot asynchronously for sub-50ms SSR latency
@@ -1215,14 +1289,18 @@ const PARTNER_LOOKUP_FIELDS = Object.fromEntries([
 const REPORT_PROJECT_FIELDS = Object.fromEntries(
   [
     'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'hashtags',
+    'venue', 'match', 'weather',
     ...[
       'userRegistration', 'marketingOptin', 'camera_consents_accepted',
-      'allImages', 'approvedImages', 'rejectedImages', 'remoteImages', 'hostessImages',
+      'allImages', 'approvedImages', 'rejectedImages', 'remoteImages', 'hostessImages', 'totalFans',
       'male', 'female', 'genAlpha', 'genYZ', 'genX', 'boomer',
       'szerencsejatekTop10', 'szerencsejatekHostessAllphotos', 'szerencsejatekAllusersAllphotos',
       'szerencsejatekAllRegistered', 'szerencsejatekMarketingOptInNumber',
       'szerencsejatekMarketingCTA01', 'szerencsejatekMarketingCTA02',
       'szerencsejatekFunnelQR', 'szerencsejatekFunnelURL', 'szerencsejatekFunnelSocial',
+      'stadiumCapacity', 'eventAttendees', 'eventResultHome', 'eventResultVisitor',
+      'matchOutcome', 'venueName', 'venueCity', 'venueIsIndoor', 'weather',
+      'capacityUtilizationRate', 'visualCaptureRate',
     ].map((key) => `stats.${key}`),
   ].map((field) => [field, 1]),
 );

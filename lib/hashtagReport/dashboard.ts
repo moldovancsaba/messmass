@@ -17,23 +17,31 @@ const EMPTY_SUMMARY: InteractiveReportData['summary'] = {
 };
 
 /** One Fanmass event as a dashboard row: its photo count is what Fanmass placed or analysed there, nothing typed. */
-function eventRow(event: HashtagReport['measured']['events'][number]): MatchItem {
+function eventRow(event: HashtagReport['measured']['events'][number], baseMatch?: MatchItem): MatchItem {
   return {
     id: event.id,
     matchName: event.name,
     cleanName: event.name.replace(/\s*#\s*/g, ' x ').trim(),
-    date: event.date ?? '',
-    partnerName: '',
-    venue: '',
-    sport: detectSport(event.name),
+    date: event.date ?? baseMatch?.date ?? '',
+    partnerName: baseMatch?.partnerName ?? '',
+    venue: baseMatch?.venue ?? '',
+    venueCapacity: baseMatch?.venueCapacity,
+    attendance: baseMatch?.attendance,
+    homeScore: baseMatch?.homeScore,
+    visitorScore: baseMatch?.visitorScore,
+    outcome: baseMatch?.outcome,
+    weather: baseMatch?.weather,
+    capacityUtilizationRate: baseMatch?.capacityUtilizationRate,
+    visualCaptureRate: baseMatch?.visualCaptureRate,
+    sport: baseMatch?.sport ?? detectSport(event.name),
     // The map counts a venue's photos from this field; here it holds the Fanmass photos of the event: the drive photos
     // placed in it and its Camera photo results
     submitted: event.drivePhotos + event.cameraPhotos,
-    approved: 0,
-    rejected: 0,
-    hostess: 0,
+    approved: baseMatch?.approved ?? 0,
+    rejected: baseMatch?.rejected ?? 0,
+    hostess: baseMatch?.hostess ?? 0,
     selfies: event.drivePhotos + event.cameraPhotos,
-    approvalRate: 0,
+    approvalRate: baseMatch?.approvalRate ?? 0,
   };
 }
 
@@ -137,6 +145,23 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
   // covers the drive library only), else the one the stored photos give
   const vision = base?.vision ? withCameraVision(base.vision, report) : visionFromReport(report);
   const events = report.measured.events.filter((event) => event.drivePhotos > 0 || event.hasPhotoResults);
+  const baseMatches = base?.matches || [];
+  const baseMatchMap = new Map(baseMatches.map((m) => [m.id, m]));
+  for (const m of baseMatches) {
+    const name = m.cleanName || m.matchName;
+    if (name) {
+      baseMatchMap.set(name.toLowerCase().replace(/[^a-z0-9]/g, ''), m);
+    }
+  }
+
+  const mergedMatches = events.length > 0
+    ? events.map((event) => {
+        const key = (event.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const bm = baseMatchMap.get(event.id) || baseMatchMap.get(key);
+        return eventRow(event, bm);
+      })
+    : baseMatches;
+
   return {
     success: true,
     scope: base?.scope
@@ -144,12 +169,16 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
       : { type: report.scope.type === 'all' ? 'global' : report.scope.type, id: report.scope.id, name: label },
     partner: base?.partner ?? { id: '', name: label, viewSlug: '', emoji: '📊' },
     style: base?.style ?? { name: 'default', heroBackground: '', pieColor1: '', pieColor2: '' },
-    summary: { ...EMPTY_SUMMARY, totalMatches: report.coverage.events },
+    summary: {
+      ...EMPTY_SUMMARY,
+      totalMatches: report.coverage.events,
+    },
     timeline: [],
-    matches: events.map(eventRow),
+    matches: mergedMatches,
     sports: [],
     funnel: [],
     demographics: buildDemographicsFromVision(vision),
     vision,
+    matchdayAnalytics: base?.matchdayAnalytics,
   };
 }

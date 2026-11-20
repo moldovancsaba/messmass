@@ -374,6 +374,13 @@ interface ProjectStats {
   eventTicketPurchases?: number;
   eventResultHome?: number;
   eventResultVisitor?: number;
+  stadiumCapacity?: number;
+  capacityUtilizationRate?: number;
+  visualCaptureRate?: number;
+  totalVenueCapacity?: number;
+  homeWinRate?: number;
+  visitorWinRate?: number;
+  drawRate?: number;
   // Merchandise pricing variables
   jerseyPrice?: number;
   scarfPrice?: number;
@@ -502,7 +509,9 @@ export function validateFormula(formula: string): FormulaValidationResult {
       merched: 1, jersey: 1, scarf: 1, flags: 1, baseballCap: 1, other: 1,
       approvedImages: 1, rejectedImages: 1,
       eventAttendees: 1, eventTicketPurchases: 1,
-      eventResultHome: 1, eventResultVisitor: 1
+      eventResultHome: 1, eventResultVisitor: 1,
+      stadiumCapacity: 1, capacityUtilizationRate: 1, visualCaptureRate: 1,
+      totalVenueCapacity: 1, homeWinRate: 1, visitorWinRate: 1, drawRate: 1
     };
     
     // WHAT: Add report image and text fields for validation

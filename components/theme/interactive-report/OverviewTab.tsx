@@ -20,6 +20,8 @@ import {
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
 import { getReportSlug } from './reportSlug';
+import StadiumCapacityChart from './StadiumCapacityChart';
+import MatchOutcomesChart from './MatchOutcomesChart';
 import styles from './interactive-report.module.css';
 
 interface OverviewTabProps {
@@ -312,9 +314,18 @@ export default function OverviewTab({
           eventCount={summary.totalMatches > 0 ? summary.totalMatches : null}
           isRunning={vision?.status === 'running'}
           lastUpdated={vision?.lastUpdated ?? null}
+          matchdayAnalytics={data.matchdayAnalytics}
         />
 
-        {/* 2. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
+        {/* 2. Matchday Sports Intelligence & Venue Analytics (Capacity & Outcomes) */}
+        {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
+            <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
+            <MatchOutcomesChart matches={data.matches} analytics={data.matchdayAnalytics} />
+          </div>
+        )}
+
+        {/* 3. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
         {vision && (
           <ExecutivePodiumGrid
             brands={filteredBrands}

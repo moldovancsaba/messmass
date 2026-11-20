@@ -86,6 +86,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
+    ...((data.matches?.length ?? 0) > 0 ? [{ id: 'table' as const, label: 'All Match Data', icon: '⚽' }] : []),
     ...(data.demographics ? [{ id: 'demographics' as const, label: 'Audience Demographics', icon: '👥' }] : []),
     { id: 'figures', label: 'Figures and events', icon: '📋' },
   ] : [

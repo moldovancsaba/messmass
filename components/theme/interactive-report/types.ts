@@ -14,6 +14,22 @@ export interface MatchItem {
   hostess: number;
   selfies: number;
   approvalRate: number;
+  venueCapacity?: number;
+  attendance?: number;
+  homeScore?: number | null;
+  visitorScore?: number | null;
+  outcome?: 'home_win' | 'draw' | 'away_win' | 'scheduled' | 'unrecorded';
+  weather?: {
+    tempC: number;
+    condition: string;
+    weatherCode: number;
+    precipitationMm: number;
+    windKmh: number;
+    isIndoor: boolean;
+    source: string;
+  };
+  capacityUtilizationRate?: number | null;
+  visualCaptureRate?: number | null;
   demographics?: {
     male?: number;
     female?: number;
@@ -206,4 +222,19 @@ export interface InteractiveReportData {
   funnel: FunnelStep[];
   demographics: DemographicsData | null;
   vision?: VisionProgressData | null;
+  matchdayAnalytics?: {
+    totalVenueCapacity: number;
+    totalGateAttendance: number;
+    avgCapacityUtilization: number;
+    avgVisualCaptureRate: number;
+    homeWins: number;
+    draws: number;
+    awayWins: number;
+    homeWinRate: number;
+    drawRate: number;
+    awayWinRate: number;
+    avgTemperatureC: number | null;
+    outdoorMatchesCount: number;
+    indoorMatchesCount: number;
+  };
 }

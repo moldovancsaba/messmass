@@ -23,6 +23,22 @@ interface ExecutiveHeroKpisProps {
   isRunning?: boolean;
   /** ISO timestamp of the last vision update. */
   lastUpdated?: string | null;
+  /** Aggregated matchday, venue capacity, outcomes, and weather intelligence. */
+  matchdayAnalytics?: {
+    totalVenueCapacity: number;
+    totalGateAttendance: number;
+    avgCapacityUtilization: number;
+    avgVisualCaptureRate: number;
+    homeWins: number;
+    draws: number;
+    awayWins: number;
+    homeWinRate: number;
+    drawRate: number;
+    awayWinRate: number;
+    avgTemperatureC: number | null;
+    outdoorMatchesCount: number;
+    indoorMatchesCount: number;
+  };
 }
 
 const SPORT_ICONS: Record<string, string> = {
@@ -61,6 +77,7 @@ export default function ExecutiveHeroKpis({
   eventCount = null,
   isRunning = false,
   lastUpdated = null,
+  matchdayAnalytics,
 }: ExecutiveHeroKpisProps) {
   // The clock is read after mount only: server and client renders must agree on first paint.
   const [now, setNow] = useState<number | null>(null);
@@ -141,6 +158,65 @@ export default function ExecutiveHeroKpis({
       iconBackground: '#f3e8ff',
       iconColor: '#7c3aed',
     });
+  }
+
+  // Sports Venue, Gate Attendance, Outcomes & Environmental Context
+  if (matchdayAnalytics && matchdayAnalytics.totalVenueCapacity > 0) {
+    cards.push({
+      key: 'stadium-capacity',
+      label: 'Total Stadium Capacity',
+      value: matchdayAnalytics.totalVenueCapacity.toLocaleString(),
+      subtext: 'Cumulative venue capacity across events',
+      icon: '🏟️',
+      iconBackground: '#ecfdf5',
+      iconColor: '#059669',
+    });
+    if (matchdayAnalytics.totalGateAttendance > 0) {
+      cards.push({
+        key: 'gate-attendance',
+        label: 'Gate Attendance',
+        value: matchdayAnalytics.totalGateAttendance.toLocaleString(),
+        subtext: `${matchdayAnalytics.avgCapacityUtilization}% average stadium fill rate`,
+        icon: '🎟️',
+        iconBackground: '#eff6ff',
+        iconColor: '#2563eb',
+      });
+    }
+    if (matchdayAnalytics.avgVisualCaptureRate > 0) {
+      cards.push({
+        key: 'visual-capture',
+        label: 'Visual Capture Rate',
+        value: `${matchdayAnalytics.avgVisualCaptureRate}%`,
+        subtext: 'Fans on photo vs actual turnstiles',
+        icon: '📸',
+        iconBackground: '#fdf2f8',
+        iconColor: '#db2777',
+      });
+    }
+    const completedMatches =
+      matchdayAnalytics.homeWins + matchdayAnalytics.draws + matchdayAnalytics.awayWins;
+    if (completedMatches > 0) {
+      cards.push({
+        key: 'competitive-outcomes',
+        label: 'Home Win Rate',
+        value: `${matchdayAnalytics.homeWinRate}%`,
+        subtext: `${matchdayAnalytics.homeWins} Home · ${matchdayAnalytics.draws} Draw · ${matchdayAnalytics.awayWins} Away`,
+        icon: '🏆',
+        iconBackground: '#fefce8',
+        iconColor: '#ca8a04',
+      });
+    }
+    if (matchdayAnalytics.avgTemperatureC !== null) {
+      cards.push({
+        key: 'weather-climate',
+        label: 'Matchday Climate',
+        value: `${matchdayAnalytics.avgTemperatureC}°C Avg`,
+        subtext: `${matchdayAnalytics.outdoorMatchesCount} outdoor · ${matchdayAnalytics.indoorMatchesCount} indoor arena 🏟️`,
+        icon: '🌤️',
+        iconBackground: '#f0fdf4',
+        iconColor: '#16a34a',
+      });
+    }
   }
 
   return (

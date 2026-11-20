@@ -130,78 +130,147 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
               >
                 Date {sortBy === 'date' ? (sortDesc ? '↓' : '↑') : ''}
               </th>
-              <th className={styles.thCell}>Partner / Venue</th>
+              <th className={styles.thCell}>Venue & Capacity</th>
+              <th className={styles.thCell}>Result</th>
+              <th className={styles.thCell}>Gate Attendance</th>
+              <th className={styles.thCell}>Weather</th>
               <th
                 onClick={() => handleSort('submitted')}
                 className={styles.thSortable}
               >
                 Photos {sortBy === 'submitted' ? (sortDesc ? '↓' : '↑') : ''}
               </th>
-              <th
-                onClick={() => handleSort('approved')}
-                className={styles.thSortable}
-              >
-                Approved {sortBy === 'approved' ? (sortDesc ? '↓' : '↑') : ''}
-              </th>
-              <th
-                onClick={() => handleSort('hostess')}
-                className={styles.thSortable}
-              >
-                Hostess {sortBy === 'hostess' ? (sortDesc ? '↓' : '↑') : ''}
-              </th>
               <th className={styles.thCell}>Approval</th>
             </tr>
           </thead>
           <tbody>
-            {pagedMatches.map((m, idx) => (
-              <tr
-                key={m.id || idx}
-                className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
-              >
-                <td className={styles.thCell}>
-                  {/* WHAT: Dynamic background color for sport category badge
-                      WHY: Standardizes visual identity across different sport codes */}
-                  {/* eslint-disable-next-line react/forbid-dom-props */}
-                  <span
-                    className={styles.sportTag}
-                    style={{ background: SPORT_COLORS[m.sport] || '#64748b' }}
-                  >
-                    {m.sport}
-                  </span>
-                </td>
-                <td className={`${styles.thCell} ${styles.matchTitle}`}>
-                  {m.cleanName}
-                </td>
-                <td className={styles.thCell}>
-                  {m.date}
-                </td>
-                <td className={styles.thCell}>
-                  <div>{m.partnerName || '—'}</div>
-                  {m.venue && <div className={styles.cardSubtitle}>{m.venue}</div>}
-                </td>
-                <td className={`${styles.thCell} ${styles.matchTitle}`}>
-                  {m.submitted}
-                </td>
-                <td className={`${styles.thCell} ${styles.valApproved}`}>
-                  {m.approved}
-                </td>
-                <td className={styles.thCell}>
-                  {m.hostess}{' '}
-                  <span className={styles.cardSubtitle}>
-                    ({m.submitted > 0 ? `${Math.round((m.hostess / m.submitted) * 100)}%` : 'n/a'})
-                  </span>
-                </td>
-                <td className={styles.thCell}>
-                  {m.submitted > 0 ? (
-                    <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
-                      {m.approvalRate}%
+            {pagedMatches.map((m, idx) => {
+              const hasScore =
+                m.homeScore !== null &&
+                m.homeScore !== undefined &&
+                m.visitorScore !== null &&
+                m.visitorScore !== undefined;
+              const outcomeBadge =
+                m.outcome === 'home_win'
+                  ? { label: 'Home Win', bg: '#ecfdf5', color: '#065f46' }
+                  : m.outcome === 'draw'
+                    ? { label: 'Draw', bg: '#f3f4f6', color: '#374151' }
+                    : m.outcome === 'away_win'
+                      ? { label: 'Away Win', bg: '#eff6ff', color: '#1e40af' }
+                      : null;
+
+              return (
+                <tr
+                  key={m.id || idx}
+                  className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
+                >
+                  <td className={styles.thCell}>
+                    <span
+                      className={styles.sportTag}
+                      style={{ background: SPORT_COLORS[m.sport] || '#64748b' }}
+                    >
+                      {m.sport}
                     </span>
-                  ) : (
-                    <span className={styles.cardSubtitle}>n/a</span>
-                  )}
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className={`${styles.thCell} ${styles.matchTitle}`}>
+                    {m.cleanName}
+                  </td>
+                  <td className={styles.thCell}>{m.date}</td>
+                  <td className={styles.thCell}>
+                    <div style={{ fontWeight: 500, color: '#111827' }}>
+                      {m.venue || m.partnerName || '—'}
+                    </div>
+                    {m.venueCapacity && (
+                      <div className={styles.cardSubtitle}>
+                        {m.venueCapacity.toLocaleString()} seats{' '}
+                        {m.weather?.isIndoor ? '• Indoor' : ''}
+                      </div>
+                    )}
+                  </td>
+                  <td className={styles.thCell}>
+                    {hasScore ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                        <span style={{ fontWeight: 700, fontSize: '14px', color: '#111827' }}>
+                          {m.homeScore} : {m.visitorScore}
+                        </span>
+                        {outcomeBadge && (
+                          <span
+                            style={{
+                              fontSize: '10px',
+                              fontWeight: 600,
+                              padding: '1px 6px',
+                              borderRadius: '4px',
+                              backgroundColor: outcomeBadge.bg,
+                              color: outcomeBadge.color,
+                              display: 'inline-block',
+                              width: 'fit-content',
+                            }}
+                          >
+                            {outcomeBadge.label}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={styles.cardSubtitle}>—</span>
+                    )}
+                  </td>
+                  <td className={styles.thCell}>
+                    {m.attendance && m.attendance > 0 ? (
+                      <div>
+                        <span style={{ fontWeight: 600, color: '#111827' }}>
+                          {m.attendance.toLocaleString()}
+                        </span>
+                        {m.capacityUtilizationRate && (
+                          <div className={styles.cardSubtitle} style={{ color: '#059669', fontWeight: 600 }}>
+                            {m.capacityUtilizationRate}% fill
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={styles.cardSubtitle}>—</span>
+                    )}
+                  </td>
+                  <td className={styles.thCell}>
+                    {m.weather ? (
+                      <div
+                        style={{
+                          fontSize: '12px',
+                          color: '#374151',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                          whiteSpace: 'nowrap',
+                        }}
+                      >
+                        {m.weather.isIndoor ? (
+                          <span title={`Outside: ${m.weather.tempC}°C, ${m.weather.condition}`}>
+                            Outside: {m.weather.tempC}°C · 🏟️
+                          </span>
+                        ) : (
+                          <span title={`${m.weather.condition}, ${m.weather.precipitationMm}mm rain`}>
+                            {m.weather.tempC}°C {m.weather.condition}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <span className={styles.cardSubtitle}>—</span>
+                    )}
+                  </td>
+                  <td className={`${styles.thCell} ${styles.matchTitle}`}>
+                    {m.submitted}
+                  </td>
+                  <td className={styles.thCell}>
+                    {m.submitted > 0 ? (
+                      <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
+                        {m.approvalRate}%
+                      </span>
+                    ) : (
+                      <span className={styles.cardSubtitle}>n/a</span>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
