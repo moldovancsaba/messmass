@@ -8,6 +8,9 @@ import clientPromise from '@/lib/mongodb';
 import config from '@/lib/config';
 import { requireSession } from '@/lib/apiGuards';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const MONGODB_DB = config.dbName;
 
 /**
@@ -52,6 +55,10 @@ export async function GET() {
       success: true,
       configs: formattedConfigs,
       count: formattedConfigs.length
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      }
     });
 
   } catch (error) {

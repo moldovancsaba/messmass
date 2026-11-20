@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import ReportChart from '@/app/report/[slug]/ReportChart';
+import { useReportStyle } from '@/hooks/useReportStyle';
 import { ChartConfiguration, ChartCalculationResult, HeroBlockSettings, BlockAlignmentSettings } from '@/lib/chartConfigTypes';
 import { calculateActiveCharts } from '@/lib/report-calculator';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -119,6 +120,7 @@ interface ReportTemplate {
   gridSettings: { desktopUnits: number; tabletUnits: number; mobileUnits: number };
   heroSettings?: HeroBlockSettings;
   alignmentSettings?: BlockAlignmentSettings;
+  styleId?: string | null;
   associatedProjects?: Array<{ _id: string; eventName: string; eventDate?: string }>;
   associatedPartners?: Array<{ _id: string; name: string; emoji?: string }>;
 }
@@ -136,6 +138,18 @@ export default function VisualizationPage() {
   // WHY: Allow editing different report templates on this page
   const [templates, setTemplates] = useState<ReportTemplate[]>([]);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+
+  const selectedTemplate = useMemo(() => {
+    return templates.find(t => t._id === selectedTemplateId) || null;
+  }, [templates, selectedTemplateId]);
+
+  // WHAT: Dynamically apply custom branding/style of the selected report template
+  // WHY: Matches the live themed styling of reports (/report, /partner-report, /organization-report)
+  useReportStyle({
+    styleId: selectedTemplate?.styleId ? String(selectedTemplate.styleId) : null,
+    enabled: !!selectedTemplateId,
+    fallbackToGlobal: true,
+  });
   
   // WHAT: Template creation modal state
   // WHY: Allow creating new templates from this page
@@ -593,8 +607,6 @@ export default function VisualizationPage() {
     }
   };
 
-  const selectedTemplate = templates.find((template) => template._id === selectedTemplateId);
-
   const getTemplateLabel = (template: ReportTemplate) => {
     const isLivePartnerReportTemplate = template.name === 'Default Event Report' && template.type === 'event';
     const isPartnerTemplate = template.type === 'partner';
@@ -621,7 +633,7 @@ export default function VisualizationPage() {
   
   const loadAvailableCharts = async () => {
     try {
-      const response = await fetch('/api/chart-configs');
+      const response = await fetch('/api/chart-configs', { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
         setAvailableCharts(data.configs);
@@ -634,7 +646,7 @@ export default function VisualizationPage() {
   // Load chart configurations used by stats pages (public subset)
   const loadChartConfigs = async () => {
     try {
-      const response = await fetch('/api/chart-config/public');
+      const response = await fetch('/api/chart-config/public', { cache: 'no-store' });
       const data = await response.json();
       if (data.success) {
         setChartConfigs(data.configurations);
@@ -1099,7 +1111,21 @@ export default function VisualizationPage() {
         eventAttendees: 12000, eventTicketPurchases: 9500,
         eventResultHome: 2, eventResultVisitor: 1,
         eventValuePropositionVisited: 600, eventValuePropositionPurchases: 75,
-        jerseyPrice: 70, scarfPrice: 15, flagsPrice: 20, capPrice: 25, otherPrice: 10
+        jerseyPrice: 70, scarfPrice: 15, flagsPrice: 20, capPrice: 25, otherPrice: 10,
+        ventCtaPopup: 791,
+        uniqueUsers: 3326,
+        marketingOptin: 450,
+        remoteFans: 85,
+        stadiumFans: 115,
+        ventQr: 240,
+        ventFacebook: 110,
+        ventInstagram: 180,
+        ventShortUrl: 45,
+        ventWeb: 320,
+        ventYoutube: 40,
+        ventTiktok: 50,
+        ventX: 35,
+        ventTrustpilot: 10
       };
 
       // Add sample image and text data for report content charts

@@ -47,7 +47,11 @@ async function getTemplates(request: Request) {
     if (!includeAssociations) {
       return NextResponse.json({
         success: true,
-        templates: templates.map(t => ({ ...t, _id: t._id.toString() })),
+        templates: templates.map(t => ({
+          ...t,
+          _id: t._id.toString(),
+          styleId: t.styleId ? t.styleId.toString() : null
+        })),
         count: templates.length
       });
     }
@@ -56,7 +60,11 @@ async function getTemplates(request: Request) {
     await connectV3();
     const templatesWithAssociations = await Promise.all(
       templates.map(async (template) => {
-        const baseTemplate = { ...template, _id: template._id.toString() };
+        const baseTemplate = {
+          ...template,
+          _id: template._id.toString(),
+          styleId: template.styleId ? template.styleId.toString() : null
+        };
 
         const associatedProjects = await V3Activity.find({ 
           organizationId: orgId,
@@ -177,6 +185,9 @@ async function updateTemplate(request: Request) {
     const updates: any = { ...body, updatedAt: new Date().toISOString() };
     delete updates._id;
     delete updates.organizationId;
+    if (updates.styleId && typeof updates.styleId === 'string' && ObjectId.isValid(updates.styleId)) {
+      updates.styleId = new ObjectId(updates.styleId);
+    }
 
     await templatesCollection.updateOne({ _id: new ObjectId(templateId) }, { $set: updates });
     const updated = await templatesCollection.findOne({ _id: new ObjectId(templateId) });

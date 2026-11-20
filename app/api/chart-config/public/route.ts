@@ -6,6 +6,9 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
 import config from '@/lib/config';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 const MONGODB_DB = config.dbName;
 
 /**
@@ -87,6 +90,10 @@ export async function GET() {
       meta: {
         total: configurations.length,
         lastUpdated: new Date().toISOString()
+      }
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
       }
     });
 
