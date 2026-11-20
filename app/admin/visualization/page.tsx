@@ -440,7 +440,7 @@ export default function VisualizationPage() {
       console.log('📋 Block IDs to load:', blockIds);
       
       if (blockIds.length > 0) {
-        const response = await fetch('/api/data-blocks');
+        const response = await fetch('/api/data-blocks', { cache: 'no-store' });
         const data = await response.json();
         if (data.success) {
           // Filter blocks that belong to this template and sort by order
@@ -527,7 +527,7 @@ export default function VisualizationPage() {
   // WHY: Remember user's last choice across browsers and sessions
   const loadUserPreferences = async (availableTemplates: ReportTemplate[]) => {
     try {
-      const response = await fetch('/api/user-preferences');
+      const response = await fetch('/api/user-preferences', { cache: 'no-store' });
       const data = await response.json();
       
       // Handle authentication errors gracefully
@@ -1364,7 +1364,7 @@ export default function VisualizationPage() {
       if (blockIds.length > 0) {
         // WHAT: Fetch full block data from database
         // WHY: Need block content (name, charts, etc.) to create copies
-        const blocksResponse = await fetch('/api/data-blocks');
+        const blocksResponse = await fetch('/api/data-blocks', { cache: 'no-store' });
         const blocksData = await blocksResponse.json();
         
         if (!blocksData.success) {

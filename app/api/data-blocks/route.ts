@@ -7,6 +7,9 @@ import { error as logError } from '@/lib/logger';
 import config from '@/lib/config';
 const MONGODB_DB = config.dbName;
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // WHAT: Data visualization block interface
 // WHY: Reusable blocks of charts for report templates
 interface DataVisualizationBlock {
@@ -49,6 +52,10 @@ export async function GET() {
         ...block,
         _id: block._id.toString()
       }))
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      }
     });
 
   } catch (error) {
