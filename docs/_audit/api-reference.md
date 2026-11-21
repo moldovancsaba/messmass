@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (251 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (252 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, brand assets management, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 251 of 251 routes documented, enforced by
+Coverage: 252 of 252 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -318,10 +318,11 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/v3/reporting/export/[entityId] | GET | withOrgContext | path entity id | CSV download | aggregates V3MetricValue |
 | /api/v3/reports/resolve | GET | withOrgContext | `?activityId\|entityId` | resolved template | reads v3 report config |
 
-## Remaining root routes (56 routes)
+## Remaining root routes (57 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/organizations | GET | requireSession | — | `{success,organizations[]}` | reads `v3_organizations` |
 | /api/activation-templates | GET, POST | requireAdmin | POST `{name,description?,partnerId?,dataFields[]}` | `{success,template\|templates}` | reads/writes `activation_templates` (messmass#228) |
 | /api/audience-packs | GET | requireAdmin | — | `{success,packs[]}` | seeds + reads `audience_packs` (messmass#236) |
 | /api/audience-packs/[key] | GET, PUT | requireAdmin | PUT `{allowedBlockIds[]}` | `{success,pack}` | reads/writes `audience_packs` |
@@ -392,10 +393,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **216** |
+| Fully guarded (every method) | **217** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **30** |
-| **Total** | **251** |
+| **Total** | **252** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

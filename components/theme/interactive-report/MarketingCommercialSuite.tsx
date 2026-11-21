@@ -9,6 +9,9 @@ export interface MarketingCommercialSuiteProps {
   totalOptIns?: number;
   totalRegistered?: number;
   totalCtaClicks?: number;
+  campaignTitle?: string;
+  ctaText?: string;
+  partnerName?: string;
   genders?: {
     male: number;
     female: number;
@@ -43,6 +46,9 @@ export default function MarketingCommercialSuite({
   totalOptIns = 7534,
   totalRegistered = 11241,
   totalCtaClicks = 791,
+  campaignTitle,
+  ctaText,
+  partnerName,
   genders,
   ageGroups,
   merchandise,
@@ -53,6 +59,27 @@ export default function MarketingCommercialSuite({
   variant = 'all',
   className = '',
 }: MarketingCommercialSuiteProps) {
+  const isSzrtOrTippmix =
+    (partnerName && (partnerName.toLowerCase().includes('tippmix') || partnerName.toLowerCase().includes('szerencsej'))) ||
+    (reportSlug && (reportSlug.toLowerCase().includes('tippmix') || reportSlug.toLowerCase().includes('szrt'))) ||
+    !partnerName;
+
+  const resolvedCampaignTitle = campaignTitle || (
+    isSzrtOrTippmix
+      ? 'TIPPMIX DIGITÁLIS FAN AKTIVÁCIÓ'
+      : `${partnerName ? partnerName.toUpperCase() : 'SPONSOR'} FAN AKTIVÁCIÓ`
+  );
+
+  const resolvedCtaText = ctaText || (
+    isSzrtOrTippmix
+      ? 'KATTINTS AZ EXKLUZÍV TIPPMIX AJÁNLATÉRT'
+      : 'KATTINTS AZ EXKLUZÍV AJÁNLATÉRT'
+  );
+
+  const resolvedClicksSubtitle = isSzrtOrTippmix
+    ? 'Közvetlen kattintások a Tippmix digitális aktivációs felületére'
+    : 'Direct clicks to official sponsor activation portal';
+
   // 1. Demographics calculation
   const male = genders?.male ?? 6070;
   const female = genders?.female ?? 5171;
@@ -228,7 +255,7 @@ export default function MarketingCommercialSuite({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#0284c7' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
                   Digital Fan Activation
                 </span>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
@@ -236,7 +263,7 @@ export default function MarketingCommercialSuite({
                 </h3>
               </div>
               <span style={{ fontSize: '12px', color: '#64748b' }}>
-                Engagement and click-through on in-flow webshop banners
+                Engagement and click-through on in-flow activation banners
               </span>
             </div>
 
@@ -249,7 +276,9 @@ export default function MarketingCommercialSuite({
                   overflow: 'hidden',
                   borderRadius: '12px',
                   minHeight: '160px',
-                  background: 'linear-gradient(135deg, #09090b 0%, #1e1b4b 60%, #312e81 100%)',
+                  background: isSzrtOrTippmix
+                    ? 'linear-gradient(135deg, #022c22 0%, #064e3b 60%, #047857 100%)'
+                    : 'linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%)',
                   position: 'relative',
                   display: 'flex',
                   flexDirection: 'column',
@@ -262,19 +291,21 @@ export default function MarketingCommercialSuite({
                   style={{
                     position: 'absolute',
                     inset: 0,
-                    backgroundImage: 'radial-gradient(circle at 80% 20%, rgba(225, 29, 72, 0.45) 0%, transparent 60%)',
+                    backgroundImage: isSzrtOrTippmix
+                      ? 'radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.45) 0%, transparent 60%)'
+                      : 'radial-gradient(circle at 80% 20%, rgba(2, 132, 199, 0.45) 0%, transparent 60%)',
                     pointerEvents: 'none',
                   }}
                 />
                 <div style={{ padding: '24px', textAlign: 'center', zIndex: 1 }}>
                   <div style={{ fontSize: '17px', fontWeight: 900, color: '#ffffff', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
-                    CHL WEBSHOP RELOADED!
+                    {resolvedCampaignTitle}
                   </div>
                   <div style={{ marginTop: '12px' }}>
                     <span
                       style={{
                         display: 'inline-block',
-                        background: '#e11d48',
+                        background: isSzrtOrTippmix ? '#10b981' : '#0284c7',
                         color: '#ffffff',
                         fontWeight: 800,
                         fontSize: '11px',
@@ -282,10 +313,10 @@ export default function MarketingCommercialSuite({
                         borderRadius: '4px',
                         letterSpacing: '0.05em',
                         textTransform: 'uppercase',
-                        boxShadow: '0 2px 8px rgba(225, 29, 72, 0.4)',
+                        boxShadow: isSzrtOrTippmix ? '0 2px 8px rgba(16, 185, 129, 0.4)' : '0 2px 8px rgba(2, 132, 199, 0.4)',
                       }}
                     >
-                      CLICK HERE TO GET YOUR OFFICIAL JERSEY
+                      {resolvedCtaText}
                     </span>
                   </div>
                 </div>
@@ -295,7 +326,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Pop-up banner clicks</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fdf2f8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#be185d' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
                       <path d="m13 13 6 6" />
@@ -307,7 +338,7 @@ export default function MarketingCommercialSuite({
                     {bannerClicks.toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                    Direct clicks to official club merchandise store
+                    {resolvedClicksSubtitle}
                   </div>
                 </div>
               </div>
