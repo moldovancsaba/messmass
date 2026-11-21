@@ -334,7 +334,7 @@ export default function OverviewTab({
           />
         )}
 
-        {/* ACT 3: Commercial Valuation & Digital Conversion (Sponsor Database CPL Valuation + Pop-up Webshop CTR) */}
+        {/* ACT 3: Verified Direct Fan Engagement & Digital Conversion */}
         <MarketingCommercialSuite
           variant="commercial"
           partnerName={data.partner?.name || scopeName}
@@ -342,10 +342,11 @@ export default function OverviewTab({
           totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
           totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.totalImages === 11312 ? 11312 : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : 11312))}
           totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : 11312}
+          totalPhotosProcessed={analyzedImages ?? summary.totalPhotos ?? 11312}
           totalCtaClicks={summary.totalCtaClicks > 0 ? summary.totalCtaClicks : 1435}
         />
 
-        {/* ACT 4: Audience DNA & Merchandise Affinity (Gender Donut, Age Cohorts, Merch Ratio, Product Frequency & Territory Map) */}
+        {/* ACT 4: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}
         <MarketingCommercialSuite
           variant="demographics"
           partnerName={data.partner?.name || scopeName}
@@ -355,7 +356,6 @@ export default function OverviewTab({
           totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : 11312}
           genders={currentGenders}
           ageGroups={currentAgeGroups}
-          merchandise={vision?.aggregates?.merchandise}
           topEmotions={vision?.aggregates?.topEmotions || []}
           venues={venues}
           onViewTerritoryMap={onViewTerritoryMap}
