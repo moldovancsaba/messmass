@@ -32,7 +32,8 @@ export default function AudienceInvolvementFunnel({
   const cap = Math.round(totalVenueCapacity / divisor);
   const att = Math.round(totalGateAttendance / divisor);
   const photo = Math.round(totalPeopleDetected / divisor);
-  const leads = Math.round((totalOptIns > 0 ? totalOptIns : (totalRegistered > 0 ? Math.round(totalRegistered * 0.15) : 1)) / divisor);
+  const rawLeads = totalOptIns > 0 ? totalOptIns : (totalRegistered > 0 ? totalRegistered : 0);
+  const leads = Math.round(rawLeads / divisor);
 
   // Conversion calculations
   const fillRate = totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0;

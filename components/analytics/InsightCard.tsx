@@ -66,9 +66,11 @@ export default function InsightCard({
 }: InsightCardProps) {
   const [isExpanded, setIsExpanded] = useState(!compact);
 
-  const priorityClass = styles[`priority--${insight.priority}`] || '';
-  const categoryIcon = getCategoryIcon(insight.category);
-  const impactEmoji = getImpactEmoji(insight.impact);
+  if (!insight) return null;
+
+  const priorityClass = insight.priority ? styles[`priority--${insight.priority}`] || '' : '';
+  const categoryIcon = getCategoryIcon(insight.category || '');
+  const impactEmoji = getImpactEmoji(insight.impact || '');
 
   return (
     <div className={`${styles.insightCard} ${priorityClass} ${compact ? styles.compact : ''}`}>

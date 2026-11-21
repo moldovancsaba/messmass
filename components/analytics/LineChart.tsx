@@ -77,10 +77,11 @@ interface LineChartProps {
  */
 function createGradient(ctx: CanvasRenderingContext2D, color: string): CanvasGradient | string {
   try {
-    let resolvedColor = color;
-    if (typeof window !== 'undefined' && color && color.startsWith('var(')) {
-      const varName = color.slice(4, -1).trim();
-      resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || color;
+    if (!ctx || typeof ctx.createLinearGradient !== 'function') return 'transparent';
+    let resolvedColor = color || '#3b82f6';
+    if (typeof window !== 'undefined' && resolvedColor.startsWith('var(')) {
+      const varName = resolvedColor.slice(4, -1).trim();
+      resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || resolvedColor;
     }
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
     gradient.addColorStop(0, resolvedColor);
