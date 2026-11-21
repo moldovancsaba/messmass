@@ -360,21 +360,24 @@ export async function getScopedInteractiveReportData(
       if (hasVettingData) vettedMatchKeys.add(key);
       else vettedMatchKeys.delete(key);
 
+      // Note: szerencsejatekTop10 table contains photo vetting breakdown per match.
+      // It does NOT contain matchday turnstiles or stadium capacity; do not inherit
+      // period rollup aggregates (which reflect the cumulative week) onto individual matches.
       matchesMap.set(key, {
         id: key,
         matchName: rawMatchName,
         cleanName,
         date,
         partnerName,
-        venue: p.venue?.name || cpStats.venueName || venue,
-        venueCapacity: p.venue?.capacity || cpStats.stadiumCapacity || undefined,
-        attendance: cpStats.eventAttendees || p.match?.attendance || undefined,
-        homeScore: cpStats.eventResultHome ?? p.match?.homeScore ?? null,
-        visitorScore: cpStats.eventResultVisitor ?? p.match?.visitorScore ?? null,
-        outcome: cpStats.matchOutcome || p.match?.outcome || undefined,
-        weather: p.weather || cpStats.weather || undefined,
-        capacityUtilizationRate: cpStats.capacityUtilizationRate || undefined,
-        visualCaptureRate: cpStats.visualCaptureRate || undefined,
+        venue: venue || '',
+        venueCapacity: undefined,
+        attendance: undefined,
+        homeScore: null,
+        visitorScore: null,
+        outcome: undefined,
+        weather: undefined,
+        capacityUtilizationRate: undefined,
+        visualCaptureRate: undefined,
         sport,
         submitted,
         approved,
@@ -383,12 +386,12 @@ export async function getScopedInteractiveReportData(
         selfies,
         approvalRate,
         demographics: {
-          male: cpStats.male || 0,
-          female: cpStats.female || 0,
-          genAlpha: cpStats.genAlpha || 0,
-          genYZ: cpStats.genYZ || 0,
-          genX: cpStats.genX || 0,
-          boomer: cpStats.boomer || 0,
+          male: 0,
+          female: 0,
+          genAlpha: 0,
+          genYZ: 0,
+          genX: 0,
+          boomer: 0,
         },
       });
     }
@@ -406,7 +409,29 @@ export async function getScopedInteractiveReportData(
     const cleanName = p.eventName.replace(/^[⚽ððð¤¾ð¸\s]+/, '').replace(/#/g, ' vs ').trim();
     const key = `${p.eventName.toLowerCase().replace(/[^a-z0-9]/g, '')}__${date}`;
 
-    if (!matchesMap.has(key)) {
+    const venueCap = p.venue?.capacity || (s.stadiumCapacity && s.stadiumCapacity !== 5000 ? s.stadiumCapacity : undefined);
+    const rawAtt = p.match?.attendance || s.eventAttendees;
+    // Physical Invariant: attendance cannot exceed venue capacity (+10% standing allowance)
+    const matchAtt = (rawAtt && venueCap && rawAtt <= venueCap * 1.1)
+      ? rawAtt
+      : (rawAtt && !venueCap && rawAtt < 50000 ? rawAtt : undefined);
+
+    if (matchesMap.has(key)) {
+      const existing = matchesMap.get(key)!;
+      if (p.venue?.name) existing.venue = p.venue.name;
+      if (venueCap) existing.venueCapacity = venueCap;
+      if (matchAtt) existing.attendance = matchAtt;
+      if (p.match?.homeScore !== undefined && p.match?.homeScore !== null) existing.homeScore = p.match.homeScore;
+      else if (s.eventResultHome !== undefined && s.eventResultHome !== null) existing.homeScore = s.eventResultHome;
+      if (p.match?.visitorScore !== undefined && p.match?.visitorScore !== null) existing.visitorScore = p.match.visitorScore;
+      else if (s.eventResultVisitor !== undefined && s.eventResultVisitor !== null) existing.visitorScore = s.eventResultVisitor;
+      if (p.match?.outcome || s.matchOutcome) existing.outcome = p.match?.outcome || s.matchOutcome;
+      if (p.weather || s.weather) existing.weather = p.weather || s.weather;
+      if (venueCap && matchAtt) {
+        existing.capacityUtilizationRate = Math.round((matchAtt / venueCap) * 1000) / 10;
+      }
+      if (s.visualCaptureRate) existing.visualCaptureRate = s.visualCaptureRate;
+    } else {
       const partnerName =
         partnerNameMap.get(String(p.partner1Id)) ||
         partnerNameMap.get(String(p.partner2Id)) ||
@@ -429,13 +454,13 @@ export async function getScopedInteractiveReportData(
         date,
         partnerName,
         venue: p.venue?.name || s.venueName || '',
-        venueCapacity: p.venue?.capacity || s.stadiumCapacity || undefined,
-        attendance: s.eventAttendees || p.match?.attendance || undefined,
+        venueCapacity: venueCap,
+        attendance: matchAtt,
         homeScore: s.eventResultHome ?? p.match?.homeScore ?? null,
         visitorScore: s.eventResultVisitor ?? p.match?.visitorScore ?? null,
         outcome: s.matchOutcome || p.match?.outcome || undefined,
         weather: p.weather || s.weather || undefined,
-        capacityUtilizationRate: s.capacityUtilizationRate || undefined,
+        capacityUtilizationRate: venueCap && matchAtt ? Math.round((matchAtt / venueCap) * 1000) / 10 : (s.capacityUtilizationRate || undefined),
         visualCaptureRate: s.visualCaptureRate || undefined,
         sport,
         submitted,
@@ -609,13 +634,23 @@ export async function getScopedInteractiveReportData(
   let indoorMatchesCount = 0;
 
   for (const m of matchesList) {
-    if (m.venueCapacity && m.venueCapacity > 0) {
-      totalVenueCapacity += m.venueCapacity;
+    const cap = m.venueCapacity && m.venueCapacity > 0 ? m.venueCapacity : 0;
+    let att = m.attendance && m.attendance > 0 ? m.attendance : 0;
+    // Physical boundary invariant: attendance cannot exceed nominal venue capacity (+10% standing allowance)
+    if (cap > 0 && att > cap * 1.1) {
+      att = cap;
     }
-    if (m.attendance && m.attendance > 0) {
-      totalGateAttendance += m.attendance;
+
+    if (cap > 0) {
+      totalVenueCapacity += cap;
     }
-    if (m.capacityUtilizationRate !== undefined && m.capacityUtilizationRate !== null) {
+    if (att > 0) {
+      totalGateAttendance += att;
+    }
+    if (cap > 0 && att > 0) {
+      capacityUtilizationSum += Math.round((att / cap) * 1000) / 10;
+      capacityUtilizationCount++;
+    } else if (m.capacityUtilizationRate !== undefined && m.capacityUtilizationRate !== null) {
       capacityUtilizationSum += m.capacityUtilizationRate;
       capacityUtilizationCount++;
     }
@@ -644,10 +679,14 @@ export async function getScopedInteractiveReportData(
   }
 
   const completedMatches = homeWins + draws + awayWins;
+  const campaignCapacityUtilization = totalVenueCapacity > 0
+    ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10
+    : 0;
+
   const matchdayAnalytics = {
     totalVenueCapacity,
     totalGateAttendance,
-    avgCapacityUtilization: capacityUtilizationCount > 0 ? Math.round((capacityUtilizationSum / capacityUtilizationCount) * 10) / 10 : (totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0),
+    avgCapacityUtilization: campaignCapacityUtilization,
     avgVisualCaptureRate: visualCaptureCount > 0 ? Math.round((visualCaptureSum / visualCaptureCount) * 10) / 10 : 0,
     homeWins,
     draws,
