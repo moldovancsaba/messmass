@@ -28,8 +28,10 @@ export interface SnapshotResult {
  *  - 5: the all-data (global) report adds the registrations and opt-ins every other event stored (or Camera counted) to the campaign's.
  *  - 6: the all-data (global) report shows no SZRT campaign figure (registrations, opt-ins, cycles), counts only the
  *       marketing opt-ins events stored, and draws its timeline month by month from every event (owner answers 501, 502, 512).
+ *  - 7: matchday turnstiles are strictly isolated from periodic rollup aggregate projects; stadium capacity boundaries
+ *       and campaign utilization math enforced with zero double-counting.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 6;
+export const SNAPSHOT_SCHEMA_VERSION = 7;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();
