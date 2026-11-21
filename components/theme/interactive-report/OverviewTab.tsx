@@ -22,6 +22,9 @@ import {
 import { getReportSlug } from './reportSlug';
 import StadiumCapacityChart from './StadiumCapacityChart';
 import MatchOutcomesChart from './MatchOutcomesChart';
+import DatabaseValueForSponsorsChart from './DatabaseValueForSponsorsChart';
+import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
+import AudienceInvolvementFunnel from './AudienceInvolvementFunnel';
 import styles from './interactive-report.module.css';
 
 interface OverviewTabProps {
@@ -317,7 +320,20 @@ export default function OverviewTab({
           matchdayAnalytics={data.matchdayAnalytics}
         />
 
-        {/* 2. Matchday Sports Intelligence & Venue Analytics (Capacity & Outcomes) */}
+        {/* 2. Multi-Tier Audience Involvement Funnel: Capacity -> Attendance -> Photo Capture -> Opt-in Leads */}
+        {data.matchdayAnalytics && data.matchdayAnalytics.totalVenueCapacity > 0 && (
+          <AudienceInvolvementFunnel
+            totalVenueCapacity={data.matchdayAnalytics.totalVenueCapacity}
+            totalGateAttendance={data.matchdayAnalytics.totalGateAttendance}
+            totalPeopleDetected={fanAppearances ?? 0}
+            totalOptIns={summary.totalOptIns}
+            totalRegistered={summary.totalRegistered}
+            totalPhotosProcessed={analyzedImages ?? summary.totalPhotos}
+            eventCount={summary.totalMatches > 0 ? summary.totalMatches : data.matches?.length || 1}
+          />
+        )}
+
+        {/* 3. Matchday Sports Intelligence & Venue Analytics (Capacity & Outcomes) */}
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
@@ -325,7 +341,12 @@ export default function OverviewTab({
           </div>
         )}
 
-        {/* 3. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
+        {/* 4. Weather & Environmental Turnout Correlation Matrix */}
+        {data.matches && data.matches.some((m) => m.weather && m.attendance) && (
+          <WeatherTurnoutCorrelationMatrix matches={data.matches} />
+        )}
+
+        {/* 5. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
         {vision && (
           <ExecutivePodiumGrid
             brands={filteredBrands}
@@ -337,6 +358,12 @@ export default function OverviewTab({
             onViewAllClubs={() => setIsAllClubsOpen(true)}
           />
         )}
+
+        {/* 6. Database Value for Sponsors (by Industry) */}
+        <DatabaseValueForSponsorsChart
+          optIns={summary.totalOptIns}
+          totalRegistered={summary.totalRegistered}
+        />
 
         {/* 3. Demographics, expressions, merchandise & territory card: each part hides without data */}
         <ExecutiveDemographicsQuadrant

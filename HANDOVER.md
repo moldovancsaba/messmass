@@ -10,10 +10,13 @@ Last verified: 2026-11-21 (v12.3.51: sports venue capacities, match outcomes, we
    - **Formula Engine & Aggregation:** Added `stadiumCapacity`, `capacityUtilizationRate`, `visualCaptureRate`, `totalVenueCapacity`, `homeWinRate`, `visitorWinRate`, and `drawRate` to `lib/formulaEngine.ts` and `lib/interactiveReportAggregator.ts`.
    - **GDS#81 Frontend Components:**
      - `ExecutiveHeroKpis.tsx`: Added Stadium Capacity, Visual Capture Rate, Win Rate, and Matchday Climate cards.
+     - `AudienceInvolvementFunnel.tsx`: Multi-tier audience funnel (Stadium Capacity Inventory -> Gate Attendance -> Photo Capture -> Marketing Opt-in Leads).
      - `MatchOutcomesChart.tsx`: Added Home vs Draw vs Visitor outcome distribution bar.
      - `StadiumCapacityChart.tsx`: Added venue capacity leaderboard with fill rate progress and kickoff weather badges.
+     - `WeatherTurnoutCorrelationMatrix.tsx`: Weather vs turnout correlation matrix (ambient kickoff temperature and precipitation vs stadium capacity fill rates).
+     - `DatabaseValueForSponsorsChart.tsx`: Sponsor database commercial valuation by industry with standard European CPL benchmarks.
      - `MatchesTable.tsx`: Added Venue & Capacity, Result / Score outcome badges, Gate Attendance & Fill Rate %, and Weather indicators.
-     - `OverviewTab.tsx` and `SzrtHeader.tsx`: Integrated new visualizations and match data tab.
+     - `OverviewTab.tsx` and `SzrtHeader.tsx`: Integrated all new visual charts and match data tab.
    - **Verification:** Ran 160 test suites (1,409 passing tests) and `tsc --noEmit` clean.
 
 **2026-11-20 (v12.3.51): Fleet Documentation, SSOT & Architecture Remediation**
