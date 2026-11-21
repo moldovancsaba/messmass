@@ -6,7 +6,6 @@ import { InteractiveReportData } from './types';
 import D3TimelineScrubber from './D3TimelineScrubber';
 import ExecutiveHeroKpis from './ExecutiveHeroKpis';
 import ExecutivePodiumGrid, { ClubPodiumStat, CommercialBrandStat } from './ExecutivePodiumGrid';
-import ExecutiveDemographicsQuadrant from './ExecutiveDemographicsQuadrant';
 import ConnectedSelfiesModal from './ConnectedSelfiesModal';
 import BrandDetailModal from './BrandDetailModal';
 import AllBrandsModal from './AllBrandsModal';
@@ -22,7 +21,6 @@ import {
 import { getReportSlug } from './reportSlug';
 import StadiumCapacityChart from './StadiumCapacityChart';
 import MatchOutcomesChart from './MatchOutcomesChart';
-import DatabaseValueForSponsorsChart from './DatabaseValueForSponsorsChart';
 import MarketingCommercialSuite from './MarketingCommercialSuite';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
 import AudienceInvolvementFunnel from './AudienceInvolvementFunnel';
@@ -296,15 +294,17 @@ export default function OverviewTab({
   return (
     <div className={styles.funnelList}>
       {/* =========================================================================
-          EXECUTIVE DASHBOARD SECTION
-          Features:
-          1. Hero KPI band with sport switcher (only cards with stored data)
-          2. Dual podiums (#1 Gold, #2 Silver, #3 Bronze) for brands and clubs (vision data only)
-          3. Demographics quadrant + geographic map launcher
-          4. Interactive connected selfies modal drill-down
+          EXECUTIVE DASHBOARD 6-ACT NARRATIVE FLOW (Important -> Interesting)
+          Act 1: Executive Bottom Line & Macro Hero
+          Act 2: Audience Conversion Funnel (Venue -> Gate -> Photo -> Opt-in)
+          Act 3: Commercial Valuation & Digital Conversion (Sponsor CPL + Pop-up CTR)
+          Act 4: Audience DNA & Merch Buying Affinity (Demographics + Merchandise)
+          Act 5: Visual Brand Visibility & Club Podiums (Podiums + Photo Proof)
+          Act 6: Sporting Context & Environmental Intelligence (Venue & Weather)
+          Act 7: Tactical Verification (Timeline Scrubber & Touchpoints)
           ========================================================================= */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {/* 1. Header & Hero KPI Band */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+        {/* ACT 1: Executive Bottom Line (Headline KPI Band & Multi-Sport Filter) */}
         <ExecutiveHeroKpis
           title={scopeName}
           subtitle={data.scope?.subtitle}
@@ -321,7 +321,7 @@ export default function OverviewTab({
           matchdayAnalytics={data.matchdayAnalytics}
         />
 
-        {/* 2. Multi-Tier Audience Involvement Funnel: Capacity -> Attendance -> Photo Capture -> Opt-in Leads */}
+        {/* ACT 2: Multi-Tier Audience Involvement Funnel (Stadium Capacity -> Gate Turnout -> Vision Capture -> Opt-in Leads) */}
         {data.matchdayAnalytics && data.matchdayAnalytics.totalVenueCapacity > 0 && (
           <AudienceInvolvementFunnel
             totalVenueCapacity={data.matchdayAnalytics.totalVenueCapacity}
@@ -334,20 +334,31 @@ export default function OverviewTab({
           />
         )}
 
-        {/* 3. Matchday Sports Intelligence & Venue Analytics (Capacity & Outcomes) */}
-        {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
-            <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
-            <MatchOutcomesChart matches={data.matches} analytics={data.matchdayAnalytics} />
-          </div>
-        )}
+        {/* ACT 3: Commercial Valuation & Digital Conversion (Sponsor Database CPL Valuation + Pop-up Webshop CTR) */}
+        <MarketingCommercialSuite
+          variant="commercial"
+          totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
+          totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241))}
+          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : (summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241)))}
+          totalCtaClicks={summary.totalCtaClicks}
+        />
 
-        {/* 4. Weather & Environmental Turnout Correlation Matrix */}
-        {data.matches && data.matches.some((m) => m.weather && m.attendance) && (
-          <WeatherTurnoutCorrelationMatrix matches={data.matches} />
-        )}
+        {/* ACT 4: Audience DNA & Merchandise Affinity (Gender Donut, Age Cohorts, Merch Ratio, Product Frequency & Territory Map) */}
+        <MarketingCommercialSuite
+          variant="demographics"
+          totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
+          totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241))}
+          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : (summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241)))}
+          genders={currentGenders}
+          ageGroups={currentAgeGroups}
+          merchandise={vision?.aggregates?.merchandise}
+          topEmotions={vision?.aggregates?.topEmotions || []}
+          venues={venues}
+          reportSlug={reportSlug}
+          onViewTerritoryMap={onViewTerritoryMap}
+        />
 
-        {/* 5. Dual Podiums: Commercial Brands vs Clubs & Competitions (vision scopes only) */}
+        {/* ACT 5: Visual Brand Visibility & Club Podiums (#1 Gold, #2 Silver, #3 Bronze + Connected Photo Proof) */}
         {vision && (
           <ExecutivePodiumGrid
             brands={filteredBrands}
@@ -360,34 +371,17 @@ export default function OverviewTab({
           />
         )}
 
-        {/* 6. Commercial, Sponsor Database & Merchandise Insights Suite */}
-        <MarketingCommercialSuite
-          totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
-          totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241))}
-          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : (summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241)))}
-          totalCtaClicks={summary.totalCtaClicks}
-          genders={currentGenders}
-          ageGroups={currentAgeGroups}
-          merchandise={vision?.aggregates?.merchandise}
-        />
+        {/* ACT 6: Sporting Context & Environmental Turnout Matrix (Venue Capacities, Outcomes & Weather Correlation) */}
+        {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
+            <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
+            <MatchOutcomesChart matches={data.matches} analytics={data.matchdayAnalytics} />
+          </div>
+        )}
 
-        {/* 7. Database Value for Sponsors (by Industry) Detail */}
-        <DatabaseValueForSponsorsChart
-          optIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241))}
-          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : (summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : (fanAppearances ?? 11241)))}
-        />
-
-        {/* 3. Demographics, expressions, merchandise & territory card: each part hides without data */}
-        <ExecutiveDemographicsQuadrant
-          genders={currentGenders}
-          ageGroups={currentAgeGroups}
-          totalPeople={fanAppearances}
-          topEmotions={vision?.aggregates?.topEmotions || []}
-          merchandise={vision?.aggregates?.merchandise}
-          venues={venues}
-          reportSlug={reportSlug}
-          onViewTerritoryMap={onViewTerritoryMap}
-        />
+        {data.matches && data.matches.some((m) => m.weather && m.attendance) && (
+          <WeatherTurnoutCorrelationMatrix matches={data.matches} />
+        )}
       </div>
 
       {/* Connected Selfies Modal (Launched when any club in the podium or list is clicked) */}
