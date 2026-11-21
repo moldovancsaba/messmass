@@ -1,0 +1,14 @@
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: var(--mm-space-6) var(--mm-space-5) var(--mm-space-16);
+}
+
+.toolbarSummary {
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-text-secondary);
+}
+
+.sectionSpacing {
+  margin-top: var(--mm-space-6);
+}

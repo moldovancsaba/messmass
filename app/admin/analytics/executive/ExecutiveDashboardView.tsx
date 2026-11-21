@@ -222,7 +222,7 @@ export function ExecutiveDashboardView({
                   <tbody>
                     {!Array.isArray(topEvents) || topEvents.length === 0 ? (
                       <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', padding: 'var(--mm-space-6)', color: 'var(--mm-text-secondary)' }}>
+                        <td colSpan={5} className={styles.emptyCell}>
                           No event data available for this time window.
                         </td>
                       </tr>

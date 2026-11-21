@@ -6,6 +6,7 @@ import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import { AnalyticsToolbar, AnalyticsStatePanel } from '@/components/analytics';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
 import MarketingCommercialSuite from '@/components/theme/interactive-report/MarketingCommercialSuite';
+import styles from './MarketingDashboard.module.css';
 
 export function MarketingDashboardView() {
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,7 @@ export function MarketingDashboardView() {
   }, [fetchMarketingData]);
 
   return (
-    <div className="page-container" style={{ maxWidth: '1280px', margin: '0 auto', padding: '24px 20px 64px' }}>
+    <div className={`page-container ${styles.container}`}>
       <UnifiedAdminHeroWithSearch
         title="📣 Marketing & Commercial Insights"
         subtitle="Campaign conversion performance, audience commercial valuation, pop-up CTR, and merchandise demand."
@@ -75,11 +76,11 @@ export function MarketingDashboardView() {
             onClick: () => setPeriod('90d'),
           },
         ]}
-        summary={<span style={{ fontSize: '13px', color: '#64748b' }}>Active window: {period === '30d' ? 'Last 30 Days' : 'Last 90 Days'}</span>}
+        summary={<span className={styles.toolbarSummary}>Active window: {period === '30d' ? 'Last 30 Days' : 'Last 90 Days'}</span>}
       />
 
       {loading ? (
-        <div style={{ marginTop: '24px' }}>
+        <div className={styles.sectionSpacing}>
           <AnalyticsStatePanel
             variant="loading"
             title="Loading marketing analytics"
@@ -87,7 +88,7 @@ export function MarketingDashboardView() {
           />
         </div>
       ) : (
-        <div style={{ marginTop: '24px' }}>
+        <div className={styles.sectionSpacing}>
           <MarketingCommercialSuite
             totalFansEngaged={metrics?.totalFans ?? 11241}
             totalOptIns={metrics?.totalOptIns ?? 7534}

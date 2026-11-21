@@ -68,6 +68,12 @@
   color: var(--mm-primary);
 }
 
+.emptyCell {
+  text-align: center;
+  padding: var(--mm-space-6);
+  color: var(--mm-text-secondary);
+}
+
 .insightsFeed {
   display: flex;
   flex-direction: column;

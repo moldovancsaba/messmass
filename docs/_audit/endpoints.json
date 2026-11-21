@@ -194,6 +194,7 @@
   {"path": "/api/organizations/edit/[id]", "methods": ["GET", "PUT"], "file": "app/api/organizations/edit/[id]/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/organizations/report/[id]/activities", "methods": ["GET"], "file": "app/api/organizations/report/[id]/activities/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/organizations/report/[id]", "methods": ["GET"], "file": "app/api/organizations/report/[id]/route.ts", "auth_markers": [], "no_auth_marker": true},
+  {"path": "/api/organizations", "methods": ["GET"], "file": "app/api/organizations/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/page-passwords", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/page-passwords/route.ts", "auth_markers": ["getAdminUser", "requireSession"], "no_auth_marker": false},
   {"path": "/api/paid-campaigns/[id]/measurement", "methods": ["GET"], "file": "app/api/paid-campaigns/[id]/measurement/route.ts", "auth_markers": ["requireAdmin"], "no_auth_marker": false},
   {"path": "/api/paid-campaigns/[id]", "methods": ["DELETE"], "file": "app/api/paid-campaigns/[id]/route.ts", "auth_markers": ["requireAdmin"], "no_auth_marker": false},

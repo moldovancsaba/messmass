@@ -34,6 +34,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import ChartBase from '../charts/ChartBase';
 import { CHART_THEME } from '@/lib/chartTheme';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
 
 // WHAT: Register Chart.js components for line charts
 ChartJS.register(
@@ -78,7 +79,7 @@ interface LineChartProps {
 function createGradient(ctx: CanvasRenderingContext2D, color: string): CanvasGradient | string {
   try {
     if (!ctx || typeof ctx.createLinearGradient !== 'function') return 'transparent';
-    let resolvedColor = color || '#3b82f6';
+    let resolvedColor = color || CHART_COLOR.blue;
     if (typeof window !== 'undefined' && resolvedColor.startsWith('var(')) {
       const varName = resolvedColor.slice(4, -1).trim();
       resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || resolvedColor;
