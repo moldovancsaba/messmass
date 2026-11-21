@@ -14,6 +14,7 @@ import {
 import type { LineChartDataset } from '@/components/analytics';
 import type { Insight } from '@/lib/insightsEngine';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
+import { CHART_COLOR } from '@/lib/theme/chartPalette';
 import styles from './ExecutiveDashboard.module.css';
 
 export interface ExecutiveDashboardViewProps {
@@ -82,23 +83,23 @@ export function ExecutiveDashboardView({
 
       if (metricsRes.ok) {
         const data = await metricsRes.json();
-        setMetrics(data.data);
+        setMetrics(data?.data ?? null);
       }
       if (trendsRes.ok) {
         const data = await trendsRes.json();
         const points = Array.isArray(data?.data?.dataPoints) ? data.data.dataPoints : [];
-        const labels = points.map((p: { date?: string }) => p.date);
-        const fans = points.map((p: { fans?: number }) => (typeof p.fans === 'number' ? p.fans : 0));
-        const revenue = points.map((p: { adValue?: number }) => (typeof p.adValue === 'number' ? p.adValue : 0));
+        const labels = points.map((p: { date?: string }) => p?.date || '');
+        const fans = points.map((p: { fans?: number }) => (typeof p?.fans === 'number' && !isNaN(p.fans) ? p.fans : 0));
+        const revenue = points.map((p: { adValue?: number }) => (typeof p?.adValue === 'number' && !isNaN(p.adValue) ? p.adValue : 0));
         setTrends({ labels, fans, revenue });
       }
       if (topEventsRes.ok) {
         const data = await topEventsRes.json();
-        setTopEvents(data.data);
+        setTopEvents(Array.isArray(data?.data) ? data.data : []);
       }
       if (insightsRes.ok) {
         const data = await insightsRes.json();
-        setInsights(data.data.insights || []);
+        setInsights(Array.isArray(data?.data?.insights) ? data.data.insights : []);
       }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
@@ -111,23 +112,23 @@ export function ExecutiveDashboardView({
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  const trendDatasets: LineChartDataset[] = trends && trends.labels?.length
+  const trendDatasets: LineChartDataset[] = trends && Array.isArray(trends.labels) && trends.labels.length > 0
     ? [
         {
           label: 'Total Fans',
-          data: trends.labels.map((label, i) => ({ label, value: trends.fans[i] ?? 0 })),
-          color: 'var(--mm-chart-blue)',
+          data: trends.labels.map((label, i) => ({ label, value: trends.fans?.[i] ?? 0 })),
+          color: CHART_COLOR.blue,
           fill: true,
         },
       ]
     : [];
 
-  const revenueDatasets: LineChartDataset[] = trends && trends.labels?.length
+  const revenueDatasets: LineChartDataset[] = trends && Array.isArray(trends.labels) && trends.labels.length > 0
     ? [
         {
           label: 'Revenue',
-          data: trends.labels.map((label, i) => ({ label, value: trends.revenue[i] ?? 0 })),
-          color: 'var(--mm-chart-green)',
+          data: trends.labels.map((label, i) => ({ label, value: trends.revenue?.[i] ?? 0 })),
+          color: CHART_COLOR.green,
           fill: true,
         },
       ]
@@ -176,12 +177,12 @@ export function ExecutiveDashboardView({
       />
 
       <div className={styles.metricsGrid}>
-        <MetricCard title="Total Fans" value={metrics?.totalFans || 0} previousValue={metrics?.previousPeriod?.totalFans} format="number" icon="👥" loading={loading} periodLabel={period} />
-        <MetricCard title="Total Revenue" value={metrics?.totalRevenue || 0} previousValue={metrics?.previousPeriod?.totalRevenue} format="currency" icon="💰" loading={loading} periodLabel={period} />
-        <MetricCard title="Total ROI (Est.)" value={metrics?.totalROI || 0} previousValue={metrics?.previousPeriod?.totalROI} format="currency" icon="📈" loading={loading} periodLabel={period} />
-        <MetricCard title="Avg Engagement" value={metrics?.avgEngagement || 0} previousValue={metrics?.previousPeriod?.avgEngagement} format="percentage" icon="🎯" loading={loading} periodLabel={period} />
-        <MetricCard title="Events Tracked" value={metrics?.eventCount || 0} previousValue={metrics?.previousPeriod?.eventCount} format="number" icon="📅" loading={loading} periodLabel={period} />
-        <MetricCard title="Period Growth" value={metrics?.growth || 0} format="percentage" trend={metrics ? (metrics.growth > 0 ? 'up' : metrics.growth < 0 ? 'down' : 'neutral') : undefined} icon="🚀" loading={loading} periodLabel={period} />
+        <MetricCard title="Total Fans" value={metrics?.totalFans ?? 0} previousValue={metrics?.previousPeriod?.totalFans ?? undefined} format="number" icon="👥" loading={loading} periodLabel={period} />
+        <MetricCard title="Total Revenue" value={metrics?.totalRevenue ?? 0} previousValue={metrics?.previousPeriod?.totalRevenue ?? undefined} format="currency" icon="💰" loading={loading} periodLabel={period} />
+        <MetricCard title="Total ROI (Est.)" value={metrics?.totalROI ?? 0} previousValue={metrics?.previousPeriod?.totalROI ?? undefined} format="currency" icon="📈" loading={loading} periodLabel={period} />
+        <MetricCard title="Avg Engagement" value={metrics?.avgEngagement ?? 0} previousValue={metrics?.previousPeriod?.avgEngagement ?? undefined} format="percentage" icon="🎯" loading={loading} periodLabel={period} />
+        <MetricCard title="Events Tracked" value={metrics?.eventCount ?? 0} previousValue={metrics?.previousPeriod?.eventCount ?? undefined} format="number" icon="📅" loading={loading} periodLabel={period} />
+        <MetricCard title="Period Growth" value={metrics?.growth ?? 0} format="percentage" trend={metrics ? ((metrics.growth ?? 0) > 0 ? 'up' : (metrics.growth ?? 0) < 0 ? 'down' : 'neutral') : undefined} icon="🚀" loading={loading} periodLabel={period} />
       </div>
 
       {loading ? (
@@ -203,7 +204,7 @@ export function ExecutiveDashboardView({
                 datasets={trendDatasets}
                 filename="fan-trend"
                 height={300}
-                formatValue={(v) => v.toLocaleString()}
+                formatValue={(v) => (typeof v === 'number' && !isNaN(v) ? v.toLocaleString() : '0')}
               />
             )}
             table={(
@@ -219,15 +220,23 @@ export function ExecutiveDashboardView({
                     </tr>
                   </thead>
                   <tbody>
-                    {topEvents.map((event) => (
-                      <tr key={event.id}>
-                        <td className={styles.eventName}>{event.name}</td>
-                        <td>{new Date(event.date).toLocaleDateString()}</td>
-                        <td>{event.fans.toLocaleString()}</td>
-                        <td>€{event.revenue.toLocaleString()}</td>
-                        <td>{event.engagement.toFixed(1)}%</td>
+                    {!Array.isArray(topEvents) || topEvents.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} style={{ textAlign: 'center', padding: 'var(--mm-space-6)', color: 'var(--mm-text-secondary)' }}>
+                          No event data available for this time window.
+                        </td>
                       </tr>
-                    ))}
+                    ) : (
+                      topEvents.map((event, idx) => (
+                        <tr key={event.id || `event-${idx}`}>
+                          <td className={styles.eventName}>{event.name || 'Unknown Event'}</td>
+                          <td>{event.date ? new Date(event.date).toLocaleDateString() : 'N/A'}</td>
+                          <td>{(typeof event.fans === 'number' && !isNaN(event.fans) ? event.fans : 0).toLocaleString()}</td>
+                          <td>€{(typeof event.revenue === 'number' && !isNaN(event.revenue) ? event.revenue : 0).toLocaleString()}</td>
+                          <td>{(typeof event.engagement === 'number' && !isNaN(event.engagement) ? event.engagement : 0).toFixed(1)}%</td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -245,13 +254,13 @@ export function ExecutiveDashboardView({
                 datasets={revenueDatasets}
                 filename="revenue-trend"
                 height={300}
-                formatValue={(v) => `€${v.toLocaleString()}`}
+                formatValue={(v) => (typeof v === 'number' && !isNaN(v) ? `€${v.toLocaleString()}` : '€0')}
               />
             )}
-            table={insights.length > 0 ? (
+            table={Array.isArray(insights) && insights.length > 0 ? (
               <div className={styles.insightsFeed}>
-                {insights.map((insight) => (
-                  <InsightCard key={insight.id} insight={insight} compact showActions={false} />
+                {insights.map((insight, idx) => (
+                  <InsightCard key={insight.id || `insight-${idx}`} insight={insight} compact showActions={false} />
                 ))}
               </div>
             ) : (

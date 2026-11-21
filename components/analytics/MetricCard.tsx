@@ -36,15 +36,16 @@ interface MetricCardProps {
  * WHAT: Format number based on specified format type
  * WHY: Consistent formatting across all metrics
  */
-function formatMetricValue(value: number, format: MetricFormat): string {
+function formatMetricValue(value: number | undefined | null, format: MetricFormat): string {
+  const safeVal = typeof value === 'number' && !isNaN(value) ? value : 0;
   switch (format) {
     case 'currency':
-      return `€${value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      return `€${safeVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
     case 'percentage':
-      return `${value.toFixed(1)}%`;
+      return `${safeVal.toFixed(1)}%`;
     case 'number':
     default:
-      return value.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+      return safeVal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   }
 }
 
@@ -52,19 +53,22 @@ function formatMetricValue(value: number, format: MetricFormat): string {
  * WHAT: Calculate percent change from previous value
  * WHY: Show growth/decline in context
  */
-function calculatePercentChange(current: number, previous: number): number {
-  if (previous === 0) return current > 0 ? 100 : 0;
-  return ((current - previous) / previous) * 100;
+function calculatePercentChange(current: number | undefined | null, previous: number | undefined | null): number {
+  const safeCurrent = typeof current === 'number' && !isNaN(current) ? current : 0;
+  const safePrevious = typeof previous === 'number' && !isNaN(previous) ? previous : 0;
+  if (safePrevious === 0) return safeCurrent > 0 ? 100 : 0;
+  return ((safeCurrent - safePrevious) / safePrevious) * 100;
 }
 
 /**
  * WHAT: Determine trend direction from values
  * WHY: Auto-detect if not explicitly provided
  */
-function determineTrend(current: number, previous: number | undefined): TrendDirection {
-  if (previous === undefined) return 'neutral';
-  if (current > previous) return 'up';
-  if (current < previous) return 'down';
+function determineTrend(current: number | undefined | null, previous: number | undefined | null): TrendDirection {
+  if (previous === undefined || previous === null || isNaN(previous)) return 'neutral';
+  const safeCurrent = typeof current === 'number' && !isNaN(current) ? current : 0;
+  if (safeCurrent > previous) return 'up';
+  if (safeCurrent < previous) return 'down';
   return 'neutral';
 }
 
@@ -81,8 +85,9 @@ export default function MetricCard({
   periodLabel,
   comparisonLabel,
 }: MetricCardProps) {
+  const hasPrevious = typeof previousValue === 'number' && !isNaN(previousValue);
   const trend = explicitTrend || determineTrend(value, previousValue);
-  const percentChange = previousValue !== undefined ? calculatePercentChange(value, previousValue) : null;
+  const percentChange = hasPrevious ? calculatePercentChange(value, previousValue) : null;
 
   if (loading) {
     return (
@@ -93,7 +98,7 @@ export default function MetricCard({
   }
 
   const formattedValue = formatMetricValue(value, format);
-  const descriptionText = subtitle || (previousValue !== undefined ? (
+  const descriptionText = subtitle || (hasPrevious ? (
     comparisonLabel || `vs ${formatMetricValue(previousValue, format)} previous period`
   ) : undefined);
 

@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
       const score = (fans / 100) + (revenue / 10) + (engagement * 10);
 
       return {
-        id: agg.projectId.toString(),
+        id: agg.projectId?.toString() || agg._id?.toString() || 'unknown',
         name: agg.partnerContext?.partnerName || 'Unknown Event',
         date: agg.eventDate,
         fans,

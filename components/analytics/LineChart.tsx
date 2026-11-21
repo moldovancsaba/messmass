@@ -75,11 +75,24 @@ interface LineChartProps {
  * WHAT: Create gradient fill for area under line
  * WHY: Professional look with subtle color gradients
  */
-function createGradient(ctx: CanvasRenderingContext2D, color: string): CanvasGradient {
-  const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-  gradient.addColorStop(0, color);
-  gradient.addColorStop(1, `${color}00`); // Transparent
-  return gradient;
+function createGradient(ctx: CanvasRenderingContext2D, color: string): CanvasGradient | string {
+  try {
+    let resolvedColor = color;
+    if (typeof window !== 'undefined' && color && color.startsWith('var(')) {
+      const varName = color.slice(4, -1).trim();
+      resolvedColor = getComputedStyle(document.documentElement).getPropertyValue(varName).trim() || color;
+    }
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, resolvedColor);
+    if (resolvedColor.startsWith('#') && (resolvedColor.length === 7 || resolvedColor.length === 4)) {
+      gradient.addColorStop(1, `${resolvedColor}00`);
+    } else {
+      gradient.addColorStop(1, 'transparent');
+    }
+    return gradient;
+  } catch {
+    return 'transparent';
+  }
 }
 
 export default function LineChart({
