@@ -672,6 +672,177 @@ export default function ChartLibraryShowcase({
     [matches]
   );
 
+  // 15. ECharts: All Events Photo Volume Treemap (treemap-simple, largest to smallest)
+  const eventsWithPhotos = useMemo(
+    () => [...matches].filter((m) => m.submitted > 0).sort((a, b) => b.submitted - a.submitted),
+    [matches]
+  );
+
+  const allEventsTreemapOption = useMemo<echarts.EChartsOption>(
+    () => ({
+      tooltip: {
+        formatter: (info: unknown) => {
+          const item = info as { name?: string; value?: number; data?: { date?: string; venue?: string; sport?: string } };
+          const meta = [item.data?.sport, item.data?.date, item.data?.venue].filter(Boolean).join(' · ');
+          return `<strong>${item.name ?? ''}</strong><br/>${(item.value ?? 0).toLocaleString()} photos${meta ? `<br/>${meta}` : ''}`;
+        },
+      },
+      color: [...REPORT_CHART_PALETTE.series],
+      series: [
+        {
+          name: 'Events by Photos',
+          type: 'treemap',
+          roam: false,
+          nodeClick: 'zoomToNode',
+          breadcrumb: { show: true, bottom: 2 },
+          label: { show: true, formatter: '{b}\n{c}' },
+          upperLabel: { show: false },
+          itemStyle: { borderColor: REPORT_CHART_PALETTE.surface, borderWidth: 1.5, gapWidth: 1.5 },
+          data: eventsWithPhotos.map((m) => ({
+            name: m.cleanName,
+            value: m.submitted,
+            date: m.date,
+            venue: m.venue,
+            sport: m.sport,
+          })),
+        },
+      ],
+    }),
+    [eventsWithPhotos]
+  );
+
+  // 16. ECharts: Top 15 Events Photo Concentration Pareto
+  const eventsParetoOption = useMemo<echarts.EChartsOption>(() => {
+    const top15 = eventsWithPhotos.slice(0, 15);
+    const total = eventsWithPhotos.reduce((s, m) => s + m.submitted, 0) || 1;
+    let running = 0;
+    const cumPct = top15.map((m) => {
+      running += m.submitted;
+      return Math.round((running / total) * 1000) / 10;
+    });
+    return {
+      tooltip: { trigger: 'axis' },
+      grid: { left: 48, right: 48, top: 20, bottom: 64 },
+      xAxis: {
+        type: 'category',
+        data: top15.map((m) => (m.cleanName.length > 16 ? `${m.cleanName.slice(0, 14)}…` : m.cleanName)),
+        axisLabel: { rotate: 28, color: REPORT_CHART_PALETTE.muted, fontSize: 10 },
+      },
+      yAxis: [
+        { type: 'value', name: 'Photos', axisLabel: { color: REPORT_CHART_PALETTE.muted } },
+        { type: 'value', name: 'Cum %', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: REPORT_CHART_PALETTE.muted } },
+      ],
+      series: [
+        { name: 'Photos', type: 'bar', data: top15.map((m) => m.submitted), itemStyle: { color: REPORT_CHART_PALETTE.blue, borderRadius: [4, 4, 0, 0] } },
+        { name: 'Cumulative %', type: 'line', yAxisIndex: 1, smooth: true, data: cumPct, itemStyle: { color: REPORT_CHART_PALETTE.amber }, lineStyle: { width: 2.5 } },
+      ],
+    };
+  }, [eventsWithPhotos]);
+
+  // 17. ECharts: Sport -> Top Events Sunburst
+  const sportSunburstOption = useMemo<echarts.EChartsOption>(() => {
+    const bySport = new Map<string, MatchItem[]>();
+    for (const m of eventsWithPhotos) {
+      const list = bySport.get(m.sport) ?? [];
+      list.push(m);
+      bySport.set(m.sport, list);
+    }
+    const children = Array.from(bySport.entries()).map(([sport, list]) => ({
+      name: sport,
+      children: list.slice(0, 6).map((m) => ({
+        name: m.cleanName.length > 18 ? `${m.cleanName.slice(0, 16)}…` : m.cleanName,
+        value: m.submitted,
+      })),
+    }));
+    return {
+      tooltip: { trigger: 'item', formatter: '{b}: {c} photos' },
+      color: [...REPORT_CHART_PALETTE.series],
+      series: [
+        {
+          type: 'sunburst',
+          radius: ['16%', '92%'],
+          label: { rotate: 'radial', fontSize: 10 },
+          data: children,
+        },
+      ],
+    };
+  }, [eventsWithPhotos]);
+
+  // 18. ECharts: Environment -> Sport -> Outcome Attendance Sankey
+  const attendanceSankeyOption = useMemo<echarts.EChartsOption>(() => {
+    const linkMap = new Map<string, number>();
+    const nodeSet = new Set<string>();
+    const addLink = (source: string, target: string, val: number) => {
+      if (val <= 0 || source === target) return;
+      nodeSet.add(source);
+      nodeSet.add(target);
+      const k = `${source}|${target}`;
+      linkMap.set(k, (linkMap.get(k) ?? 0) + val);
+    };
+    for (const m of matches) {
+      const att = m.attendance || 0;
+      if (att <= 0) continue;
+      const env = m.weather?.isIndoor ? 'Indoor Arena' : 'Outdoor Stadium';
+      const sport = m.sport || 'Other';
+      const outcomeLabel =
+        m.outcome === 'home_win'
+          ? 'Home Win'
+          : m.outcome === 'away_win'
+            ? 'Away Win'
+            : m.outcome === 'draw'
+              ? 'Draw'
+              : 'Unrecorded';
+      addLink(env, sport, att);
+      addLink(sport, outcomeLabel, att);
+    }
+    const links = Array.from(linkMap.entries()).map(([k, value]) => {
+      const [source, target] = k.split('|');
+      return { source, target, value };
+    });
+    const nodes = Array.from(nodeSet).map((name) => ({ name }));
+    return {
+      tooltip: { trigger: 'item', triggerOn: 'mousemove' },
+      color: [...REPORT_CHART_PALETTE.series],
+      series: [
+        {
+          type: 'sankey',
+          emphasis: { focus: 'adjacency' },
+          data: nodes,
+          links,
+          lineStyle: { color: 'gradient', curveness: 0.5 },
+        },
+      ],
+    };
+  }, [matches]);
+
+  // 19. ECharts: Multi-Dimensional Fixture Parallel Coordinates
+  const parallelOption = useMemo<echarts.EChartsOption>(() => {
+    const rows = matches
+      .filter((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0)
+      .slice(0, 60)
+      .map((m) => [
+        m.weather!.tempC,
+        m.venueCapacity!,
+        m.attendance!,
+        getFillPct(m) ?? 0,
+        m.submitted || 0,
+      ]);
+    return {
+      parallelAxis: [
+        { dim: 0, name: 'Temp °C' },
+        { dim: 1, name: 'Capacity' },
+        { dim: 2, name: 'Attendance' },
+        { dim: 3, name: 'Fill %', max: 100 },
+        { dim: 4, name: 'Photos' },
+      ],
+      series: {
+        type: 'parallel',
+        lineStyle: { width: 1.5, opacity: 0.45, color: REPORT_CHART_PALETTE.blue },
+        data: rows,
+      },
+    };
+  }, [matches]);
+
   if (matches.length === 0 && brands.length === 0) return null;
 
   const showECharts = engine === 'all' || engine === 'echarts';
@@ -713,6 +884,48 @@ export default function ChartLibraryShowcase({
       {/* ECharts Row */}
       {showECharts && (
         <>
+          {eventsWithPhotos.length > 0 && (
+            <EChartsPanel
+              title={`All events by photo volume — largest to smallest (${eventsWithPhotos.length} events)`}
+              icon="🖼️"
+              status="Click to zoom"
+              option={allEventsTreemapOption}
+              tall
+            />
+          )}
+          <div className={styles.bentoTwoCol}>
+            {eventsWithPhotos.length > 0 && (
+              <EChartsPanel
+                title="Top 15 events photo concentration (Pareto)"
+                icon="📊"
+                option={eventsParetoOption}
+              />
+            )}
+            {eventsWithPhotos.length > 0 && (
+              <EChartsPanel
+                title="Sport → event photo hierarchy (Sunburst)"
+                icon="☀️"
+                option={sportSunburstOption}
+              />
+            )}
+          </div>
+          {matches.some((m) => (m.attendance ?? 0) > 0) && (
+            <EChartsPanel
+              title="Venue environment → sport → outcome attendance flow (Sankey)"
+              icon="🔀"
+              status="Gate turnout flow"
+              option={attendanceSankeyOption}
+              tall
+            />
+          )}
+          {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
+            <EChartsPanel
+              title="Multi-dimensional fixture profile (Parallel Coordinates)"
+              icon="🧬"
+              status="Temp · Capacity · Attendance · Fill % · Photos"
+              option={parallelOption}
+            />
+          )}
           {monthlySeries.length > 1 && (
             <EChartsPanel
               title="Cumulative season attendance & photo growth"
