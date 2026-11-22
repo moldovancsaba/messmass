@@ -116,69 +116,55 @@ export default function SportsExecutiveInsights({
   if (!insights) return null;
 
   return (
-    <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
+      <div className={styles.gdsRowBetween}>
         <div>
-          <div className={styles.cardSubtitle}>Sports Executive Intelligence</div>
-          <h3 className={styles.cardTitle}>Matchday Activation Efficiency &amp; Home/Away Split</h3>
+          <div className={styles.gdsEyebrow}>Sports Executive Intelligence</div>
+          <h3 className={styles.gdsCardTitle}>Matchday Activation Efficiency &amp; Home/Away Split</h3>
         </div>
-        <span style={{ fontSize: '12px', color: '#64748b' }}>
+        <span className={styles.gdsCaption}>
           Empirical matchday turnout, capture density, and sponsor reach per fixture
         </span>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
-        {/* Capture Efficiency */}
-        <div style={{ padding: '16px', borderRadius: '12px', background: 'var(--report-primary-soft, #eff6ff)', border: '1px solid #cbd5e1' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--report-primary, #1d4ed8)', letterSpacing: '0.05em' }}>
-            Visual Capture Efficiency
-          </div>
-          <div style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', marginTop: '6px' }}>
-            {insights.visualReachPct}%
-          </div>
-          <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>
+      <div className={styles.suiteGrid4}>
+        <div className={styles.gdsSubCard}>
+          <div className={styles.gdsEyebrow}>Visual Capture Efficiency</div>
+          <div className={styles.gdsSectionKpi}>{insights.visualReachPct}%</div>
+          <div className={styles.gdsCaption}>
             {totalPeopleDetected.toLocaleString()} fans captured across gate turnout • {insights.fansPerPhoto} fans/photo
           </div>
         </div>
 
-        {/* Per-Match Output */}
-        <div style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-          <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
-            Avg Matchday Output
+        <div className={styles.gdsSubCard}>
+          <div className={styles.gdsEyebrow}>Avg Matchday Output</div>
+          <div className={styles.gdsSectionKpi}>
+            {insights.avgPhotosPerMatch.toLocaleString()} <span className={styles.gdsCaption}>photos</span>
           </div>
-          <div style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', marginTop: '6px' }}>
-            {insights.avgPhotosPerMatch.toLocaleString()} <span style={{ fontSize: '14px', fontWeight: 600, color: '#64748b' }}>photos</span>
-          </div>
-          <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>
+          <div className={styles.gdsCaption}>
             {insights.avgPeoplePerMatch.toLocaleString()} people/match • {totalBrandsDetected} commercial brands detected
           </div>
         </div>
 
-        {/* Home Venue Performance */}
         {insights.homeCount > 0 && (
-          <div style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
-              Home Fixtures ({insights.homeCount})
+          <div className={styles.gdsSubCard}>
+            <div className={styles.gdsEyebrow}>Home Fixtures ({insights.homeCount})</div>
+            <div className={styles.gdsSectionKpi}>
+              {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
             </div>
-            <div style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', marginTop: '6px' }}>
-              {insights.homeAvgAtt.toLocaleString()} <span style={{ fontSize: '14px', fontWeight: 600, color: '#64748b' }}>avg gate</span>
-            </div>
-            <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>
+            <div className={styles.gdsCaption}>
               {insights.homeFillPct}% avg stadium fill • Record: <strong>{insights.homeRecord}</strong>
             </div>
           </div>
         )}
 
-        {/* Away Fixture Performance */}
         {isPartnerScope && insights.awayCount > 0 && (
-          <div style={{ padding: '16px', borderRadius: '12px', background: '#f8fafc', border: '1px solid #e2e8f0' }}>
-            <div style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', color: '#64748b', letterSpacing: '0.05em' }}>
-              Away Fixtures ({insights.awayCount})
+          <div className={styles.gdsSubCard}>
+            <div className={styles.gdsEyebrow}>Away Fixtures ({insights.awayCount})</div>
+            <div className={styles.gdsSectionKpi}>
+              {insights.awayAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
             </div>
-            <div style={{ fontSize: '30px', fontWeight: 800, color: '#0f172a', marginTop: '6px' }}>
-              {insights.awayAvgAtt.toLocaleString()} <span style={{ fontSize: '14px', fontWeight: 600, color: '#64748b' }}>avg gate</span>
-            </div>
-            <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>
+            <div className={styles.gdsCaption}>
               {insights.awayFillPct}% avg stadium fill • Record: <strong>{insights.awayRecord}</strong>
             </div>
           </div>

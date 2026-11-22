@@ -112,13 +112,13 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
   const thirdLabel = clubMode ? 'Losses' : 'Visitor Wins';
 
   return (
-    <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
+      <div className={styles.gdsRowBetween}>
         <div>
-          <div className={styles.cardSubtitle}>{clubMode ? 'Club Match Record' : 'Competitive Balance & Results'}</div>
-          <h3 className={styles.cardTitle}>{clubMode ? `${partnerName} Results (Win / Draw / Loss)` : 'Home vs. Visitor Win Distribution'}</h3>
+          <div className={styles.gdsEyebrow}>{clubMode ? 'Club Match Record' : 'Competitive Balance & Results'}</div>
+          <h3 className={styles.gdsCardTitle}>{clubMode ? `${partnerName} Results (Win / Draw / Loss)` : 'Home vs. Visitor Win Distribution'}</h3>
         </div>
-        <div style={{ fontSize: '13px', color: 'var(--gds-sys-color-neutral-60, #4b5563)', fontWeight: 500 }}>
+        <div className={`${styles.gdsCaption} ${styles.gdsNum}`}>
           {totalMatches} Completed Fixtures
         </div>
       </div>
@@ -130,113 +130,52 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
           height: '24px',
           borderRadius: '8px',
           overflow: 'hidden',
-          backgroundColor: '#f3f4f6',
-          boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.06)',
+          backgroundColor: 'var(--mm-gray-100)',
         }}
       >
         {homeWinRate > 0 && (
           <div
             title={`${firstLabel}: ${homeWins} (${homeWinRate}%)`}
-            style={{
-              width: `${homeWinRate}%`,
-              backgroundColor: 'var(--report-primary, #059669)',
-              transition: 'width 0.4s ease',
-            }}
+            style={{ width: `${homeWinRate}%`, backgroundColor: 'var(--report-primary, var(--mm-gray-800))' }}
           />
         )}
         {drawRate > 0 && (
           <div
             title={`Draws: ${draws} (${drawRate}%)`}
-            style={{
-              width: `${drawRate}%`,
-              backgroundColor: '#9ca3af',
-              transition: 'width 0.4s ease',
-            }}
+            style={{ width: `${drawRate}%`, backgroundColor: 'var(--mm-gray-400)' }}
           />
         )}
         {awayWinRate > 0 && (
           <div
             title={`${thirdLabel}: ${awayWins} (${awayWinRate}%)`}
-            style={{
-              width: `${awayWinRate}%`,
-              backgroundColor: clubMode ? '#64748b' : '#2563eb',
-              transition: 'width 0.4s ease',
-            }}
+            style={{ width: `${awayWinRate}%`, backgroundColor: 'var(--report-accent, var(--mm-gray-600))' }}
           />
         )}
       </div>
 
       {/* Outcome Cards Grid */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-          gap: '12px',
-        }}
-      >
-        {/* First Outcome */}
-        <div
-          style={{
-            padding: '12px 14px',
-            borderRadius: '8px',
-            backgroundColor: 'var(--report-primary-soft, #ecfdf5)',
-            border: '1px solid #cbd5e1',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
-          <div style={{ fontSize: '12px', color: 'var(--report-primary, #047857)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--report-primary, #059669)' }} />
-            {firstLabel}
-          </div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#0f172a' }}>
-            {homeWins}
-            <span style={{ fontSize: '13px', fontWeight: 500, color: '#64748b', marginLeft: '6px' }}>({homeWinRate}%)</span>
+      <div className={styles.suiteGrid3}>
+        <div className={styles.gdsSubCard}>
+          <div className={`${styles.gdsEyebrow} ${styles.gdsPrimaryText}`}>{firstLabel}</div>
+          <div className={styles.gdsSectionKpi}>
+            {homeWins}{' '}
+            <span className={styles.gdsCaption}>({homeWinRate}%)</span>
           </div>
         </div>
 
-        {/* Draws */}
-        <div
-          style={{
-            padding: '12px 14px',
-            borderRadius: '8px',
-            backgroundColor: '#f9fafb',
-            border: '1px solid #e5e7eb',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
-          <div style={{ fontSize: '12px', color: '#4b5563', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#9ca3af' }} />
-            Draws
-          </div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: '#1f2937' }}>
-            {draws}
-            <span style={{ fontSize: '13px', fontWeight: 500, color: '#4b5563', marginLeft: '6px' }}>({drawRate}%)</span>
+        <div className={styles.gdsSubCard}>
+          <div className={styles.gdsEyebrow}>Draws</div>
+          <div className={styles.gdsSectionKpi}>
+            {draws}{' '}
+            <span className={styles.gdsCaption}>({drawRate}%)</span>
           </div>
         </div>
 
-        {/* Away / Losses */}
-        <div
-          style={{
-            padding: '12px 14px',
-            borderRadius: '8px',
-            backgroundColor: clubMode ? '#f8fafc' : '#eff6ff',
-            border: clubMode ? '1px solid #e2e8f0' : '1px solid #dbeafe',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '4px',
-          }}
-        >
-          <div style={{ fontSize: '12px', color: clubMode ? '#475569' : '#1d4ed8', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: clubMode ? '#64748b' : '#2563eb' }} />
-            {thirdLabel}
-          </div>
-          <div style={{ fontSize: '22px', fontWeight: 700, color: clubMode ? '#334155' : '#1e40af' }}>
-            {awayWins}
-            <span style={{ fontSize: '13px', fontWeight: 500, color: clubMode ? '#64748b' : '#1d4ed8', marginLeft: '6px' }}>({awayWinRate}%)</span>
+        <div className={styles.gdsSubCard}>
+          <div className={styles.gdsEyebrow}>{thirdLabel}</div>
+          <div className={styles.gdsSectionKpi}>
+            {awayWins}{' '}
+            <span className={styles.gdsCaption}>({awayWinRate}%)</span>
           </div>
         </div>
       </div>

@@ -2605,3 +2605,123 @@
   font-size: var(--mm-font-size-sm);
 }
 
+/* Shared GDS Layout & Interactive Primitives */
+.gdsStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-5);
+}
+
+.gdsStackSm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-3);
+}
+
+.gdsRowBetween {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-3);
+}
+
+.gdsRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-3);
+}
+
+.gdsSegmentGroup {
+  display: inline-flex;
+  background: var(--mm-gray-100);
+  padding: 3px;
+  border-radius: var(--mm-radius-md, 8px);
+}
+
+.gdsSegmentBtn {
+  padding: 4px 10px;
+  border-radius: var(--mm-radius-sm, 6px);
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-xs);
+  font-weight: 600;
+}
+
+.gdsSegmentBtnActive {
+  background: var(--mm-white);
+  color: var(--mm-gray-900);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.gdsSubCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-2);
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-md, 8px);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+}
+
+.gdsPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  font-size: var(--mm-font-size-xs);
+  font-weight: 600;
+  color: var(--mm-gray-700);
+}
+
+.gdsPillAccent {
+  background: var(--report-primary-soft, var(--mm-gray-100));
+  border-color: var(--report-primary-soft, var(--mm-gray-200));
+  color: var(--report-primary, var(--mm-gray-800));
+}
+
+.gdsFunnelCard {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-3) var(--mm-space-4);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-3);
+}
+
+.gdsFunnelConnector {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-3);
+  padding: 0 var(--mm-space-6);
+}
+
+.gdsFunnelLine {
+  width: 2px;
+  height: 16px;
+  background: var(--mm-gray-300);
+  margin-left: var(--mm-space-3);
+}
+
+.gdsFooterNote {
+  border-top: 1px solid var(--mm-gray-200);
+  padding-top: var(--mm-space-3);
+}
+
+.gdsPrimaryText {
+  color: var(--report-primary, var(--mm-gray-900));
+}
+
+.gdsRight {
+  text-align: right;
+}
+

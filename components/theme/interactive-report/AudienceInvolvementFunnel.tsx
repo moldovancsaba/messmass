@@ -129,56 +129,29 @@ export default function AudienceInvolvementFunnel({
   ];
 
   return (
-    <div className={`${styles.executiveCard} ${className}`} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+    <div className={`${styles.executiveCard} ${styles.gdsStack} ${className}`}>
+      <div className={styles.gdsRowBetween}>
         <div>
-          <div className={styles.cardSubtitle}>Audience Conversion & Monetization</div>
-          <h3 className={styles.cardTitle}>Multi-Tier Audience Involvement Funnel</h3>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--gds-sys-color-neutral-60, #64748b)' }}>
+          <div className={styles.gdsEyebrow}>Audience Conversion & Monetization</div>
+          <h3 className={styles.gdsCardTitle}>Multi-Tier Audience Involvement Funnel</h3>
+          <p className={styles.gdsCaption}>
             Hierarchical conversion from nominal stadium capacity to actual attendance, visual capture, and sponsor opt-ins
           </p>
         </div>
 
         {eventCount > 1 && (
-          <div
-            style={{
-              display: 'inline-flex',
-              background: 'var(--gds-sys-color-surface-container-high, #f1f5f9)',
-              padding: '3px',
-              borderRadius: '8px',
-              fontSize: '12px',
-              fontWeight: 600,
-            }}
-          >
+          <div className={styles.gdsSegmentGroup}>
             <button
               type="button"
               onClick={() => setShowAveragePerMatch(false)}
-              style={{
-                padding: '4px 10px',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                background: !showAveragePerMatch ? '#ffffff' : 'transparent',
-                color: !showAveragePerMatch ? 'var(--gds-sys-color-on-surface, #0f172a)' : '#64748b',
-                boxShadow: !showAveragePerMatch ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease',
-              }}
+              className={`${styles.gdsSegmentBtn} ${!showAveragePerMatch ? styles.gdsSegmentBtnActive : ''}`}
             >
               Campaign Total
             </button>
             <button
               type="button"
               onClick={() => setShowAveragePerMatch(true)}
-              style={{
-                padding: '4px 10px',
-                borderRadius: '6px',
-                border: 'none',
-                cursor: 'pointer',
-                background: showAveragePerMatch ? '#ffffff' : 'transparent',
-                color: showAveragePerMatch ? 'var(--gds-sys-color-on-surface, #0f172a)' : '#64748b',
-                boxShadow: showAveragePerMatch ? '0 1px 2px rgba(0,0,0,0.06)' : 'none',
-                transition: 'all 0.15s ease',
-              }}
+              className={`${styles.gdsSegmentBtn} ${showAveragePerMatch ? styles.gdsSegmentBtnActive : ''}`}
             >
               Avg. Per Match ({eventCount})
             </button>
@@ -187,86 +160,44 @@ export default function AudienceInvolvementFunnel({
       </div>
 
       {/* Funnel Steps Breakdown */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className={styles.gdsStackSm}>
         {stages.map((stage, idx) => (
-          <div key={stage.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div
-              style={{
-                background: stage.bgColor,
-                border: `1px solid ${stage.borderColor}`,
-                borderRadius: '12px',
-                padding: '14px 18px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '12px',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', minWidth: '220px' }}>
-                <span style={{ fontSize: '24px' }}>{stage.icon}</span>
+          <div key={stage.id} className={styles.gdsStackSm}>
+            <div className={styles.gdsFunnelCard}>
+              <div className={styles.gdsRow}>
+                <span className={styles.gdsSectionTitle}>{stage.icon}</span>
                 <div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--gds-sys-color-on-surface, #0f172a)' }}>
-                    {stage.title}
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                    {stage.description}
-                  </div>
+                  <div className={styles.gdsCardTitle}>{stage.title}</div>
+                  <div className={styles.gdsCaption}>{stage.description}</div>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--gds-sys-color-on-surface, #0f172a)', fontVariantNumeric: 'tabular-nums' }}>
+              <div className={styles.gdsRow}>
+                <div className={styles.gdsRight}>
+                  <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                     {stage.value.toLocaleString()}
                   </div>
-                  <div style={{ fontSize: '11px', color: '#64748b', fontWeight: 500 }}>
-                    {stage.unit}
-                  </div>
+                  <div className={styles.gdsCaption}>{stage.unit}</div>
                 </div>
 
-                <div
-                  style={{
-                    padding: '4px 10px',
-                    borderRadius: '999px',
-                    background: '#ffffff',
-                    border: `1px solid ${stage.borderColor}`,
-                    color: stage.badgeColor,
-                    fontSize: '12px',
-                    fontWeight: 700,
-                  }}
-                >
+                <div className={`${styles.gdsPill} ${styles.gdsPillAccent}`}>
                   {stage.badgeText}
                 </div>
               </div>
-              <div style={{ width: '100%', height: '4px', background: 'rgba(15, 23, 42, 0.06)', borderRadius: '999px', overflow: 'hidden', flexBasis: '100%' }}>
+              <div className={styles.suiteTrack}>
                 <div
-                  style={{
-                    width: `${Math.max(3, Math.min(100, stage.pctOfTop))}%`,
-                    height: '100%',
-                    background: stage.badgeColor,
-                    borderRadius: '999px',
-                    transition: 'width 0.3s ease',
-                  }}
+                  className={styles.suiteTrackFill}
+                  style={{ width: `${Math.max(3, Math.min(100, stage.pctOfTop))}%` }}
                 />
               </div>
             </div>
 
             {/* Stepped Conversion Connector between stages */}
             {idx < stages.length - 1 && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '0 24px',
-                  fontSize: '12px',
-                  color: '#64748b',
-                }}
-              >
-                <div style={{ width: '2px', height: '16px', background: '#cbd5e1', marginLeft: '12px' }} />
-                <span>
-                  ↓ <strong>{stages[idx + 1].conversionFromPrev}</strong> ({stages[idx + 1].conversionDetail})
+              <div className={styles.gdsFunnelConnector}>
+                <div className={styles.gdsFunnelLine} />
+                <span className={styles.gdsCaption}>
+                  ↓ <strong className={styles.gdsNum}>{stages[idx + 1].conversionFromPrev}</strong> ({stages[idx + 1].conversionDetail})
                 </span>
               </div>
             )}
@@ -275,20 +206,12 @@ export default function AudienceInvolvementFunnel({
       </div>
 
       {/* Summary Narrative Callout */}
-      <div
-        style={{
-          borderTop: '1px solid var(--gds-sys-color-surface-container, #e2e8f0)',
-          paddingTop: '12px',
-          fontSize: '12px',
-          color: '#64748b',
-          lineHeight: 1.5,
-        }}
-      >
+      <div className={`${styles.gdsFooterNote} ${styles.gdsCaption}`}>
         💡 <strong>Executive Summary:</strong> Across {eventCount} matchday fixtures, the nominal venue footprint of{' '}
-        <strong>{totalVenueCapacity.toLocaleString()} seats</strong> yielded{' '}
-        <strong>{totalGateAttendance.toLocaleString()} attendees</strong> ({fillRate}% utilization). Photographic sampling
-        captured <strong>{totalPeopleDetected.toLocaleString()} fan exposures</strong> ({captureRate}% visual reach),
-        culminating in <strong>{leads.toLocaleString()} direct sponsor leads</strong>.
+        <strong className={styles.gdsNum}>{totalVenueCapacity.toLocaleString()} seats</strong> yielded{' '}
+        <strong className={styles.gdsNum}>{totalGateAttendance.toLocaleString()} attendees</strong> ({fillRate}% utilization). Photographic sampling
+        captured <strong className={styles.gdsNum}>{totalPeopleDetected.toLocaleString()} fan exposures</strong> ({captureRate}% visual reach),
+        culminating in <strong className={styles.gdsNum}>{leads.toLocaleString()} direct sponsor leads</strong>.
       </div>
     </div>
   );

@@ -68,110 +68,64 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
   const avgFill = analytics?.avgCapacityUtilization ?? (totalCap > 0 ? Math.round((totalAtt / totalCap) * 1000) / 10 : 0);
 
   return (
-    <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
+    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
+      <div className={styles.gdsRowBetween}>
         <div>
-          <div className={styles.cardSubtitle}>Stadium Footprint & Attendance Utilization</div>
-          <h3 className={styles.cardTitle}>Venue Capacity vs. Gate Turnout</h3>
+          <div className={styles.gdsEyebrow}>Stadium Footprint & Attendance Utilization</div>
+          <h3 className={styles.gdsCardTitle}>Venue Capacity vs. Gate Turnout</h3>
         </div>
-        <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>Avg Fill Rate</div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--report-primary, #059669)', fontVariantNumeric: 'tabular-nums' }}>{avgFill}%</div>
+        <div className={styles.gdsRow}>
+          <div className={styles.gdsRight}>
+            <div className={styles.gdsEyebrow}>Avg Fill Rate</div>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsPrimaryText}`}>{avgFill}%</div>
           </div>
-          <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>Total Footprint</div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>{totalCap.toLocaleString()}</div>
+          <div className={styles.gdsRight}>
+            <div className={styles.gdsEyebrow}>Total Footprint</div>
+            <div className={styles.gdsSectionKpi}>{totalCap.toLocaleString()}</div>
           </div>
         </div>
       </div>
 
       {/* Venues Bar Leaderboard */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className={styles.gdsStackSm}>
         {venueLeaderboard.map((v) => {
           const cumulativeCap = v.cumulativeCapacity;
           const fillRate = cumulativeCap > 0 ? Math.round((v.totalAttendance / cumulativeCap) * 1000) / 10 : 0;
           return (
-            <div
-              key={v.name}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '6px',
-                padding: '12px',
-                borderRadius: '8px',
-                backgroundColor: '#f9fafb',
-                border: '1px solid #f3f4f6',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '16px' }}>{v.isIndoor ? '🏟️' : '⚽'}</span>
-                  <span style={{ fontWeight: 600, color: '#111827', fontSize: '14px' }}>{v.name}</span>
+            <div key={v.name} className={styles.gdsSubCard}>
+              <div className={styles.gdsRowBetween}>
+                <div className={styles.gdsRow}>
+                  <span>{v.isIndoor ? '🏟️' : '⚽'}</span>
+                  <span className={styles.gdsBody}>{v.name}</span>
                   {v.isIndoor && (
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        backgroundColor: '#e0f2fe',
-                        color: '#0369a1',
-                        fontWeight: 600,
-                      }}
-                    >
-                      Indoor Arena
-                    </span>
+                    <span className={`${styles.gdsPill} ${styles.gdsPillAccent}`}>Indoor Arena</span>
                   )}
                   {v.eventsCount > 1 && (
-                    <span style={{ fontSize: '12px', color: '#6b7280' }}>
+                    <span className={styles.gdsCaption}>
                       ({v.eventsCount} events • {cumulativeCap.toLocaleString()} total cap)
                     </span>
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div className={styles.gdsRow}>
                   {v.sampleWeather && (
                     <span
                       title={`Kickoff Weather: ${v.sampleWeather.tempC}°C, ${v.sampleWeather.condition}`}
-                      style={{
-                        fontSize: '12px',
-                        color: '#4b5563',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        backgroundColor: '#ffffff',
-                        padding: '2px 8px',
-                        borderRadius: '12px',
-                        border: '1px solid #e5e7eb',
-                      }}
+                      className={styles.gdsPill}
                     >
                       {v.isIndoor ? `Outside: ${v.sampleWeather.tempC}°C · Indoor 🏟️` : `${v.sampleWeather.tempC}°C ${v.sampleWeather.condition}`}
                     </span>
                   )}
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--report-primary, #1d4ed8)' }}>
+                  <span className={`${styles.gdsBody} ${styles.gdsNum} ${styles.gdsPrimaryText}`}>
                     {v.totalAttendance.toLocaleString()} fans ({fillRate}% fill)
                   </span>
                 </div>
               </div>
 
-              {/* Capacity Fill Progress Bar */}
-              <div
-                style={{
-                  height: '8px',
-                  borderRadius: '4px',
-                  backgroundColor: '#e5e7eb',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-              >
+              <div className={styles.suiteTrack}>
                 <div
-                  style={{
-                    height: '100%',
-                    width: `${Math.min(100, fillRate)}%`,
-                    backgroundColor: fillRate > 75 ? 'var(--report-primary, #1d4ed8)' : fillRate > 40 ? 'var(--report-accent, #3b82f6)' : '#f59e0b',
-                    borderRadius: '4px',
-                    transition: 'width 0.4s ease',
-                  }}
+                  className={styles.suiteTrackFill}
+                  style={{ width: `${Math.min(100, fillRate)}%` }}
                 />
               </div>
             </div>

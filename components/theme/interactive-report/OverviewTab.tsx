@@ -314,7 +314,7 @@ export default function OverviewTab({
           Act 6: Sporting Context & Environmental Intelligence (Venue & Weather)
           Act 7: Tactical Verification (Timeline Scrubber & Touchpoints)
           ========================================================================= */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+      <div className={styles.suiteStack}>
         {/* ACT 1: Executive Bottom Line (Only in non-Fanmass clicker mode; Fanmass mode uses the unified SzrtHeader KPI strip) */}
         {!isFanmass ? (
           <ExecutiveHeroKpis
@@ -333,11 +333,9 @@ export default function OverviewTab({
             matchdayAnalytics={data.matchdayAnalytics}
           />
         ) : sportOptions.length >= 2 ? (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '12px 18px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
-              Filter by Sport
-            </span>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          <div className={`${styles.executiveCard} ${styles.gdsRowBetween}`}>
+            <span className={styles.gdsEyebrow}>Filter by Sport</span>
+            <div className={styles.gdsRow}>
               {['all', ...sportOptions].map((sport) => {
                 const isActive = selectedSport.toLowerCase() === sport.toLowerCase();
                 return (
@@ -345,16 +343,7 @@ export default function OverviewTab({
                     key={sport}
                     type="button"
                     onClick={() => setSelectedSport(sport)}
-                    style={{
-                      padding: '5px 12px',
-                      borderRadius: '999px',
-                      border: '1px solid #cbd5e1',
-                      fontSize: '12px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      background: isActive ? 'var(--report-primary, #1d4ed8)' : '#f8fafc',
-                      color: isActive ? '#ffffff' : '#475569',
-                    }}
+                    className={`${styles.sportFilterBtn} ${isActive ? styles.sportFilterBtnActive : ''}`}
                   >
                     {sport === 'all' ? '🏆 All Sports' : `${SPORT_ICONS[sport] || '🏅'} ${sport}`}
                   </button>
@@ -379,26 +368,17 @@ export default function OverviewTab({
 
         {/* ACT 3: Analyzed Events & Direct Event AI Report Links */}
         {isFanmass && data.matches && data.matches.length > 0 && (
-          <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+          <div className={`${styles.executiveCard} ${styles.gdsStackSm}`}>
+            <div className={styles.gdsRowBetween}>
               <div>
-                <div className={styles.cardSubtitle}>Event-Level AI Analytics</div>
-                <h3 className={styles.cardTitle}>Analyzed Fixtures & Event Reports ({data.matches.length})</h3>
+                <div className={styles.gdsEyebrow}>Event-Level AI Analytics</div>
+                <h3 className={styles.gdsCardTitle}>Analyzed Fixtures & Event Reports ({data.matches.length})</h3>
               </div>
               {onViewMatches && data.matches.length > 8 && (
                 <button
                   type="button"
                   onClick={onViewMatches}
-                  style={{
-                    background: 'var(--report-primary-soft, #eff6ff)',
-                    color: 'var(--report-primary, #1d4ed8)',
-                    border: 'none',
-                    padding: '6px 14px',
-                    borderRadius: '8px',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                  }}
+                  className={`${styles.gdsPill} ${styles.gdsPillAccent}`}
                 >
                   View All {data.matches.length} Events →
                 </button>
@@ -425,35 +405,23 @@ export default function OverviewTab({
                       <tr key={m.id || idx} className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}>
                         <td className={`${styles.thCell} ${styles.matchTitle}`}>
                           {hasEventId ? (
-                            <a href={`/interactive-report/event/${m.id}`} style={{ color: 'var(--report-primary, #1d4ed8)', textDecoration: 'none', fontWeight: 700 }}>
+                            <a href={`/interactive-report/event/${m.id}`} className={`${styles.gdsPrimaryText} ${styles.gdsNum}`}>
                               {m.cleanName}
                             </a>
                           ) : (
                             m.cleanName
                           )}
                         </td>
-                        <td className={styles.thCell}>{m.date || '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.date || '—'}</td>
                         <td className={styles.thCell}>{m.venue || '—'}</td>
-                        <td className={styles.thCell}>{hasScore ? `${m.homeScore} : ${m.visitorScore}` : '—'}</td>
-                        <td className={styles.thCell}>{m.attendance && m.attendance > 0 ? m.attendance.toLocaleString() : '—'}</td>
-                        <td className={styles.thCell} style={{ fontWeight: 700 }}>{m.submitted.toLocaleString()}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{hasScore ? `${m.homeScore} : ${m.visitorScore}` : '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.attendance && m.attendance > 0 ? m.attendance.toLocaleString() : '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.submitted.toLocaleString()}</td>
                         <td className={styles.thCell}>
                           {hasEventId ? (
                             <a
                               href={`/interactive-report/event/${m.id}`}
-                              style={{
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: '4px',
-                                padding: '4px 10px',
-                                borderRadius: '6px',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                background: 'var(--report-primary-soft, #eff6ff)',
-                                color: 'var(--report-primary, #1d4ed8)',
-                                textDecoration: 'none',
-                                whiteSpace: 'nowrap',
-                              }}
+                              className={`${styles.gdsPill} ${styles.gdsPillAccent}`}
                             >
                               Open AI Report →
                             </a>
