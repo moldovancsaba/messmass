@@ -90,8 +90,8 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
   const visionLabel =
     vision && vision.totalImages > 0
-      ? `AI Photo & Brand Proof (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
-      : 'AI Photo & Brand Proof';
+      ? `Fan Photo & Brand Proof (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
+      : 'Fan Photo & Brand Proof';
 
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
@@ -172,7 +172,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
           <div className={styles.kpiGrid}>
             {[
               {
-                label: 'AI Analysed Photos',
+                label: 'Analysed Fan Photos',
                 value: vision?.processedCount ?? (fanmass.measured.drive.analysed + fanmass.measured.photos.analysed),
                 text: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} total photos` : null,
               },

@@ -413,8 +413,8 @@ export default function OverviewTab({
                     <th className={styles.thCell}>Venue</th>
                     <th className={styles.thCell}>Score</th>
                     <th className={styles.thCell}>Attendance</th>
-                    <th className={styles.thCell}>AI Photos</th>
-                    <th className={styles.thCell}>Event AI Report</th>
+                    <th className={styles.thCell}>Fan Photos</th>
+                    <th className={styles.thCell}>Event Report</th>
                   </tr>
                 </thead>
                 <tbody>

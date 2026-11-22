@@ -245,12 +245,11 @@ async function run(apply: boolean) {
         oneClubSkippedForeign++;
       }
     } else {
-      // 0 clubs identified -> distribute evenly within the SAME sport so every Tippmix event has >= 1 photo
-      const chosen = pickLeastLoaded(sportEvents);
-      chosen.assignedCount++;
-      t.newEventId = chosen.id;
-      t.confidence = 0.5;
-      t.method = 'same_sport_balanced';
+      // 0 clubs identified -> NEVER fabricate per-match counts by round-robinning.
+      // Leave eventId: null (campaign/sport-level library photo only).
+      t.newEventId = null;
+      t.confidence = 0;
+      t.method = 'unassigned_no_club_signal';
       genericDistributed++;
     }
   }
