@@ -5,6 +5,7 @@ import clientPromise from '@/lib/mongodb';
 import { getScopedInteractiveReportData, resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
 import { buildProjectsReport } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
+import { matchesVariantEventFilter, type CompetitionFilter } from '@/lib/sportCompetitions';
 import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import ServerPageGate from '@/components/ServerPageGate';
@@ -17,7 +18,7 @@ export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ report?: string }>;
+  searchParams?: Promise<{ report?: string; variant?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -63,7 +64,31 @@ export default async function OrganizationInteractiveReportPage({ params, search
   const client = await clientPromise;
   const db = client.db(config.dbName);
   const scope = await resolveScopeProjectIds('organization', decoded, undefined, db);
-  const report = await buildProjectsReport(db as unknown as ReportDb, scope.campaignProjects, data.scope?.name || decoded);
 
-  return <FanmassDashboardPage report={report} base={data} />;
+  let targetProjects = scope.campaignProjects;
+  let scopedBase = data;
+  if (resolvedSearchParams.variant) {
+    const variantDoc = await db.collection('report_variants').findOne({
+      ownerType: 'organization',
+      ownerId: scope.scopeHeader.id,
+      slug: resolvedSearchParams.variant,
+    });
+    if (variantDoc?.eventFilter) {
+      const evFilter = variantDoc.eventFilter as CompetitionFilter;
+      targetProjects = scope.campaignProjects.filter((p) => matchesVariantEventFilter(p, evFilter));
+      const allowedIds = new Set(targetProjects.map((p) => String(p._id)));
+      const allowedNames = new Set(targetProjects.map((p) => String(p.eventName || '').toLowerCase().trim()));
+      scopedBase = {
+        ...data,
+        scope: data.scope
+          ? { ...data.scope, name: `${data.scope.name} — ${String(variantDoc.name)}` }
+          : undefined,
+        matches: data.matches.filter((m) => allowedIds.has(m.id) || allowedNames.has((m.matchName || '').toLowerCase().trim())),
+      };
+    }
+  }
+
+  const report = await buildProjectsReport(db as unknown as ReportDb, targetProjects, scopedBase.scope?.name || decoded);
+
+  return <FanmassDashboardPage report={report} base={scopedBase} />;
 }

@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       periodPreset?: ReportPeriodPreset;
       customDateRange?: ReportCustomDateRange | null;
       timezone?: string;
+      eventFilter?: Record<string, unknown> | null;
     } | null;
 
     if (!body?.ownerType || !ALLOWED_OWNER_TYPES.includes(body.ownerType)) {
@@ -81,6 +82,7 @@ export async function POST(request: NextRequest) {
       periodPreset: body.periodPreset,
       customDateRange: body.customDateRange,
       timezone: body.timezone,
+      eventFilter: body.eventFilter || null,
     });
 
     return NextResponse.json({

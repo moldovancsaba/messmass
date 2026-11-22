@@ -22,7 +22,10 @@ const CONFIG: OwnerConfig = {
   },
   reportHref: (id, slug) =>
     slug ? `/organization-report/${id}?variant=${encodeURIComponent(slug)}` : `/organization-report/${id}`,
-  interactiveReportHref: (id) => `/interactive-report/organization/${id}`,
+  interactiveReportHref: (id, slug) =>
+    slug
+      ? `/interactive-report/organization/${id}?variant=${encodeURIComponent(slug)}`
+      : `/interactive-report/organization/${id}`,
   editorHref: (id, slug) =>
     slug ? `/organization-edit/${id}?variant=${encodeURIComponent(slug)}` : `/organization-edit/${id}`,
 };

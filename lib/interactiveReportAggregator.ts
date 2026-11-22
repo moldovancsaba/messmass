@@ -1501,7 +1501,7 @@ const PARTNER_LOOKUP_FIELDS = Object.fromEntries([
 /** The project fields getScopedInteractiveReportData reads. Every scope fetches nothing else: a full stats document of every project of a scope times the page out. */
 const REPORT_PROJECT_FIELDS = Object.fromEntries(
   [
-    'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'hashtags',
+    'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'organizationIds', 'competition', 'categorizedHashtags', 'hashtags',
     'venue', 'match', 'weather',
     ...[
       'userRegistration', 'marketingOptin', 'camera_consents_accepted',
@@ -1823,6 +1823,8 @@ export async function resolveScopeProjectIds(
       $or: [
         { organizationId: orgId },
         { organizationId: orgIdStr },
+        { organizationIds: orgId },
+        { organizationIds: orgIdStr },
         ...(orgPartnerIds.length > 0
           ? [
               { partner1Id: { $in: orgPartnerIds } },

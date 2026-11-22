@@ -10,6 +10,7 @@ import {
 import { normalizeReportPeriodInput, normalizeReportPeriodUpdate } from '@/lib/reportPeriodValidation';
 import { resolveRuntimeReportById, type RuntimeReportResolution } from '@/lib/reportRuntime';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import { matchesVariantEventFilter, type CompetitionFilter } from '@/lib/sportCompetitions';
 import {
   applyStatsFieldChanges,
   editorSequenceGuard,
@@ -27,6 +28,10 @@ export interface ReportVariantEventFilter {
   leagueTags?: string[];
   sponsorTags?: string[];
   sportTags?: string[];
+  formats?: string[];
+  divisions?: string[];
+  tierLabels?: string[];
+  seasons?: string[];
   organizationIds?: string[];
   excludeSyntheticRollups?: boolean;
 }
@@ -489,8 +494,12 @@ export function filterEventsByReportVariant<T extends Record<string, any>>(
     result = result.filter(
       (event) =>
         allowed.has(String(event.organizationId || '')) ||
-        allowed.has(String(event.federationOrganizationId || ''))
+        allowed.has(String(event.federationOrganizationId || '')) ||
+        (Array.isArray(event.organizationIds) && event.organizationIds.some((id: unknown) => allowed.has(String(id))))
     );
+  }
+  if (filter.formats?.length || filter.divisions?.length || filter.tierLabels?.length || filter.seasons?.length) {
+    result = result.filter((event) => matchesVariantEventFilter(event, filter as CompetitionFilter));
   }
   if (filter.leagueTags?.length) {
     const allowed = new Set(filter.leagueTags.map((t) => t.toLowerCase()));
@@ -736,6 +745,7 @@ export async function createReportVariant(
     periodPreset?: ReportPeriodPreset;
     customDateRange?: ReportCustomDateRange | null;
     timezone?: string;
+    eventFilter?: ReportVariantEventFilter | null;
   }
 ): Promise<ReportVariant> {
   const baseSource = await resolveReportVariantBaseSource(db, input.ownerType, input.ownerId);
@@ -764,6 +774,7 @@ export async function createReportVariant(
     timezone: input.timezone || baseSource.timezone || DEFAULT_TIMEZONE,
     periodPreset: normalizedPeriod.periodPreset,
     customDateRange: normalizedPeriod.customDateRange,
+    ...(input.eventFilter ? { eventFilter: input.eventFilter } : {}),
     reportTemplateId: sourceVariant.reportTemplateId || null,
     styleId: sourceVariant.styleId || null,
     logoUrl: sourceVariant.logoUrl || null,

@@ -54,7 +54,7 @@ export async function GET() {
     const db = await getDb();
     const organizations = await db
       .collection<OrganizationRecord>('organizations')
-      .find({})
+      .find({ status: { $ne: 'migrated' } as any })
       .sort({ name: 1 })
       .toArray();
 

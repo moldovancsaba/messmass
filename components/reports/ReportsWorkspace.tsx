@@ -99,6 +99,10 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
     periodPreset: 'all_time',
     customStartDate: '',
     customEndDate: '',
+    sportTag: '',
+    format: '',
+    division: '',
+    tierLabel: '',
   });
   const [shareTarget, setShareTarget] = useState<ReportVariantSummary | null>(null);
 
@@ -161,6 +165,15 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
       };
     }
 
+    if (config.ownerType === 'organization') {
+      const eventFilter: Record<string, unknown> = { excludeSyntheticRollups: true };
+      if (createForm.sportTag) eventFilter.sportTags = [createForm.sportTag];
+      if (createForm.format) eventFilter.formats = [createForm.format];
+      if (createForm.division) eventFilter.divisions = [createForm.division];
+      if (createForm.tierLabel.trim()) eventFilter.tierLabels = [createForm.tierLabel.trim()];
+      payload.eventFilter = eventFilter;
+    }
+
     const result = await apiPost('/api/report-variants', payload);
     if (!result.success) {
       setError(result.error || 'Failed to create report variant');
@@ -168,7 +181,7 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
     }
 
     setCreateOpen(false);
-    setCreateForm({ name: '', periodPreset: 'all_time', customStartDate: '', customEndDate: '' });
+    setCreateForm({ name: '', periodPreset: 'all_time', customStartDate: '', customEndDate: '', sportTag: '', format: '', division: '', tierLabel: '' });
     await loadWorkspace();
   };
 
@@ -376,6 +389,53 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
                 onChange={(value) => setCreateForm((prev) => ({ ...prev, customEndDate: value }))}
                 required
                 error={createFormErrors.customEndDate}
+              />
+            </div>
+          )}
+          {config.ownerType === 'organization' && (
+            <div className={styles.customGrid}>
+              <UnifiedSelectField
+                label="Sport (Optional)"
+                value={createForm.sportTag}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, sportTag: value }))}
+                options={[
+                  { value: '', label: 'All Sports' },
+                  { value: 'basketball', label: 'Basketball' },
+                  { value: 'football', label: 'Football' },
+                  { value: 'handball', label: 'Handball' },
+                  { value: 'ice_hockey', label: 'Ice Hockey' },
+                  { value: 'volleyball', label: 'Volleyball' },
+                ]}
+              />
+              <UnifiedSelectField
+                label="Competition Format"
+                value={createForm.format}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, format: value }))}
+                options={[
+                  { value: '', label: 'All Formats' },
+                  { value: 'league', label: 'League / Bajnokság' },
+                  { value: 'cup', label: 'Cup / Magyar Kupa' },
+                  { value: 'qualifier', label: 'National Qualifiers' },
+                  { value: 'tournament', label: 'Tournament' },
+                ]}
+              />
+              <UnifiedSelectField
+                label="Division"
+                value={createForm.division}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, division: value }))}
+                options={[
+                  { value: '', label: 'All Divisions' },
+                  { value: 'men', label: 'Men (Férfi)' },
+                  { value: 'women', label: 'Women (Női)' },
+                  { value: 'youth_u20', label: 'Youth U20' },
+                  { value: 'youth_u21', label: 'Youth U21' },
+                ]}
+              />
+              <UnifiedInputField
+                label="League Tier (Optional)"
+                value={createForm.tierLabel}
+                onChange={(value) => setCreateForm((prev) => ({ ...prev, tierLabel: value }))}
+                placeholder="e.g. NB I. A, NB I, NB II, Serie A"
               />
             </div>
           )}
