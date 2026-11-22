@@ -161,8 +161,11 @@ export default function OverviewTab({
     : null;
 
   const registeredFans = summary.totalRegistered > 0 ? summary.totalRegistered : null;
-  const resolvedOptIns = Math.max(summary.totalOptIns, vision?.optInImages ?? 0);
-  const resolvedRegistered = Math.max(summary.totalRegistered, resolvedOptIns);
+  const resolvedOptIns = vision?.marketingOptInImages !== undefined
+    ? vision.marketingOptInImages
+    : Math.max(summary.totalOptIns, vision?.optInImages ?? 0);
+  const resolvedRegistered = Math.max(summary.totalRegistered, vision?.optInImages ?? 0, resolvedOptIns);
+  const resolvedCtaClicks = summary.totalCtaClicks > 0 ? summary.totalCtaClicks : (vision?.ctaClickImages ?? 0);
   const resolvedPhotosProcessed = analyzedImages ?? (summary.totalPhotos > 0 ? summary.totalPhotos : 0);
 
   const reportSlug = getReportSlug(data);
@@ -346,7 +349,7 @@ export default function OverviewTab({
           totalOptIns={resolvedOptIns}
           totalRegistered={resolvedRegistered}
           totalPhotosProcessed={resolvedPhotosProcessed}
-          totalCtaClicks={summary.totalCtaClicks}
+          totalCtaClicks={resolvedCtaClicks}
         />
 
         {/* ACT 4: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}

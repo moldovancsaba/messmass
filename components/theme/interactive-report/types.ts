@@ -94,8 +94,12 @@ export interface VisionProgressData {
   currentSport: string;
   currentFile: string;
   lastUpdated: string;
-  /** Photos with a recorded opt-in, as Fanmass counted them; absent until Fanmass sends it. */
+  /** Photos with a recorded PP/GTC & image-rights opt-in, as Fanmass counted them; absent until Fanmass sends it. */
   optInImages?: number;
+  /** Photos with a recorded marketing communication opt-in (optional marketing checkbox accepted). */
+  marketingOptInImages?: number;
+  /** Photos where the user clicked the in-flow pop-up CTA banner. */
+  ctaClickImages?: number;
   aggregates: {
     totalPeople: number;
     genders: {

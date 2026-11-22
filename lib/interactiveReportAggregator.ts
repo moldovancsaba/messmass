@@ -850,6 +850,8 @@ export async function getScopedInteractiveReportData(
               .sort((a, b) => b.count - a.count)
               .map((row) => ({ [keyName]: row.name, count: row.count }) as any);
           };
+          const mktOptIn = drive.withOptIn + (photos.withMarketingOptIn ?? photos.withOptIn ?? 0);
+          const ctaClicksCount = photos.withCtaClicks ?? 0;
           rawVisionDoc = {
             totalImages,
             processedCount: analysed,
@@ -859,6 +861,8 @@ export async function getScopedInteractiveReportData(
             currentFile: '',
             lastUpdated: projectsReport.generatedAt,
             optInImages: drive.withOptIn + (photos.withOptIn ?? 0),
+            marketingOptInImages: mktOptIn,
+            ...(ctaClicksCount > 0 ? { ctaClickImages: ctaClicksCount } : {}),
             aggregates: {
               totalPeople: drive.people + photos.people.measured,
               genders: { male, female, malePct: pct(male), femalePct: pct(female) },
@@ -1218,6 +1222,8 @@ export async function getScopedInteractiveReportData(
         currentFile: visionDoc.currentFile || '',
         lastUpdated: visionDoc.lastUpdated || '',
         ...(visionDoc.optIn ? { optInImages: toCount(visionDoc.optIn.images) } : visionDoc.optInImages !== undefined ? { optInImages: toCount(visionDoc.optInImages) } : {}),
+        ...(visionDoc.marketingOptInImages !== undefined ? { marketingOptInImages: toCount(visionDoc.marketingOptInImages) } : visionDoc.optIn ? { marketingOptInImages: toCount(visionDoc.optIn.images) } : {}),
+        ...(visionDoc.ctaClickImages !== undefined && toCount(visionDoc.ctaClickImages) > 0 ? { ctaClickImages: toCount(visionDoc.ctaClickImages) } : {}),
         ...(Array.isArray(visionDoc.cameraProof) && visionDoc.cameraProof.length > 0 ? { cameraProof: visionDoc.cameraProof } : {}),
         aggregates: {
           totalPeople: toCount(visionDoc.aggregates?.totalPeople),
@@ -1905,6 +1911,15 @@ export async function resolveScopeProjectIds(
     }
 
     project = await db.collection("projects").findOne(eventFilter);
+    if (!project) {
+      const fallbackFilter: any = {
+        $or: [{ viewSlug: scopeIdentifier }, { _id: scopeIdentifier as any }],
+      };
+      if (organizationId) {
+        fallbackFilter.organizationId = organizationId;
+      }
+      project = await db.collection("projects").findOne(fallbackFilter);
+    }
 
     if (!project) {
       return {

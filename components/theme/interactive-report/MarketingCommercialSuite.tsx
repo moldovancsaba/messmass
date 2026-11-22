@@ -82,7 +82,7 @@ export default function MarketingCommercialSuite({
 
   // 2. Pop-up Performance (Empirical Digital Activation)
   const bannerClicks = totalCtaClicks > 0 ? totalCtaClicks : 0;
-  const bannerImpressions = bannerClicks > 0 ? Math.max(bannerClicks, effectiveOptIns > 0 ? effectiveOptIns : totalPhotosProcessed) : 0;
+  const bannerImpressions = bannerClicks > 0 ? Math.max(bannerClicks, effectiveRegistered > 0 ? effectiveRegistered : totalPhotosProcessed) : 0;
   const popUpCtr = bannerImpressions > 0 ? Math.min(Math.round((bannerClicks / bannerImpressions) * 1000) / 10, 100) : 0;
 
   // 3. Real Gender Breakdown (from measured face classifications)
@@ -153,7 +153,28 @@ export default function MarketingCommercialSuite({
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
+              {/* PP, GTC & Image Usage Rights */}
+              <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>PP, GTC & Image Rights</span>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5' }}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                      <path d="m9 12 2 2 4-4" />
+                    </svg>
+                  </div>
+                </div>
+                <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
+                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                    {effectiveRegistered > 0 ? '100.0%' : '0.0%'}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
+                    {effectiveRegistered.toLocaleString()} fans accepted PP, GTC & full image usage rights
+                  </div>
+                </div>
+              </div>
+
               {/* Marketing Opt-in % */}
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -170,7 +191,7 @@ export default function MarketingCommercialSuite({
                     {optInPct.toFixed(1)}%
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                    {effectiveOptIns.toLocaleString()} direct GDPR consented leads
+                    {effectiveOptIns.toLocaleString()} of {effectiveRegistered.toLocaleString()} opted into marketing communications
                   </div>
                 </div>
               </div>
@@ -178,7 +199,7 @@ export default function MarketingCommercialSuite({
               {/* Verified Direct Leads */}
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>GDPR Direct Leads</span>
+                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>GDPR Marketing Leads</span>
                   <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -192,7 +213,7 @@ export default function MarketingCommercialSuite({
                     {effectiveOptIns.toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                    100% verified marketing consent from active fan submissions
+                    Verified marketing communication opt-ins from active submissions
                   </div>
                 </div>
               </div>
@@ -211,7 +232,7 @@ export default function MarketingCommercialSuite({
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
                   <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
-                    {(totalPhotosProcessed > 0 ? totalPhotosProcessed : effectiveOptIns).toLocaleString()}
+                    {(totalPhotosProcessed > 0 ? totalPhotosProcessed : effectiveRegistered).toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
                     Analyzed fan photos across verified matchday activations

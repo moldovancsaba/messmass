@@ -13,8 +13,12 @@ import type { CameraProofEntry } from './cameraProof';
 export interface MeasuredPhotos {
   /** Photo results stored by Messmass (one per analysed photo). */
   analysed: number;
-  /** Analysed photos whose stored result carries a recorded opt-in (counted from the per-photo results). */
+  /** Analysed photos whose stored result carries a recorded PP/GTC/image-rights opt-in (counted from the per-photo results). */
   withOptIn: number | null;
+  /** Analysed photos whose stored result carries a marketing communication opt-in (`marketing` in `optIn.kinds` or `optIn.marketingOptIn === true`). */
+  withMarketingOptIn?: number | null;
+  /** Analysed photos whose stored result carries an in-flow pop-up CTA click (`optIn.ctaClicked === true`). */
+  withCtaClicks?: number | null;
   /** Camera photo results that carry the hashtag themselves (lib/photoHashtags.ts), in any event. */
   tagged: number;
   /** Names Fanmass read from the Camera photos (text-read proof only), counted once per photo. */

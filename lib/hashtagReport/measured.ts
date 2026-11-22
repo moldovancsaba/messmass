@@ -224,8 +224,10 @@ export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array
   const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
 
   const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
-  const [withOptIn, proofRows] = await Promise.all([
+  const [withOptIn, withMarketingOptIn, withCtaClicks, proofRows] = await Promise.all([
     db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.received': true }),
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.kinds': 'marketing' }),
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.ctaClicked': true }),
     db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
   ]);
 
@@ -266,6 +268,8 @@ export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
   photos.withOptIn = withOptIn;
+  photos.withMarketingOptIn = withMarketingOptIn;
+  photos.withCtaClicks = withCtaClicks;
   const toNamedCount = (entry: (typeof cameraProof)[number]) => ({
     name: entry.name,
     count: entry.photos,

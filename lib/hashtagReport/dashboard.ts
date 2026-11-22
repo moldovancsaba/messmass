@@ -116,6 +116,11 @@ export function visionFromReport(report: HashtagReport): VisionProgressData | nu
   const male = genders.male ?? 0;
   const female = genders.female ?? 0;
   const pct = (n: number) => (male + female > 0 ? Math.round((n / (male + female)) * 1000) / 10 : 0);
+  const optInImages = drive.withOptIn + (photos.withOptIn ?? 0);
+  const marketingOptInImages = photos.withMarketingOptIn !== undefined && photos.withMarketingOptIn !== null
+    ? drive.withOptIn + photos.withMarketingOptIn
+    : undefined;
+  const ctaClickImages = photos.withCtaClicks && photos.withCtaClicks > 0 ? photos.withCtaClicks : undefined;
   return {
     totalImages: drive.photos + photos.analysed,
     processedCount: analysed,
@@ -124,7 +129,9 @@ export function visionFromReport(report: HashtagReport): VisionProgressData | nu
     currentSport: '',
     currentFile: '',
     lastUpdated: report.generatedAt,
-    optInImages: drive.withOptIn + (photos.withOptIn ?? 0),
+    optInImages,
+    ...(marketingOptInImages !== undefined ? { marketingOptInImages } : {}),
+    ...(ctaClickImages !== undefined ? { ctaClickImages } : {}),
     aggregates: {
       totalPeople: drive.people + photos.people.measured,
       genders: { male, female, malePct: pct(male), femalePct: pct(female) },

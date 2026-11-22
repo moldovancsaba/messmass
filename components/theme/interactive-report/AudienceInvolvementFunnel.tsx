@@ -32,15 +32,17 @@ export default function AudienceInvolvementFunnel({
   const cap = Math.round(totalVenueCapacity / divisor);
   const att = Math.round(totalGateAttendance / divisor);
   const photo = Math.round(totalPeopleDetected / divisor);
+  const rawRightsConsents = totalRegistered > 0 ? totalRegistered : totalOptIns;
+  const rightsConsents = Math.round(rawRightsConsents / divisor);
   const rawLeads = totalOptIns > 0 ? totalOptIns : totalRegistered;
   const leads = Math.round(rawLeads / divisor);
 
   // Conversion calculations
   const fillRate = totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0;
   const captureRate = totalGateAttendance > 0 ? Math.round((totalPeopleDetected / totalGateAttendance) * 1000) / 10 : 0;
-  const leadRate = photo > 0 && leads > 0 ? Math.min(100, Math.round((leads / photo) * 1000) / 10) : 0;
-  const optInConsentPct = totalRegistered > 0 && rawLeads > 0
-    ? Math.min(100, Math.round((rawLeads / totalRegistered) * 1000) / 10)
+  const rightsRate = photo > 0 && rightsConsents > 0 ? Math.min(100, Math.round((rightsConsents / photo) * 1000) / 10) : 0;
+  const optInConsentPct = rawRightsConsents > 0 && rawLeads > 0
+    ? Math.min(100, Math.round((rawLeads / rawRightsConsents) * 1000) / 10)
     : (rawLeads > 0 ? 100 : 0);
 
   const stages = [
@@ -88,21 +90,38 @@ export default function AudienceInvolvementFunnel({
       description: 'Unique fan appearances recognized by Fanmass computer vision',
     },
     {
+      id: 'rights',
+      title: 'PP, GTC & Image Usage Rights',
+      icon: '🛡️',
+      value: rightsConsents,
+      unit: 'Consented Submissions',
+      pctOfTop: totalVenueCapacity > 0 ? Math.round((rightsConsents / totalVenueCapacity) * 1000) / 10 : 0,
+      conversionFromPrev: `${rightsRate}% Submission Rate`,
+      conversionDetail: rawRightsConsents > 0
+        ? `100% accepted Privacy Policy, GTC & full image usage rights (${rawRightsConsents.toLocaleString()} submissions)`
+        : 'No consent records stored for this scope',
+      badgeText: rawRightsConsents > 0 ? '100% PP & GTC Accepted' : 'Not Measured',
+      badgeColor: '#4f46e5',
+      bgColor: 'rgba(79, 70, 229, 0.04)',
+      borderColor: 'rgba(79, 70, 229, 0.2)',
+      description: 'Fans who accepted Privacy Policy & General Terms and granted full commercial image usage rights',
+    },
+    {
       id: 'leads',
       title: 'Active Marketing Opt-ins',
       icon: '🎯',
       value: leads,
-      unit: 'GDPR Direct Leads',
+      unit: 'GDPR Marketing Leads',
       pctOfTop: totalVenueCapacity > 0 ? Math.round((leads / totalVenueCapacity) * 1000) / 10 : 0,
-      conversionFromPrev: `${leadRate}% Lead Rate`,
+      conversionFromPrev: `${optInConsentPct}% Marketing Opt-in Rate`,
       conversionDetail: rawLeads > 0
-        ? `${optInConsentPct}% opt-in rate (${rawLeads.toLocaleString()} verified opt-ins)`
+        ? `${rawLeads.toLocaleString()} of ${rawRightsConsents.toLocaleString()} consented submissions opted into marketing communications`
         : 'No marketing opt-in records stored for this scope',
-      badgeText: rawLeads > 0 ? `${optInConsentPct}% Opt-in Consent` : 'Not Measured',
+      badgeText: rawLeads > 0 ? `${optInConsentPct}% Marketing Opt-in` : 'Not Measured',
       badgeColor: '#9f1532',
       bgColor: 'rgba(159, 21, 50, 0.04)',
       borderColor: 'rgba(159, 21, 50, 0.2)',
-      description: 'Fans who opted into commercial sponsor communications with verified email',
+      description: 'Fans who explicitly opted into commercial & club marketing communications',
     },
   ];
 

@@ -34,8 +34,10 @@ export interface SnapshotResult {
  *       eventId normalization across all 53 events; zero SZRT fallback leakage.
  *  - 9: full brand/club/demographic rollup enrichment for partner/event/organization scopes alongside FanmassDashboardPage
  *       strict measured-event isolation (zero manual clicker stat mixing).
+ *  - 10: explicit separation of PP, GTC & image usage rights (100% consent) vs. optional marketing communication opt-ins
+ *        and Camera in-flow CTA popup clicks.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 9;
+export const SNAPSHOT_SCHEMA_VERSION = 10;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();
