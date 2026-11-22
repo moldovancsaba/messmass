@@ -301,11 +301,21 @@ export async function getScopedInteractiveReportData(
 
   const { partner, campaignProjects, scopeHeader } = resolvedScope;
 
-  // 2. Resolve partner / event style
+  // 2. Resolve partner / event style (event styleId -> resolved partner styleId -> home partner1 styleId)
   let style = null;
-  const resolvedStyleId = campaignProjects.length === 1 && campaignProjects[0]?.styleId
+  let resolvedStyleId = campaignProjects.length === 1 && campaignProjects[0]?.styleId
     ? campaignProjects[0].styleId
     : partner?.styleId;
+  if (!resolvedStyleId && campaignProjects.length === 1) {
+    const p1Id = campaignProjects[0]?.partner1Id || campaignProjects[0]?.partner1;
+    if (p1Id && ObjectId.isValid(String(p1Id))) {
+      const homePartner = await db.collection('partners').findOne(
+        { _id: new ObjectId(String(p1Id)) },
+        { projection: { styleId: 1 } },
+      );
+      if (homePartner?.styleId) resolvedStyleId = homePartner.styleId;
+    }
+  }
   if (resolvedStyleId && ObjectId.isValid(String(resolvedStyleId))) {
     style =
       (await db.collection('report_styles').findOne({ _id: new ObjectId(String(resolvedStyleId)) })) ||

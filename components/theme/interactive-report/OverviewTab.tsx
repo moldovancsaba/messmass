@@ -525,12 +525,14 @@ export default function OverviewTab({
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
-            <MatchOutcomesChart
-              matches={data.matches}
-              scopeType={data.scope?.type}
-              partnerName={data.partner?.name || scopeName}
-              analytics={data.matchdayAnalytics}
-            />
+            {data.scope?.type !== 'event' && (data.matches?.length ?? 0) > 1 && (
+              <MatchOutcomesChart
+                matches={data.matches}
+                scopeType={data.scope?.type}
+                partnerName={data.partner?.name || scopeName}
+                analytics={data.matchdayAnalytics}
+              />
+            )}
           </div>
         )}
 
