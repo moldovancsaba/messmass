@@ -146,11 +146,11 @@ export default function ExecutiveBentoGrid({
           {genders && genderTotal > 0 ? (
             <div className={styles.bentoDonutMajor}>
               <div className={styles.bentoDonut}>
-                <svg viewBox="0 0 36 36" className={styles.donutSvg} aria-hidden="true">
-                  <circle cx="18" cy="18" r="15.9155" className={styles.donutTrack} />
+                <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
+                  <circle cx="21" cy="21" r="15.9155" className={styles.donutTrack} />
                   <circle
-                    cx="18"
-                    cy="18"
+                    cx="21"
+                    cy="21"
                     r="15.9155"
                     className={styles.donutArcPrimary}
                     strokeDasharray={`${malePct} ${Math.max(0, 100 - malePct)}`}
@@ -219,7 +219,7 @@ export default function ExecutiveBentoGrid({
             <h2 className={styles.gdsCardTitle}>Activation funnel</h2>
           </div>
           <span className={styles.bentoPanelStatus}>
-            {eventsCount > 0 ? `${eventsCount} events` : 'Scope'}
+            {eventsCount > 0 ? `${eventsCount} ${eventsCount === 1 ? 'event' : 'events'}` : 'Scope'}
           </span>
         </header>
         <div className={styles.bentoPanelBody}>
@@ -335,11 +335,11 @@ export default function ExecutiveBentoGrid({
           {hasVetting ? (
             <div className={styles.bentoDonutMajor}>
               <div className={styles.bentoDonut}>
-                <svg viewBox="0 0 36 36" className={styles.donutSvg} aria-hidden="true">
-                  <circle cx="18" cy="18" r="15.9155" className={styles.donutTrack} />
+                <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
+                  <circle cx="21" cy="21" r="15.9155" className={styles.donutTrack} />
                   <circle
-                    cx="18"
-                    cy="18"
+                    cx="21"
+                    cy="21"
                     r="15.9155"
                     className={styles.donutArcSuccess}
                     strokeDasharray={`${vettingApprovalRate} ${Math.max(0, 100 - vettingApprovalRate)}`}
@@ -541,11 +541,11 @@ export default function ExecutiveBentoGrid({
           {totalVenueCoded > 0 ? (
             <div className={styles.bentoDonutMajor}>
               <div className={styles.bentoDonut}>
-                <svg viewBox="0 0 36 36" className={styles.donutSvg} aria-hidden="true">
-                  <circle cx="18" cy="18" r="15.9155" className={styles.donutTrack} />
+                <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
+                  <circle cx="21" cy="21" r="15.9155" className={styles.donutTrack} />
                   <circle
-                    cx="18"
-                    cy="18"
+                    cx="21"
+                    cy="21"
                     r="15.9155"
                     className={styles.donutArcPrimary}
                     strokeDasharray={`${indoorPct} ${Math.max(0, 100 - indoorPct)}`}
