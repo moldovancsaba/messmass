@@ -23,6 +23,7 @@ import MatchOutcomesChart from './MatchOutcomesChart';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
 import MatchdayAnalyticsSuite from './MatchdayAnalyticsSuite';
 import ChartLibraryShowcase from './ChartLibraryShowcase';
+import MessmassAlgorithmsSuite from './MessmassAlgorithmsSuite';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
 import { REPORT_CHART_PALETTE } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
@@ -555,6 +556,16 @@ export default function OverviewTab({
             />
           </>
         )}
+
+        <MessmassAlgorithmsSuite
+          data={data}
+          fanAppearances={fanAppearances}
+          resolvedOptIns={resolvedOptIns}
+          resolvedPhotosProcessed={resolvedPhotosProcessed}
+          resolvedCtaClicks={resolvedCtaClicks}
+          clubsCountSum={filteredClubs.reduce((s, c) => s + c.count, 0)}
+          primaryColor={primaryColor}
+        />
       </div>
 
       {/* Connected Selfies Modal (Launched when any club in the podium or list is clicked) */}
