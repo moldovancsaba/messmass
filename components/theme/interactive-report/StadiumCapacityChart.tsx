@@ -68,70 +68,44 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
   const avgFill = analytics?.avgCapacityUtilization ?? (totalCap > 0 ? Math.round((totalAtt / totalCap) * 1000) / 10 : 0);
 
   return (
-    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
-      <div className={styles.gdsRowBetween}>
-        <div>
-          <div className={styles.gdsEyebrow}>Stadium Footprint & Attendance Utilization</div>
-          <h3 className={styles.gdsCardTitle}>Venue Capacity vs. Gate Turnout</h3>
+    <article className={styles.bentoPanel}>
+      <header className={styles.bentoPanelHeader}>
+        <div className={styles.bentoPanelTitle}>
+          <span className={styles.bentoPanelIcon} aria-hidden="true">🏟️</span>
+          <h2 className={styles.gdsCardTitle}>Venue capacity vs. gate turnout</h2>
         </div>
-        <div className={styles.gdsRow}>
-          <div className={styles.gdsRight}>
-            <div className={styles.gdsEyebrow}>Avg Fill Rate</div>
-            <div className={`${styles.gdsSectionKpi} ${styles.gdsPrimaryText}`}>{avgFill}%</div>
-          </div>
-          <div className={styles.gdsRight}>
-            <div className={styles.gdsEyebrow}>Total Footprint</div>
-            <div className={styles.gdsSectionKpi}>{totalCap.toLocaleString()}</div>
-          </div>
-        </div>
-      </div>
+        <span className={styles.bentoPanelStatus}>
+          Avg fill {avgFill}% · {totalCap.toLocaleString()} seats
+        </span>
+      </header>
 
-      {/* Venues Bar Leaderboard */}
-      <div className={styles.gdsStackSm}>
-        {venueLeaderboard.map((v) => {
-          const cumulativeCap = v.cumulativeCapacity;
-          const fillRate = cumulativeCap > 0 ? Math.round((v.totalAttendance / cumulativeCap) * 1000) / 10 : 0;
-          return (
-            <div key={v.name} className={styles.gdsSubCard}>
-              <div className={styles.gdsRowBetween}>
-                <div className={styles.gdsRow}>
-                  <span>{v.isIndoor ? '🏟️' : '⚽'}</span>
-                  <span className={styles.gdsBody}>{v.name}</span>
-                  {v.isIndoor && (
-                    <span className={`${styles.gdsPill} ${styles.gdsPillAccent}`}>Indoor Arena</span>
-                  )}
-                  {v.eventsCount > 1 && (
-                    <span className={styles.gdsCaption}>
-                      ({v.eventsCount} events • {cumulativeCap.toLocaleString()} total cap)
-                    </span>
-                  )}
-                </div>
-
-                <div className={styles.gdsRow}>
-                  {v.sampleWeather && (
-                    <span
-                      title={`Kickoff Weather: ${v.sampleWeather.tempC}°C, ${v.sampleWeather.condition}`}
-                      className={styles.gdsPill}
-                    >
-                      {v.isIndoor ? `Outside: ${v.sampleWeather.tempC}°C · Indoor 🏟️` : `${v.sampleWeather.tempC}°C ${v.sampleWeather.condition}`}
-                    </span>
-                  )}
-                  <span className={`${styles.gdsBody} ${styles.gdsNum} ${styles.gdsPrimaryText}`}>
-                    {v.totalAttendance.toLocaleString()} fans ({fillRate}% fill)
+      <div className={styles.bentoPanelBody}>
+        <div className={styles.bentoBarList}>
+          {venueLeaderboard.map((v) => {
+            const cumulativeCap = v.cumulativeCapacity;
+            const fillRate = cumulativeCap > 0 ? Math.round((v.totalAttendance / cumulativeCap) * 1000) / 10 : 0;
+            return (
+              <div key={v.name} className={styles.bentoVenueRow}>
+                <div className={styles.bentoVenueHead}>
+                  <span className={styles.gdsBody}>
+                    {v.isIndoor ? '🏟️' : '⚽'} <strong>{v.name}</strong>
+                    {v.eventsCount > 1 && (
+                      <span className={styles.gdsCaption}> · {v.eventsCount} events</span>
+                    )}
+                  </span>
+                  <span className={`${styles.gdsCaption} ${styles.gdsNum}`}>
+                    {v.totalAttendance.toLocaleString()} / {cumulativeCap.toLocaleString()} ({fillRate}%)
                   </span>
                 </div>
+                <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                  <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
+                  <rect x="0" y="0" width={Math.max(2, Math.min(100, fillRate))} height="8" rx="4" className={styles.bentoBarFillRect} />
+                </svg>
               </div>
-
-              <div className={styles.suiteTrack}>
-                <div
-                  className={styles.suiteTrackFill}
-                  style={{ width: `${Math.min(100, fillRate)}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

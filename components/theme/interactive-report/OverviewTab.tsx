@@ -516,7 +516,7 @@ export default function OverviewTab({
         )}
 
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))', gap: '20px' }}>
+          <div className={styles.bentoTwoCol}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
             {data.scope?.type !== 'event' && (data.matches?.length ?? 0) > 1 && (
               <MatchOutcomesChart

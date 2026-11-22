@@ -88,72 +88,74 @@ export default function WeatherTurnoutCorrelationMatrix({
   const tempRange = Math.max(maxTemp - minTemp, 10);
 
   return (
-    <div className={`${styles.executiveCard} ${styles.gdsStack} ${className}`}>
-      <div className={styles.gdsRowBetween}>
-        <div>
-          <div className={styles.gdsEyebrow}>Environmental Intelligence</div>
-          <h3 className={styles.gdsCardTitle}>Weather vs. Stadium Attendance Matrix</h3>
-          <p className={styles.gdsCaption}>
-            Correlation between kickoff climate conditions, ambient temperature, and stadium capacity fill rates
-          </p>
+    <article className={`${styles.bentoPanel} ${className}`}>
+      <header className={styles.bentoPanelHeader}>
+        <div className={styles.bentoPanelTitle}>
+          <span className={styles.bentoPanelIcon} aria-hidden="true">🌤️</span>
+          <h2 className={styles.gdsCardTitle}>Weather vs. stadium attendance</h2>
         </div>
 
-        {/* Sport Filter Pills */}
-        <div className={styles.gdsRow}>
+        {/* Sport Filter Toggle */}
+        <div className={styles.bentoToggle} role="tablist" aria-label="Filter weather by sport">
           <button
             type="button"
+            role="tab"
+            aria-selected={selectedSport === 'all'}
             onClick={() => setSelectedSport('all')}
-            className={`${styles.sportFilterBtn} ${selectedSport === 'all' ? styles.sportFilterBtnActive : ''}`}
+            className={`${styles.bentoToggleBtn} ${selectedSport === 'all' ? styles.bentoToggleBtnActive : ''}`}
           >
-            All Disciplines ({validMatches.length})
+            All ({validMatches.length})
           </button>
           {sportsList.map((sport) => (
             <button
               key={sport}
               type="button"
+              role="tab"
+              aria-selected={selectedSport === sport}
               onClick={() => setSelectedSport(sport)}
-              className={`${styles.sportFilterBtn} ${selectedSport === sport ? styles.sportFilterBtnActive : ''}`}
+              className={`${styles.bentoToggleBtn} ${selectedSport === sport ? styles.bentoToggleBtnActive : ''}`}
             >
               {sport}
             </button>
           ))}
         </div>
-      </div>
+      </header>
 
-      {/* Climate Tier Comparison Banners */}
-      <div className={styles.weatherBandGrid}>
-        <div className={styles.weatherBandWarm}>
-          <div className={styles.gdsEyebrow}>☀️ Warm (&gt;18°C)</div>
-          <div className={styles.gdsSectionKpi}>
-            {climateBands.warm.avgFill !== null ? `${climateBands.warm.avgFill}%` : 'N/A'}
+      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        {/* Climate Tier Comparison */}
+        <div className={styles.bentoFourCol}>
+          <div className={styles.bentoSummaryStat}>
+            <span className={styles.gdsEyebrow}>☀️ Warm (&gt;18°C)</span>
+            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {climateBands.warm.avgFill !== null ? `${climateBands.warm.avgFill}%` : 'n/a'}
+            </strong>
+            <span className={styles.gdsCaption}>{climateBands.warm.count} outdoor matches</span>
           </div>
-          <div className={styles.gdsCaption}>{climateBands.warm.count} outdoor matches</div>
-        </div>
 
-        <div className={styles.weatherBandMild}>
-          <div className={styles.gdsEyebrow}>⛅ Mild (10–18°C)</div>
-          <div className={styles.gdsSectionKpi}>
-            {climateBands.mild.avgFill !== null ? `${climateBands.mild.avgFill}%` : 'N/A'}
+          <div className={styles.bentoSummaryStat}>
+            <span className={styles.gdsEyebrow}>⛅ Mild (10–18°C)</span>
+            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {climateBands.mild.avgFill !== null ? `${climateBands.mild.avgFill}%` : 'n/a'}
+            </strong>
+            <span className={styles.gdsCaption}>{climateBands.mild.count} outdoor matches</span>
           </div>
-          <div className={styles.gdsCaption}>{climateBands.mild.count} outdoor matches</div>
-        </div>
 
-        <div className={styles.weatherBandCold}>
-          <div className={styles.gdsEyebrow}>❄️ Cold (&lt;10°C)</div>
-          <div className={styles.gdsSectionKpi}>
-            {climateBands.cold.avgFill !== null ? `${climateBands.cold.avgFill}%` : 'N/A'}
+          <div className={styles.bentoSummaryStat}>
+            <span className={styles.gdsEyebrow}>❄️ Cold (&lt;10°C)</span>
+            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {climateBands.cold.avgFill !== null ? `${climateBands.cold.avgFill}%` : 'n/a'}
+            </strong>
+            <span className={styles.gdsCaption}>{climateBands.cold.count} outdoor matches</span>
           </div>
-          <div className={styles.gdsCaption}>{climateBands.cold.count} outdoor matches</div>
-        </div>
 
-        <div className={styles.weatherBandIndoor}>
-          <div className={styles.gdsEyebrow}>🏟️ Indoor Arenas</div>
-          <div className={styles.gdsSectionKpi}>
-            {climateBands.indoor.avgFill !== null ? `${climateBands.indoor.avgFill}%` : 'N/A'}
+          <div className={styles.bentoSummaryStat}>
+            <span className={styles.gdsEyebrow}>🏟️ Indoor arenas</span>
+            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {climateBands.indoor.avgFill !== null ? `${climateBands.indoor.avgFill}%` : 'n/a'}
+            </strong>
+            <span className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</span>
           </div>
-          <div className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</div>
         </div>
-      </div>
 
       {/* Interactive Scatter Canvas */}
       <div className={styles.weatherCanvas}>
@@ -260,6 +262,7 @@ export default function WeatherTurnoutCorrelationMatrix({
         </div>
         <span className={styles.gdsCaption}>Hover or focus any plot point for fixture turnout details</span>
       </div>
-    </div>
+      </div>
+    </article>
   );
 }

@@ -112,73 +112,84 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
   const thirdLabel = clubMode ? 'Losses' : 'Visitor Wins';
 
   return (
-    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
-      <div className={styles.gdsRowBetween}>
-        <div>
-          <div className={styles.gdsEyebrow}>{clubMode ? 'Club Match Record' : 'Competitive Balance & Results'}</div>
-          <h3 className={styles.gdsCardTitle}>{clubMode ? `${partnerName} Results (Win / Draw / Loss)` : 'Home vs. Visitor Win Distribution'}</h3>
+    <article className={styles.bentoPanel}>
+      <header className={styles.bentoPanelHeader}>
+        <div className={styles.bentoPanelTitle}>
+          <span className={styles.bentoPanelIcon} aria-hidden="true">🏆</span>
+          <h2 className={styles.gdsCardTitle}>
+            {clubMode ? `${partnerName} results` : 'Home vs. visitor win distribution'}
+          </h2>
         </div>
-        <div className={`${styles.gdsCaption} ${styles.gdsNum}`}>
-          {totalMatches} Completed Fixtures
-        </div>
-      </div>
+        <span className={styles.bentoPanelStatus}>{totalMatches} fixtures</span>
+      </header>
 
-      {/* Tri-color Stacked Ratio Bar */}
-      <div
-        style={{
-          display: 'flex',
-          height: '24px',
-          borderRadius: '8px',
-          overflow: 'hidden',
-          backgroundColor: 'var(--mm-gray-100)',
-        }}
-      >
-        {homeWinRate > 0 && (
-          <div
-            title={`${firstLabel}: ${homeWins} (${homeWinRate}%)`}
-            style={{ width: `${homeWinRate}%`, backgroundColor: 'var(--report-primary, var(--mm-gray-800))' }}
-          />
-        )}
-        {drawRate > 0 && (
-          <div
-            title={`Draws: ${draws} (${drawRate}%)`}
-            style={{ width: `${drawRate}%`, backgroundColor: 'var(--mm-gray-400)' }}
-          />
-        )}
-        {awayWinRate > 0 && (
-          <div
-            title={`${thirdLabel}: ${awayWins} (${awayWinRate}%)`}
-            style={{ width: `${awayWinRate}%`, backgroundColor: 'var(--report-accent, var(--mm-gray-600))' }}
-          />
-        )}
-      </div>
+      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        <div className={styles.bentoDonutMajor}>
+          <div className={styles.bentoDonut}>
+            <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
+              <circle cx="21" cy="21" r="15.9155" className={styles.donutTrack} />
+              <circle
+                cx="21"
+                cy="21"
+                r="15.9155"
+                className={styles.donutArcPrimary}
+                strokeDasharray={`${homeWinRate} ${Math.max(0, 100 - homeWinRate)}`}
+              />
+            </svg>
+            <div className={styles.bentoDonutCenter}>
+              <strong className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>{homeWinRate}%</strong>
+              <span className={styles.gdsCaption}>{clubMode ? 'Wins' : 'Home'}</span>
+            </div>
+          </div>
 
-      {/* Outcome Cards Grid */}
-      <div className={styles.suiteGrid3}>
-        <div className={styles.gdsSubCard}>
-          <div className={`${styles.gdsEyebrow} ${styles.gdsPrimaryText}`}>{firstLabel}</div>
-          <div className={styles.gdsSectionKpi}>
-            {homeWins}{' '}
-            <span className={styles.gdsCaption}>({homeWinRate}%)</span>
+          <div className={styles.bentoLegend}>
+            <div className={styles.bentoLegendRow}>
+              <span className={styles.bentoLegendDotPrimary} />
+              <div>
+                <div className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
+                  {homeWins} <span className={styles.gdsCaption}>({homeWinRate}%)</span>
+                </div>
+                <div className={styles.gdsCaption}>{firstLabel}</div>
+              </div>
+            </div>
+            <div className={styles.bentoLegendRow}>
+              <span className={styles.bentoLegendDotMuted} />
+              <div>
+                <div className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
+                  {draws} <span className={styles.gdsCaption}>({drawRate}%)</span>
+                </div>
+                <div className={styles.gdsCaption}>Draws</div>
+              </div>
+            </div>
+            <div className={styles.bentoLegendRow}>
+              <span className={styles.bentoLegendDotSuccess} />
+              <div>
+                <div className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
+                  {awayWins} <span className={styles.gdsCaption}>({awayWinRate}%)</span>
+                </div>
+                <div className={styles.gdsCaption}>{thirdLabel}</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className={styles.gdsSubCard}>
-          <div className={styles.gdsEyebrow}>Draws</div>
-          <div className={styles.gdsSectionKpi}>
-            {draws}{' '}
-            <span className={styles.gdsCaption}>({drawRate}%)</span>
-          </div>
-        </div>
-
-        <div className={styles.gdsSubCard}>
-          <div className={styles.gdsEyebrow}>{thirdLabel}</div>
-          <div className={styles.gdsSectionKpi}>
-            {awayWins}{' '}
-            <span className={styles.gdsCaption}>({awayWinRate}%)</span>
-          </div>
+        <div className={styles.bentoBarList}>
+          {[
+            { label: firstLabel, count: homeWins, rate: homeWinRate, cls: styles.bentoBarFillRect },
+            { label: 'Draws', count: draws, rate: drawRate, cls: styles.bentoBarFillRect },
+            { label: thirdLabel, count: awayWins, rate: awayWinRate, cls: styles.bentoBarFillTeal },
+          ].map((row) => (
+            <div key={row.label} className={styles.bentoBarRow}>
+              <span className={styles.gdsCaption}>{row.label}</span>
+              <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
+                <rect x="0" y="0" width={Math.max(2, row.rate)} height="8" rx="4" className={row.cls} />
+              </svg>
+              <span className={`${styles.gdsCaption} ${styles.gdsNum}`}>{row.rate}%</span>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

@@ -3595,7 +3595,45 @@
   line-height: 1.5;
 }
 
+.bentoTwoCol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  align-items: start;
+}
+
+.bentoVenueRow {
+  display: grid;
+  gap: 5px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--mm-gray-100);
+}
+
+.bentoVenueRow:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.bentoVenueHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.bentoFourCol {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
 @media (max-width: 1160px) {
+  .bentoTwoCol {
+    grid-template-columns: 1fr;
+  }
+  .bentoFourCol {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .bentoGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
