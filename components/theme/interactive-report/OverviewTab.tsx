@@ -394,41 +394,37 @@ export default function OverviewTab({
                     <th className={styles.thCell}>Score</th>
                     <th className={styles.thCell}>Attendance</th>
                     <th className={styles.thCell}>Fan Photos</th>
-                    <th className={styles.thCell}>Event Report</th>
                   </tr>
                 </thead>
                 <tbody>
                   {data.matches.slice(0, 8).map((m, idx) => {
                     const hasScore = m.homeScore !== null && m.homeScore !== undefined && m.visitorScore !== null && m.visitorScore !== undefined;
                     const hasEventId = Boolean(m.id && /^[a-f0-9]{24}$/i.test(m.id));
+                    const teamParts = m.cleanName.split(/\s+[x×#]\s+/i);
                     return (
                       <tr key={m.id || idx} className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}>
                         <td className={`${styles.thCell} ${styles.matchTitle}`}>
                           {hasEventId ? (
-                            <a href={`/interactive-report/event/${m.id}`} className={`${styles.gdsPrimaryText} ${styles.gdsNum}`}>
-                              {m.cleanName}
+                            <a href={`/interactive-report/event/${m.id}`} className={styles.gdsMatchLink}>
+                              <span>{teamParts[0]}</span>
+                              {teamParts.length > 1 && (
+                                <span className={styles.gdsMatchAway}>vs {teamParts.slice(1).join(' × ')}</span>
+                              )}
                             </a>
                           ) : (
-                            m.cleanName
+                            <>
+                              <div>{teamParts[0]}</div>
+                              {teamParts.length > 1 && (
+                                <div className={styles.gdsMatchAway}>vs {teamParts.slice(1).join(' × ')}</div>
+                              )}
+                            </>
                           )}
                         </td>
-                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.date || '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{m.date || '—'}</td>
                         <td className={styles.thCell}>{m.venue || '—'}</td>
-                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{hasScore ? `${m.homeScore} : ${m.visitorScore}` : '—'}</td>
-                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.attendance && m.attendance > 0 ? m.attendance.toLocaleString() : '—'}</td>
-                        <td className={`${styles.thCell} ${styles.gdsNum}`}>{m.submitted.toLocaleString()}</td>
-                        <td className={styles.thCell}>
-                          {hasEventId ? (
-                            <a
-                              href={`/interactive-report/event/${m.id}`}
-                              className={`${styles.gdsPill} ${styles.gdsPillAccent}`}
-                            >
-                              Open AI Report →
-                            </a>
-                          ) : (
-                            '—'
-                          )}
-                        </td>
+                        <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{hasScore ? `${m.homeScore} : ${m.visitorScore}` : '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{m.attendance && m.attendance > 0 ? m.attendance.toLocaleString() : '—'}</td>
+                        <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{m.submitted.toLocaleString()}</td>
                       </tr>
                     );
                   })}

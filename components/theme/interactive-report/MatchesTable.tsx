@@ -135,14 +135,14 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
               <th className={styles.thCell}>Result</th>
               <th className={styles.thCell}>Gate Attendance</th>
               <th className={styles.thCell}>Weather</th>
-              <th
-                onClick={() => handleSort('submitted')}
-                className={styles.thSortable}
-              >
-                Photos {sortBy === 'submitted' ? (sortDesc ? '↓' : '↑') : ''}
-              </th>
-              <th className={styles.thCell}>{isFanmass ? 'Event AI Report' : 'Approval'}</th>
-            </tr>
+                <th
+                  onClick={() => handleSort('submitted')}
+                  className={styles.thSortable}
+                >
+                  Photos {sortBy === 'submitted' ? (sortDesc ? '↓' : '↑') : ''}
+                </th>
+                {!isFanmass && <th className={styles.thCell}>Approval</th>}
+              </tr>
           </thead>
           <tbody>
             {pagedMatches.map((m, idx) => {
@@ -160,14 +160,16 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                       ? { label: 'Away Win', bg: '#eff6ff', color: '#1e40af' }
                       : null;
 
+              const teamParts = m.cleanName.split(/\s+[x×#]\s+/i);
+
               return (
                 <tr
                   key={m.id || idx}
                   className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
                 >
-                  <td className={styles.thCell}>
+                  <td className={`${styles.thCell} ${styles.gdsNowrap}`}>
                     <span
-                      className={styles.sportTag}
+                      className={`${styles.sportTag} ${styles.gdsNowrap}`}
                       style={{ background: SPORT_COLORS[m.sport] || '#64748b' }}
                     >
                       {m.sport}
@@ -175,17 +177,22 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   </td>
                   <td className={`${styles.thCell} ${styles.matchTitle}`}>
                     {m.id && /^[a-f0-9]{24}$/i.test(m.id) ? (
-                      <a
-                        href={`/interactive-report/event/${m.id}`}
-                        style={{ color: 'var(--report-primary, #1d4ed8)', textDecoration: 'none', fontWeight: 700 }}
-                      >
-                        {m.cleanName}
+                      <a href={`/interactive-report/event/${m.id}`} className={styles.gdsMatchLink}>
+                        <span>{teamParts[0]}</span>
+                        {teamParts.length > 1 && (
+                          <span className={styles.gdsMatchAway}>vs {teamParts.slice(1).join(' × ')}</span>
+                        )}
                       </a>
                     ) : (
-                      m.cleanName
+                      <>
+                        <div>{teamParts[0]}</div>
+                        {teamParts.length > 1 && (
+                          <div className={styles.gdsMatchAway}>vs {teamParts.slice(1).join(' × ')}</div>
+                        )}
+                      </>
                     )}
                   </td>
-                  <td className={styles.thCell}>{m.date}</td>
+                  <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{m.date}</td>
                   <td className={styles.thCell}>
                     <div style={{ fontWeight: 500, color: '#111827' }}>
                       {m.venue || m.partnerName || '—'}
@@ -197,7 +204,7 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                       </div>
                     )}
                   </td>
-                  <td className={styles.thCell}>
+                  <td className={`${styles.thCell} ${styles.gdsNowrap}`}>
                     {hasScore ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                         <span style={{ fontWeight: 700, fontSize: '14px', color: '#111827' }}>
@@ -205,6 +212,7 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                         </span>
                         {outcomeBadge && (
                           <span
+                            className={styles.gdsNowrap}
                             style={{
                               fontSize: '10px',
                               fontWeight: 600,
@@ -266,41 +274,20 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                       <span className={styles.cardSubtitle}>—</span>
                     )}
                   </td>
-                  <td className={`${styles.thCell} ${styles.matchTitle}`}>
+                  <td className={`${styles.thCell} ${styles.matchTitle} ${styles.gdsNum} ${styles.gdsNowrap}`}>
                     {m.submitted}
                   </td>
-                  <td className={styles.thCell}>
-                    {isFanmass ? (
-                      m.id && /^[a-f0-9]{24}$/i.test(m.id) ? (
-                        <a
-                          href={`/interactive-report/event/${m.id}`}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '4px',
-                            padding: '4px 10px',
-                            borderRadius: '6px',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            background: 'var(--report-primary-soft, #eff6ff)',
-                            color: 'var(--report-primary, #1d4ed8)',
-                            textDecoration: 'none',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          Open AI Report →
-                        </a>
+                  {!isFanmass && (
+                    <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>
+                      {m.submitted > 0 ? (
+                        <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
+                          {m.approvalRate}%
+                        </span>
                       ) : (
-                        <span className={styles.cardSubtitle}>—</span>
-                      )
-                    ) : m.submitted > 0 ? (
-                      <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
-                        {m.approvalRate}%
-                      </span>
-                    ) : (
-                      <span className={styles.cardSubtitle}>n/a</span>
-                    )}
-                  </td>
+                        <span className={styles.cardSubtitle}>n/a</span>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })}

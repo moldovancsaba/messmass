@@ -2858,3 +2858,26 @@
   border: 2px solid var(--mm-gray-600);
 }
 
+.gdsNowrap {
+  white-space: nowrap;
+}
+
+.gdsMatchLink {
+  color: var(--report-primary, var(--mm-gray-900));
+  text-decoration: none;
+  font-weight: 700;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gdsMatchLink:hover {
+  text-decoration: underline;
+}
+
+.gdsMatchAway {
+  font-weight: 500;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+}
+
