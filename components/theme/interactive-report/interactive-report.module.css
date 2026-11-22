@@ -3626,6 +3626,74 @@
   gap: 10px;
 }
 
+.svgChart {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.svgGridLine {
+  stroke: #e2e8f0;
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+
+.svgAxisLine {
+  stroke: #cbd5e1;
+  stroke-width: 1;
+}
+
+.svgAxisText {
+  fill: #64748b;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.svgValueLabel {
+  fill: #102242;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.svgBarPrimary {
+  fill: var(--report-accent, #1b79df);
+}
+
+.svgBarTeal {
+  fill: #03ad9f;
+}
+
+.svgBarMuted {
+  fill: #cbd5e1;
+}
+
+.svgTrendLine {
+  fill: none;
+  stroke: #f59e0b;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.svgTrendDot {
+  fill: #ffffff;
+  stroke: #f59e0b;
+  stroke-width: 2.2;
+}
+
+.svgBubblePrimary {
+  fill: rgba(27, 121, 223, 0.22);
+  stroke: var(--report-accent, #1b79df);
+  stroke-width: 2;
+}
+
+.svgBubbleTeal {
+  fill: rgba(3, 173, 159, 0.22);
+  stroke: #03ad9f;
+  stroke-width: 2;
+}
+
 @media (max-width: 1160px) {
   .bentoTwoCol {
     grid-template-columns: 1fr;
