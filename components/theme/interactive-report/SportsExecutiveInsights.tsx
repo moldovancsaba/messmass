@@ -116,60 +116,62 @@ export default function SportsExecutiveInsights({
   if (!insights) return null;
 
   return (
-    <div className={`${styles.executiveCard} ${styles.gdsStack}`}>
-      <div className={styles.gdsRowBetween}>
-        <div>
-          <div className={styles.gdsEyebrow}>Sports Executive Intelligence</div>
-          <h3 className={styles.gdsCardTitle}>Matchday Activation Efficiency &amp; Home/Away Split</h3>
+    <article className={styles.bentoPanel}>
+      <header className={styles.bentoPanelHeader}>
+        <div className={styles.bentoPanelTitle}>
+          <span className={styles.bentoPanelIcon} aria-hidden="true">🎯</span>
+          <h2 className={styles.gdsCardTitle}>Matchday activation efficiency &amp; home/away split</h2>
         </div>
-        <span className={styles.gdsCaption}>
-          Empirical matchday turnout, capture density, and sponsor reach per fixture
+        <span className={styles.bentoPanelStatus}>
+          {matches.length} {matches.length === 1 ? 'fixture' : 'fixtures'}
         </span>
-      </div>
+      </header>
 
-      <div className={styles.suiteGrid4}>
-        <div className={styles.gdsSubCard}>
-          <div className={styles.gdsEyebrow}>Visual Capture Efficiency</div>
-          <div className={styles.gdsSectionKpi}>{insights.visualReachPct}%</div>
-          <div className={styles.gdsCaption}>
-            {totalPeopleDetected.toLocaleString()} fans captured across gate turnout • {insights.fansPerPhoto} fans/photo
+      <div className={styles.bentoPanelBody}>
+        <div className={styles.bentoFourCol}>
+          <div className={styles.bentoSummaryStat}>
+            <div className={styles.gdsEyebrow}>Visual capture efficiency</div>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>{insights.visualReachPct}%</div>
+            <div className={styles.gdsCaption}>
+              {totalPeopleDetected.toLocaleString()} fans captured • {insights.fansPerPhoto} fans/photo
+            </div>
           </div>
-        </div>
 
-        <div className={styles.gdsSubCard}>
-          <div className={styles.gdsEyebrow}>Avg Matchday Output</div>
-          <div className={styles.gdsSectionKpi}>
-            {insights.avgPhotosPerMatch.toLocaleString()} <span className={styles.gdsCaption}>photos</span>
-          </div>
-          <div className={styles.gdsCaption}>
-            {insights.avgPeoplePerMatch.toLocaleString()} people/match • {totalBrandsDetected} commercial brands detected
-          </div>
-        </div>
-
-        {insights.homeCount > 0 && (
-          <div className={styles.gdsSubCard}>
-            <div className={styles.gdsEyebrow}>Home Fixtures ({insights.homeCount})</div>
-            <div className={styles.gdsSectionKpi}>
-              {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+          <div className={styles.bentoSummaryStat}>
+            <div className={styles.gdsEyebrow}>Avg matchday output</div>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {insights.avgPhotosPerMatch.toLocaleString()} <span className={styles.gdsCaption}>photos</span>
             </div>
             <div className={styles.gdsCaption}>
-              {insights.homeFillPct}% avg stadium fill • Record: <strong>{insights.homeRecord}</strong>
+              {insights.avgPeoplePerMatch.toLocaleString()} people/match • {totalBrandsDetected} brands
             </div>
           </div>
-        )}
 
-        {isPartnerScope && insights.awayCount > 0 && (
-          <div className={styles.gdsSubCard}>
-            <div className={styles.gdsEyebrow}>Away Fixtures ({insights.awayCount})</div>
-            <div className={styles.gdsSectionKpi}>
-              {insights.awayAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+          {insights.homeCount > 0 && (
+            <div className={styles.bentoSummaryStat}>
+              <div className={styles.gdsEyebrow}>Home fixtures ({insights.homeCount})</div>
+              <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+              </div>
+              <div className={styles.gdsCaption}>
+                {insights.homeFillPct}% avg fill • <strong>{insights.homeRecord}</strong>
+              </div>
             </div>
-            <div className={styles.gdsCaption}>
-              {insights.awayFillPct}% avg stadium fill • Record: <strong>{insights.awayRecord}</strong>
+          )}
+
+          {isPartnerScope && insights.awayCount > 0 && (
+            <div className={styles.bentoSummaryStat}>
+              <div className={styles.gdsEyebrow}>Away fixtures ({insights.awayCount})</div>
+              <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {insights.awayAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+              </div>
+              <div className={styles.gdsCaption}>
+                {insights.awayFillPct}% avg fill • <strong>{insights.awayRecord}</strong>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }

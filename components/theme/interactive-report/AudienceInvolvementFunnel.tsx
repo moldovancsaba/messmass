@@ -129,35 +129,33 @@ export default function AudienceInvolvementFunnel({
   ];
 
   return (
-    <div className={`${styles.executiveCard} ${styles.gdsStack} ${className}`}>
-      <div className={styles.gdsRowBetween}>
-        <div>
-          <div className={styles.gdsEyebrow}>Audience Conversion & Monetization</div>
-          <h3 className={styles.gdsCardTitle}>Multi-Tier Audience Involvement Funnel</h3>
-          <p className={styles.gdsCaption}>
-            Hierarchical conversion from nominal stadium capacity to actual attendance, visual capture, and sponsor opt-ins
-          </p>
+    <article className={`${styles.bentoPanel} ${className}`}>
+      <header className={styles.bentoPanelHeader}>
+        <div className={styles.bentoPanelTitle}>
+          <span className={styles.bentoPanelIcon} aria-hidden="true">📈</span>
+          <h2 className={styles.gdsCardTitle}>Multi-tier audience involvement funnel</h2>
         </div>
 
         {eventCount > 1 && (
-          <div className={styles.gdsSegmentGroup}>
+          <div className={styles.bentoToggle}>
             <button
               type="button"
               onClick={() => setShowAveragePerMatch(false)}
-              className={`${styles.gdsSegmentBtn} ${!showAveragePerMatch ? styles.gdsSegmentBtnActive : ''}`}
+              className={`${styles.bentoToggleBtn} ${!showAveragePerMatch ? styles.bentoToggleBtnActive : ''}`}
             >
               Campaign Total
             </button>
             <button
               type="button"
               onClick={() => setShowAveragePerMatch(true)}
-              className={`${styles.gdsSegmentBtn} ${showAveragePerMatch ? styles.gdsSegmentBtnActive : ''}`}
+              className={`${styles.bentoToggleBtn} ${showAveragePerMatch ? styles.bentoToggleBtnActive : ''}`}
             >
-              Avg. Per Match ({eventCount})
+              Avg / Match ({eventCount})
             </button>
           </div>
         )}
-      </div>
+      </header>
+      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
 
       {/* Tapered Trapezoid Funnel Steps */}
       <div className={styles.funnelTrapezoidList}>
@@ -202,6 +200,7 @@ export default function AudienceInvolvementFunnel({
         captured <strong className={styles.gdsNum}>{totalPeopleDetected.toLocaleString()} fan exposures</strong> ({captureRate}% visual reach),
         culminating in <strong className={styles.gdsNum}>{leads.toLocaleString()} direct sponsor leads</strong>.
       </div>
-    </div>
+      </div>
+    </article>
   );
 }

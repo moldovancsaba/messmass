@@ -434,23 +434,24 @@ export default function OverviewTab({
 
         {/* ACT 3: Analyzed Events & Direct Event AI Report Links */}
         {isFanmass && data.matches && data.matches.length > 0 && (
-          <div className={`${styles.executiveCard} ${styles.gdsStackSm}`}>
-            <div className={styles.gdsRowBetween}>
-              <div>
-                <div className={styles.gdsEyebrow}>Event-Level AI Analytics</div>
-                <h3 className={styles.gdsCardTitle}>Analyzed Fixtures & Event Reports ({data.matches.length})</h3>
+          <article className={styles.bentoPanel}>
+            <header className={styles.bentoPanelHeader}>
+              <div className={styles.bentoPanelTitle}>
+                <span className={styles.bentoPanelIcon} aria-hidden="true">📋</span>
+                <h2 className={styles.gdsCardTitle}>Analyzed fixtures &amp; event reports ({data.matches.length})</h2>
               </div>
               {onViewMatches && data.matches.length > 8 && (
                 <button
                   type="button"
                   onClick={onViewMatches}
-                  className={`${styles.gdsPill} ${styles.gdsPillAccent}`}
+                  className={styles.actionLinkBtn}
                 >
                   View All {data.matches.length} Events →
                 </button>
               )}
-            </div>
-            <div className={styles.tableScroll}>
+            </header>
+            <div className={styles.bentoPanelBody}>
+              <div className={styles.tableScroll}>
               <table className={styles.tableRoot}>
                 <thead>
                   <tr className={styles.tableHeadRow}>
@@ -499,8 +500,9 @@ export default function OverviewTab({
                   })}
                 </tbody>
               </table>
+              </div>
             </div>
-          </div>
+          </article>
         )}
 
         {/* ACT 5: Sporting Context & Environmental Turnout Matrix (Executive Insights, Venue Capacities, Outcomes & Weather Correlation) */}
