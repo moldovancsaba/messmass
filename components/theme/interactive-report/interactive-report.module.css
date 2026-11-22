@@ -2531,6 +2531,26 @@
   flex-shrink: 0;
 }
 
+.suiteIconRowMiddle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: var(--mm-space-4) 0;
+}
+
+.suiteIconBoxLarge {
+  width: 68px;
+  height: 68px;
+  border-radius: var(--mm-radius-xl, 16px);
+  background: var(--report-primary-soft, var(--mm-gray-100));
+  color: var(--report-primary, var(--mm-gray-700));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 .suiteBadge {
   padding: 3px 8px;
   border-radius: var(--mm-radius-sm, 6px);

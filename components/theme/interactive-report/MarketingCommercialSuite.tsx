@@ -416,8 +416,10 @@ export default function MarketingCommercialSuite({
               <div className={`${styles.executiveCard} ${styles.suiteCardColumn}`}>
                 <div className={styles.suiteCardTop}>
                   <span className={styles.gdsBody}>Total Fans Engaged</span>
-                  <div className={styles.suiteIconBox}>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                </div>
+                <div className={styles.suiteIconRowMiddle}>
+                  <div className={styles.suiteIconBoxLarge}>
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
                       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -428,7 +430,7 @@ export default function MarketingCommercialSuite({
                 <div className={styles.suiteCardBottom}>
                   <div className={styles.gdsSectionKpi}>{effectiveFans.toLocaleString()}</div>
                   <div className={styles.gdsCaption}>
-                    Visual people detections across {venues.length > 0 ? `${venues.length} venues` : 'matchday sports venues'}
+                    Visual people detections across {venues.length > 0 ? `${venues.length} ${venues.length === 1 ? 'venue' : 'venues'}` : 'matchday sports venues'}
                   </div>
                 </div>
               </div>
