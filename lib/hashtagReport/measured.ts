@@ -224,10 +224,11 @@ export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array
   const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
 
   const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
+  const cameraOnlyFilter = { ...cameraResults, source: { $ne: 'local_storage' } };
   const [withOptIn, withMarketingOptIn, withCtaClicks, proofRows] = await Promise.all([
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.received': true }),
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.kinds': 'marketing' }),
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.ctaClicked': true }),
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.received': true }),
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.kinds': 'marketing' }),
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.ctaClicked': true }),
     db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
   ]);
 
