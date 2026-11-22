@@ -25,12 +25,13 @@ export function MarketingDashboardView() {
         const data = await res.json();
         const m = data?.data;
         if (m) {
-          const totalFans = m.totalFans || 11241;
-          const totalOptIns = Math.round(totalFans * 0.6702);
+          const totalFans = typeof m.totalFans === 'number' ? m.totalFans : 0;
+          const totalOptIns = typeof m.totalOptIns === 'number' ? m.totalOptIns : 0;
+          const totalRegistered = typeof m.totalRegistered === 'number' ? m.totalRegistered : totalFans;
           setMetrics({
             totalFans,
             totalOptIns,
-            totalRegistered: totalFans,
+            totalRegistered,
           });
         }
       }
@@ -90,9 +91,9 @@ export function MarketingDashboardView() {
       ) : (
         <div className={styles.sectionSpacing}>
           <MarketingCommercialSuite
-            totalFansEngaged={metrics?.totalFans ?? 11241}
-            totalOptIns={metrics?.totalOptIns ?? 7534}
-            totalRegistered={metrics?.totalRegistered ?? 11241}
+            totalFansEngaged={metrics?.totalFans ?? 0}
+            totalOptIns={metrics?.totalOptIns ?? 0}
+            totalRegistered={metrics?.totalRegistered ?? 0}
           />
         </div>
       )}

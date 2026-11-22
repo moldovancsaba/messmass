@@ -161,6 +161,9 @@ export default function OverviewTab({
     : null;
 
   const registeredFans = summary.totalRegistered > 0 ? summary.totalRegistered : null;
+  const resolvedOptIns = Math.max(summary.totalOptIns, vision?.optInImages ?? 0);
+  const resolvedRegistered = Math.max(summary.totalRegistered, resolvedOptIns);
+  const resolvedPhotosProcessed = analyzedImages ?? (summary.totalPhotos > 0 ? summary.totalPhotos : 0);
 
   const reportSlug = getReportSlug(data);
   const scopeName = data.scope?.name || data.partner.name || '';
@@ -327,9 +330,9 @@ export default function OverviewTab({
             totalVenueCapacity={data.matchdayAnalytics.totalVenueCapacity}
             totalGateAttendance={data.matchdayAnalytics.totalGateAttendance}
             totalPeopleDetected={fanAppearances ?? 0}
-            totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.totalImages === 11312 ? 11312 : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : 11312))}
-            totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : 11312}
-            totalPhotosProcessed={analyzedImages ?? summary.totalPhotos ?? 11312}
+            totalOptIns={resolvedOptIns}
+            totalRegistered={resolvedRegistered}
+            totalPhotosProcessed={resolvedPhotosProcessed}
             eventCount={summary.totalMatches > 0 ? summary.totalMatches : data.matches?.length || 1}
           />
         )}
@@ -340,10 +343,10 @@ export default function OverviewTab({
           partnerName={data.partner?.name || scopeName}
           reportSlug={reportSlug}
           totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
-          totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.totalImages === 11312 ? 11312 : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : 11312))}
-          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : 11312}
-          totalPhotosProcessed={analyzedImages ?? summary.totalPhotos ?? 11312}
-          totalCtaClicks={summary.totalCtaClicks > 0 ? summary.totalCtaClicks : 1435}
+          totalOptIns={resolvedOptIns}
+          totalRegistered={resolvedRegistered}
+          totalPhotosProcessed={resolvedPhotosProcessed}
+          totalCtaClicks={summary.totalCtaClicks}
         />
 
         {/* ACT 4: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}
@@ -352,8 +355,8 @@ export default function OverviewTab({
           partnerName={data.partner?.name || scopeName}
           reportSlug={reportSlug}
           totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
-          totalOptIns={summary.totalOptIns > 0 ? summary.totalOptIns : (vision?.totalImages === 11312 ? 11312 : (vision?.optInImages && vision.optInImages > 0 ? vision.optInImages : 11312))}
-          totalRegistered={summary.totalRegistered > 0 ? summary.totalRegistered : 11312}
+          totalOptIns={resolvedOptIns}
+          totalRegistered={resolvedRegistered}
           genders={currentGenders}
           ageGroups={currentAgeGroups}
           topEmotions={vision?.aggregates?.topEmotions || []}

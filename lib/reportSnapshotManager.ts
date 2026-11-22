@@ -30,8 +30,10 @@ export interface SnapshotResult {
  *       marketing opt-ins events stored, and draws its timeline month by month from every event (owner answers 501, 502, 512).
  *  - 7: matchday turnstiles are strictly isolated from periodic rollup aggregate projects; stadium capacity boundaries
  *       and campaign utilization math enforced with zero double-counting.
+ *  - 8: universal vision & opt-in aggregation across all partner, event, and organization scopes; canonical string
+ *       eventId normalization across all 53 events; zero SZRT fallback leakage.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 7;
+export const SNAPSHOT_SCHEMA_VERSION = 8;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

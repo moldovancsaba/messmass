@@ -32,13 +32,16 @@ export default function AudienceInvolvementFunnel({
   const cap = Math.round(totalVenueCapacity / divisor);
   const att = Math.round(totalGateAttendance / divisor);
   const photo = Math.round(totalPeopleDetected / divisor);
-  const rawLeads = totalOptIns > 0 ? totalOptIns : (totalRegistered > 0 ? totalRegistered : 11312);
+  const rawLeads = totalOptIns > 0 ? totalOptIns : totalRegistered;
   const leads = Math.round(rawLeads / divisor);
 
   // Conversion calculations
   const fillRate = totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0;
   const captureRate = totalGateAttendance > 0 ? Math.round((totalPeopleDetected / totalGateAttendance) * 1000) / 10 : 0;
-  const leadRate = photo > 0 ? Math.min(100, Math.round((leads / photo) * 1000) / 10) : 100;
+  const leadRate = photo > 0 && leads > 0 ? Math.min(100, Math.round((leads / photo) * 1000) / 10) : 0;
+  const optInConsentPct = totalRegistered > 0 && rawLeads > 0
+    ? Math.min(100, Math.round((rawLeads / totalRegistered) * 1000) / 10)
+    : (rawLeads > 0 ? 100 : 0);
 
   const stages = [
     {
@@ -92,8 +95,10 @@ export default function AudienceInvolvementFunnel({
       unit: 'GDPR Direct Leads',
       pctOfTop: totalVenueCapacity > 0 ? Math.round((leads / totalVenueCapacity) * 1000) / 10 : 0,
       conversionFromPrev: `${leadRate}% Lead Rate`,
-      conversionDetail: totalRegistered > 0 ? `100% opt-in rate (${totalRegistered.toLocaleString()} verified emails)` : '100% verified marketing consent (11,312 emails)',
-      badgeText: '100% Opt-in Consent',
+      conversionDetail: rawLeads > 0
+        ? `${optInConsentPct}% opt-in rate (${rawLeads.toLocaleString()} verified opt-ins)`
+        : 'No marketing opt-in records stored for this scope',
+      badgeText: rawLeads > 0 ? `${optInConsentPct}% Opt-in Consent` : 'Not Measured',
       badgeColor: '#9f1532',
       bgColor: 'rgba(159, 21, 50, 0.04)',
       borderColor: 'rgba(159, 21, 50, 0.2)',

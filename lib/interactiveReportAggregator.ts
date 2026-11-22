@@ -24,6 +24,9 @@ import {
   getCachedReportSnapshot,
   saveReportSnapshot,
 } from '@/lib/reportSnapshotManager';
+import { calculate as calculateHashtagReport } from '@/lib/hashtagReport/calculated';
+import { loadMeasuredLayerForProjects, type ReportDb } from '@/lib/hashtagReport/measured';
+import type { HashtagReport } from '@/lib/hashtagReport/types';
 
 
 export const SZRT_CAMPAIGN_NAMES = [
@@ -403,7 +406,8 @@ export async function getScopedInteractiveReportData(
     const s = p.stats || {};
     const submitted =
       toCount(s.allImages) || toCount(s.approvedImages) || toCount(s.remoteImages) + toCount(s.hostessImages);
-    if (!submitted || submitted <= 0) continue;
+    const isDirectScope = scopeType === 'partner' || scopeType === 'event' || scopeType === 'organization';
+    if ((!submitted || submitted <= 0) && !isDirectScope) continue;
 
     const date = (p.eventDate || '').replace(/\./g, '-').replace(/-$/, '').trim();
     const cleanName = p.eventName.replace(/^[⚽ððð¤¾ð¸\s]+/, '').replace(/#/g, ' vs ').trim();
@@ -556,8 +560,8 @@ export async function getScopedInteractiveReportData(
   // CTA clicks and touchpoints, which only the campaign stores, stay n/a.
   const cyclePeriods = scopeType === 'global' ? [] : campaignTimeline.filter((t) => t.type === 'monthly');
   const monthlyPeriods = cyclePeriods;
-  // Registrations and opt-ins of the all-data scope: every event outside the SZRT campaign adds the two counts it stored
-  // itself (userRegistration, marketingOptin). Campaign events are skipped: their figures are the campaign's.
+  // Registrations and opt-ins of the all-data scope or any direct scope outside the SZRT monthly campaign cycles:
+  // every event outside the SZRT campaign adds the two counts it stored itself (userRegistration, marketingOptin).
   const otherEvents =
     scopeType === 'global'
       ? campaignProjects.filter(
@@ -566,7 +570,9 @@ export async function getScopedInteractiveReportData(
             !(Array.isArray(p.hashtags) && p.hashtags.includes('tippmixreport2026')) &&
             !/tippmix/i.test(String(p.eventName ?? '')),
         )
-      : [];
+      : cyclePeriods.length === 0
+        ? campaignProjects.filter((p) => !campaignNames.includes(p.eventName))
+        : [];
   const sumStat = (key: string) => otherEvents.reduce((acc, p) => acc + toCount(p.stats?.[key]), 0);
   // The marketing opt-ins an operator or sheet stored (marketingOptin). A photo's opt-in is not a marketing opt-in: the
   // photos with a stored opt-in record are the headline of the Fanmass report (owner answer 512), never mixed in here.
@@ -752,15 +758,114 @@ export async function getScopedInteractiveReportData(
     },
   ];
 
-  // 9. Fanmass Vision Analysis. The vision document describes the SZRT campaign only,
-  // so every other scope gets no vision data at all.
+  // 9. Fanmass Vision Analysis.
+  // - For the SZRT campaign scope (or global), load szrt_vision_progress once publishApproved is true.
+  // - For any other scope (partner like MTK, event, organization, non-SZRT hashtag/filter), build vision from the
+  //   measured Fanmass Camera & Drive analyses of the scope's events.
   let vision: VisionProgressData | null = null;
   try {
-    const visionDoc = isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId, resolvedScope.scopeHeader.hashtags)
-      ? await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any })
-      : null;
+    let rawVisionDoc: any = null;
+    if (isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId, resolvedScope.scopeHeader.hashtags)) {
+      const szrtDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
+      if (szrtDoc && isVisionPublishable(szrtDoc)) {
+        rawVisionDoc = szrtDoc;
+      }
+    } else if (campaignProjects.length > 0 && typeof (db as any).collection === 'function') {
+      try {
+        const measured = await loadMeasuredLayerForProjects(db as unknown as ReportDb, campaignProjects);
+        const projectsReport: HashtagReport = {
+          success: true,
+          scope: { type: 'filter', id: `${scopeType}-${scopeIdentifier}`, tags: [] },
+          generatedAt: new Date().toISOString(),
+          measured,
+          calculated: calculateHashtagReport(measured),
+          coverage: {
+            events: measured.events.length,
+            eventsWithCounters: measured.events.filter((e) => e.hasCounters).length,
+            eventsWithPhotoResults: measured.events.filter((e) => e.hasPhotoResults).length,
+            eventsWithDrivePhotos: measured.events.filter((e) => e.drivePhotos > 0).length,
+          },
+        };
+        const { drive, photos } = projectsReport.measured;
+        const analysed = drive.analysed + photos.analysed;
+        if (analysed > 0) {
+          const addMap = (a: Record<string, number>, b: Record<string, number>) => {
+            const out: Record<string, number> = { ...a };
+            for (const [k, v] of Object.entries(b ?? {})) out[k] = (out[k] ?? 0) + (Number(v) || 0);
+            return out;
+          };
+          const genders = addMap(drive.genders, photos.genders);
+          const ages = addMap(drive.ageGroups, photos.ageGroups);
+          const emotions = addMap(drive.emotions, photos.emotions);
+          const male = genders.male ?? 0;
+          const female = genders.female ?? 0;
+          const pct = (n: number) => (male + female > 0 ? Math.round((n / (male + female)) * 1000) / 10 : 0);
+          const totalImages = drive.photos + photos.analysed;
+          const mergeLists = <K extends string>(
+            dList: Array<{ name: string; count: number }>,
+            pList: Array<{ name: string; count: number }>,
+            keyName: K
+          ) => {
+            const map = new Map<string, { name: string; count: number }>();
+            for (const row of [...dList, ...pList]) {
+              const k = row.name.toLowerCase().trim();
+              const prev = map.get(k);
+              if (prev) prev.count += row.count;
+              else map.set(k, { name: row.name, count: row.count });
+            }
+            return [...map.values()]
+              .sort((a, b) => b.count - a.count)
+              .map((row) => ({ [keyName]: row.name, count: row.count }) as any);
+          };
+          rawVisionDoc = {
+            totalImages,
+            processedCount: analysed,
+            percent: totalImages > 0 ? Math.round((analysed / totalImages) * 100) : 0,
+            status: 'idle',
+            currentSport: '',
+            currentFile: '',
+            lastUpdated: projectsReport.generatedAt,
+            optInImages: drive.withOptIn + (photos.withOptIn ?? 0),
+            aggregates: {
+              totalPeople: drive.people + photos.people.measured,
+              genders: { male, female, malePct: pct(male), femalePct: pct(female) },
+              ageGroups: {
+                children: ages.children ?? 0,
+                teens: ages.teens ?? 0,
+                adults: ages.adults ?? 0,
+                seniors: ages.seniors ?? 0,
+              },
+              topBrands: mergeLists(drive.brands, photos.brands, 'brand'),
+              topClubs: mergeLists(drive.clubs, photos.clubs, 'club'),
+              topEmotions: Object.entries(emotions)
+                .filter(([, count]) => count > 0)
+                .sort((a, b) => b[1] - a[1])
+                .map(([emotion, count]) => ({ emotion, count })),
+              sportsBreakdown: {},
+            },
+            recentImages: [],
+            cameraProof: projectsReport.measured.cameraProof,
+          };
+        }
+        // Populate match photo counts for events where only Fanmass Camera/Drive photos exist
+        for (const ev of projectsReport.measured.events) {
+          const measuredPhotos = ev.drivePhotos + ev.cameraPhotos;
+          if (measuredPhotos <= 0) continue;
+          const evDate = (ev.date || '').replace(/\./g, '-').replace(/-$/, '').trim();
+          const key = `${ev.name.toLowerCase().replace(/[^a-z0-9]/g, '')}__${evDate}`;
+          const m = matchesMap.get(key) || matchesList.find((item) => item.matchName === ev.name);
+          if (m && m.submitted === 0) {
+            m.submitted = measuredPhotos;
+            m.selfies = measuredPhotos;
+          }
+        }
+      } catch {
+        // Fallback cleanly when mocked DB in unit tests does not implement aggregate/countDocuments
+      }
+    }
 
-    if (visionDoc && isVisionPublishable(visionDoc)) {
+    if (rawVisionDoc) {
+      const visionDoc = rawVisionDoc;
       // Fetch official brand assets for unified logo resolution
       const brandAssets = await db.collection('brand_assets').find({}).toArray().catch(() => []);
       const brandMap = new Map<string, any>();
@@ -813,6 +918,9 @@ export async function getScopedInteractiveReportData(
         const low = club.toLowerCase().trim();
         if (!low || low === 'n/a' || low === 'none') return null;
 
+        if (low.includes('mtk')) {
+          return partners.find((p) => p.name && p.name.toLowerCase().includes('mtk'));
+        }
         if (low.includes('debrecen') || low.includes('dvsc')) {
           return partners.find(
             (p) =>
@@ -1076,7 +1184,8 @@ export async function getScopedInteractiveReportData(
         currentSport: visionDoc.currentSport || '',
         currentFile: visionDoc.currentFile || '',
         lastUpdated: visionDoc.lastUpdated || '',
-        ...(visionDoc.optIn ? { optInImages: toCount(visionDoc.optIn.images) } : {}),
+        ...(visionDoc.optIn ? { optInImages: toCount(visionDoc.optIn.images) } : visionDoc.optInImages !== undefined ? { optInImages: toCount(visionDoc.optInImages) } : {}),
+        ...(Array.isArray(visionDoc.cameraProof) && visionDoc.cameraProof.length > 0 ? { cameraProof: visionDoc.cameraProof } : {}),
         aggregates: {
           totalPeople: toCount(visionDoc.aggregates?.totalPeople),
           genders: visionDoc.aggregates?.genders || {

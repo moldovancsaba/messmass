@@ -11,7 +11,7 @@
 import { ObjectId } from 'mongodb';
 
 import { calculate } from './calculated';
-import { loadMeasuredLayer, type ReportDb } from './measured';
+import { loadMeasuredLayer, loadMeasuredLayerForProjects, type ReportDb } from './measured';
 import type { HashtagReport } from './types';
 
 export type { HashtagReport } from './types';
@@ -30,6 +30,11 @@ export async function buildFilterReport(db: ReportDb, hashtags: string[], id = '
 /** The same report over every event and every drive photo: what /report/global shows. */
 export async function buildAllEventsReport(db: ReportDb): Promise<HashtagReport> {
   return build(await loadMeasuredLayer(db, null), { type: 'all', id: 'all', tags: [] });
+}
+
+/** Build a measured HashtagReport for an explicit list of already-resolved project documents. */
+export async function buildProjectsReport(db: ReportDb, projects: Array<Record<string, any>>, id = 'projects'): Promise<HashtagReport> {
+  return build(await loadMeasuredLayerForProjects(db, projects), { type: 'filter', id, tags: [] });
 }
 
 function build(measured: HashtagReport['measured'], scope: HashtagReport['scope']): HashtagReport {

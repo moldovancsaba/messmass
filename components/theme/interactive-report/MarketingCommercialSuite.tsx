@@ -53,9 +53,8 @@ export default function MarketingCommercialSuite({
   className = '',
 }: MarketingCommercialSuiteProps) {
   const isSzrtOrTippmix =
-    (partnerName && (partnerName.toLowerCase().includes('tippmix') || partnerName.toLowerCase().includes('szerencsej'))) ||
-    (reportSlug && (reportSlug.toLowerCase().includes('tippmix') || reportSlug.toLowerCase().includes('szrt'))) ||
-    !partnerName;
+    Boolean(partnerName && (partnerName.toLowerCase().includes('tippmix') || partnerName.toLowerCase().includes('szerencsej'))) ||
+    Boolean(reportSlug && (reportSlug.toLowerCase().includes('tippmix') || reportSlug.toLowerCase().includes('szrt')));
 
   const resolvedCampaignTitle = campaignTitle || (
     isSzrtOrTippmix
@@ -82,8 +81,8 @@ export default function MarketingCommercialSuite({
     : (effectiveOptIns > 0 ? 100 : 0);
 
   // 2. Pop-up Performance (Empirical Digital Activation)
-  const bannerClicks = totalCtaClicks > 0 ? totalCtaClicks : 1435;
-  const bannerImpressions = Math.max(bannerClicks, effectiveOptIns > 0 ? effectiveOptIns : 3268);
+  const bannerClicks = totalCtaClicks > 0 ? totalCtaClicks : 0;
+  const bannerImpressions = bannerClicks > 0 ? Math.max(bannerClicks, effectiveOptIns > 0 ? effectiveOptIns : totalPhotosProcessed) : 0;
   const popUpCtr = bannerImpressions > 0 ? Math.min(Math.round((bannerClicks / bannerImpressions) * 1000) / 10, 100) : 0;
 
   // 3. Real Gender Breakdown (from measured face classifications)
@@ -222,7 +221,8 @@ export default function MarketingCommercialSuite({
             </div>
           </div>
 
-          {/* Section 2: Pop-up Digital Performance */}
+          {/* Section 2: Pop-up Digital Performance (only rendered when CTA clicks were recorded) */}
+          {bannerClicks > 0 && (
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
@@ -333,6 +333,7 @@ export default function MarketingCommercialSuite({
               </div>
             </div>
           </div>
+          )}
         </div>
       )}
 

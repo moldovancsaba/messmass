@@ -459,9 +459,10 @@ function aggregatePhotos(eventId: string, photos: Array<Record<string, unknown>>
 }
 
 export async function rebuildFanmassPhotoEventSummary(
-  eventId: string,
+  rawEventId: string,
   options: { allowMissingProject?: boolean } = {},
 ) {
+  const eventId = String(rawEventId).trim();
   const db = await getDb();
   const photos = await db.collection<PhotoAnalysisRecord>(PHOTO_ANALYSIS_COLLECTION)
     .find({ eventId, tombstone: { $ne: true }, status: 'completed' }, {
@@ -495,6 +496,7 @@ export async function rebuildFanmassPhotoEventSummary(
         },
         {
           $set: {
+            eventId,
             calculationStatus: 'in_progress',
             leaseToken,
             leaseExpiresAt,

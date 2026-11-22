@@ -202,6 +202,84 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
 }
 
+/** Build the measured layer for an explicit list of already-resolved project documents (e.g. partner, event, organization scopes). */
+export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array<Record<string, any>>): Promise<MeasuredLayer> {
+  const eventIds = projects.map((p) => String(p._id)).filter(Boolean);
+  if (eventIds.length === 0) {
+    const { drive } = readDriveSummary({});
+    const photos = mergePhotoSummaries([]);
+    photos.withOptIn = 0;
+    return { events: [], counters: {}, photos, drive, cameraProof: [], months: [] };
+  }
+
+  const drivePhotos = db.collection('fanmass_event_drive_photos');
+  const [facet, rollups] = await Promise.all([
+    drivePhotos.aggregate(driveSummaryPipeline({ eventId: { $in: eventIds } })).toArray().then((rows) => rows[0]),
+    db.collection('ai_analysis_summaries')
+      .find({ eventId: { $in: eventIds }, sourceType: 'camera_photo_pipeline' }, { projection: { eventId: 1, summary: 1 } })
+      .toArray(),
+  ]);
+
+  const { drive, byEvent: driveByEvent } = readDriveSummary(facet);
+  const rollupByEvent = new Map(rollups.map((row) => [String(row.eventId), (row.summary ?? {}) as Record<string, unknown>]));
+
+  const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
+  const [withOptIn, proofRows] = await Promise.all([
+    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraResults, 'optIn.received': true }),
+    db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
+  ]);
+
+  const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
+  const cameraProof = readCameraProof(proofRows, (eventId) => nameOf.get(eventId) ?? '');
+  const perEvent = new Map<string, number>();
+  for (const [eventId, count] of driveByEvent) {
+    if (!eventId) continue;
+    const name = nameOf.get(eventId) || 'Unnamed event';
+    perEvent.set(name, (perEvent.get(name) ?? 0) + count);
+  }
+  drive.events = topNames(perEvent);
+
+  const counters: MeasuredCounters = {};
+  const events: HashtagEvent[] = projects
+    .map((project) => {
+      const stats = (project.stats ?? {}) as Record<string, unknown>;
+      let hasCounters = false;
+      for (const name of CAMERA_TOTAL_COUNTERS) {
+        if (reported(stats[name])) {
+          counters[name] = (counters[name] ?? 0) + (stats[name] as number);
+          hasCounters = true;
+        }
+      }
+      const rollup = rollupByEvent.get(String(project._id));
+      return {
+        id: String(project._id),
+        name: String(project.eventName ?? ''),
+        date: typeof project.eventDate === 'string' && project.eventDate ? project.eventDate : null,
+        hasCounters,
+        hasPhotoResults: Number(rollup?.photoResultsReceived ?? 0) > 0,
+        drivePhotos: driveByEvent.get(String(project._id)) ?? 0,
+        cameraPhotos: Math.max(0, Math.round(Number(rollup?.photoResultsReceived ?? 0)) || 0),
+        joinedBy: 'hashtag' as const,
+      };
+    })
+    .sort((a, b) => String(a.date ?? '').localeCompare(String(b.date ?? '')) || a.name.localeCompare(b.name));
+
+  const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
+  photos.withOptIn = withOptIn;
+  const toNamedCount = (entry: (typeof cameraProof)[number]) => ({
+    name: entry.name,
+    count: entry.photos,
+    ...(entry.appearances !== undefined ? { appearances: entry.appearances } : {}),
+    ...(entry.weightedCount !== undefined ? { weightedCount: entry.weightedCount } : {}),
+    ...(entry.soloPhotos !== undefined ? { soloPhotos: entry.soloPhotos } : {}),
+    ...(entry.coOccurrencePhotos !== undefined ? { coOccurrencePhotos: entry.coOccurrencePhotos } : {}),
+    ...(entry.avgSharePct !== undefined ? { avgSharePct: entry.avgSharePct } : {}),
+  });
+  photos.brands = cameraProof.filter((entry) => entry.kind === 'brand').map(toNamedCount);
+  photos.clubs = cameraProof.filter((entry) => entry.kind === 'club').map(toNamedCount);
+  return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
+}
+
 /** The events with measured photos, month by month (event date), drive and Camera photos side by side. */
 export function monthsOf(events: HashtagEvent[]): MeasuredMonth[] {
   const months = new Map<string, MeasuredMonth>();

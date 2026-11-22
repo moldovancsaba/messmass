@@ -118,7 +118,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
     matchFilter.source = 'local_storage';
   }
 
-  const [grouped, sourceAggregation] = await Promise.all([
+  const [grouped, sourceAggregation, driveByEventRows, szrtDoc] = await Promise.all([
     db.collection('fanmass_camera_photo_analyses').aggregate<{
       _id: string;
       sources: string[];
@@ -136,7 +136,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
       { $match: matchFilter },
       {
         $group: {
-          _id: '$eventId',
+          _id: { $toString: '$eventId' },
           sources: { $addToSet: { $ifNull: ['$source', 'camera'] } },
           photoResultsReceived: { $sum: 1 },
           peopleDetections: { $sum: toNumber('$summary.peopleCounts.measured') },
@@ -161,6 +161,29 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
       { $match: { status: 'completed', tombstone: { $ne: true } } },
       { $group: { _id: '$source', count: { $sum: 1 } } },
     ]).toArray(),
+    db.collection('fanmass_event_drive_photos')
+      .aggregate<{
+        _id: string;
+        count: number;
+        people: number;
+        brandAppearances: number;
+        clubAppearances: number;
+        updatedAt: string | null;
+      }>([
+        { $match: { eventId: { $type: 'string', $ne: '' } } },
+        {
+          $group: {
+            _id: '$eventId',
+            count: { $sum: 1 },
+            people: { $sum: toNumber('$analysis.people') },
+            brandAppearances: { $sum: { $size: safeArray('$analysis.brands') } },
+            clubAppearances: { $sum: { $size: safeArray('$analysis.clubs') } },
+            updatedAt: { $max: '$updatedAt' },
+          },
+        },
+      ])
+      .toArray(),
+    db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any }),
   ]);
 
   let cameraCount = 0;
@@ -172,6 +195,46 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
       cameraCount += finiteNumber(row.count);
     }
   }
+
+  const driveCountByEvent = new Map<string, { count: number; people: number; brandAppearances: number; clubAppearances: number; updatedAt: string | null }>();
+  let totalDrivePlaced = 0;
+  for (const row of driveByEventRows) {
+    const c = finiteNumber(row.count);
+    totalDrivePlaced += c;
+    driveCountByEvent.set(String(row._id), {
+      count: c,
+      people: finiteNumber(row.people),
+      brandAppearances: finiteNumber(row.brandAppearances),
+      clubAppearances: finiteNumber(row.clubAppearances),
+      updatedAt: typeof row.updatedAt === 'string' ? row.updatedAt : null,
+    });
+  }
+
+  // Merge drive-only events into grouped when source !== 'camera'
+  const groupedById = new Map(grouped.map((r) => [String(r._id), r]));
+  if (source !== 'camera') {
+    for (const [eid, dInfo] of driveCountByEvent.entries()) {
+      if (!groupedById.has(eid)) {
+        const synthRow = {
+          _id: eid,
+          sources: ['local_storage'],
+          photoResultsReceived: 0,
+          peopleDetections: dInfo.people,
+          personBoxes: 0,
+          faceBoxes: 0,
+          brandAppearances: dInfo.brandAppearances,
+          clubAppearances: dInfo.clubAppearances,
+          merchandiseDetections: 0,
+          moderationPhotosReviewed: 0,
+          moderationFlaggedPhotos: 0,
+          lastAnalyzedAt: dInfo.updatedAt,
+        };
+        grouped.push(synthRow);
+        groupedById.set(eid, synthRow);
+      }
+    }
+  }
+
   const sourceCounts = {
     all: cameraCount + localStorageCount,
     camera: cameraCount,
@@ -199,7 +262,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
   }
 
   const evidenceOrigins = grouped.map((row) => `camera-${String(row._id)}`);
-  const [partnerDocs, orgDocs, evidenceSamples, szrtDoc, driveByEventRows] = await Promise.all([
+  const [partnerDocs, orgDocs, evidenceSamples] = await Promise.all([
     partnerIdSet.size > 0
       ? db.collection('partners')
           .find({ _id: { $in: [...partnerIdSet].map((id) => new ObjectId(id)) } }, { projection: { name: 1, emoji: 1, viewSlug: 1, organizationId: 1 } })
@@ -216,22 +279,7 @@ export async function getAiPhotoEvents(limit = 500, source?: string): Promise<{
           .limit(600)
           .toArray()
       : Promise.resolve([]),
-    db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any }),
-    db.collection('fanmass_event_drive_photos')
-      .aggregate<{ _id: string; count: number; updatedAt: string | null }>([
-        { $match: { eventId: { $type: 'string', $ne: '' } } },
-        { $group: { _id: '$eventId', count: { $sum: 1 }, updatedAt: { $max: '$updatedAt' } } },
-      ])
-      .toArray(),
   ]);
-
-  const driveCountByEvent = new Map<string, { count: number; updatedAt: string | null }>();
-  let totalDrivePlaced = 0;
-  for (const row of driveByEventRows) {
-    const c = finiteNumber(row.count);
-    totalDrivePlaced += c;
-    driveCountByEvent.set(String(row._id), { count: c, updatedAt: typeof row.updatedAt === 'string' ? row.updatedAt : null });
-  }
 
   const szrtProgress: SzrtCampaignProgressSummary | null = szrtDoc
     ? {

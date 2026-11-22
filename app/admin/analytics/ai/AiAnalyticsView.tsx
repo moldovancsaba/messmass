@@ -143,7 +143,7 @@ export default function AiAnalyticsView() {
   const visibleEvents = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return events.filter((event) => {
-      if (onlyWithImages && event.photoResultsReceived <= 0) return false;
+      if (onlyWithImages && event.photoResultsReceived <= 0 && (event.drivePhotosPlaced ?? 0) <= 0) return false;
       if (onlyWithPreviews && (!event.previewUrls || event.previewUrls.length === 0)) return false;
       if (!q) return true;
       const partnerMatch = (event.partners || []).some((p) => p.name.toLowerCase().includes(q));
@@ -166,36 +166,9 @@ export default function AiAnalyticsView() {
   const sourceCounts = data?.sourceCounts;
   const partners = data?.partners || [];
   const organizations = data?.organizations || [];
-  const szrtProgress = data?.szrtProgress || null;
 
   return (
     <div className={styles.wrapper}>
-      {szrtProgress && szrtProgress.totalImages > 0 && (
-        <AnalyticsSectionCard
-          title={`🍀 SZRT Campaign Deep Analysis (${szrtProgress.processedCount.toLocaleString()} / ${szrtProgress.totalImages.toLocaleString()} photos · ${Math.round((szrtProgress.processedCount / szrtProgress.totalImages) * 1000) / 10}%)`}
-          subtitle={`Status: ${szrtProgress.status} · Last synced: ${formatDate(szrtProgress.updatedAt)}`}
-        >
-          <dl className={styles.metricsGrid}>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Analysed / Total</dt><dd className={styles.coverageValue}>{szrtProgress.processedCount.toLocaleString()} / {szrtProgress.totalImages.toLocaleString()}</dd></div>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>People detected</dt><dd className={styles.coverageValue}>{szrtProgress.peopleDetected.toLocaleString()}</dd></div>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Proven brands</dt><dd className={styles.coverageValue}>{szrtProgress.provenBrands.toLocaleString()}</dd></div>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Proven clubs</dt><dd className={styles.coverageValue}>{szrtProgress.provenClubs.toLocaleString()}</dd></div>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Drive photos placed</dt><dd className={styles.coverageValue}>{szrtProgress.drivePhotosPlaced.toLocaleString()}</dd></div>
-            <div className={styles.coverageItem}><dt className={styles.coverageLabel}>Matched SZRT events</dt><dd className={styles.coverageValue}>{szrtProgress.eventsWithDrivePhotos.toLocaleString()}</dd></div>
-          </dl>
-          <div className={styles.cardActions}>
-            <Link href="/interactive-report/hashtag/tippmixreport2026" className={`${styles.hubLink} ${styles.hubLinkPrimary}`}>
-              🍀 Open SZRT Campaign Report
-            </Link>
-            <Link href="/interactive-report/filter/d504c010-514f-40ad-8bfa-fd5bede650e6" className={styles.hubLink}>
-              🎯 Open SZRT Filter Report
-            </Link>
-            <Link href="/admin/fanmass-evidence?origin=szrt" className={styles.hubLink}>
-              🔍 Review SZRT Proofs
-            </Link>
-          </div>
-        </AnalyticsSectionCard>
-      )}
       <AnalyticsSectionCard
         title="AI Reports & Entity Navigation"
         subtitle="Jump directly to the Global AI Report, partner/organization reports, or visual proof review."
@@ -366,7 +339,7 @@ export default function AiAnalyticsView() {
                 <dl className={styles.eventMetrics}>
                   <div><dt>Photo results received</dt><dd>{event.photoResultsReceived.toLocaleString()}</dd></div>
                   {event.drivePhotosPlaced !== undefined && (
-                    <div><dt>SZRT drive photos placed</dt><dd>{event.drivePhotosPlaced.toLocaleString()}</dd></div>
+                    <div><dt>Drive photos placed</dt><dd>{event.drivePhotosPlaced.toLocaleString()}</dd></div>
                   )}
                   <div><dt>People model estimate (summed)</dt><dd>{event.peopleDetections.toLocaleString()}</dd></div>
                   <div><dt>Person boxes</dt><dd>{event.personBoxes.toLocaleString()}</dd></div>
