@@ -121,12 +121,29 @@ function parseCellCount(cell: string | undefined): number | null {
 /** Sport label from event/partner text. Anything that is not recognised is 'Other'. */
 export function detectSport(text: string): MatchItem['sport'] {
   const combined = text.toLowerCase();
+  if (combined.includes('⚽')) return 'Football';
+  if (combined.includes('🏒')) return 'Ice Hockey';
+  if (combined.includes('🏀')) return 'Basketball';
+  if (combined.includes('🤾')) return 'Handball';
   if (
     combined.includes('jégkorong') ||
+    combined.includes('jegkorong') ||
     combined.includes('hoki') ||
+    combined.includes('hockey') ||
     combined.includes('av19') ||
+    combined.includes('feha19') ||
     combined.includes('erste liga') ||
     combined.includes('titánok') ||
+    combined.includes('jegesmedvék') ||
+    combined.includes('jegesmedvek') ||
+    combined.includes('acélbikák') ||
+    combined.includes('acelbikak') ||
+    combined.includes('csíkszereda') ||
+    combined.includes('csikszereda') ||
+    combined.includes('corona bra') ||
+    combined.includes('pustertal') ||
+    combined.includes('ec kac') ||
+    combined.includes('ec-kac') ||
     combined.includes('vsv')
   ) {
     return 'Ice Hockey';
