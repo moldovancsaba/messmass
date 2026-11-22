@@ -129,9 +129,9 @@ function D3LollipopPanel({
     const svgEl = svgRef.current;
     if (!svgEl || items.length === 0) return;
 
-    const W = 720;
+    const W = 820;
     const H = items.length * 28 + 36;
-    const margin = { top: 14, right: 48, bottom: 24, left: 220 };
+    const margin = { top: 14, right: 48, bottom: 24, left: 295 };
     const innerW = W - margin.left - margin.right;
     const innerH = H - margin.top - margin.bottom;
 
@@ -338,7 +338,7 @@ export default function ChartLibraryShowcase({
           return `${months[p.value[0]]} · ${DAY_LABELS[DAY_ORDER[p.value[1]]]}: ${p.value[2]}% avg fill`;
         },
       },
-      grid: { left: 48, right: 20, top: 14, bottom: 48 },
+      grid: { left: 48, right: 20, top: 14, bottom: 76 },
       xAxis: { type: 'category', data: months, splitArea: { show: true }, axisLabel: { color: REPORT_CHART_PALETTE.muted } },
       yAxis: {
         type: 'category',
@@ -351,7 +351,9 @@ export default function ChartLibraryShowcase({
         max: 100,
         orient: 'horizontal',
         left: 'center',
-        bottom: 0,
+        bottom: 4,
+        itemWidth: 12,
+        itemHeight: 90,
         inRange: { color: [REPORT_CHART_PALETTE.blueSoft, REPORT_CHART_PALETTE.teal, REPORT_CHART_PALETTE.blue] },
       },
       series: [{ type: 'heatmap', data, label: { show: months.length <= 8 } }],
@@ -654,7 +656,7 @@ export default function ChartLibraryShowcase({
       matches
         .filter((m) => (m.attendance ?? 0) > 0 && m.submitted > 0)
         .map((m) => ({
-          name: m.cleanName.length > 30 ? `${m.cleanName.slice(0, 28)}…` : m.cleanName,
+          name: m.cleanName.length > 44 ? `${m.cleanName.slice(0, 42)}…` : m.cleanName,
           rate: Math.round((m.submitted / m.attendance!) * 10000) / 10,
           photos: m.submitted,
           attendance: m.attendance!,
@@ -714,11 +716,11 @@ export default function ChartLibraryShowcase({
     });
     return {
       tooltip: { trigger: 'axis' },
-      grid: { left: 48, right: 48, top: 20, bottom: 64 },
+      grid: { left: 48, right: 48, top: 20, bottom: 88 },
       xAxis: {
         type: 'category',
-        data: top15.map((m) => (m.cleanName.length > 16 ? `${m.cleanName.slice(0, 14)}…` : m.cleanName)),
-        axisLabel: { rotate: 28, color: REPORT_CHART_PALETTE.muted, fontSize: 10 },
+        data: top15.map((m) => (m.cleanName.length > 24 ? `${m.cleanName.slice(0, 22)}…` : m.cleanName)),
+        axisLabel: { rotate: 32, interval: 0, color: REPORT_CHART_PALETTE.muted, fontSize: 10 },
       },
       yAxis: [
         { type: 'value', name: 'Photos', axisLabel: { color: REPORT_CHART_PALETTE.muted } },
@@ -741,8 +743,8 @@ export default function ChartLibraryShowcase({
     }
     const children = Array.from(bySport.entries()).map(([sport, list]) => ({
       name: sport,
-      children: list.slice(0, 6).map((m) => ({
-        name: m.cleanName.length > 18 ? `${m.cleanName.slice(0, 16)}…` : m.cleanName,
+      children: list.slice(0, 4).map((m) => ({
+        name: m.cleanName.length > 20 ? `${m.cleanName.slice(0, 18)}…` : m.cleanName,
         value: m.submitted,
       })),
     }));
@@ -752,8 +754,9 @@ export default function ChartLibraryShowcase({
       series: [
         {
           type: 'sunburst',
-          radius: ['16%', '92%'],
-          label: { rotate: 'radial', fontSize: 10 },
+          radius: ['16%', '90%'],
+          nodeClick: 'rootToNode',
+          label: { rotate: 'radial', fontSize: 10, minAngle: 10, overflow: 'truncate', width: 68 },
           data: children,
         },
       ],

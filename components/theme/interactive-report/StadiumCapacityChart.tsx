@@ -97,10 +97,11 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
                     {v.totalAttendance.toLocaleString()} / {cumulativeCap.toLocaleString()} ({fillRate}%)
                   </span>
                 </div>
-                <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                  <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
-                  <rect x="0" y="0" width={Math.max(2, Math.min(100, fillRate))} height="8" rx="4" className={styles.bentoBarFillRect} />
-                </svg>
+                <div className={styles.bentoBarTrackWrap}>
+                  <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                    <rect x="0" y="0" width={Math.max(2, Math.min(100, fillRate))} height="8" rx="0" className={styles.bentoBarFillRect} />
+                  </svg>
+                </div>
               </div>
             );
           })}

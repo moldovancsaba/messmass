@@ -181,10 +181,11 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
           ].map((row) => (
             <div key={row.label} className={styles.bentoBarRow}>
               <span className={styles.gdsCaption}>{row.label}</span>
-              <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
-                <rect x="0" y="0" width={Math.max(2, row.rate)} height="8" rx="4" className={row.cls} />
-              </svg>
+              <div className={styles.bentoBarTrackWrap}>
+                <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                  <rect x="0" y="0" width={Math.max(2, row.rate)} height="8" rx="0" className={row.cls} />
+                </svg>
+              </div>
               <span className={`${styles.gdsCaption} ${styles.gdsNum}`}>{row.rate}%</span>
             </div>
           ))}

@@ -194,10 +194,11 @@ export default function ExecutiveBentoGrid({
                   return (
                     <div key={row.label} className={styles.bentoBarRow}>
                       <span className={styles.gdsCaption}>{row.label}</span>
-                      <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                        <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
-                        <rect x="0" y="0" width={Math.max(2, pct)} height="8" rx="4" className={styles.bentoBarFillRect} />
-                      </svg>
+                      <div className={styles.bentoBarTrackWrap}>
+                        <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                          <rect x="0" y="0" width={Math.max(2, pct)} height="8" rx="0" className={styles.bentoBarFillRect} />
+                        </svg>
+                      </div>
                       <span className={`${styles.gdsCaption} ${styles.gdsNum}`}>{pct}%</span>
                     </div>
                   );
@@ -382,26 +383,29 @@ export default function ExecutiveBentoGrid({
                     : `${resolvedOptIns.toLocaleString()} opted in`}
                 </div>
                 {consentPct !== null && (
-                  <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                    <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
-                    <rect x="0" y="0" width={Math.max(2, consentPct)} height="8" rx="4" className={styles.bentoBarFillTeal} />
-                  </svg>
+                  <div className={styles.bentoBarTrackWrap}>
+                    <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                      <rect x="0" y="0" width={Math.max(2, consentPct)} height="8" rx="0" className={styles.bentoBarFillTeal} />
+                    </svg>
+                  </div>
                 )}
               </div>
 
-              <div className={styles.bentoConsentRow}>
-                <div className={styles.bentoConsentHead}>
-                  <span className={styles.gdsCardTitle}>Digital CTA Clicks</span>
-                  <strong className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
-                    {resolvedCtaClicks > 0 ? resolvedCtaClicks.toLocaleString() : 'n/a'}
-                  </strong>
+              {resolvedCtaClicks > 0 && (
+                <div className={styles.bentoConsentRow}>
+                  <div className={styles.bentoConsentHead}>
+                    <span className={styles.gdsCardTitle}>Digital CTA Clicks</span>
+                    <strong className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
+                      {resolvedCtaClicks.toLocaleString()}
+                    </strong>
+                  </div>
+                  <div className={styles.gdsCaption}>
+                    {resolvedRegistered > 0
+                      ? `${Math.round((resolvedCtaClicks / resolvedRegistered) * 1000) / 10}% click-through`
+                      : 'Sponsor portal interactions'}
+                  </div>
                 </div>
-                <div className={styles.gdsCaption}>
-                  {resolvedCtaClicks > 0 && resolvedRegistered > 0
-                    ? `${Math.round((resolvedCtaClicks / resolvedRegistered) * 1000) / 10}% click-through`
-                    : 'Sponsor portal interactions'}
-                </div>
-              </div>
+              )}
             </div>
           )}
           <div className={styles.bentoFootnote}>
@@ -506,7 +510,9 @@ export default function ExecutiveBentoGrid({
               <span className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {activeItems[0].count.toLocaleString()}
               </span>
-              <span className={styles.gdsCaption}>detections · click to inspect</span>
+              <span className={styles.gdsCaption}>
+                {activeItems[0].count === 1 ? 'detection' : 'detections'} · click to inspect
+              </span>
             </div>
           ) : (
             <div className={styles.gdsCaption}>No detections counted in this scope.</div>
@@ -519,8 +525,8 @@ export default function ExecutiveBentoGrid({
               className={styles.actionLinkBtn}
             >
               {rankingTab === 'brands'
-                ? `View all ${sortedBrands.length} brands →`
-                : `View all ${sortedClubs.length} clubs →`}
+                ? `View all ${sortedBrands.length} ${sortedBrands.length === 1 ? 'brand' : 'brands'} →`
+                : `View all ${sortedClubs.length} ${sortedClubs.length === 1 ? 'club' : 'clubs'} →`}
             </button>
           </div>
         </div>
@@ -616,10 +622,11 @@ export default function ExecutiveBentoGrid({
                     className={`${styles.bentoBarRow} ${styles.bentoBarRowClickable}`}
                   >
                     <span className={styles.gdsBody}>{b.brand}</span>
-                    <svg viewBox="0 0 100 10" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                      <rect x="0" y="0" width="100" height="10" rx="5" className={styles.bentoBarTrackRect} />
-                      <rect x="0" y="0" width={Math.max(4, pct)} height="10" rx="5" className={styles.bentoBarFillRect} />
-                    </svg>
+                    <div className={styles.bentoBarTrackWrap}>
+                      <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                        <rect x="0" y="0" width={Math.max(4, pct)} height="8" rx="0" className={styles.bentoBarFillRect} />
+                      </svg>
+                    </div>
                     <strong className={`${styles.gdsBody} ${styles.gdsNum}`}>{b.count.toLocaleString()}</strong>
                   </div>
                 );
@@ -679,10 +686,11 @@ export default function ExecutiveBentoGrid({
                     className={`${styles.bentoBarRow} ${styles.bentoBarRowClickable}`}
                   >
                     <span className={styles.gdsCaption}>{c.club}</span>
-                    <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
-                      <rect x="0" y="0" width="100" height="8" rx="4" className={styles.bentoBarTrackRect} />
-                      <rect x="0" y="0" width={Math.max(4, pct)} height="8" rx="4" className={styles.bentoBarFillTeal} />
-                    </svg>
+                    <div className={styles.bentoBarTrackWrap}>
+                      <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bentoBarSvg} aria-hidden="true">
+                        <rect x="0" y="0" width={Math.max(4, pct)} height="8" rx="0" className={styles.bentoBarFillTeal} />
+                      </svg>
+                    </div>
                     <strong className={`${styles.gdsCaption} ${styles.gdsNum}`}>{c.count.toLocaleString()}</strong>
                   </div>
                 );
