@@ -15,7 +15,7 @@ interface ChartLibraryShowcaseProps {
   clubs: Array<{ club: string; count: number }>;
 }
 
-type EngineFilter = 'all' | 'echarts' | 'chartjs' | 'd3';
+type InsightDomain = 'all' | 'events' | 'attendance' | 'weather' | 'brands';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -33,14 +33,12 @@ function getFillPct(m: MatchItem): number | null {
 function ChartJsPanel({
   title,
   icon,
-  engine = 'Chart.js',
   status,
   config,
   tall = false,
 }: {
   title: string;
   icon: string;
-  engine?: string;
   status?: string;
   config: ChartConfiguration;
   tall?: boolean;
@@ -63,10 +61,7 @@ function ChartJsPanel({
           <span className={styles.bentoPanelIcon} aria-hidden="true">{icon}</span>
           <h3 className={styles.gdsCardTitle}>{title}</h3>
         </div>
-        <div className={styles.gdsRow}>
-          {status && <span className={styles.bentoPanelStatus}>{status}</span>}
-          <span className={styles.chartEngineTag}>{engine}</span>
-        </div>
+        {status && <span className={styles.bentoPanelStatus}>{status}</span>}
       </header>
       <div className={styles.bentoPanelBody}>
         <div className={tall ? styles.chartCanvasBoxTall : styles.chartCanvasBox}>
@@ -114,10 +109,7 @@ function EChartsPanel({
           <span className={styles.bentoPanelIcon} aria-hidden="true">{icon}</span>
           <h3 className={styles.gdsCardTitle}>{title}</h3>
         </div>
-        <div className={styles.gdsRow}>
-          {status && <span className={styles.bentoPanelStatus}>{status}</span>}
-          <span className={styles.chartEngineTag}>ECharts</span>
-        </div>
+        {status && <span className={styles.bentoPanelStatus}>{status}</span>}
       </header>
       <div className={styles.bentoPanelBody}>
         <div ref={boxRef} className={tall ? styles.chartCanvasBoxTall : styles.chartCanvasBox} />
@@ -214,7 +206,7 @@ function D3LollipopPanel({
           <span className={styles.bentoPanelIcon} aria-hidden="true">🎯</span>
           <h3 className={styles.gdsCardTitle}>Top fixtures by photo capture rate (photos / 1k attendees)</h3>
         </div>
-        <span className={styles.chartEngineTag}>D3.js</span>
+        <span className={styles.bentoPanelStatus}>Top 12 fixtures</span>
       </header>
       <div className={styles.bentoPanelBody}>
         <svg ref={svgRef} className={styles.svgChart} role="img" aria-label="D3 lollipop chart of fixture photo capture rate" />
@@ -229,7 +221,7 @@ export default function ChartLibraryShowcase({
   brands,
   clubs,
 }: ChartLibraryShowcaseProps) {
-  const [engine, setEngine] = useState<EngineFilter>('all');
+  const [domain, setDomain] = useState<InsightDomain>('all');
 
   // Chronological monthly aggregates
   const monthlySeries = useMemo(() => {
@@ -845,34 +837,36 @@ export default function ChartLibraryShowcase({
 
   if (matches.length === 0 && brands.length === 0) return null;
 
-  const showECharts = engine === 'all' || engine === 'echarts';
-  const showChartJs = engine === 'all' || engine === 'chartjs';
-  const showD3 = engine === 'all' || engine === 'd3';
+  const showEvents = domain === 'all' || domain === 'events';
+  const showAttendance = domain === 'all' || domain === 'attendance';
+  const showWeather = domain === 'all' || domain === 'weather';
+  const showBrands = domain === 'all' || domain === 'brands';
 
   return (
-    <section className={styles.suiteStack} aria-label="Interactive Multi-Library Chart Gallery">
+    <section className={styles.suiteStack} aria-label="Deep-Dive Visual Intelligence">
       <div className={styles.bentoPanel}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
-            <span className={styles.bentoPanelIcon} aria-hidden="true">📐</span>
-            <h2 className={styles.gdsCardTitle}>Interactive Chart Gallery (ECharts · Chart.js · D3.js)</h2>
+            <span className={styles.bentoPanelIcon} aria-hidden="true">📊</span>
+            <h2 className={styles.gdsCardTitle}>Deep-dive visual intelligence</h2>
           </div>
-          <div className={styles.bentoToggle} role="tablist" aria-label="Filter chart engine">
+          <div className={styles.bentoToggle} role="tablist" aria-label="Filter analytics domain">
             {(
               [
-                { id: 'all', label: 'All Engines' },
-                { id: 'echarts', label: 'ECharts' },
-                { id: 'chartjs', label: 'Chart.js' },
-                { id: 'd3', label: 'D3.js' },
+                { id: 'all', label: 'All Insights' },
+                { id: 'events', label: 'Events & Photos' },
+                { id: 'attendance', label: 'Attendance & Venues' },
+                { id: 'weather', label: 'Weather & Sports' },
+                { id: 'brands', label: 'Brands & Audience' },
               ] as const
             ).map((tab) => (
               <button
                 key={tab.id}
                 type="button"
                 role="tab"
-                aria-selected={engine === tab.id}
-                onClick={() => setEngine(tab.id)}
-                className={`${styles.bentoToggleBtn} ${engine === tab.id ? styles.bentoToggleBtnActive : ''}`}
+                aria-selected={domain === tab.id}
+                onClick={() => setDomain(tab.id)}
+                className={`${styles.bentoToggleBtn} ${domain === tab.id ? styles.bentoToggleBtnActive : ''}`}
               >
                 {tab.label}
               </button>
@@ -881,8 +875,8 @@ export default function ChartLibraryShowcase({
         </header>
       </div>
 
-      {/* ECharts Row */}
-      {showECharts && (
+      {/* Events & Photo Volume */}
+      {showEvents && (
         <>
           {eventsWithPhotos.length > 0 && (
             <EChartsPanel
@@ -909,21 +903,20 @@ export default function ChartLibraryShowcase({
               />
             )}
           </div>
+          {lollipopItems.length > 0 && <D3LollipopPanel items={lollipopItems} />}
+        </>
+      )}
+
+      {/* Attendance & Venues */}
+      {showAttendance && (
+        <>
           {matches.some((m) => (m.attendance ?? 0) > 0) && (
             <EChartsPanel
-              title="Venue environment → sport → outcome attendance flow (Sankey)"
+              title="Venue environment → sport → outcome attendance flow"
               icon="🔀"
               status="Gate turnout flow"
               option={attendanceSankeyOption}
               tall
-            />
-          )}
-          {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
-            <EChartsPanel
-              title="Multi-dimensional fixture profile (Parallel Coordinates)"
-              icon="🧬"
-              status="Temp · Capacity · Attendance · Fill % · Photos"
-              option={parallelOption}
             />
           )}
           {monthlySeries.length > 1 && (
@@ -935,24 +928,6 @@ export default function ChartLibraryShowcase({
               tall
             />
           )}
-          <div className={styles.bentoTwoCol}>
-            {brands.length > 0 && (
-              <EChartsPanel
-                title="Commercial brand exposure treemap"
-                icon="🏷️"
-                status={`Top ${Math.min(18, brands.length)} brands`}
-                option={treemapOption}
-              />
-            )}
-            {clubs.length > 0 && (
-              <EChartsPanel
-                title="Club apparel Nightingale rose"
-                icon="🌹"
-                status={`Top ${Math.min(8, clubs.length)} clubs`}
-                option={roseOption}
-              />
-            )}
-          </div>
           <div className={styles.bentoTwoCol}>
             {monthlySeries.length > 0 && (
               <EChartsPanel
@@ -968,8 +943,38 @@ export default function ChartLibraryShowcase({
             />
           </div>
           <div className={styles.bentoTwoCol}>
+            {monthlySeries.length > 0 && (
+              <ChartJsPanel
+                title="Monthly gate attendance vs. fan photos"
+                icon="📊"
+                config={monthlyChartJsConfig}
+              />
+            )}
+            {matches.some((m) => m.venueCapacity) && (
+              <ChartJsPanel
+                title="Top venues: attended vs. unoccupied seats"
+                icon="🏟️"
+                config={venueStackConfig}
+              />
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Weather & Sports */}
+      {showWeather && (
+        <>
+          {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
             <EChartsPanel
-              title="Stadium fill % distribution by sport (boxplot)"
+              title="Multi-dimensional fixture profile"
+              icon="🧬"
+              status="Temp · Capacity · Attendance · Fill % · Photos"
+              option={parallelOption}
+            />
+          )}
+          <div className={styles.bentoTwoCol}>
+            <EChartsPanel
+              title="Stadium fill % distribution by sport"
               icon="📦"
               option={boxplotOption}
             />
@@ -981,53 +986,15 @@ export default function ChartLibraryShowcase({
               />
             )}
           </div>
-        </>
-      )}
-
-      {/* Chart.js Row */}
-      {showChartJs && (
-        <>
           <div className={styles.bentoTwoCol}>
-            {monthlySeries.length > 0 && (
-              <ChartJsPanel
-                title="Monthly gate attendance vs. fan photos"
-                icon="📊"
-                config={monthlyChartJsConfig}
-              />
-            )}
             <ChartJsPanel
               title="Multi-axis sport performance radar"
               icon="🕸️"
               config={radarConfig}
             />
-          </div>
-          <div className={styles.bentoTwoCol}>
-            {ageGroups && (ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors) > 0 && (
-              <ChartJsPanel
-                title="Age cohort polar distribution"
-                icon="🧭"
-                config={agePolarConfig}
-              />
-            )}
-            {emotions.length > 0 && (
-              <ChartJsPanel
-                title="Fan facial sentiment doughnut"
-                icon="😊"
-                config={emotionDoughnutConfig}
-              />
-            )}
-          </div>
-          <div className={styles.bentoTwoCol}>
-            {matches.some((m) => m.venueCapacity) && (
-              <ChartJsPanel
-                title="Top venues: attended vs. unoccupied seats"
-                icon="🏟️"
-                config={venueStackConfig}
-              />
-            )}
             {matches.some((m) => m.weather) && (
               <ChartJsPanel
-                title="Temperature × fill % × photo volume bubble"
+                title="Temperature × fill % × photo volume"
                 icon="🫧"
                 config={bubbleConfig}
               />
@@ -1036,9 +1003,44 @@ export default function ChartLibraryShowcase({
         </>
       )}
 
-      {/* D3.js Row */}
-      {showD3 && lollipopItems.length > 0 && (
-        <D3LollipopPanel items={lollipopItems} />
+      {/* Brands & Audience */}
+      {showBrands && (
+        <>
+          <div className={styles.bentoTwoCol}>
+            {brands.length > 0 && (
+              <EChartsPanel
+                title="Commercial brand exposure treemap"
+                icon="🏷️"
+                status={`Top ${Math.min(18, brands.length)} brands`}
+                option={treemapOption}
+              />
+            )}
+            {clubs.length > 0 && (
+              <EChartsPanel
+                title="Club apparel share breakdown"
+                icon="🌹"
+                status={`Top ${Math.min(8, clubs.length)} clubs`}
+                option={roseOption}
+              />
+            )}
+          </div>
+          <div className={styles.bentoTwoCol}>
+            {ageGroups && (ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors) > 0 && (
+              <ChartJsPanel
+                title="Age cohort distribution"
+                icon="🧭"
+                config={agePolarConfig}
+              />
+            )}
+            {emotions.length > 0 && (
+              <ChartJsPanel
+                title="Fan facial sentiment mix"
+                icon="😊"
+                config={emotionDoughnutConfig}
+              />
+            )}
+          </div>
+        </>
       )}
     </section>
   );
