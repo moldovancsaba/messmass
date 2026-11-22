@@ -359,6 +359,8 @@ export default function OverviewTab({
           clubs={filteredClubs}
           indoorMatchesCount={data.matchdayAnalytics?.indoorMatchesCount ?? 0}
           outdoorMatchesCount={data.matchdayAnalytics?.outdoorMatchesCount ?? 0}
+          totalVenueCapacity={data.matchdayAnalytics?.totalVenueCapacity ?? 0}
+          totalGateAttendance={data.matchdayAnalytics?.totalGateAttendance ?? 0}
           topEmotions={vision?.aggregates?.topEmotions || []}
           onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
           onSelectClub={(club) => setSelectedClubForModal(club)}

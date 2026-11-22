@@ -32,6 +32,8 @@ export interface ExecutiveBentoGridProps {
   clubs: ClubPodiumStat[];
   indoorMatchesCount?: number;
   outdoorMatchesCount?: number;
+  totalVenueCapacity?: number;
+  totalGateAttendance?: number;
   topEmotions?: Array<{ emotion: string; count: number }>;
   onSelectBrand: (brand: CommercialBrandStat) => void;
   onSelectClub: (club: ClubPodiumStat) => void;
@@ -59,6 +61,8 @@ export default function ExecutiveBentoGrid({
   clubs,
   indoorMatchesCount = 0,
   outdoorMatchesCount = 0,
+  totalVenueCapacity = 0,
+  totalGateAttendance = 0,
   topEmotions = [],
   onSelectBrand,
   onSelectClub,
@@ -219,37 +223,91 @@ export default function ExecutiveBentoGrid({
           </span>
         </header>
         <div className={styles.bentoPanelBody}>
-          <div className={styles.bentoFunnelSteps}>
-            <div className={styles.bentoFunnelStage}>
-              <div>
-                <div className={styles.gdsEyebrow}>PHOTOS CAPTURED</div>
-                <div className={styles.gdsCaption}>Submitted & analyzed</div>
-              </div>
-              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {stage1Val > 0 ? stage1Val.toLocaleString() : 'n/a'}
-              </strong>
-            </div>
-            <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage2}`}>
-              <div>
-                <div className={styles.gdsEyebrow}>PEOPLE ENGAGED</div>
-                <div className={styles.gdsCaption}>
-                  {fanAppearances !== null ? 'Face appearances' : 'Registered fans'}
+          {totalVenueCapacity > 0 && totalGateAttendance > 0 ? (
+            <div className={styles.bentoFunnelSteps}>
+              <div className={styles.bentoFunnelStage}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Stadium capacity</span>
+                  <span className={styles.bentoFunnelSub}>Nominal seat inventory</span>
                 </div>
+                <strong className={styles.bentoFunnelVal}>{totalVenueCapacity.toLocaleString()}</strong>
               </div>
-              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {stage2Val > 0 ? stage2Val.toLocaleString() : 'n/a'}
-              </strong>
-            </div>
-            <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage3}`}>
-              <div>
-                <div className={styles.gdsEyebrow}>MARKETING OPT-INS</div>
-                <div className={styles.gdsCaption}>Consented leads</div>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage2}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Gate attendance</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10}% utilization
+                  </span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>{totalGateAttendance.toLocaleString()}</strong>
               </div>
-              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {stage3Val > 0 ? stage3Val.toLocaleString() : 'n/a'}
-              </strong>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage3}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Photo audience</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {stage2Val > 0 && totalGateAttendance > 0
+                      ? `${Math.round((stage2Val / totalGateAttendance) * 1000) / 10}% visual capture`
+                      : 'Detected fans'}
+                  </span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {stage2Val > 0 ? stage2Val.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage4}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Image usage rights</span>
+                  <span className={styles.bentoFunnelSub}>Consented photos</span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {resolvedRegistered > 0 ? resolvedRegistered.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage5}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Marketing opt-ins</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {computedOptInPct !== null ? `${computedOptInPct}% opt-in rate` : 'Consented leads'}
+                  </span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {stage3Val > 0 ? stage3Val.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className={styles.bentoFunnelSteps}>
+              <div className={styles.bentoFunnelStage}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Photos captured</span>
+                  <span className={styles.bentoFunnelSub}>Submitted &amp; analyzed</span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {stage1Val > 0 ? stage1Val.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage2}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>People engaged</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {fanAppearances !== null ? 'Face appearances' : 'Registered fans'}
+                  </span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {stage2Val > 0 ? stage2Val.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
+              <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage3}`}>
+                <div className={styles.bentoFunnelInfo}>
+                  <span className={styles.bentoFunnelTitle}>Marketing opt-ins</span>
+                  <span className={styles.bentoFunnelSub}>Consented leads</span>
+                </div>
+                <strong className={styles.bentoFunnelVal}>
+                  {stage3Val > 0 ? stage3Val.toLocaleString() : 'n/a'}
+                </strong>
+              </div>
+            </div>
+          )}
 
           <div className={styles.bentoFunnelSummary}>
             <span className={styles.gdsCaption}>

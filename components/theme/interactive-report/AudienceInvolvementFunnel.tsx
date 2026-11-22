@@ -159,50 +159,39 @@ export default function AudienceInvolvementFunnel({
         )}
       </div>
 
-      {/* Funnel Steps Breakdown */}
-      <div className={styles.gdsStackSm}>
-        {stages.map((stage, idx) => (
-          <div key={stage.id} className={styles.gdsStackSm}>
-            <div className={styles.gdsFunnelCard}>
-              <div className={styles.gdsRow}>
-                <span className={styles.gdsSectionTitle}>{stage.icon}</span>
+      {/* Tapered Trapezoid Funnel Steps */}
+      <div className={styles.funnelTrapezoidList}>
+        {stages.map((stage, idx) => {
+          const stageClass =
+            idx === 1
+              ? styles.funnelTrapezoidStage2
+              : idx === 2
+                ? styles.funnelTrapezoidStage3
+                : idx === 3
+                  ? styles.funnelTrapezoidStage4
+                  : idx === 4
+                    ? styles.funnelTrapezoidStage5
+                    : '';
+          return (
+            <div key={stage.id} className={`${styles.funnelTrapezoidStage} ${stageClass}`}>
+              <div className={styles.funnelTrapezoidMeta}>
+                <span className={styles.funnelTrapezoidIcon} aria-hidden="true">{stage.icon}</span>
                 <div>
-                  <div className={styles.gdsCardTitle}>{stage.title}</div>
-                  <div className={styles.gdsCaption}>{stage.description}</div>
-                </div>
-              </div>
-
-              <div className={styles.gdsRow}>
-                <div className={styles.gdsRight}>
-                  <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                    {stage.value.toLocaleString()}
+                  <div className={styles.funnelTrapezoidTitle}>{stage.title}</div>
+                  <div className={styles.funnelTrapezoidSub}>
+                    {idx > 0 && stage.conversionFromPrev
+                      ? `${stage.conversionFromPrev} · ${stage.conversionDetail}`
+                      : stage.description}
                   </div>
-                  <div className={styles.gdsCaption}>{stage.unit}</div>
-                </div>
-
-                <div className={`${styles.gdsPill} ${styles.gdsPillAccent}`}>
-                  {stage.badgeText}
                 </div>
               </div>
-              <div className={styles.suiteTrack}>
-                <div
-                  className={styles.suiteTrackFill}
-                  style={{ width: `${Math.max(3, Math.min(100, stage.pctOfTop))}%` }}
-                />
+              <div className={styles.funnelTrapezoidRight}>
+                <div className={styles.funnelTrapezoidVal}>{stage.value.toLocaleString()}</div>
+                <div className={styles.funnelTrapezoidBadge}>{stage.badgeText}</div>
               </div>
             </div>
-
-            {/* Stepped Conversion Connector between stages */}
-            {idx < stages.length - 1 && (
-              <div className={styles.gdsFunnelConnector}>
-                <div className={styles.gdsFunnelLine} />
-                <span className={styles.gdsCaption}>
-                  ↓ <strong className={styles.gdsNum}>{stages[idx + 1].conversionFromPrev}</strong> ({stages[idx + 1].conversionDetail})
-                </span>
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Summary Narrative Callout */}
