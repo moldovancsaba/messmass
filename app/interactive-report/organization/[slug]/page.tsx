@@ -1,6 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getScopedInteractiveReportData } from '@/lib/interactiveReportAggregator';
+import config from '@/lib/config';
+import clientPromise from '@/lib/mongodb';
+import { getScopedInteractiveReportData, resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
+import { buildProjectsReport } from '@/lib/hashtagReport';
+import type { ReportDb } from '@/lib/hashtagReport/measured';
+import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import ServerPageGate from '@/components/ServerPageGate';
 import { getAdminUser } from '@/lib/auth';
@@ -12,6 +17,7 @@ export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ report?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -23,7 +29,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function OrganizationInteractiveReportPage({ params }: PageProps) {
+export default async function OrganizationInteractiveReportPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
   if (!slug) notFound();
 
@@ -38,6 +44,7 @@ export default async function OrganizationInteractiveReportPage({ params }: Page
     }
   }
 
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const data = await getScopedInteractiveReportData({
     type: 'organization',
     identifier: decoded,
@@ -45,9 +52,18 @@ export default async function OrganizationInteractiveReportPage({ params }: Page
 
   if (!data) notFound();
 
-  return (
-    <main className={styles.pageMain}>
-      <InteractiveReportDashboard initialData={data} />
-    </main>
-  );
+  if (resolvedSearchParams.report === 'classic') {
+    return (
+      <main className={styles.pageMain}>
+        <InteractiveReportDashboard initialData={data} />
+      </main>
+    );
+  }
+
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+  const scope = await resolveScopeProjectIds('organization', decoded, undefined, db);
+  const report = await buildProjectsReport(db as unknown as ReportDb, scope.campaignProjects, data.scope?.name || decoded);
+
+  return <FanmassDashboardPage report={report} base={data} />;
 }

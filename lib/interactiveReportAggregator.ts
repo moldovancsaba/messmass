@@ -789,13 +789,46 @@ export async function getScopedInteractiveReportData(
         const { drive, photos } = projectsReport.measured;
         const analysed = drive.analysed + photos.analysed;
         if (analysed > 0) {
+          const eventIds = campaignProjects.map((p) => String(p._id)).filter(Boolean);
+          const rollupRows = eventIds.length > 0
+            ? await db.collection('ai_analysis_summaries')
+                .find({ eventId: { $in: eventIds }, sourceType: 'camera_photo_pipeline' }, { projection: { summary: 1 } })
+                .toArray()
+                .catch(() => [])
+            : [];
+          const rollupBrands: Array<{ name: string; count: number }> = [];
+          const rollupClubs: Array<{ name: string; count: number }> = [];
+          for (const row of rollupRows) {
+            const s = (row.summary ?? {}) as Record<string, any>;
+            if (Array.isArray(s.brandMentions)) {
+              for (const b of s.brandMentions) {
+                const name = typeof b?.name === 'string' ? b.name.trim() : typeof b?.brand === 'string' ? b.brand.trim() : '';
+                const count = toCount(b?.count);
+                if (name && count > 0 && name.toLowerCase() !== 'brand short name') {
+                  rollupBrands.push({ name, count });
+                }
+              }
+            }
+            if (Array.isArray(s.clubMentions)) {
+              for (const c of s.clubMentions) {
+                const name = typeof c?.name === 'string' ? c.name.trim() : typeof c?.club === 'string' ? c.club.trim() : '';
+                const count = toCount(c?.count);
+                if (name && count > 0) {
+                  rollupClubs.push({ name, count });
+                }
+              }
+            }
+          }
+          const effectivePhotoBrands = photos.brands.length > 0 ? photos.brands : rollupBrands;
+          const effectivePhotoClubs = photos.clubs.length > 0 ? photos.clubs : rollupClubs;
+
           const addMap = (a: Record<string, number>, b: Record<string, number>) => {
             const out: Record<string, number> = { ...a };
             for (const [k, v] of Object.entries(b ?? {})) out[k] = (out[k] ?? 0) + (Number(v) || 0);
             return out;
           };
           const genders = addMap(drive.genders, photos.genders);
-          const ages = addMap(drive.ageGroups, photos.ageGroups);
+          const rawAges = addMap(drive.ageGroups, photos.ageGroups);
           const emotions = addMap(drive.emotions, photos.emotions);
           const male = genders.male ?? 0;
           const female = genders.female ?? 0;
@@ -830,15 +863,15 @@ export async function getScopedInteractiveReportData(
               totalPeople: drive.people + photos.people.measured,
               genders: { male, female, malePct: pct(male), femalePct: pct(female) },
               ageGroups: {
-                children: ages.children ?? 0,
-                teens: ages.teens ?? 0,
-                adults: ages.adults ?? 0,
-                seniors: ages.seniors ?? 0,
+                children: (rawAges.children ?? 0) + (rawAges.genAlpha ?? 0),
+                teens: (rawAges.teens ?? 0) + (rawAges.genZ ?? 0),
+                adults: (rawAges.adults ?? 0) + (rawAges.millennial ?? 0) + (rawAges.genX ?? 0),
+                seniors: (rawAges.seniors ?? 0) + (rawAges.boomer ?? 0) + (rawAges.silent ?? 0),
               },
-              topBrands: mergeLists(drive.brands, photos.brands, 'brand'),
-              topClubs: mergeLists(drive.clubs, photos.clubs, 'club'),
+              topBrands: mergeLists(drive.brands, effectivePhotoBrands, 'brand'),
+              topClubs: mergeLists(drive.clubs, effectivePhotoClubs, 'club'),
               topEmotions: Object.entries(emotions)
-                .filter(([, count]) => count > 0)
+                .filter(([em, count]) => count > 0 && em.toLowerCase() !== 'unknown')
                 .sort((a, b) => b[1] - a[1])
                 .map(([emotion, count]) => ({ emotion, count })),
               sportsBreakdown: {},

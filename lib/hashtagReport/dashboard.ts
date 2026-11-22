@@ -140,27 +140,93 @@ export function visionFromReport(report: HashtagReport): VisionProgressData | nu
 }
 
 export function fanmassDashboardData(base: InteractiveReportData | null, report: HashtagReport): InteractiveReportData {
-  const label = report.scope.type === 'all' ? 'All events' : report.scope.tags.map((tag) => `#${tag}`).join(' + ');
+  const label = report.scope.type === 'all'
+    ? 'All events'
+    : report.scope.tags.length > 0
+      ? report.scope.tags.map((tag) => `#${tag}`).join(' + ')
+      : (base?.scope?.name || base?.partner?.name || report.scope.id);
   // The vision document Fanmass published for the scope (the SZRT campaign), with the scope's Camera results added (it
-  // covers the drive library only), else the one the stored photos give
-  const vision = base?.vision ? withCameraVision(base.vision, report) : visionFromReport(report);
+  // covers the drive library only), else the enriched vision from base (or raw visionFromReport when base is null)
+  const isSzrtCampaignBase = Boolean(base?.vision && (report.scope.type === 'all' || report.scope.id.toLowerCase() === 'tippmixreport2026' || base?.scope?.id?.toLowerCase() === 'tippmixreport2026' || base?.partner?.viewSlug === 'szrt'));
+  const vision = base?.vision
+    ? (isSzrtCampaignBase ? withCameraVision(base.vision, report) : base.vision)
+    : visionFromReport(report);
   const events = report.measured.events.filter((event) => event.drivePhotos > 0 || event.hasPhotoResults);
   const baseMatches = base?.matches || [];
   const baseMatchMap = new Map(baseMatches.map((m) => [m.id, m]));
   for (const m of baseMatches) {
     const name = m.cleanName || m.matchName;
     if (name) {
-      baseMatchMap.set(name.toLowerCase().replace(/[^a-z0-9]/g, ''), m);
+      const cleanKey = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+      baseMatchMap.set(cleanKey, m);
+      if (m.date) {
+        const normDate = m.date.replace(/\./g, '-').replace(/-$/, '').trim();
+        baseMatchMap.set(`${cleanKey}__${normDate}`, m);
+      }
     }
   }
 
   const mergedMatches = events.length > 0
     ? events.map((event) => {
         const key = (event.name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-        const bm = baseMatchMap.get(event.id) || baseMatchMap.get(key);
+        const normDate = (event.date || '').replace(/\./g, '-').replace(/-$/, '').trim();
+        const bm = baseMatchMap.get(event.id) || (normDate ? baseMatchMap.get(`${key}__${normDate}`) : undefined) || baseMatchMap.get(key);
         return eventRow(event, bm);
       })
     : baseMatches;
+
+  // Recompute matchdayAnalytics strictly over the Fanmass-analyzed events when events.length > 0
+  let matchdayAnalytics = base?.matchdayAnalytics;
+  if (events.length > 0) {
+    let totalVenueCapacity = 0;
+    let totalGateAttendance = 0;
+    let visualCaptureSum = 0;
+    let visualCaptureCount = 0;
+    let homeWins = 0;
+    let draws = 0;
+    let awayWins = 0;
+    let tempSum = 0;
+    let tempCount = 0;
+    let outdoorMatchesCount = 0;
+    let indoorMatchesCount = 0;
+
+    for (const m of mergedMatches) {
+      const cap = m.venueCapacity && m.venueCapacity > 0 ? m.venueCapacity : 0;
+      let att = m.attendance && m.attendance > 0 ? m.attendance : 0;
+      if (cap > 0 && att > cap * 1.1) att = cap;
+      if (cap > 0) totalVenueCapacity += cap;
+      if (att > 0) totalGateAttendance += att;
+      if (m.visualCaptureRate !== undefined && m.visualCaptureRate !== null) {
+        visualCaptureSum += m.visualCaptureRate;
+        visualCaptureCount++;
+      }
+      if (m.outcome === 'home_win') homeWins++;
+      else if (m.outcome === 'draw') draws++;
+      else if (m.outcome === 'away_win') awayWins++;
+      if (m.weather) {
+        tempSum += m.weather.tempC;
+        tempCount++;
+        if (m.weather.isIndoor) indoorMatchesCount++;
+        else outdoorMatchesCount++;
+      }
+    }
+    const completedMatches = homeWins + draws + awayWins;
+    matchdayAnalytics = {
+      totalVenueCapacity,
+      totalGateAttendance,
+      avgCapacityUtilization: totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0,
+      avgVisualCaptureRate: visualCaptureCount > 0 ? Math.round((visualCaptureSum / visualCaptureCount) * 10) / 10 : 0,
+      homeWins,
+      draws,
+      awayWins,
+      homeWinRate: completedMatches > 0 ? Math.round((homeWins / completedMatches) * 1000) / 10 : 0,
+      drawRate: completedMatches > 0 ? Math.round((draws / completedMatches) * 1000) / 10 : 0,
+      awayWinRate: completedMatches > 0 ? Math.round((awayWins / completedMatches) * 1000) / 10 : 0,
+      avgTemperatureC: tempCount > 0 ? Math.round((tempSum / tempCount) * 10) / 10 : null,
+      outdoorMatchesCount,
+      indoorMatchesCount,
+    };
+  }
 
   return {
     success: true,
@@ -179,6 +245,6 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
     funnel: [],
     demographics: buildDemographicsFromVision(vision),
     vision,
-    matchdayAnalytics: base?.matchdayAnalytics,
+    matchdayAnalytics,
   };
 }

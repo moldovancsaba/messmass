@@ -275,9 +275,38 @@ export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array
     ...(entry.coOccurrencePhotos !== undefined ? { coOccurrencePhotos: entry.coOccurrencePhotos } : {}),
     ...(entry.avgSharePct !== undefined ? { avgSharePct: entry.avgSharePct } : {}),
   });
-  photos.brands = cameraProof.filter((entry) => entry.kind === 'brand').map(toNamedCount);
-  photos.clubs = cameraProof.filter((entry) => entry.kind === 'club').map(toNamedCount);
-  return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
+  const proofBrands = cameraProof.filter((entry) => entry.kind === 'brand').map(toNamedCount);
+  const proofClubs = cameraProof.filter((entry) => entry.kind === 'club').map(toNamedCount);
+
+  if (proofBrands.length > 0 || proofClubs.length > 0) {
+    photos.brands = proofBrands;
+    photos.clubs = proofClubs;
+  } else {
+    const brandMap = new Map<string, number>();
+    const clubMap = new Map<string, number>();
+    for (const r of rollupByEvent.values()) {
+      const bm = Array.isArray(r.brandMentions) ? r.brandMentions : [];
+      for (const item of bm) {
+        const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.brand === 'string' ? item.brand.trim() : '';
+        const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
+        if (name && count > 0 && name.toLowerCase() !== 'brand short name') {
+          brandMap.set(name, (brandMap.get(name) ?? 0) + count);
+        }
+      }
+      const cm = Array.isArray(r.clubMentions) ? r.clubMentions : [];
+      for (const item of cm) {
+        const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.club === 'string' ? item.club.trim() : '';
+        const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
+        if (name && count > 0) {
+          clubMap.set(name, (clubMap.get(name) ?? 0) + count);
+        }
+      }
+    }
+    photos.brands = topNames(brandMap);
+    photos.clubs = topNames(clubMap);
+  }
+  const activeEvents = events.filter((e) => e.drivePhotos > 0 || e.hasPhotoResults || e.hasCounters);
+  return { events: activeEvents.length > 0 ? activeEvents : events, counters, photos, drive, cameraProof, months: monthsOf(events) };
 }
 
 /** The events with measured photos, month by month (event date), drive and Camera photos side by side. */

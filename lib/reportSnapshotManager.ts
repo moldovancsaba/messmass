@@ -32,8 +32,10 @@ export interface SnapshotResult {
  *       and campaign utilization math enforced with zero double-counting.
  *  - 8: universal vision & opt-in aggregation across all partner, event, and organization scopes; canonical string
  *       eventId normalization across all 53 events; zero SZRT fallback leakage.
+ *  - 9: full brand/club/demographic rollup enrichment for partner/event/organization scopes alongside FanmassDashboardPage
+ *       strict measured-event isolation (zero manual clicker stat mixing).
  */
-export const SNAPSHOT_SCHEMA_VERSION = 8;
+export const SNAPSHOT_SCHEMA_VERSION = 9;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

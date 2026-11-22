@@ -153,8 +153,8 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 131 | 201 |
-| `lib/mongodb.ts` | 114 | 112 |
+| `lib/config.ts` | 134 | 201 |
+| `lib/mongodb.ts` | 117 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 91 | 390 |

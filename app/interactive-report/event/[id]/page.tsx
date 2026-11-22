@@ -1,6 +1,11 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getScopedInteractiveReportData } from '@/lib/interactiveReportAggregator';
+import config from '@/lib/config';
+import clientPromise from '@/lib/mongodb';
+import { getScopedInteractiveReportData, resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
+import { buildProjectsReport } from '@/lib/hashtagReport';
+import type { ReportDb } from '@/lib/hashtagReport/measured';
+import FanmassDashboardPage from '@/components/hashtagReport/FanmassDashboardPage';
 import InteractiveReportDashboard from '@/components/theme/interactive-report/InteractiveReportDashboard';
 import styles from '@/components/theme/interactive-report/interactive-report.module.css';
 
@@ -11,6 +16,7 @@ export const dynamic = 'force-dynamic';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams?: Promise<{ report?: string }>;
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -21,10 +27,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function EventInteractiveReportPage({ params }: PageProps) {
+export default async function EventInteractiveReportPage({ params, searchParams }: PageProps) {
   const { id } = await params;
   if (!id) notFound();
 
+  const resolvedSearchParams = searchParams ? await searchParams : {};
   const data = await getScopedInteractiveReportData({
     type: 'event',
     identifier: id,
@@ -32,9 +39,18 @@ export default async function EventInteractiveReportPage({ params }: PageProps) 
 
   if (!data) notFound();
 
-  return (
-    <main className={styles.pageMain}>
-      <InteractiveReportDashboard initialData={data} />
-    </main>
-  );
+  if (resolvedSearchParams.report === 'classic') {
+    return (
+      <main className={styles.pageMain}>
+        <InteractiveReportDashboard initialData={data} />
+      </main>
+    );
+  }
+
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+  const scope = await resolveScopeProjectIds('event', id, undefined, db);
+  const report = await buildProjectsReport(db as unknown as ReportDb, scope.campaignProjects, data.scope?.name || id);
+
+  return <FanmassDashboardPage report={report} base={data} />;
 }
