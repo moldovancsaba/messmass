@@ -87,15 +87,35 @@
   border: 1px solid var(--mm-border-light);
   border-radius: var(--mm-radius-2xl);
   box-shadow: var(--mm-shadow-md);
-  padding: var(--mm-space-6);
+  padding: var(--mm-space-5);
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-4);
+  gap: var(--mm-space-3);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  padding-bottom: var(--mm-space-3);
+  border-bottom: 1px solid var(--mm-border-light);
+}
+
+.cardIcon {
+  width: var(--mm-space-8);
+  height: var(--mm-space-8);
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-100);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--mm-font-size-base);
+  flex: 0 0 auto;
 }
 
 .cardTitle {
   margin: 0;
-  font-size: var(--mm-font-size-lg);
+  font-size: var(--mm-font-size-base);
   font-weight: var(--mm-font-weight-bold);
 }
 
@@ -118,6 +138,14 @@
   align-items: center;
   gap: var(--mm-space-3);
   font-size: var(--mm-font-size-sm);
+}
+
+.barRowWide {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.4fr) minmax(56px, 0.8fr) auto;
+  align-items: center;
+  gap: var(--mm-space-3);
+  font-size: var(--mm-font-size-xs);
 }
 
 .bar {

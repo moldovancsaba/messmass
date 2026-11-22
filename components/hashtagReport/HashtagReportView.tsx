@@ -39,13 +39,16 @@ function Kpi({ label, value, text }: { label: string; value: string | null; text
   );
 }
 
-function Bars({ title, counts, note }: { title: string; counts: Record<string, number>; note?: string }) {
+function Bars({ title, counts, note, icon = '📊' }: { title: string; counts: Record<string, number>; note?: string; icon?: string }) {
   const rows = Object.entries(counts).filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1]);
   if (rows.length === 0) return null;
   const max = rows[0][1];
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{title}</h2>
+      <div className={styles.cardHeader}>
+        <span className={styles.cardIcon} aria-hidden="true">{icon}</span>
+        <h2 className={styles.cardTitle}>{title}</h2>
+      </div>
       {note && <p className={styles.cardNote}>{note}</p>}
       {rows.slice(0, 12).map(([name, count]) => (
         <div key={name} className={styles.barRow}>
@@ -61,17 +64,20 @@ function Bars({ title, counts, note }: { title: string; counts: Record<string, n
   );
 }
 
-function Names({ title, list, note }: { title: string; list: NamedCount[]; note: string }) {
+function Names({ title, list, note, icon = '🏷️', wide = false }: { title: string; list: NamedCount[]; note: string; icon?: string; wide?: boolean }) {
   if (list.length === 0) return null;
   const rows = list.slice(0, 12);
   const top = Math.max(...rows.map((r) => r.count), 1);
   return (
     <section className={styles.card}>
-      <h2 className={styles.cardTitle}>{title}</h2>
+      <div className={styles.cardHeader}>
+        <span className={styles.cardIcon} aria-hidden="true">{icon}</span>
+        <h2 className={styles.cardTitle}>{title}</h2>
+      </div>
       {note && <p className={styles.cardNote}>{note}</p>}
       {rows.map((row) => (
         <div
-          className={styles.barRow}
+          className={wide ? styles.barRowWide : styles.barRow}
           key={row.name}
           title={
             row.weightedCount !== undefined
@@ -179,14 +185,14 @@ export default function HashtagReportView({ report, embedded = false }: { report
                 </div>
               </section>
               <div className={styles.columns}>
-                <Bars title="Gender in drive photos" counts={drive.genders} note={drive.analysed > 0 ? `${fmt(drive.people)} people in ${fmt(drive.analysed)} analysed photos` : undefined} />
-                <Bars title="Age groups in drive photos" counts={drive.ageGroups} />
-                <Bars title="Emotions in drive photos" counts={drive.emotions} />
+                <Bars icon="👥" title="Gender in drive photos" counts={drive.genders} note={drive.analysed > 0 ? `${fmt(drive.people)} people in ${fmt(drive.analysed)} analysed photos` : undefined} />
+                <Bars icon="🎂" title="Age groups in drive photos" counts={drive.ageGroups} />
+                <Bars icon="😊" title="Emotions in drive photos" counts={drive.emotions} />
               </div>
               <div className={styles.columns}>
-                <Names title="Brands" list={drive.brands} note="Photos in which the brand name was read from the picture" />
-                <Names title="Clubs" list={drive.clubs} note="Photos in which the club name was read from the picture" />
-                <Names title="Events" list={drive.events} note="Drive photos per event" />
+                <Names icon="🏷️" title="Brands" list={drive.brands} note="Photos in which the brand name was read from the picture" />
+                <Names icon="🛡️" title="Clubs" list={drive.clubs} note="Photos in which the club name was read from the picture" />
+                <Names icon="📅" wide title="Events" list={drive.events} note="Drive photos per event" />
               </div>
             </>
           )}
@@ -195,7 +201,10 @@ export default function HashtagReportView({ report, embedded = false }: { report
 
       {measured.months.length > 0 && (
         <section className={styles.card}>
-          <h2 className={styles.cardTitle}>By month</h2>
+          <div className={styles.cardHeader}>
+            <span className={styles.cardIcon} aria-hidden="true">📆</span>
+            <h2 className={styles.cardTitle}>By month</h2>
+          </div>
           <p className={styles.cardNote}>
             The photos Fanmass measured in the events of each month (by event date), drive photos and Camera photo results side by
             side. Events without a date are not in it.
