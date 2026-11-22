@@ -21,6 +21,15 @@ import { withAdminEntityActions } from '@/lib/adminEntitySystem';
 import BitlyLinksEditor from '@/components/BitlyLinksEditor';
 import DriveFoldersEditor from '@/components/DriveFoldersEditor';
 import ColoredCard from '@/components/ColoredCard';
+import { resolveCompetitionFromProject } from '@/lib/sportCompetitions';
+
+const DEFAULT_COMPETITION = {
+  sport: 'other',
+  format: 'league',
+  division: 'men',
+  tierLabel: '',
+  season: '',
+};
 
 const PAGE_SIZE = 20;
 
@@ -63,7 +72,9 @@ export default function ProjectsPageUnified() {
     styleId: '' as string | null,
     reportTemplateId: '' as string | null,
     organizationId: '' as string | null,
-    competitionType: '' as string | null
+    organizationIds: [] as string[],
+    competitionType: '' as string | null,
+    competition: { ...DEFAULT_COMPETITION },
   });
   const [isCreatingProject, setIsCreatingProject] = useState(false);
   const [createResult, setCreateResult] = useState<{
@@ -86,7 +97,9 @@ export default function ProjectsPageUnified() {
     partner1Id: '' as string | null,
     partner2Id: '' as string | null,
     organizationId: '' as string | null,
-    competitionType: '' as string | null
+    organizationIds: [] as string[],
+    competitionType: '' as string | null,
+    competition: { ...DEFAULT_COMPETITION },
   });
   const [isUpdatingProject, setIsUpdatingProject] = useState(false);
   
@@ -105,7 +118,9 @@ export default function ProjectsPageUnified() {
       styleId: '',
       reportTemplateId: '',
       organizationId: '',
+      organizationIds: [],
       competitionType: '',
+      competition: { ...DEFAULT_COMPETITION },
     });
     setShowNewProjectForm(false);
   }, []);
@@ -124,7 +139,9 @@ export default function ProjectsPageUnified() {
       partner1Id: '',
       partner2Id: '',
       organizationId: '',
+      organizationIds: [],
       competitionType: '',
+      competition: { ...DEFAULT_COMPETITION },
     });
   }, []);
   
@@ -381,8 +398,10 @@ export default function ProjectsPageUnified() {
         stats: defaultStats,
         styleId: newProjectData.styleId || null,
         reportTemplateId: newProjectData.reportTemplateId || null,
-        organizationId: newProjectData.organizationId || null,
+        organizationId: newProjectData.organizationIds[0] || newProjectData.organizationId || null,
+        organizationIds: newProjectData.organizationIds,
         competitionType: newProjectData.competitionType || null,
+        competition: newProjectData.competition,
       };
       
       console.log('📤 [CREATE EVENT] Sending payload:', {
@@ -436,6 +455,12 @@ export default function ProjectsPageUnified() {
     const partner1Id = (project as any).partner1?._id || (project as any).partner1Id || '';
     const partner2Id = (project as any).partner2?._id || (project as any).partner2Id || '';
     const organizationId = (project as any).organization?._id || (project as any).organizationId || '';
+    const rawOrgIds: string[] = Array.isArray((project as any).organizationIds)
+      ? (project as any).organizationIds.map(String)
+      : organizationId
+        ? [String(organizationId)]
+        : [];
+    const resolvedComp = resolveCompetitionFromProject(project as any);
     const competitionType = (project as any).competitionType || '';
     
     setEditProjectData({
@@ -448,7 +473,15 @@ export default function ProjectsPageUnified() {
       partner1Id,
       partner2Id,
       organizationId,
-      competitionType
+      organizationIds: rawOrgIds,
+      competitionType,
+      competition: {
+        sport: resolvedComp.sport || 'other',
+        format: resolvedComp.format || 'league',
+        division: resolvedComp.division || 'men',
+        tierLabel: resolvedComp.tierLabel || '',
+        season: resolvedComp.season || '',
+      },
     });
     setShowEditProjectForm(true);
   }, []);
@@ -492,6 +525,7 @@ export default function ProjectsPageUnified() {
       //     the name or style hours into an event put back every count and text
       //     the event editor (and fanmass) had stored since. PUT /api/projects
       //     keeps a field the body leaves out.
+      const primaryOrgId = editProjectData.organizationIds[0] || editProjectData.organizationId || null;
       const payload = {
         projectId: editingProject._id,
         eventName: finalEventName,
@@ -502,8 +536,10 @@ export default function ProjectsPageUnified() {
         reportTemplateId: editProjectData.reportTemplateId || null,
         partner1Id: editProjectData.partner1Id || null,
         partner2Id: editProjectData.partner2Id || null,
-        organizationId: editProjectData.organizationId || null,
+        organizationId: primaryOrgId,
+        organizationIds: editProjectData.organizationIds,
         competitionType: editProjectData.competitionType || null,
+        competition: editProjectData.competition,
       };
       
       console.log('📤 [UPDATE EVENT] Sending payload:', {
@@ -511,13 +547,14 @@ export default function ProjectsPageUnified() {
         styleId: payload.styleId,
         reportTemplateId: payload.reportTemplateId,
         organizationId: payload.organizationId,
+        organizationIds: payload.organizationIds,
         competitionType: payload.competitionType,
       });
       
       const result = await apiPut('/api/projects', payload);
       
       if (result.success) {
-        const selectedOrg = availableOrganizations.find(o => o._id === editProjectData.organizationId);
+        const selectedOrg = availableOrganizations.find(o => o._id === primaryOrgId);
         setProjects(prev => prev.map(p => 
           p._id === editingProject._id 
             ? {
@@ -527,8 +564,10 @@ export default function ProjectsPageUnified() {
                 hashtags: editProjectData.hashtags,
                 categorizedHashtags: editProjectData.categorizedHashtags,
                 styleIdEnhanced: editProjectData.styleId || null,
-                organizationId: editProjectData.organizationId || null,
+                organizationId: primaryOrgId,
+                organizationIds: editProjectData.organizationIds,
                 competitionType: editProjectData.competitionType || null,
+                competition: editProjectData.competition,
                 organization: selectedOrg ? { _id: selectedOrg._id, name: selectedOrg.name, slug: selectedOrg.slug } : null,
               }
             : p
@@ -899,36 +938,91 @@ export default function ProjectsPageUnified() {
             </div>
 
             <div className="form-group mb-4">
-              <label className="form-label-block">Organization (Hierarchy &amp; League)</label>
-              <select
-                className="form-input"
-                value={newProjectData.organizationId || ''}
-                onChange={(e) => setNewProjectData(prev => ({ ...prev, organizationId: e.target.value || null }))}
-              >
-                <option value="">— None (Standalone Partner Event) —</option>
-                {availableOrganizations.map(o => (
-                  <option key={o._id} value={o._id}>🏆 {o.name}</option>
-                ))}
-              </select>
+              <label className="form-label-block">Organizations (Multi-Parent Ownership)</label>
+              <div className="multi-org-list">
+                {availableOrganizations.map((o) => {
+                  const checked = newProjectData.organizationIds.includes(o._id);
+                  return (
+                    <label key={o._id} className="multi-org-option">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={(e) => {
+                          const next = e.target.checked
+                            ? [...newProjectData.organizationIds, o._id]
+                            : newProjectData.organizationIds.filter((id) => id !== o._id);
+                          setNewProjectData((prev) => ({
+                            ...prev,
+                            organizationIds: next,
+                            organizationId: next[0] || null,
+                          }));
+                        }}
+                      />
+                      <span>🏆 {o.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
               <p className="form-hint">
-                💡 Select an organization (e.g. Champions Hockey League), or None for a partner-only match.
+                💡 Select all governing federations and title sponsors (e.g. MKOSZ + Tippmix).
               </p>
             </div>
 
             <div className="form-group mb-4">
-              <label className="form-label-block">Competition Type</label>
-              <select
-                className="form-input"
-                value={newProjectData.competitionType || ''}
-                onChange={(e) => setNewProjectData(prev => ({ ...prev, competitionType: e.target.value || null }))}
-              >
-                <option value="">— Select Competition Type —</option>
-                <option value="international_club">International Club (e.g. CHL, Champions League)</option>
-                <option value="domestic_league">Domestic League (e.g. SIHF, Serie A, NB I)</option>
-                <option value="cup">Domestic / Regional Cup</option>
-                <option value="friendly">Friendly / Exhibition Match</option>
-                <option value="standalone">Standalone Club Event</option>
-              </select>
+              <label className="form-label-block">Competition Classification</label>
+              <div className="competition-grid">
+                <select
+                  className="form-input"
+                  value={newProjectData.competition.sport}
+                  onChange={(e) => setNewProjectData((prev) => ({ ...prev, competition: { ...prev.competition, sport: e.target.value } }))}
+                >
+                  <option value="football">Football</option>
+                  <option value="basketball">Basketball</option>
+                  <option value="handball">Handball</option>
+                  <option value="ice_hockey">Ice Hockey</option>
+                  <option value="volleyball">Volleyball</option>
+                  <option value="aquatics">Aquatics</option>
+                  <option value="motorsport">Motorsport</option>
+                  <option value="other">Other</option>
+                </select>
+                <select
+                  className="form-input"
+                  value={newProjectData.competition.format}
+                  onChange={(e) => setNewProjectData((prev) => ({ ...prev, competition: { ...prev.competition, format: e.target.value } }))}
+                >
+                  <option value="league">League / Championship</option>
+                  <option value="cup">Cup</option>
+                  <option value="super_cup">Super Cup</option>
+                  <option value="qualifier">Qualifier</option>
+                  <option value="tournament">Tournament</option>
+                  <option value="friendly">Friendly</option>
+                </select>
+                <select
+                  className="form-input"
+                  value={newProjectData.competition.division}
+                  onChange={(e) => setNewProjectData((prev) => ({ ...prev, competition: { ...prev.competition, division: e.target.value } }))}
+                >
+                  <option value="men">Men</option>
+                  <option value="women">Women</option>
+                  <option value="mixed">Mixed</option>
+                  <option value="youth_u20">Youth U20</option>
+                  <option value="youth_u21">Youth U21</option>
+                </select>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Tier (e.g. NB I. A, Serie A)"
+                  value={newProjectData.competition.tierLabel}
+                  onChange={(e) => setNewProjectData((prev) => ({ ...prev, competition: { ...prev.competition, tierLabel: e.target.value } }))}
+                />
+              </div>
+              <input
+                type="text"
+                className="form-input competition-season-input"
+                placeholder="Season (e.g. 2025/2026)"
+                value={newProjectData.competition.season}
+                onChange={(e) => setNewProjectData((prev) => ({ ...prev, competition: { ...prev.competition, season: e.target.value } }))}
+              />
             </div>
             
             <div className="form-group mb-4">
@@ -1077,38 +1171,93 @@ export default function ProjectsPageUnified() {
               })()}
               
               <div className="form-group">
-                <label>Organization (Hierarchy &amp; League)</label>
-                <select
-                  className="form-input"
-                  value={editProjectData.organizationId || ''}
-                  onChange={(e) => setEditProjectData(prev => ({ ...prev, organizationId: e.target.value || null }))}
-                >
-                  <option value="">— None (Standalone Partner-Only Game) —</option>
-                  {availableOrganizations.map(o => (
-                    <option key={o._id} value={o._id}>🏆 {o.name}</option>
-                  ))}
-                </select>
+                <label>Organizations (Multi-Parent Ownership)</label>
+                <div className="multi-org-list">
+                  {availableOrganizations.map((o) => {
+                    const checked = editProjectData.organizationIds.includes(o._id);
+                    return (
+                      <label key={o._id} className="multi-org-option">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={(e) => {
+                            const next = e.target.checked
+                              ? [...editProjectData.organizationIds, o._id]
+                              : editProjectData.organizationIds.filter((id) => id !== o._id);
+                            setEditProjectData((prev) => ({
+                              ...prev,
+                              organizationIds: next,
+                              organizationId: next[0] || null,
+                            }));
+                          }}
+                        />
+                        <span>🏆 {o.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
                 <p className="form-hint">
-                  💡 Select an organization (e.g. Champions Hockey League, Swiss Ice Hockey), or select &quot;None&quot; if this match is not part of an organization but strictly a game for the partner.
+                  💡 Select all governing federations and title sponsors (e.g. MKOSZ + Tippmix).
                 </p>
               </div>
 
               <div className="form-group">
-                <label>Competition Type</label>
-                <select
-                  className="form-input"
-                  value={editProjectData.competitionType || ''}
-                  onChange={(e) => setEditProjectData(prev => ({ ...prev, competitionType: e.target.value || null }))}
-                >
-                  <option value="">— Default / Inherited —</option>
-                  <option value="international_club">International Club (e.g. CHL, Champions League)</option>
-                  <option value="domestic_league">Domestic League (e.g. SIHF, Serie A, NB I)</option>
-                  <option value="cup">Domestic / Regional Cup</option>
-                  <option value="friendly">Friendly / Exhibition Match</option>
-                  <option value="standalone">Standalone Club Event</option>
-                </select>
+                <label>Competition Classification</label>
+                <div className="competition-grid">
+                  <select
+                    className="form-input"
+                    value={editProjectData.competition.sport}
+                    onChange={(e) => setEditProjectData((prev) => ({ ...prev, competition: { ...prev.competition, sport: e.target.value } }))}
+                  >
+                    <option value="football">Football</option>
+                    <option value="basketball">Basketball</option>
+                    <option value="handball">Handball</option>
+                    <option value="ice_hockey">Ice Hockey</option>
+                    <option value="volleyball">Volleyball</option>
+                    <option value="aquatics">Aquatics</option>
+                    <option value="motorsport">Motorsport</option>
+                    <option value="other">Other</option>
+                  </select>
+                  <select
+                    className="form-input"
+                    value={editProjectData.competition.format}
+                    onChange={(e) => setEditProjectData((prev) => ({ ...prev, competition: { ...prev.competition, format: e.target.value } }))}
+                  >
+                    <option value="league">League / Championship</option>
+                    <option value="cup">Cup</option>
+                    <option value="super_cup">Super Cup</option>
+                    <option value="qualifier">Qualifier</option>
+                    <option value="tournament">Tournament</option>
+                    <option value="friendly">Friendly</option>
+                  </select>
+                  <select
+                    className="form-input"
+                    value={editProjectData.competition.division}
+                    onChange={(e) => setEditProjectData((prev) => ({ ...prev, competition: { ...prev.competition, division: e.target.value } }))}
+                  >
+                    <option value="men">Men</option>
+                    <option value="women">Women</option>
+                    <option value="mixed">Mixed</option>
+                    <option value="youth_u20">Youth U20</option>
+                    <option value="youth_u21">Youth U21</option>
+                  </select>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="Tier (e.g. NB I. A, Serie A)"
+                    value={editProjectData.competition.tierLabel}
+                    onChange={(e) => setEditProjectData((prev) => ({ ...prev, competition: { ...prev.competition, tierLabel: e.target.value } }))}
+                  />
+                </div>
+                <input
+                  type="text"
+                  className="form-input competition-season-input"
+                  placeholder="Season (e.g. 2025/2026)"
+                  value={editProjectData.competition.season}
+                  onChange={(e) => setEditProjectData((prev) => ({ ...prev, competition: { ...prev.competition, season: e.target.value } }))}
+                />
                 <p className="form-hint">
-                  💡 Competition classification level for analytics and reporting rollups.
+                  💡 Canonical sport, format, division, and league tier used by Organization Report Variants.
                 </p>
               </div>
 

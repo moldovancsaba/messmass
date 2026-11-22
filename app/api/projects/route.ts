@@ -214,7 +214,7 @@ function fieldLevelStatsUpdate(
 //     aggregates) stay with admins. The route drops these for every other
 //     caller on its own, whatever the shared EVENT_EDITOR_WRITABLE_FIELDS list
 //     says, so the rule cannot drift away from this handler.
-const ADMIN_ONLY_PROJECT_FIELDS = ['eventName', 'eventDate', 'styleId', 'reportTemplateId', 'partner1Id', 'partner2Id', 'organizationId', 'competitionType'] as const;
+const ADMIN_ONLY_PROJECT_FIELDS = ['eventName', 'eventDate', 'styleId', 'reportTemplateId', 'partner1Id', 'partner2Id', 'organizationId', 'organizationIds', 'competitionType', 'competition'] as const;
 
 // WHAT: Case-insensitive exact match for one hashtag value. On an array field
 //     it matches when any element matches (same idiom as lib/cameraPartnerSync.ts).
@@ -625,7 +625,9 @@ export async function GET(request: NextRequest) {
           styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
           reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
           organizationId: project.organizationId ? project.organizationId.toString() : null,
+          organizationIds: Array.isArray(project.organizationIds) ? project.organizationIds.map((id: any) => String(id)) : (project.organizationId ? [project.organizationId.toString()] : []),
           competitionType: project.competitionType || null,
+          competition: project.competition || null,
           partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
           partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
           externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
@@ -766,7 +768,9 @@ export async function GET(request: NextRequest) {
         styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null, // Project-specific style reference
         reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null, // Project-specific report template
         organizationId: project.organizationId ? project.organizationId.toString() : null,
+        organizationIds: Array.isArray(project.organizationIds) ? project.organizationIds.map((id: any) => String(id)) : (project.organizationId ? [project.organizationId.toString()] : []),
         competitionType: project.competitionType || null,
+        competition: project.competition || null,
         partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
         partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
         externalRefs: project.externalRefs || null, // Cross-app refs (camera.eventId) set by lib/cameraProvision.ts
@@ -992,7 +996,7 @@ export async function PUT(request: NextRequest) {
     //     save (see EditorSavePayload in components/EditorDashboard.tsx). A
     //     field it does not send must not be reset: before, a body without
     //     hashtags stored [] and one without stats stored empty totals.
-    let { eventName, eventDate, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, partner1Id, partner2Id, organizationId, competitionType } = writable;
+    let { eventName, eventDate, hashtags, categorizedHashtags, stats, styleId, reportTemplateId, partner1Id, partner2Id, organizationId, organizationIds, competitionType, competition } = writable;
     const statsChanges = parseEventStatsChanges(writable);
     if (!statsChanges.ok) {
       return NextResponse.json({ success: false, error: statsChanges.error }, { status: 400 });
@@ -1180,15 +1184,39 @@ export async function PUT(request: NextRequest) {
       logDebug('Setting partner2Id', { context: 'projects', projectId, partner2Id, method: 'PUT' });
     }
 
-    // WHAT: Handle organizationId assignment/removal
-    // WHY: Support CRUD relationship between events and organizations (e.g., CHL, SIHF, or standalone)
-    if (organizationId === null || organizationId === '' || organizationId === 'null' || organizationId === 'none') {
+    // WHAT: Handle organizationId / organizationIds multi-org assignment/removal
+    if (Array.isArray(organizationIds)) {
+      const validIds = Array.from(new Set(organizationIds.filter((id: unknown) => typeof id === 'string' && ObjectId.isValid(id))));
+      if (validIds.length === 0) {
+        unsetData.organizationIds = '';
+        unsetData.organizationId = '';
+        unsetData.federationOrganizationId = '';
+      } else {
+        setData.organizationIds = validIds;
+        setData.organizationId = new ObjectId(validIds[0]);
+      }
+    } else if (organizationId === null || organizationId === '' || organizationId === 'null' || organizationId === 'none') {
       unsetData.organizationId = '';
       unsetData.federationOrganizationId = '';
       logDebug('Removing organizationId and federationOrganizationId', { context: 'projects', projectId, method: 'PUT' });
     } else if (organizationId && organizationId !== undefined && ObjectId.isValid(organizationId)) {
       setData.organizationId = new ObjectId(organizationId);
       logDebug('Setting organizationId', { context: 'projects', projectId, organizationId, method: 'PUT' });
+    }
+
+    // WHAT: Handle structured competition metadata (sport, format, division, tierLabel, season)
+    if (competition === null) {
+      unsetData.competition = '';
+    } else if (competition && typeof competition === 'object') {
+      setData.competition = {
+        sport: typeof competition.sport === 'string' ? competition.sport.trim() : 'other',
+        format: typeof competition.format === 'string' ? competition.format.trim() : 'league',
+        division: typeof competition.division === 'string' ? competition.division.trim() : 'men',
+        tierLevel: typeof competition.tierLevel === 'number' ? competition.tierLevel : null,
+        tierLabel: typeof competition.tierLabel === 'string' && competition.tierLabel.trim() ? competition.tierLabel.trim() : null,
+        sponsorTitle: typeof competition.sponsorTitle === 'string' && competition.sponsorTitle.trim() ? competition.sponsorTitle.trim() : null,
+        season: typeof competition.season === 'string' && competition.season.trim() ? competition.season.trim() : null,
+      };
     }
 
     // WHAT: Handle competitionType assignment/removal

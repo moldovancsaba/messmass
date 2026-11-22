@@ -30,14 +30,16 @@ export interface NewEventInput {
   partner2Id?: string;
   reportTemplateId?: string | null;
   organizationId?: string | null;
+  organizationIds?: string[] | null;
   competitionType?: string | null;
+  competition?: Record<string, any> | null;
 }
 
 export async function insertEvent(
   db: Db,
   input: NewEventInput,
 ): Promise<{ insertedId: ObjectId; project: Record<string, any>; validation: ValidationResult }> {
-  const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId, organizationId, competitionType } = input;
+  const { eventName, eventDate, hashtags = [], categorizedHashtags = {}, stats, styleId, partner1Id, partner2Id, reportTemplateId, organizationId, organizationIds, competitionType, competition } = input;
   if (!eventName || !eventDate || !stats) throw new EventCreateError(400, 'Missing required fields: eventName, eventDate, stats');
 
   // Same hashtag shape rule as PUT (lib/eventSaveRules.ts): a malformed list
@@ -116,11 +118,30 @@ export async function insertEvent(
     project.partner2Id = new ObjectId(partner2Id);
   }
 
-  // WHAT: Add organizationId if provided
-  // WHY: Allow linking event directly to an organization (e.g. CHL)
-  if (organizationId && organizationId !== '' && organizationId !== 'null' && ObjectId.isValid(organizationId)) {
+  // WHAT: Add organizationIds / organizationId if provided
+  if (Array.isArray(organizationIds) && organizationIds.length > 0) {
+    const validIds = Array.from(new Set(organizationIds.filter((id) => typeof id === 'string' && ObjectId.isValid(id))));
+    if (validIds.length > 0) {
+      project.organizationIds = validIds;
+      project.organizationId = new ObjectId(validIds[0]);
+    }
+  } else if (organizationId && organizationId !== '' && organizationId !== 'null' && ObjectId.isValid(organizationId)) {
     project.organizationId = new ObjectId(organizationId);
+    project.organizationIds = [String(organizationId)];
     logDebug('Setting organizationId', { context: 'projects', organizationId, method: 'POST' });
+  }
+
+  // WHAT: Add competition metadata if provided
+  if (competition && typeof competition === 'object') {
+    project.competition = {
+      sport: typeof competition.sport === 'string' ? competition.sport.trim() : 'other',
+      format: typeof competition.format === 'string' ? competition.format.trim() : 'league',
+      division: typeof competition.division === 'string' ? competition.division.trim() : 'men',
+      tierLevel: typeof competition.tierLevel === 'number' ? competition.tierLevel : null,
+      tierLabel: typeof competition.tierLabel === 'string' && competition.tierLabel.trim() ? competition.tierLabel.trim() : null,
+      sponsorTitle: typeof competition.sponsorTitle === 'string' && competition.sponsorTitle.trim() ? competition.sponsorTitle.trim() : null,
+      season: typeof competition.season === 'string' && competition.season.trim() ? competition.season.trim() : null,
+    };
   }
 
   // WHAT: Add competitionType if provided
