@@ -19,12 +19,12 @@
 }
 
 .brandHero {
-  background: radial-gradient(120% 120% at 90% 10%, rgba(34, 197, 94, 0.18) 0%, rgba(16, 185, 129, 0.05) 45%, transparent 70%),
-              linear-gradient(135deg, #092618 0%, #0d3824 50%, #061a10 100%);
+  background: var(--report-hero-glow, radial-gradient(120% 120% at 90% 10%, rgba(56, 189, 248, 0.2) 0%, rgba(29, 78, 216, 0.06) 45%, transparent 70%)),
+              var(--report-hero-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #0f172a 100%));
   color: var(--mm-white);
   border-radius: var(--mm-radius-2xl);
   padding: var(--mm-space-8) var(--mm-space-8);
-  box-shadow: 0 16px 40px -10px rgba(6, 26, 16, 0.45);
+  box-shadow: 0 16px 40px -10px rgba(15, 23, 42, 0.35);
   border: 1px solid rgba(255, 255, 255, 0.12);
   position: relative;
   overflow: hidden;
@@ -65,14 +65,14 @@
 }
 
 .tippmixPill {
-  background: #22c55e;
-  color: #052e16;
+  background: var(--report-pill-bg, #38bdf8);
+  color: var(--report-pill-text, #0f172a);
   padding: 4px 12px;
   border-radius: var(--mm-radius-full);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.02em;
-  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.35);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.25);
 }
 
 .partnerTitle {
@@ -103,7 +103,7 @@
 
 .mapActionBtn {
   background: #ffffff;
-  color: #092618;
+  color: var(--report-primary-dark, #0f172a);
   border: 1px solid rgba(255, 255, 255, 0.9);
   border-radius: var(--mm-radius-full);
   padding: 8px 16px;
@@ -118,8 +118,8 @@
 }
 
 .mapActionBtn:hover {
-  background: #f0fdf4;
-  color: #052e16;
+  background: var(--report-primary-soft, #eff6ff);
+  color: var(--report-primary-dark, #0f172a);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
 }
@@ -196,7 +196,7 @@
   font-weight: 800;
   margin-top: var(--mm-space-1);
   line-height: 1.15;
-  color: #4ade80;
+  color: var(--report-accent, #38bdf8);
 }
 
 .kpiSubtext {
@@ -243,7 +243,7 @@
 }
 
 .tabBtnActive {
-  background: #4f7a28;
+  background: var(--report-primary, #1d4ed8);
   color: var(--mm-white);
   font-weight: var(--mm-font-weight-bold);
 }

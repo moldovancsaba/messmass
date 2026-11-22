@@ -7,6 +7,7 @@ import { getReportSlug } from './reportSlug';
 import type { DashboardTab } from './InteractiveReportDashboard';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
 import { proofNameKey } from '@/lib/hashtagReport/cameraProof';
+import { isSportFranchise, isVenue, mergeBrandVariants } from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
 
 interface SzrtHeaderProps {
@@ -74,21 +75,30 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const optIn = fanmass ? fanmass.calculated.photoOptInShare : null;
 
   const vision = data.vision;
+  const rawTopBrands = vision?.aggregates?.topBrands;
+  const commercialBrands = React.useMemo(() => {
+    const raw = rawTopBrands || [];
+    if (raw.length === 0) {
+      return brandsRead.map((b) => ({ brand: b.name, count: b.count }));
+    }
+    return mergeBrandVariants(
+      raw.filter((b) => b.brand && b.count > 0 && !isSportFranchise(b.brand) && !isVenue(b.brand))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rawTopBrands, fanmass]);
+
   const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
   const visionLabel =
     vision && vision.totalImages > 0
-      ? `Visual Analytics (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
-      : 'Visual Analytics';
+      ? `AI Photo & Brand Proof (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
+      : 'AI Photo & Brand Proof';
 
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
-    // The Fanmass report: what the local AI measured only; the clicker tabs live in the clicker report. The overview
-    // carries the victory podiums and the demographics quadrant (vision data); its clicker parts hide without data.
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
+    ...((data.matches?.length ?? 0) > 0 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: '⚽' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
-    ...((data.matches?.length ?? 0) > 0 ? [{ id: 'table' as const, label: 'All Match Data', icon: '⚽' }] : []),
-    ...(data.demographics ? [{ id: 'demographics' as const, label: 'Audience Demographics', icon: '👥' }] : []),
-    { id: 'figures', label: 'Figures and events', icon: '📋' },
+    { id: 'figures', label: 'Data Audit & Figures', icon: '📋' },
   ] : [
     { id: 'overview', label: 'Executive Overview', icon: '📊' },
     // The vision tab only exists for scopes that have vision data.
@@ -152,10 +162,21 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
           /* Fanmass figures only: what the local AI measured (lib/hashtagReport), n/a when nothing is measured */
           <div className={styles.kpiGrid}>
             {[
-              { label: 'Photos', value: fanmass.measured.drive.photos + fanmass.measured.photos.analysed, text: fanmass.measured.drive.placed > 0 ? `${fanmass.measured.drive.placed.toLocaleString()} placed in an event` : null },
-              { label: 'AI Analysed Photos', value: fanmass.measured.drive.analysed + fanmass.measured.photos.analysed, text: null },
-              { label: 'People seen', value: fanmass.measured.drive.people + fanmass.measured.photos.people.measured, text: null },
-              { label: 'Brands read', value: brandsRead.length, text: brandsRead[0] ? `Most seen: ${brandsRead[0].name}` : null },
+              {
+                label: 'AI Analysed Photos',
+                value: vision?.processedCount ?? (fanmass.measured.drive.analysed + fanmass.measured.photos.analysed),
+                text: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} total photos` : null,
+              },
+              {
+                label: 'People Detected',
+                value: vision?.aggregates?.totalPeople ?? (fanmass.measured.drive.people + fanmass.measured.photos.people.measured),
+                text: null,
+              },
+              {
+                label: 'Brands Detected',
+                value: commercialBrands.length,
+                text: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
+              },
               { label: 'Events', value: fanmass.coverage.events, text: null },
             ].map((card) => (
               <div key={card.label} className={styles.kpiCard}>
@@ -164,15 +185,24 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                 {card.value > 0 && card.text && <span className={styles.kpiSubtext}>{card.text}</span>}
               </div>
             ))}
-            {/* The opt-in headline (owner answer 512): photos with a stored opt-in record, drive and Camera, never a
-                marketing opt-in typed for a campaign; the share with its two counts, or Not measured */}
             {optIn && (
               <div className={styles.kpiCard}>
-                <span className={styles.kpiLabel}>Photos with opt-in</span>
+                <span className={styles.kpiLabel}>PP, GTC & Image Rights</span>
                 <span className={styles.kpiValueHighlight}>{optIn.value !== null ? `${optIn.value}%` : 'Not measured'}</span>
                 {optIn.numerator !== null && optIn.denominator !== null && (
                   <span className={styles.kpiSubtext}>{optIn.numerator.toLocaleString()} of {optIn.denominator.toLocaleString()} {optIn.basis}</span>
                 )}
+              </div>
+            )}
+            {vision?.marketingOptInImages !== undefined && (vision.optInImages ?? 0) > 0 && (
+              <div className={styles.kpiCard}>
+                <span className={styles.kpiLabel}>Marketing Opt-in</span>
+                <span className={styles.kpiValueHighlight}>
+                  {`${Math.round((vision.marketingOptInImages / (vision.optInImages || 1)) * 1000) / 10}%`}
+                </span>
+                <span className={styles.kpiSubtext}>
+                  {vision.marketingOptInImages.toLocaleString()} of {(vision.optInImages || 0).toLocaleString()} consented
+                </span>
               </div>
             )}
           </div>

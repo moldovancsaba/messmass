@@ -13,6 +13,7 @@ import MatchesTable from './MatchesTable';
 import { getReportSlug } from './reportSlug';
 import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
+import { resolvePartnerTheme } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportDashboardProps {
@@ -84,8 +85,28 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
     setSelectedMatch(match);
   };
 
+  const partnerTheme = resolvePartnerTheme(
+    data.partner?.name || data.scope?.name,
+    data.scope?.type,
+    data.partner?.viewSlug || data.scope?.viewSlug
+  );
+
+  const themeVars = {
+    '--report-primary': partnerTheme.primary,
+    '--report-primary-dark': partnerTheme.primaryDark,
+    '--report-primary-soft': partnerTheme.primarySoft,
+    '--report-accent': partnerTheme.accent,
+    '--report-hero-bg': partnerTheme.heroBg,
+    '--report-hero-glow': partnerTheme.heroGlow,
+    '--report-pill-bg': partnerTheme.pillBg,
+    '--report-pill-text': partnerTheme.pillText,
+    '--report-gender-male': partnerTheme.genderMale,
+    '--report-gender-female': partnerTheme.genderFemale,
+  } as React.CSSProperties;
+
   return (
-    <div className={styles.pageContainer}>
+    /* eslint-disable-next-line react/forbid-dom-props */
+    <div className={styles.pageContainer} style={themeVars}>
       {/* Client Header & Navigation */}
       <SzrtHeader
         data={data}
@@ -106,6 +127,8 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
           onViewBubble={() => setActiveTab('bubble')}
           onViewFunnel={() => setActiveTab('funnel')}
           onViewTerritoryMap={() => setActiveTab('territory')}
+          onViewMatches={() => setActiveTab('table')}
+          isFanmass={Boolean(fanmass)}
         />
       )}
 
@@ -187,7 +210,7 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
       {activeTab === 'demographics' && <D3DemographicsChart demographics={data.demographics} />}
 
       {/* Tab 5: All Match Data Table */}
-      {activeTab === 'table' && <MatchesTable matches={data.matches} />}
+      {activeTab === 'table' && <MatchesTable matches={data.matches} isFanmass={Boolean(fanmass)} />}
 
       {/* Fanmass report: every measured figure with its counts, and the events it comes from */}
       {activeTab === 'figures' && fanmass && <HashtagReportView report={fanmass} embedded />}

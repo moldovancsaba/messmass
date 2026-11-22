@@ -40,7 +40,10 @@ export default function AudienceInvolvementFunnel({
   // Conversion calculations
   const fillRate = totalVenueCapacity > 0 ? Math.round((totalGateAttendance / totalVenueCapacity) * 1000) / 10 : 0;
   const captureRate = totalGateAttendance > 0 ? Math.round((totalPeopleDetected / totalGateAttendance) * 1000) / 10 : 0;
-  const rightsRate = photo > 0 && rightsConsents > 0 ? Math.min(100, Math.round((rightsConsents / photo) * 1000) / 10) : 0;
+  const rightsPhotoDenominator = totalPhotosProcessed > 0 ? totalPhotosProcessed : rawRightsConsents;
+  const rightsRate = rightsPhotoDenominator > 0 && rightsConsents > 0
+    ? Math.min(100, Math.round((rawRightsConsents / rightsPhotoDenominator) * 1000) / 10)
+    : 0;
   const optInConsentPct = rawRightsConsents > 0 && rawLeads > 0
     ? Math.min(100, Math.round((rawLeads / rawRightsConsents) * 1000) / 10)
     : (rawLeads > 0 ? 100 : 0);
@@ -84,9 +87,9 @@ export default function AudienceInvolvementFunnel({
       conversionFromPrev: `${captureRate}% Visual Capture`,
       conversionDetail: `from ${totalPhotosProcessed.toLocaleString()} analyzed photos`,
       badgeText: `${captureRate}% Exposure`,
-      badgeColor: '#059669',
-      bgColor: 'rgba(5, 150, 105, 0.04)',
-      borderColor: 'rgba(5, 150, 105, 0.2)',
+      badgeColor: 'var(--report-primary, #1d4ed8)',
+      bgColor: 'var(--report-primary-soft, rgba(29, 78, 216, 0.04))',
+      borderColor: '#cbd5e1',
       description: 'Unique fan appearances recognized by Fanmass computer vision',
     },
     {
@@ -94,17 +97,17 @@ export default function AudienceInvolvementFunnel({
       title: 'PP, GTC & Image Usage Rights',
       icon: '🛡️',
       value: rightsConsents,
-      unit: 'Consented Submissions',
+      unit: 'Consented Photos',
       pctOfTop: totalVenueCapacity > 0 ? Math.round((rightsConsents / totalVenueCapacity) * 1000) / 10 : 0,
-      conversionFromPrev: `${rightsRate}% Submission Rate`,
+      conversionFromPrev: `${rightsRate}% Image Consent`,
       conversionDetail: rawRightsConsents > 0
-        ? `100% accepted Privacy Policy, GTC & full image usage rights (${rawRightsConsents.toLocaleString()} submissions)`
+        ? `100% of ${rightsPhotoDenominator.toLocaleString()} analyzed photos accepted Privacy Policy, GTC & full image usage rights`
         : 'No consent records stored for this scope',
       badgeText: rawRightsConsents > 0 ? '100% PP & GTC Accepted' : 'Not Measured',
       badgeColor: '#4f46e5',
       bgColor: 'rgba(79, 70, 229, 0.04)',
       borderColor: 'rgba(79, 70, 229, 0.2)',
-      description: 'Fans who accepted Privacy Policy & General Terms and granted full commercial image usage rights',
+      description: 'Photos where fans accepted Privacy Policy & General Terms and granted full commercial image usage rights',
     },
     {
       id: 'leads',
@@ -118,9 +121,9 @@ export default function AudienceInvolvementFunnel({
         ? `${rawLeads.toLocaleString()} of ${rawRightsConsents.toLocaleString()} consented submissions opted into marketing communications`
         : 'No marketing opt-in records stored for this scope',
       badgeText: rawLeads > 0 ? `${optInConsentPct}% Marketing Opt-in` : 'Not Measured',
-      badgeColor: '#9f1532',
-      bgColor: 'rgba(159, 21, 50, 0.04)',
-      borderColor: 'rgba(159, 21, 50, 0.2)',
+      badgeColor: 'var(--report-primary-dark, #0f172a)',
+      bgColor: 'var(--report-primary-soft, #eff6ff)',
+      borderColor: '#cbd5e1',
       description: 'Fans who explicitly opted into commercial & club marketing communications',
     },
   ];

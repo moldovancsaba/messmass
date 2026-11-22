@@ -7,6 +7,7 @@ import styles from './interactive-report.module.css';
 
 interface MatchesTableProps {
   matches: MatchItem[];
+  isFanmass?: boolean;
 }
 
 const SPORT_COLORS: Record<string, string> = {
@@ -17,7 +18,7 @@ const SPORT_COLORS: Record<string, string> = {
   Other: '#64748b',
 };
 
-export default function MatchesTable({ matches }: MatchesTableProps) {
+export default function MatchesTable({ matches, isFanmass = false }: MatchesTableProps) {
   const [search, setSearch] = useState('');
   const [selectedSport, setSelectedSport] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'submitted' | 'date' | 'approved' | 'hostess'>('submitted');
@@ -140,7 +141,7 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
               >
                 Photos {sortBy === 'submitted' ? (sortDesc ? '↓' : '↑') : ''}
               </th>
-              <th className={styles.thCell}>Approval</th>
+              <th className={styles.thCell}>{isFanmass ? 'Event AI Report' : 'Approval'}</th>
             </tr>
           </thead>
           <tbody>
@@ -173,7 +174,16 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
                     </span>
                   </td>
                   <td className={`${styles.thCell} ${styles.matchTitle}`}>
-                    {m.cleanName}
+                    {m.id && /^[a-f0-9]{24}$/i.test(m.id) ? (
+                      <a
+                        href={`/interactive-report/event/${m.id}`}
+                        style={{ color: 'var(--report-primary, #1d4ed8)', textDecoration: 'none', fontWeight: 700 }}
+                      >
+                        {m.cleanName}
+                      </a>
+                    ) : (
+                      m.cleanName
+                    )}
                   </td>
                   <td className={styles.thCell}>{m.date}</td>
                   <td className={styles.thCell}>
@@ -260,7 +270,30 @@ export default function MatchesTable({ matches }: MatchesTableProps) {
                     {m.submitted}
                   </td>
                   <td className={styles.thCell}>
-                    {m.submitted > 0 ? (
+                    {isFanmass ? (
+                      m.id && /^[a-f0-9]{24}$/i.test(m.id) ? (
+                        <a
+                          href={`/interactive-report/event/${m.id}`}
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            padding: '4px 10px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            background: 'var(--report-primary-soft, #eff6ff)',
+                            color: 'var(--report-primary, #1d4ed8)',
+                            textDecoration: 'none',
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          Open AI Report →
+                        </a>
+                      ) : (
+                        <span className={styles.cardSubtitle}>—</span>
+                      )
+                    ) : m.submitted > 0 ? (
                       <span className={m.approvalRate >= 95 ? styles.brandPassHigh : styles.brandPassMed}>
                         {m.approvalRate}%
                       </span>

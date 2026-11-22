@@ -141,7 +141,7 @@ export default function MarketingCommercialSuite({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#be185d' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--report-primary, #1d4ed8)' }}>
                   Verified Direct Engagement & Leads
                 </span>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
@@ -158,7 +158,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>PP, GTC & Image Rights</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#eef2ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4f46e5' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                       <path d="m9 12 2 2 4-4" />
@@ -179,7 +179,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Marketing Opt-in Rate</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fdf2f8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#be185d' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m3 11 18-5v12L3 14v-3z" />
                       <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
@@ -200,7 +200,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>GDPR Marketing Leads</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                       <circle cx="8.5" cy="7" r="4" />
@@ -366,7 +366,7 @@ export default function MarketingCommercialSuite({
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
               <div>
-                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--report-primary, #1d4ed8)' }}>
                   Audience Composition & DNA
                 </span>
                 <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
@@ -384,7 +384,7 @@ export default function MarketingCommercialSuite({
                     type="button"
                     onClick={onViewTerritoryMap}
                     style={{
-                      background: '#0284c7',
+                      background: 'var(--report-primary, #1d4ed8)',
                       color: '#ffffff',
                       border: 'none',
                       padding: '5px 12px',
@@ -408,35 +408,50 @@ export default function MarketingCommercialSuite({
                 {totalGender > 0 ? (
                   <>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '14px 0', position: 'relative' }}>
-                      <svg width="136" height="136" viewBox="0 0 140 140">
+                      <svg width="144" height="144" viewBox="0 0 140 140">
                         <circle cx="70" cy="70" r="54" fill="transparent" stroke="#f1f5f9" strokeWidth="18" />
                         <circle
                           cx="70"
                           cy="70"
                           r="54"
                           fill="transparent"
-                          stroke="#e11d48"
+                          stroke="var(--report-gender-male, #0284c7)"
+                          strokeWidth="18"
+                          strokeDasharray={`${(malePct / 100) * 339.29} 339.29`}
+                          strokeDashoffset="0"
+                          transform="rotate(-90 70 70)"
+                        />
+                        <circle
+                          cx="70"
+                          cy="70"
+                          r="54"
+                          fill="transparent"
+                          stroke="var(--report-gender-female, #6366f1)"
                           strokeWidth="18"
                           strokeDasharray={`${(femalePct / 100) * 339.29} 339.29`}
-                          strokeDashoffset="84.82"
-                          strokeLinecap="round"
+                          strokeDashoffset={`${-((malePct / 100) * 339.29)}`}
                           transform="rotate(-90 70 70)"
                         />
                       </svg>
-                      <div style={{ position: 'absolute', textAlign: 'center' }}>
-                        <span style={{ fontSize: '26px', fontWeight: 800, color: '#0f172a' }}>{malePct}%</span>
+                      <div style={{ position: 'absolute', textAlign: 'center', lineHeight: 1.1 }}>
+                        <div style={{ fontSize: '24px', fontWeight: 800, color: '#0f172a' }}>
+                          {malePct >= femalePct ? `${malePct}%` : `${femalePct}%`}
+                        </div>
+                        <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748b', textTransform: 'uppercase', marginTop: '2px' }}>
+                          {malePct >= femalePct ? 'Male' : 'Female'}
+                        </div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', paddingTop: '12px', borderTop: '1px solid #f1f5f9' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#e11d48' }} />
-                        <span style={{ color: '#64748b' }}>Female</span>
-                        <strong style={{ color: '#0f172a' }}>{female.toLocaleString()} ({femalePct}%)</strong>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: '#e2e8f0' }} />
+                        <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--report-gender-male, #0284c7)' }} />
                         <span style={{ color: '#64748b' }}>Male</span>
                         <strong style={{ color: '#0f172a' }}>{male.toLocaleString()} ({malePct}%)</strong>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ width: '10px', height: '10px', borderRadius: '2px', background: 'var(--report-gender-female, #6366f1)' }} />
+                        <span style={{ color: '#64748b' }}>Female</span>
+                        <strong style={{ color: '#0f172a' }}>{female.toLocaleString()} ({femalePct}%)</strong>
                       </div>
                     </div>
                   </>
@@ -470,7 +485,7 @@ export default function MarketingCommercialSuite({
                             style={{
                               width: `${Math.min(cohort.pct, 100)}%`,
                               height: '100%',
-                              background: '#be185d',
+                              background: 'var(--report-primary, #1d4ed8)',
                               borderRadius: '4px',
                               transition: 'width 0.4s ease',
                             }}
@@ -490,7 +505,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Total Fans Engaged</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#fdf2f8', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#be185d' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                       <circle cx="9" cy="7" r="4" />
@@ -516,7 +531,7 @@ export default function MarketingCommercialSuite({
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
-                  <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#059669' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--report-primary, #1d4ed8)' }}>
                     Facial Expression Analysis
                   </span>
                   <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>

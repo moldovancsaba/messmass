@@ -33,6 +33,8 @@ interface OverviewTabProps {
   onViewBubble: () => void;
   onViewFunnel: () => void;
   onViewTerritoryMap?: () => void;
+  onViewMatches?: () => void;
+  isFanmass?: boolean;
 }
 
 const SPORT_ICONS: Record<string, string> = {
@@ -117,6 +119,8 @@ export default function OverviewTab({
   onViewBubble,
   onViewFunnel,
   onViewTerritoryMap = onViewBubble,
+  onViewMatches,
+  isFanmass = false,
 }: OverviewTabProps) {
   const { summary, sports, timeline, vision } = data;
 
@@ -310,24 +314,162 @@ export default function OverviewTab({
           Act 7: Tactical Verification (Timeline Scrubber & Touchpoints)
           ========================================================================= */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        {/* ACT 1: Executive Bottom Line (Headline KPI Band & Multi-Sport Filter) */}
-        <ExecutiveHeroKpis
-          title={scopeName}
-          subtitle={data.scope?.subtitle}
-          selectedSport={selectedSport}
-          onSelectSport={setSelectedSport}
-          sportOptions={sportOptions}
-          registeredFans={registeredFans}
-          analyzedImages={analyzedImages}
-          fanAppearances={fanAppearances}
-          scopeLabel={scopeName}
-          eventCount={summary.totalMatches > 0 ? summary.totalMatches : null}
-          isRunning={vision?.status === 'running'}
-          lastUpdated={vision?.lastUpdated ?? null}
-          matchdayAnalytics={data.matchdayAnalytics}
-        />
+        {/* ACT 1: Executive Bottom Line (Only in non-Fanmass clicker mode; Fanmass mode uses the unified SzrtHeader KPI strip) */}
+        {!isFanmass ? (
+          <ExecutiveHeroKpis
+            title={scopeName}
+            subtitle={data.scope?.subtitle}
+            selectedSport={selectedSport}
+            onSelectSport={setSelectedSport}
+            sportOptions={sportOptions}
+            registeredFans={registeredFans}
+            analyzedImages={analyzedImages}
+            fanAppearances={fanAppearances}
+            scopeLabel={scopeName}
+            eventCount={summary.totalMatches > 0 ? summary.totalMatches : null}
+            isRunning={vision?.status === 'running'}
+            lastUpdated={vision?.lastUpdated ?? null}
+            matchdayAnalytics={data.matchdayAnalytics}
+          />
+        ) : sportOptions.length >= 2 ? (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '12px 18px' }}>
+            <span style={{ fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#64748b' }}>
+              Filter by Sport
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+              {['all', ...sportOptions].map((sport) => {
+                const isActive = selectedSport.toLowerCase() === sport.toLowerCase();
+                return (
+                  <button
+                    key={sport}
+                    type="button"
+                    onClick={() => setSelectedSport(sport)}
+                    style={{
+                      padding: '5px 12px',
+                      borderRadius: '999px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      background: isActive ? 'var(--report-primary, #1d4ed8)' : '#f8fafc',
+                      color: isActive ? '#ffffff' : '#475569',
+                    }}
+                  >
+                    {sport === 'all' ? '🏆 All Sports' : `${SPORT_ICONS[sport] || '🏅'} ${sport}`}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ) : null}
 
-        {/* ACT 2: Multi-Tier Audience Involvement Funnel (Stadium Capacity -> Gate Turnout -> Vision Capture -> Opt-in Leads) */}
+        {/* ACT 2: Visual Brand Visibility & Club Podiums (#1 Gold, #2 Silver, #3 Bronze + Connected Photo Proof) */}
+        {vision && (
+          <ExecutivePodiumGrid
+            brands={filteredBrands}
+            clubs={filteredClubs}
+            totalPhotosProcessed={analyzedImages ?? 0}
+            onSelectClub={(club) => setSelectedClubForModal(club)}
+            onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
+            onViewAllBrands={() => setIsAllBrandsOpen(true)}
+            onViewAllClubs={() => setIsAllClubsOpen(true)}
+          />
+        )}
+
+        {/* ACT 3: Analyzed Events & Direct Event AI Report Links */}
+        {isFanmass && data.matches && data.matches.length > 0 && (
+          <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <div className={styles.cardSubtitle}>Event-Level AI Analytics</div>
+                <h3 className={styles.cardTitle}>Analyzed Fixtures & Event Reports ({data.matches.length})</h3>
+              </div>
+              {onViewMatches && data.matches.length > 8 && (
+                <button
+                  type="button"
+                  onClick={onViewMatches}
+                  style={{
+                    background: 'var(--report-primary-soft, #eff6ff)',
+                    color: 'var(--report-primary, #1d4ed8)',
+                    border: 'none',
+                    padding: '6px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                  }}
+                >
+                  View All {data.matches.length} Events →
+                </button>
+              )}
+            </div>
+            <div className={styles.tableScroll}>
+              <table className={styles.tableRoot}>
+                <thead>
+                  <tr className={styles.tableHeadRow}>
+                    <th className={styles.thCell}>Event / Fixture</th>
+                    <th className={styles.thCell}>Date</th>
+                    <th className={styles.thCell}>Venue</th>
+                    <th className={styles.thCell}>Score</th>
+                    <th className={styles.thCell}>Attendance</th>
+                    <th className={styles.thCell}>AI Photos</th>
+                    <th className={styles.thCell}>Event AI Report</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.matches.slice(0, 8).map((m, idx) => {
+                    const hasScore = m.homeScore !== null && m.homeScore !== undefined && m.visitorScore !== null && m.visitorScore !== undefined;
+                    const hasEventId = Boolean(m.id && /^[a-f0-9]{24}$/i.test(m.id));
+                    return (
+                      <tr key={m.id || idx} className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}>
+                        <td className={`${styles.thCell} ${styles.matchTitle}`}>
+                          {hasEventId ? (
+                            <a href={`/interactive-report/event/${m.id}`} style={{ color: 'var(--report-primary, #1d4ed8)', textDecoration: 'none', fontWeight: 700 }}>
+                              {m.cleanName}
+                            </a>
+                          ) : (
+                            m.cleanName
+                          )}
+                        </td>
+                        <td className={styles.thCell}>{m.date || '—'}</td>
+                        <td className={styles.thCell}>{m.venue || '—'}</td>
+                        <td className={styles.thCell}>{hasScore ? `${m.homeScore} : ${m.visitorScore}` : '—'}</td>
+                        <td className={styles.thCell}>{m.attendance && m.attendance > 0 ? m.attendance.toLocaleString() : '—'}</td>
+                        <td className={styles.thCell} style={{ fontWeight: 700 }}>{m.submitted.toLocaleString()}</td>
+                        <td className={styles.thCell}>
+                          {hasEventId ? (
+                            <a
+                              href={`/interactive-report/event/${m.id}`}
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                padding: '4px 10px',
+                                borderRadius: '6px',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                background: 'var(--report-primary-soft, #eff6ff)',
+                                color: 'var(--report-primary, #1d4ed8)',
+                                textDecoration: 'none',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              Open AI Report →
+                            </a>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* ACT 4: Multi-Tier Audience Involvement Funnel (Stadium Capacity -> Gate Turnout -> Vision Capture -> Consent & Opt-in) */}
         {data.matchdayAnalytics && data.matchdayAnalytics.totalVenueCapacity > 0 && (
           <AudienceInvolvementFunnel
             totalVenueCapacity={data.matchdayAnalytics.totalVenueCapacity}
@@ -340,7 +482,7 @@ export default function OverviewTab({
           />
         )}
 
-        {/* ACT 3: Verified Direct Fan Engagement & Digital Conversion */}
+        {/* ACT 5: Verified Direct Fan Engagement & Digital Conversion */}
         <MarketingCommercialSuite
           variant="commercial"
           partnerName={data.partner?.name || scopeName}
@@ -352,7 +494,7 @@ export default function OverviewTab({
           totalCtaClicks={resolvedCtaClicks}
         />
 
-        {/* ACT 4: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}
+        {/* ACT 6: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}
         <MarketingCommercialSuite
           variant="demographics"
           partnerName={data.partner?.name || scopeName}
@@ -367,24 +509,16 @@ export default function OverviewTab({
           onViewTerritoryMap={onViewTerritoryMap}
         />
 
-        {/* ACT 5: Visual Brand Visibility & Club Podiums (#1 Gold, #2 Silver, #3 Bronze + Connected Photo Proof) */}
-        {vision && (
-          <ExecutivePodiumGrid
-            brands={filteredBrands}
-            clubs={filteredClubs}
-            totalPhotosProcessed={analyzedImages ?? 0}
-            onSelectClub={(club) => setSelectedClubForModal(club)}
-            onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
-            onViewAllBrands={() => setIsAllBrandsOpen(true)}
-            onViewAllClubs={() => setIsAllClubsOpen(true)}
-          />
-        )}
-
-        {/* ACT 6: Sporting Context & Environmental Turnout Matrix (Venue Capacities, Outcomes & Weather Correlation) */}
+        {/* ACT 7: Sporting Context & Environmental Turnout Matrix (Venue Capacities, Outcomes & Weather Correlation) */}
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
-            <MatchOutcomesChart matches={data.matches} analytics={data.matchdayAnalytics} />
+            <MatchOutcomesChart
+              matches={data.matches}
+              scopeType={data.scope?.type}
+              partnerName={data.partner?.name || scopeName}
+              analytics={data.matchdayAnalytics}
+            />
           </div>
         )}
 

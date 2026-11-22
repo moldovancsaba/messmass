@@ -230,7 +230,13 @@ export default function HashtagReportView({ report, embedded = false }: { report
               {measured.events.filter((event) => !all || event.hasCounters || event.hasPhotoResults || event.drivePhotos > 0).map((event) => (
                 <tr key={event.id}>
                   <td>
-                    {event.name || 'Unnamed event'}
+                    {/^[a-f0-9]{24}$/i.test(event.id) ? (
+                      <a href={`/interactive-report/event/${event.id}`}>
+                        {event.name || 'Unnamed event'}
+                      </a>
+                    ) : (
+                      event.name || 'Unnamed event'
+                    )}
                     {!all && <div className={styles.cardNote}>{event.joinedBy === 'photos' ? 'Holds photos of the hashtag' : 'Carries the hashtag'}</div>}
                   </td>
                   <td>{event.date ?? 'No date'}</td>
