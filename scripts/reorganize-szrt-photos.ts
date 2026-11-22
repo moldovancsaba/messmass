@@ -3,6 +3,8 @@
 //       with strict sport fencing, exact 2-club / 1-club matching, zero synthetic-rollup pollution,
 //       and deduplication across fanmass_camera_photo_analyses (local_storage) and fanmass_event_drive_photos.
 
+import fs from 'fs';
+import path from 'path';
 import { MongoClient, ObjectId } from 'mongodb';
 import { detectSport } from '../lib/interactiveReportAggregator';
 
@@ -58,6 +60,8 @@ const CLUB_PATTERNS: Array<{ key: string; pattern: RegExp }> = [
   { key: 'kac', pattern: /ec[\s-]*kac/i },
   { key: 'graz', pattern: /graz/i },
   { key: 'vienna', pattern: /vienna\s*capitals/i },
+  { key: 'tatabanya', pattern: /tatab[áa]nya/i },
+  { key: 'szedeak', pattern: /szede[áa]k/i },
   { key: 'hungary', pattern: /magyarorsz[áa]g|hungary|\bhun\b|v[áa]logatott|national\s*(handball|football|basketball)?\s*team/i },
 ];
 
@@ -90,10 +94,21 @@ interface TippmixEvent {
   date: string;
   sport: string;
   clubKeys: string[];
+  partner1: string | null;
+  partner2: string | null;
+  organizationIds: string[];
   isNationalTeam: boolean;
   targetWeight: number;
   assignedCount: number;
 }
+
+const SPORT_FEDERATION_ORG: Record<string, string> = {
+  Football: '6af1c0000000000000000001',   // MLSZ
+  Basketball: '6afd4d1727132886f7e7b49d', // MKOSZ
+  Handball: '6af1c0000000000000000005',   // MKSZ
+  'Ice Hockey': '6af1c0000000000000000007', // MJSZ
+};
+const TIPPMIX_ORG_ID = '6af1c2000000000000000001';
 
 async function run(apply: boolean) {
   const client = new MongoClient(CLUSTERS.camaraclastar);
@@ -108,7 +123,7 @@ async function run(apply: boolean) {
       { 'categorizedHashtags.campaign': { $regex: /tippmix/i } },
       { eventName: /tippmix/i },
     ],
-  }, { projection: { _id: 1, eventName: 1, eventDate: 1, categorizedHashtags: 1, 'stats.allImages': 1 } }).toArray();
+  }, { projection: { _id: 1, eventName: 1, eventDate: 1, categorizedHashtags: 1, partner1: 1, partner2: 1, organizationId: 1, organizationIds: 1, 'stats.allImages': 1 } }).toArray();
 
   const events: TippmixEvent[] = rawProjects
     .filter((p) => !/statisztika|ai analytics/i.test(p.eventName || ''))
@@ -119,17 +134,52 @@ async function run(apply: boolean) {
       const isNationalTeam = clubKeys.includes('hungary') || /magyar|hungary|fiba|válogatott/i.test(name);
       const storedImgs = Number(p.stats?.allImages || 0);
       const targetWeight = isNationalTeam ? 10 : storedImgs >= 150 ? 3 : 1;
+      const orgIds = new Set<string>(
+        Array.isArray(p.organizationIds) ? p.organizationIds.map(String) : p.organizationId ? [String(p.organizationId)] : []
+      );
+      if (SPORT_FEDERATION_ORG[sport]) orgIds.add(SPORT_FEDERATION_ORG[sport]);
+      orgIds.add(TIPPMIX_ORG_ID);
       return {
         id: String(p._id),
         name,
         date: String(p.eventDate || ''),
         sport,
         clubKeys,
+        partner1: p.partner1 ? String(p.partner1) : null,
+        partner2: p.partner2 ? String(p.partner2) : null,
+        organizationIds: [...orgIds],
         isNationalTeam,
         targetWeight,
         assignedCount: 0,
       };
     });
+
+  // Build (sport, clubKey) -> partnerId lookup from Tippmix events + partners collection
+  const allPartners = await db.collection('partners').find({}, { projection: { _id: 1, name: 1 } }).toArray();
+  const partnerByClubSport = new Map<string, string>();
+  for (const ev of events) {
+    const p1 = ev.partner1;
+    const p2 = ev.partner2;
+    const p1Name = allPartners.find((p) => String(p._id) === p1)?.name || '';
+    const p2Name = allPartners.find((p) => String(p._id) === p2)?.name || '';
+    for (const ck of ev.clubKeys) {
+      const pat = CLUB_PATTERNS.find((c) => c.key === ck)?.pattern;
+      if (!pat) continue;
+      if (p1 && pat.test(p1Name) && !partnerByClubSport.has(`${ev.sport}:${ck}`)) {
+        partnerByClubSport.set(`${ev.sport}:${ck}`, p1);
+      } else if (p2 && pat.test(p2Name) && !partnerByClubSport.has(`${ev.sport}:${ck}`)) {
+        partnerByClubSport.set(`${ev.sport}:${ck}`, p2);
+      }
+    }
+  }
+  for (const { key, pattern } of CLUB_PATTERNS) {
+    for (const sport of ['Basketball', 'Football', 'Handball', 'Ice Hockey']) {
+      if (!partnerByClubSport.has(`${sport}:${key}`)) {
+        const match = allPartners.find((p) => pattern.test(String(p.name || '')));
+        if (match) partnerByClubSport.set(`${sport}:${key}`, String(match._id));
+      }
+    }
+  }
 
   const eventsBySport = new Map<string, TippmixEvent[]>();
   for (const ev of events) {
@@ -169,12 +219,18 @@ async function run(apply: boolean) {
     drvId: string;
     fileName: string;
     sport: string;
+    mtimeMs: number;
     clubKeys: string[];
     newEventId: string | null;
+    placeClubKey: string | null;
+    placePartnerId: string | null;
+    placeOrganizationIds: string[];
+    burstId: string | null;
     confidence: number;
     method: string;
   }
 
+  const SZRT_ROOT = '/Users/Shared/Projects/szrt';
   const tasks: PhotoTask[] = drvDocs.map((d) => {
     const drvId = String(d._id);
     const fileName = drvId.split('/').pop() || drvId;
@@ -185,7 +241,27 @@ async function run(apply: boolean) {
       ...(Array.isArray(cam?.summary?.clubMentions) ? cam.summary.clubMentions.map((m: any) => m.name || m.club || '') : []),
     ];
     const clubKeys = extractPhotoClubKeys(rawClubs);
-    return { drvId, fileName, sport, clubKeys, newEventId: null, confidence: 0, method: 'unassigned' };
+    let mtimeMs = 0;
+    const localPath = path.join(SZRT_ROOT, sport, fileName);
+    if (fs.existsSync(localPath)) {
+      mtimeMs = fs.statSync(localPath).mtimeMs;
+    } else if (cam?.receivedAt) {
+      mtimeMs = new Date(cam.receivedAt).getTime() || 0;
+    }
+    return {
+      drvId,
+      fileName,
+      sport,
+      mtimeMs,
+      clubKeys,
+      newEventId: null,
+      placeClubKey: null,
+      placePartnerId: null,
+      placeOrganizationIds: [],
+      burstId: null,
+      confidence: 0,
+      method: 'unassigned',
+    };
   });
 
   // Sort: 2-club photos first, then 1-club photos, then 0-club photos
@@ -196,10 +272,17 @@ async function run(apply: boolean) {
   let twoClubSkippedForeign = 0;
   let oneClubExact = 0;
   let oneClubSkippedForeign = 0;
-  let genericDistributed = 0;
+  let genericUnassigned = 0;
 
   const pickLeastLoaded = (candidates: TippmixEvent[]): TippmixEvent => {
     return candidates.slice().sort((a, b) => (a.assignedCount / a.targetWeight) - (b.assignedCount / b.targetWeight))[0];
+  };
+
+  const resolvePlaceMeta = (sport: string, clubKey: string) => {
+    const partnerId = partnerByClubSport.get(`${sport}:${clubKey}`) || null;
+    const orgs = new Set<string>([TIPPMIX_ORG_ID]);
+    if (SPORT_FEDERATION_ORG[sport]) orgs.add(SPORT_FEDERATION_ORG[sport]);
+    return { partnerId, organizationIds: [...orgs] };
   };
 
   for (const t of tasks) {
@@ -207,28 +290,33 @@ async function run(apply: boolean) {
     if (sportEvents.length === 0) continue;
 
     if (t.clubKeys.length >= 2) {
-      // Look for an event in THIS sport that has at least 2 matching clubs
       const exactBoth = sportEvents.filter((ev) => t.clubKeys.filter((ck) => ev.clubKeys.includes(ck)).length >= 2);
       if (exactBoth.length > 0) {
         const chosen = pickLeastLoaded(exactBoth);
         chosen.assignedCount++;
         t.newEventId = chosen.id;
+        t.placeClubKey = chosen.clubKeys[0] || t.clubKeys[0];
+        const meta = resolvePlaceMeta(t.sport, t.placeClubKey);
+        t.placePartnerId = meta.partnerId;
+        t.placeOrganizationIds = chosen.organizationIds;
         t.confidence = 1.0;
         t.method = 'two_club_exact_match';
         twoClubExact++;
         continue;
       }
-      // Else only match an event in THIS sport that contains at least one of the 2 clubs (NEVER a 3rd club!)
       const oneOfTwo = sportEvents.filter((ev) => t.clubKeys.some((ck) => ev.clubKeys.includes(ck)));
       if (oneOfTwo.length > 0) {
         const chosen = pickLeastLoaded(oneOfTwo);
         chosen.assignedCount++;
         t.newEventId = chosen.id;
+        t.placeClubKey = t.clubKeys.find((ck) => chosen.clubKeys.includes(ck)) || t.clubKeys[0];
+        const meta = resolvePlaceMeta(t.sport, t.placeClubKey);
+        t.placePartnerId = meta.partnerId;
+        t.placeOrganizationIds = chosen.organizationIds;
         t.confidence = 0.85;
         t.method = 'club_match_same_sport';
         twoClubSingle++;
       } else {
-        // Foreign / unmatched clubs (e.g. Barcelona vs Real Madrid jersey) -> keep unassigned rather than polluting a 3rd club
         twoClubSkippedForeign++;
       }
     } else if (t.clubKeys.length === 1) {
@@ -238,19 +326,156 @@ async function run(apply: boolean) {
         const chosen = pickLeastLoaded(matching);
         chosen.assignedCount++;
         t.newEventId = chosen.id;
+        t.placeClubKey = ck;
+        const meta = resolvePlaceMeta(t.sport, ck);
+        t.placePartnerId = meta.partnerId;
+        t.placeOrganizationIds = chosen.organizationIds;
         t.confidence = 0.9;
         t.method = 'one_club_same_sport';
         oneClubExact++;
       } else {
+        // Still record place if we know the club partner in this sport
+        t.placeClubKey = ck;
+        const meta = resolvePlaceMeta(t.sport, ck);
+        t.placePartnerId = meta.partnerId;
+        t.placeOrganizationIds = meta.organizationIds;
         oneClubSkippedForeign++;
       }
-    } else {
-      // 0 clubs identified -> NEVER fabricate per-match counts by round-robinning.
-      // Leave eventId: null (campaign/sport-level library photo only).
-      t.newEventId = null;
-      t.confidence = 0;
+    }
+  }
+
+  // Pass 2: Chronological-Burst Same-Place Clustering (bracket + burst extension)
+  // Photos taken chronologically between/around same-club anchors in the same burst belong to the SAME PLACE
+  // (never fabricating an eventId when a club has multiple events!).
+  const MAX_BURST_GAP_MS = 10_000;
+  let bracketSamePlace = 0;
+  let burstSamePlace = 0;
+  let burstUniqueEvent = 0;
+
+  for (const sport of ['Basketball', 'Football', 'Handball', 'Ice Hockey']) {
+    const sportEvents = eventsBySport.get(sport) || [];
+    const sportTasks = tasks
+      .filter((t) => t.sport === sport && t.mtimeMs > 0)
+      .sort((a, b) => a.mtimeMs - b.mtimeMs || a.fileName.localeCompare(b.fileName));
+
+    const bursts: PhotoTask[][] = [];
+    let cur: PhotoTask[] = [];
+    for (let i = 0; i < sportTasks.length; i++) {
+      if (i > 0 && sportTasks[i].mtimeMs - sportTasks[i - 1].mtimeMs > MAX_BURST_GAP_MS) {
+        bursts.push(cur);
+        cur = [];
+      }
+      cur.push(sportTasks[i]);
+    }
+    if (cur.length > 0) bursts.push(cur);
+
+    for (let bIdx = 0; bIdx < bursts.length; bIdx++) {
+      const grp = bursts[bIdx];
+      const burstId = `${sport.toLowerCase().replace(/\s+/g, '_')}_b${bIdx + 1}`;
+      const anchorIndices: number[] = [];
+      const clubCounts: Record<string, number> = {};
+      for (let i = 0; i < grp.length; i++) {
+        grp[i].burstId = burstId;
+        if (grp[i].clubKeys.length > 0) {
+          anchorIndices.push(i);
+          for (const ck of grp[i].clubKeys) {
+            clubCounts[ck] = (clubCounts[ck] || 0) + 1;
+          }
+        }
+      }
+      if (anchorIndices.length === 0) continue;
+
+      const sortedClubs = Object.entries(clubCounts).sort((a, b) => b[1] - a[1]);
+      const dominantClub = sortedClubs[0][0];
+      const dominantShare = sortedClubs[0][1] / anchorIndices.length;
+
+      // Check if burst uniquely identifies a single Tippmix event (2-club match with 1 event, or 1-club with 1 event)
+      let uniqueBurstEvent: TippmixEvent | null = null;
+      if (sortedClubs.length >= 2) {
+        const top2 = [sortedClubs[0][0], sortedClubs[1][0]];
+        const twoMatch = sportEvents.filter((ev) => top2.every((ck) => ev.clubKeys.includes(ck)));
+        if (twoMatch.length === 1) uniqueBurstEvent = twoMatch[0];
+      }
+      if (!uniqueBurstEvent && sortedClubs.length === 1) {
+        const oneMatch = sportEvents.filter((ev) => ev.clubKeys.includes(dominantClub));
+        if (oneMatch.length === 1) uniqueBurstEvent = oneMatch[0];
+      }
+
+      // First: bracket generic photos strictly between two anchors sharing the same club
+      for (let a = 0; a < anchorIndices.length - 1; a++) {
+        const i = anchorIndices[a];
+        const j = anchorIndices[a + 1];
+        const shared = grp[i].clubKeys.filter((ck) => grp[j].clubKeys.includes(ck));
+        if (shared.length > 0 && j - i > 1) {
+          const placeCk = shared[0];
+          const meta = resolvePlaceMeta(sport, placeCk);
+          for (let k = i + 1; k < j; k++) {
+            if (grp[k].clubKeys.length === 0) {
+              grp[k].placeClubKey = placeCk;
+              grp[k].placePartnerId = meta.partnerId;
+              grp[k].placeOrganizationIds = uniqueBurstEvent ? uniqueBurstEvent.organizationIds : meta.organizationIds;
+              if (uniqueBurstEvent) {
+                grp[k].newEventId = uniqueBurstEvent.id;
+                uniqueBurstEvent.assignedCount++;
+                grp[k].confidence = 0.9;
+                grp[k].method = 'chronological_burst_unique_event';
+                burstUniqueEvent++;
+              } else {
+                grp[k].confidence = 0.9;
+                grp[k].method = 'chronological_bracket_same_place';
+                bracketSamePlace++;
+              }
+            }
+          }
+        }
+      }
+
+      // Second: remaining generic photos in the same <=10s burst
+      const hasClearPlurality =
+        sortedClubs.length === 1 || sortedClubs[0][1] >= sortedClubs[1][1] * 1.5;
+
+      for (let i = 0; i < grp.length; i++) {
+        const t = grp[i];
+        if (t.clubKeys.length > 0 || t.placeClubKey) continue;
+
+        let chosenClub = dominantClub;
+        let conf = 0.8;
+        if (!hasClearPlurality) {
+          // Nearest chronological anchor in this burst
+          let bestDist = Infinity;
+          for (const aIdx of anchorIndices) {
+            const dist = Math.abs(grp[aIdx].mtimeMs - t.mtimeMs) * 1000 + Math.abs(aIdx - i);
+            if (dist < bestDist) {
+              bestDist = dist;
+              chosenClub = grp[aIdx].clubKeys[0];
+            }
+          }
+          conf = 0.75;
+        }
+
+        const meta = resolvePlaceMeta(sport, chosenClub);
+        t.placeClubKey = chosenClub;
+        t.placePartnerId = meta.partnerId;
+        t.placeOrganizationIds = uniqueBurstEvent ? uniqueBurstEvent.organizationIds : meta.organizationIds;
+        if (uniqueBurstEvent) {
+          t.newEventId = uniqueBurstEvent.id;
+          uniqueBurstEvent.assignedCount++;
+          t.confidence = Math.max(conf, 0.85);
+          t.method = 'chronological_burst_unique_event';
+          burstUniqueEvent++;
+        } else {
+          t.confidence = conf;
+          t.method = 'chronological_burst_same_place';
+          burstSamePlace++;
+        }
+      }
+    }
+  }
+
+  for (const t of tasks) {
+    if (!t.newEventId && !t.placeClubKey) {
       t.method = 'unassigned_no_club_signal';
-      genericDistributed++;
+      genericUnassigned++;
     }
   }
 
@@ -261,12 +486,14 @@ async function run(apply: boolean) {
     twoClubSkippedForeign,
     oneClubExact,
     oneClubSkippedForeign,
-    genericDistributed,
+    bracketSamePlace,
+    burstSamePlace,
+    burstUniqueEvent,
+    totalPlaceTagged: tasks.filter((t) => t.placeClubKey !== null).length,
+    genericUnassigned,
     zeroPhotoEventsCount: zeroPhotoEvents.length,
-    zeroPhotoEvents: zeroPhotoEvents.map((e) => `${e.sport}: ${e.name}`),
   });
   console.log('Top 10 events by assigned count:', events.slice().sort((a, b) => b.assignedCount - a.assignedCount).slice(0, 10).map((e) => ({ name: e.name, sport: e.sport, count: e.assignedCount })));
-  console.log('Bottom 5 events by assigned count:', events.slice().sort((a, b) => a.assignedCount - b.assignedCount).slice(0, 5).map((e) => ({ name: e.name, sport: e.sport, count: e.assignedCount })));
 
   if (!apply) {
     console.log('\n[DRY RUN] Run with --apply to write changes to MongoDB.');
@@ -285,8 +512,12 @@ async function run(apply: boolean) {
       update: {
         $set: {
           eventId: t.newEventId,
+          placeClubKey: t.placeClubKey,
+          placePartnerId: t.placePartnerId,
+          placeOrganizationIds: t.placeOrganizationIds,
           'assignment.confidence': t.confidence,
           'assignment.method': t.method,
+          'assignment.burstId': t.burstId,
         },
       },
     },
@@ -301,6 +532,9 @@ async function run(apply: boolean) {
         update: {
           $set: {
             eventId: t.newEventId,
+            placeClubKey: t.placeClubKey,
+            placePartnerId: t.placePartnerId,
+            placeOrganizationIds: t.placeOrganizationIds,
           },
         },
       },

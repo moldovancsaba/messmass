@@ -202,22 +202,50 @@ export async function loadMeasuredLayer(db: ReportDb, hashtags: string[] | null,
   return { events, counters, photos, drive, cameraProof, months: monthsOf(events) };
 }
 
+export interface MeasuredPlaceScope {
+  partnerId?: string;
+  organizationId?: string;
+  sportFilter?: string;
+}
+
 /** Build the measured layer for an explicit list of already-resolved project documents (e.g. partner, event, organization scopes). */
-export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array<Record<string, any>>): Promise<MeasuredLayer> {
+export async function loadMeasuredLayerForProjects(
+  db: ReportDb,
+  projects: Array<Record<string, any>>,
+  placeScope?: MeasuredPlaceScope,
+): Promise<MeasuredLayer> {
   const eventIds = projects.map((p) => String(p._id)).filter(Boolean);
-  if (eventIds.length === 0) {
+  if (eventIds.length === 0 && !placeScope?.partnerId && !placeScope?.organizationId) {
     const { drive } = readDriveSummary({});
     const photos = mergePhotoSummaries([]);
     photos.withOptIn = 0;
     return { events: [], counters: {}, photos, drive, cameraProof: [], months: [] };
   }
 
+  const placeBranches: Array<Record<string, unknown>> = [];
+  if (eventIds.length > 0) {
+    placeBranches.push({ eventId: { $in: eventIds } });
+  }
+  const sportClause =
+    placeScope?.sportFilter && placeScope.sportFilter !== 'all'
+      ? { sport: new RegExp(`^${placeScope.sportFilter.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') }
+      : {};
+  if (placeScope?.partnerId) {
+    placeBranches.push({ eventId: null, placePartnerId: placeScope.partnerId, ...sportClause });
+  }
+  if (placeScope?.organizationId) {
+    placeBranches.push({ eventId: null, placeOrganizationIds: placeScope.organizationId, ...sportClause });
+  }
+  const driveFilter = placeBranches.length === 1 ? placeBranches[0] : { $or: placeBranches };
+
   const drivePhotos = db.collection('fanmass_event_drive_photos');
   const [facet, rollups] = await Promise.all([
-    drivePhotos.aggregate(driveSummaryPipeline({ eventId: { $in: eventIds } })).toArray().then((rows) => rows[0]),
-    db.collection('ai_analysis_summaries')
-      .find({ eventId: { $in: eventIds }, sourceType: 'camera_photo_pipeline' }, { projection: { eventId: 1, summary: 1 } })
-      .toArray(),
+    drivePhotos.aggregate(driveSummaryPipeline(driveFilter)).toArray().then((rows) => rows[0]),
+    eventIds.length > 0
+      ? db.collection('ai_analysis_summaries')
+          .find({ eventId: { $in: eventIds }, sourceType: 'camera_photo_pipeline' }, { projection: { eventId: 1, summary: 1 } })
+          .toArray()
+      : Promise.resolve([]),
   ]);
 
   const { drive, byEvent: driveByEvent } = readDriveSummary(facet);
@@ -225,12 +253,14 @@ export async function loadMeasuredLayerForProjects(db: ReportDb, projects: Array
 
   const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
   const cameraOnlyFilter = { ...cameraResults, source: { $ne: 'local_storage' } };
-  const [withOptIn, withMarketingOptIn, withCtaClicks, proofRows] = await Promise.all([
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.received': true }),
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.kinds': 'marketing' }),
-    db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.ctaClicked': true }),
-    db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
-  ]);
+  const [withOptIn, withMarketingOptIn, withCtaClicks, proofRows] = eventIds.length > 0
+    ? await Promise.all([
+        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.received': true }),
+        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.kinds': 'marketing' }),
+        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.ctaClicked': true }),
+        db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
+      ])
+    : [0, 0, 0, []];
 
   const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
   const cameraProof = readCameraProof(proofRows, (eventId) => nameOf.get(eventId) ?? '');

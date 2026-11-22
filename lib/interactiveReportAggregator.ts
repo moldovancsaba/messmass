@@ -790,9 +790,15 @@ export async function getScopedInteractiveReportData(
       if (szrtDoc && isVisionPublishable(szrtDoc)) {
         rawVisionDoc = szrtDoc;
       }
-    } else if (campaignProjects.length > 0 && typeof (db as any).collection === 'function') {
+    } else if ((campaignProjects.length > 0 || scopeType === 'partner' || scopeType === 'organization') && typeof (db as any).collection === 'function') {
       try {
-        const measured = await loadMeasuredLayerForProjects(db as unknown as ReportDb, campaignProjects);
+        const placeScope =
+          scopeType === 'partner' && partner?._id
+            ? { partnerId: String(partner._id), sportFilter }
+            : scopeType === 'organization' && (query.organizationId || rawId)
+              ? { organizationId: String(query.organizationId || rawId), sportFilter }
+              : undefined;
+        const measured = await loadMeasuredLayerForProjects(db as unknown as ReportDb, campaignProjects, placeScope);
         const projectsReport: HashtagReport = {
           success: true,
           scope: { type: 'filter', id: `${scopeType}-${scopeIdentifier}`, tags: [] },
