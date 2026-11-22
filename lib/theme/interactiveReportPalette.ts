@@ -340,3 +340,25 @@ export function resolvePartnerTheme(
   }
   return NEUTRAL_DEFAULT_THEME;
 }
+
+export const REPORT_CHART_PALETTE = {
+  blue: '#1b79df',
+  blueSoft: 'rgba(27, 121, 223, 0.22)',
+  teal: '#03ad9f',
+  tealSoft: 'rgba(3, 173, 159, 0.22)',
+  violet: '#7c3aed',
+  violetSoft: 'rgba(124, 58, 237, 0.2)',
+  amber: '#f59e0b',
+  amberSoft: 'rgba(245, 158, 11, 0.2)',
+  rose: '#e11d48',
+  roseSoft: 'rgba(225, 29, 72, 0.2)',
+  emerald: '#10b981',
+  cyan: '#06b6d4',
+  indigo: '#4f46e5',
+  slate: '#64748b',
+  grid: '#e2e8f0',
+  ink: '#102242',
+  muted: '#64748b',
+  surface: '#ffffff',
+  series: ['#1b79df', '#03ad9f', '#7c3aed', '#f59e0b', '#e11d48', '#10b981', '#06b6d4', '#4f46e5'],
+} as const;

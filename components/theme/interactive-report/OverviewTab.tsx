@@ -22,6 +22,7 @@ import StadiumCapacityChart from './StadiumCapacityChart';
 import MatchOutcomesChart from './MatchOutcomesChart';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
 import MatchdayAnalyticsSuite from './MatchdayAnalyticsSuite';
+import ChartLibraryShowcase from './ChartLibraryShowcase';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
 import styles from './interactive-report.module.css';
 
@@ -537,7 +538,15 @@ export default function OverviewTab({
         )}
 
         {data.matches && data.matches.length > 0 && (
-          <MatchdayAnalyticsSuite matches={data.matches} vision={vision} />
+          <>
+            <MatchdayAnalyticsSuite matches={data.matches} vision={vision} />
+            <ChartLibraryShowcase
+              matches={data.matches}
+              vision={vision}
+              brands={filteredBrands}
+              clubs={filteredClubs}
+            />
+          </>
         )}
       </div>
 

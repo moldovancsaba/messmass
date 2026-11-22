@@ -3694,6 +3694,30 @@
   stroke-width: 2;
 }
 
+.chartCanvasBox {
+  position: relative;
+  width: 100%;
+  height: 270px;
+}
+
+.chartCanvasBoxTall {
+  position: relative;
+  width: 100%;
+  height: 330px;
+}
+
+.chartEngineTag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: #eef3fc;
+  color: #334663;
+  border: 1px solid #dde7f5;
+}
+
 @media (max-width: 1160px) {
   .bentoTwoCol {
     grid-template-columns: 1fr;
