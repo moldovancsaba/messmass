@@ -397,7 +397,10 @@ export default function OverviewTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {data.matches.slice(0, 8).map((m, idx) => {
+                  {[...data.matches]
+                    .sort((a, b) => (b.submitted ?? 0) - (a.submitted ?? 0) || (b.attendance ?? 0) - (a.attendance ?? 0))
+                    .slice(0, 8)
+                    .map((m, idx) => {
                     const hasScore = m.homeScore !== null && m.homeScore !== undefined && m.visitorScore !== null && m.visitorScore !== undefined;
                     const hasEventId = Boolean(m.id && /^[a-f0-9]{24}$/i.test(m.id));
                     const teamParts = m.cleanName.split(/\s+[x×#]\s+/i);

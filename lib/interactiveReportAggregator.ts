@@ -932,6 +932,7 @@ export async function getScopedInteractiveReportData(
             m.selfies = measuredPhotos;
           }
         }
+        matchesList.sort((a, b) => (b.submitted ?? 0) - (a.submitted ?? 0) || (b.attendance ?? 0) - (a.attendance ?? 0));
       } catch {
         // Fallback cleanly when mocked DB in unit tests does not implement aggregate/countDocuments
       }
