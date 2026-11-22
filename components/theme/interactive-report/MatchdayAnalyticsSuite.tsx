@@ -608,7 +608,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
               {sportVisionStats.map((row, idx) => {
                 const y = idx * 36 + 8;
                 const barX = 120;
-                const barMaxW = 600;
+                const barMaxW = 480;
                 const maleW = (row.malePct / 100) * barMaxW;
                 const femaleW = Math.max(0, barMaxW - maleW);
                 return (
