@@ -88,32 +88,22 @@ export default function WeatherTurnoutCorrelationMatrix({
   const tempRange = Math.max(maxTemp - minTemp, 10);
 
   return (
-    <div className={`${styles.executiveCard} ${className}`} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+    <div className={`${styles.executiveCard} ${styles.gdsStack} ${className}`}>
+      <div className={styles.gdsRowBetween}>
         <div>
-          <div className={styles.cardSubtitle}>Environmental Intelligence</div>
-          <h3 className={styles.cardTitle}>Weather vs. Stadium Attendance Matrix</h3>
-          <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--gds-sys-color-neutral-60, #64748b)' }}>
+          <div className={styles.gdsEyebrow}>Environmental Intelligence</div>
+          <h3 className={styles.gdsCardTitle}>Weather vs. Stadium Attendance Matrix</h3>
+          <p className={styles.gdsCaption}>
             Correlation between kickoff climate conditions, ambient temperature, and stadium capacity fill rates
           </p>
         </div>
 
         {/* Sport Filter Pills */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+        <div className={styles.gdsRow}>
           <button
             type="button"
             onClick={() => setSelectedSport('all')}
-            style={{
-              padding: '4px 10px',
-              borderRadius: '999px',
-              border: '1px solid var(--gds-sys-color-surface-container-high, #e2e8f0)',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              background: selectedSport === 'all' ? 'var(--gds-sys-color-primary, #0f172a)' : '#ffffff',
-              color: selectedSport === 'all' ? '#ffffff' : '#475569',
-              transition: 'all 0.15s ease',
-            }}
+            className={`${styles.sportFilterBtn} ${selectedSport === 'all' ? styles.sportFilterBtnActive : ''}`}
           >
             All Disciplines ({validMatches.length})
           </button>
@@ -122,17 +112,7 @@ export default function WeatherTurnoutCorrelationMatrix({
               key={sport}
               type="button"
               onClick={() => setSelectedSport(sport)}
-              style={{
-                padding: '4px 10px',
-                borderRadius: '999px',
-                border: '1px solid var(--gds-sys-color-surface-container-high, #e2e8f0)',
-                fontSize: '12px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                background: selectedSport === sport ? (SPORT_COLORS[sport] || '#0f172a') : '#ffffff',
-                color: selectedSport === sport ? '#ffffff' : '#475569',
-                transition: 'all 0.15s ease',
-              }}
+              className={`${styles.sportFilterBtn} ${selectedSport === sport ? styles.sportFilterBtnActive : ''}`}
             >
               {sport}
             </button>
@@ -141,66 +121,60 @@ export default function WeatherTurnoutCorrelationMatrix({
       </div>
 
       {/* Climate Tier Comparison Banners */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' }}>
-        <div style={{ padding: '12px', background: 'rgba(245, 158, 11, 0.08)', borderRadius: '12px', border: '1px solid rgba(245, 158, 11, 0.2)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#b45309' }}>☀️ Warm (&gt;18°C)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#92400e', marginTop: '4px' }}>
+      <div className={styles.weatherBandGrid}>
+        <div className={styles.weatherBandWarm}>
+          <div className={styles.gdsEyebrow}>☀️ Warm (&gt;18°C)</div>
+          <div className={styles.gdsSectionKpi}>
             {climateBands.warm.avgFill !== null ? `${climateBands.warm.avgFill}%` : 'N/A'}
           </div>
-          <div style={{ fontSize: '11px', color: '#78350f', marginTop: '2px' }}>{climateBands.warm.count} outdoor matches</div>
+          <div className={styles.gdsCaption}>{climateBands.warm.count} outdoor matches</div>
         </div>
 
-        <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.08)', borderRadius: '12px', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#1d4ed8' }}>⛅ Mild (10–18°C)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#1e40af', marginTop: '4px' }}>
+        <div className={styles.weatherBandMild}>
+          <div className={styles.gdsEyebrow}>⛅ Mild (10–18°C)</div>
+          <div className={styles.gdsSectionKpi}>
             {climateBands.mild.avgFill !== null ? `${climateBands.mild.avgFill}%` : 'N/A'}
           </div>
-          <div style={{ fontSize: '11px', color: '#172554', marginTop: '2px' }}>{climateBands.mild.count} outdoor matches</div>
+          <div className={styles.gdsCaption}>{climateBands.mild.count} outdoor matches</div>
         </div>
 
-        <div style={{ padding: '12px', background: 'rgba(99, 102, 241, 0.08)', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#4338ca' }}>❄️ Cold (&lt;10°C)</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#3730a3', marginTop: '4px' }}>
+        <div className={styles.weatherBandCold}>
+          <div className={styles.gdsEyebrow}>❄️ Cold (&lt;10°C)</div>
+          <div className={styles.gdsSectionKpi}>
             {climateBands.cold.avgFill !== null ? `${climateBands.cold.avgFill}%` : 'N/A'}
           </div>
-          <div style={{ fontSize: '11px', color: '#312e81', marginTop: '2px' }}>{climateBands.cold.count} outdoor matches</div>
+          <div className={styles.gdsCaption}>{climateBands.cold.count} outdoor matches</div>
         </div>
 
-        <div style={{ padding: '12px', background: 'rgba(16, 185, 129, 0.08)', borderRadius: '12px', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-          <div style={{ fontSize: '12px', fontWeight: 600, color: '#047857' }}>🏟️ Indoor Arenas</div>
-          <div style={{ fontSize: '20px', fontWeight: 700, color: '#065f46', marginTop: '4px' }}>
+        <div className={styles.weatherBandIndoor}>
+          <div className={styles.gdsEyebrow}>🏟️ Indoor Arenas</div>
+          <div className={styles.gdsSectionKpi}>
             {climateBands.indoor.avgFill !== null ? `${climateBands.indoor.avgFill}%` : 'N/A'}
           </div>
-          <div style={{ fontSize: '11px', color: '#064e3b', marginTop: '2px' }}>{climateBands.indoor.count} arena fixtures</div>
+          <div className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</div>
         </div>
       </div>
 
       {/* Interactive Scatter Canvas */}
-      <div style={{ position: 'relative', width: '100%', height: '260px', background: 'var(--gds-sys-color-surface-container-low, #f8fafc)', borderRadius: '12px', border: '1px solid #e2e8f0', padding: '24px 32px 36px 44px', boxSizing: 'border-box' }}>
-        {/* Y-Axis Label & Gridlines */}
-        <div style={{ position: 'absolute', left: '8px', top: '10px', fontSize: '10px', fontWeight: 700, color: '#94a3b8', textTransform: 'uppercase' }}>
-          Fill %
-        </div>
+      <div className={styles.weatherCanvas}>
+        <div className={styles.weatherYLabel}>Fill %</div>
         {[100, 75, 50, 25, 0].map((tick) => {
           const topPct = (1 - tick / 100) * 80 + 10;
           return (
-            <div key={tick} style={{ position: 'absolute', left: '44px', right: '16px', top: `${topPct}%`, borderTop: '1px dashed #e2e8f0' }}>
-              <span style={{ position: 'absolute', left: '-36px', top: '-7px', fontSize: '10px', color: '#94a3b8', fontWeight: 600, width: '30px', textAlign: 'right' }}>
-                {tick}%
-              </span>
+            <div key={tick} className={styles.weatherGridline} style={{ top: `${topPct}%` }}>
+              <span className={styles.weatherTick}>{tick}%</span>
             </div>
           );
         })}
 
-        {/* X-Axis Labels */}
-        <div style={{ position: 'absolute', left: '44px', right: '16px', bottom: '8px', display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#94a3b8', fontWeight: 600 }}>
+        <div className={styles.weatherXAxis}>
           <span>{Math.round(minTemp)}°C (Cold)</span>
-          <span style={{ color: '#64748b' }}>Kickoff Ambient Temperature (°C)</span>
+          <span>Kickoff Ambient Temperature (°C)</span>
           <span>{Math.round(maxTemp)}°C (Warm)</span>
         </div>
 
         {/* Match Scatter Points */}
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div className={styles.weatherPlotArea}>
           {filteredMatches.map((m) => {
             const fillRate = Math.min(
               100,
@@ -244,39 +218,23 @@ export default function WeatherTurnoutCorrelationMatrix({
 
         {/* Hover Tooltip Card */}
         {hoveredMatch && (
-          <div
-            style={{
-              position: 'absolute',
-              bottom: '44px',
-              right: '24px',
-              background: '#0f172a',
-              color: '#ffffff',
-              padding: '10px 14px',
-              borderRadius: '10px',
-              boxShadow: '0 8px 24px rgba(0,0,0,0.25)',
-              zIndex: 30,
-              maxWidth: '280px',
-              fontSize: '12px',
-              pointerEvents: 'none',
-              animation: 'fadeIn 0.15s ease-out',
-            }}
-          >
-            <div style={{ fontWeight: 700, fontSize: '13px', marginBottom: '4px' }}>
+          <div className={styles.weatherTooltip}>
+            <div className={styles.gdsNum}>
               {hoveredMatch.cleanName || hoveredMatch.matchName}
             </div>
-            <div style={{ color: '#94a3b8', fontSize: '11px', marginBottom: '6px' }}>
+            <div>
               📍 {hoveredMatch.venue} • {hoveredMatch.date}
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #334155', paddingTop: '6px', marginTop: '4px' }}>
+            <div className={styles.weatherTooltipDivider}>
               <span>Turnout:</span>
-              <strong style={{ color: '#38bdf8' }}>
+              <strong className={styles.gdsNum}>
                 {hoveredMatch.attendance?.toLocaleString()} / {hoveredMatch.venueCapacity?.toLocaleString()}{' '}
                 ({hoveredMatch.capacityUtilizationRate}%)
               </strong>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '2px' }}>
+            <div className={styles.gdsRowBetween}>
               <span>Weather:</span>
-              <span style={{ color: '#fbbf24' }}>
+              <span>
                 {hoveredMatch.weather?.tempC}°C · {hoveredMatch.weather?.condition}{' '}
                 {hoveredMatch.weather?.isIndoor ? '(Indoor 🏟️)' : ''}
               </span>
@@ -286,21 +244,21 @@ export default function WeatherTurnoutCorrelationMatrix({
       </div>
 
       {/* Legend & Insight Footer */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#64748b' }}>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className={styles.gdsRowBetween}>
+        <div className={styles.gdsRow}>
           {sportsList.map((sp) => (
-            <span key={sp} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-              <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: SPORT_COLORS[sp] || '#059669', display: 'inline-block' }} /> {sp}
+            <span key={sp} className={styles.gdsCaption}>
+              <span className={styles.weatherLegendDot} style={{ background: SPORT_COLORS[sp] || 'var(--report-primary)' }} /> {sp}
             </span>
           ))}
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#475569', display: 'inline-block' }} /> Outdoor
+          <span className={styles.gdsCaption}>
+            <span className={`${styles.weatherLegendDot} ${styles.weatherLegendDotOutdoor}`} /> Outdoor
           </span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#ffffff', border: '2px solid #475569', display: 'inline-block' }} /> Indoor Arena
+          <span className={styles.gdsCaption}>
+            <span className={`${styles.weatherLegendDot} ${styles.weatherLegendDotIndoor}`} /> Indoor Arena
           </span>
         </div>
-        <span>Hover or focus any plot point for fixture turnout details</span>
+        <span className={styles.gdsCaption}>Hover or focus any plot point for fixture turnout details</span>
       </div>
     </div>
   );

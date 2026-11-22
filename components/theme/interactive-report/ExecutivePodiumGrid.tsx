@@ -125,19 +125,18 @@ export default function ExecutivePodiumGrid({
             {/* Rank #2: Silver */}
             {brand2 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand2)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBrand?.(brand2); } }}
                 title={`Rank #2: ${brand2.brand} (${brand2.count} appearances) - Click for details`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand2.logoUrl ? (
-                    <img
-                      src={brand2.logoUrl}
-                      alt={brand2.brand}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={brand2.logoUrl} alt={brand2.brand} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '20px' }}>🥈</span>
+                    <span className={styles.pedestalEmoji}>🥈</span>
                   )}
                 </div>
                 <span className={styles.pedestalName}>{brand2.brand}</span>
@@ -151,31 +150,24 @@ export default function ExecutivePodiumGrid({
             {/* Rank #1: Gold (Center Elevated) */}
             {brand1 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand1)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBrand?.(brand1); } }}
                 title={`Rank #1: ${brand1.brand} (${brand1.count} appearances) - Click for details`}
               >
-                <div
-                  className={styles.pedestalLogoCircle}
-                  style={{
-                    borderColor: '#f59e0b',
-                    boxShadow: '0 0 12px rgba(245, 158, 11, 0.35)',
-                  }}
-                >
+                <div className={`${styles.pedestalLogoCircle} ${styles.pedestalLogoGold}`}>
                   {brand1.logoUrl ? (
-                    <img
-                      src={brand1.logoUrl}
-                      alt={brand1.brand}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={brand1.logoUrl} alt={brand1.brand} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '22px' }}>👑</span>
+                    <span className={styles.pedestalEmoji}>👑</span>
                   )}
                 </div>
-                <span className={styles.pedestalName} style={{ fontWeight: 800, color: '#92400e' }}>
+                <span className={`${styles.pedestalName} ${styles.pedestalNameGold}`}>
                   {brand1.brand}
                 </span>
-                <span className={styles.pedestalCount} style={{ color: '#b45309', fontWeight: 700 }}>
+                <span className={`${styles.pedestalCount} ${styles.pedestalCountGold}`}>
                   {brand1.count.toLocaleString()}
                 </span>
                 <div className={`${styles.pedestalBlock} ${styles.blockGold}`}>
@@ -187,19 +179,18 @@ export default function ExecutivePodiumGrid({
             {/* Rank #3: Bronze */}
             {brand3 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectBrand?.(brand3)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBrand?.(brand3); } }}
                 title={`Rank #3: ${brand3.brand} (${brand3.count} appearances) - Click for details`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {brand3.logoUrl ? (
-                    <img
-                      src={brand3.logoUrl}
-                      alt={brand3.brand}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={brand3.logoUrl} alt={brand3.brand} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '20px' }}>🥉</span>
+                    <span className={styles.pedestalEmoji}>🥉</span>
                   )}
                 </div>
                 <span className={styles.pedestalName}>{brand3.brand}</span>
@@ -211,7 +202,7 @@ export default function ExecutivePodiumGrid({
             )}
           </div>
         ) : sortedBrands.length === 0 ? (
-          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+          <div className={styles.podiumEmptyState}>
             n/a (no brand appearances counted)
           </div>
         ) : null}
@@ -225,20 +216,19 @@ export default function ExecutivePodiumGrid({
             return (
               <div
                 key={b.brand}
+                role="button"
+                tabIndex={0}
                 className={styles.rankedRow}
                 onClick={() => onSelectBrand?.(b)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectBrand?.(b); } }}
                 title={`${b.brand}: ${b.count} appearances (${formatShare(pct)}) - Click for details`}
               >
                 <span className={styles.rankNumber}>{hasBrandPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
                   {b.logoUrl ? (
-                    <img
-                      src={b.logoUrl}
-                      alt={b.brand}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={b.logoUrl} alt={b.brand} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '12px' }}>🏷️</span>
+                    <span className={styles.rowEmoji}>🏷️</span>
                   )}
                 </div>
                 <span className={styles.rowName}>{b.brand}</span>
@@ -295,19 +285,18 @@ export default function ExecutivePodiumGrid({
             {/* Rank #2: Silver */}
             {club2 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectClub(club2)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectClub(club2); } }}
                 title={`Rank #2: ${club2.partnerName || club2.club} (Click to inspect selfies)`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {club2.logoUrl ? (
-                    <img
-                      src={club2.logoUrl}
-                      alt={club2.club}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={club2.logoUrl} alt={club2.club} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '20px' }}>🥈</span>
+                    <span className={styles.pedestalEmoji}>🥈</span>
                   )}
                 </div>
                 <span className={styles.pedestalName}>{club2.partnerName || club2.club}</span>
@@ -321,31 +310,24 @@ export default function ExecutivePodiumGrid({
             {/* Rank #1: Gold (Center Elevated) */}
             {club1 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectClub(club1)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectClub(club1); } }}
                 title={`Rank #1: ${club1.partnerName || club1.club} (Click to inspect selfies)`}
               >
-                <div
-                  className={styles.pedestalLogoCircle}
-                  style={{
-                    borderColor: '#f59e0b',
-                    boxShadow: '0 0 12px rgba(245, 158, 11, 0.35)',
-                  }}
-                >
+                <div className={`${styles.pedestalLogoCircle} ${styles.pedestalLogoGold}`}>
                   {club1.logoUrl ? (
-                    <img
-                      src={club1.logoUrl}
-                      alt={club1.club}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={club1.logoUrl} alt={club1.club} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '22px' }}>👑</span>
+                    <span className={styles.pedestalEmoji}>👑</span>
                   )}
                 </div>
-                <span className={styles.pedestalName} style={{ fontWeight: 800, color: '#92400e' }}>
+                <span className={`${styles.pedestalName} ${styles.pedestalNameGold}`}>
                   {club1.partnerName || club1.club}
                 </span>
-                <span className={styles.pedestalCount} style={{ color: '#b45309', fontWeight: 700 }}>
+                <span className={`${styles.pedestalCount} ${styles.pedestalCountGold}`}>
                   {club1.count.toLocaleString()}
                 </span>
                 <div className={`${styles.pedestalBlock} ${styles.blockGold}`}>
@@ -357,19 +339,18 @@ export default function ExecutivePodiumGrid({
             {/* Rank #3: Bronze */}
             {club3 && (
               <div
+                role="button"
+                tabIndex={0}
                 className={styles.pedestalColumn}
                 onClick={() => onSelectClub(club3)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectClub(club3); } }}
                 title={`Rank #3: ${club3.partnerName || club3.club} (Click to inspect selfies)`}
               >
                 <div className={styles.pedestalLogoCircle}>
                   {club3.logoUrl ? (
-                    <img
-                      src={club3.logoUrl}
-                      alt={club3.club}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={club3.logoUrl} alt={club3.club} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '20px' }}>🥉</span>
+                    <span className={styles.pedestalEmoji}>🥉</span>
                   )}
                 </div>
                 <span className={styles.pedestalName}>{club3.partnerName || club3.club}</span>
@@ -381,7 +362,7 @@ export default function ExecutivePodiumGrid({
             )}
           </div>
         ) : sortedClubs.length === 0 ? (
-          <div style={{ padding: '24px', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
+          <div className={styles.podiumEmptyState}>
             n/a (no club appearances counted)
           </div>
         ) : null}
@@ -395,20 +376,19 @@ export default function ExecutivePodiumGrid({
             return (
               <div
                 key={c.club}
+                role="button"
+                tabIndex={0}
                 className={styles.rankedRow}
                 onClick={() => onSelectClub(c)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onSelectClub(c); } }}
                 title={`Click to view selfies for ${c.partnerName || c.club}: ${c.count} appearances (${formatShare(pct)})`}
               >
                 <span className={styles.rankNumber}>{hasClubPodium ? idx + 4 : idx + 1}</span>
                 <div className={styles.rowLogoWrap}>
                   {c.logoUrl ? (
-                    <img
-                      src={c.logoUrl}
-                      alt={c.club}
-                      style={{ width: '100%', height: '100%', objectFit: 'contain' }}
-                    />
+                    <img src={c.logoUrl} alt={c.club} className={styles.pedestalLogoImg} />
                   ) : (
-                    <span style={{ fontSize: '12px' }}>🛡️</span>
+                    <span className={styles.rowEmoji}>🛡️</span>
                   )}
                 </div>
                 <span className={styles.rowName}>{c.partnerName || c.club}</span>

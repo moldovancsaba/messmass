@@ -2725,3 +2725,136 @@
   text-align: right;
 }
 
+/* Weather Turnout Matrix GDS Classes */
+.weatherBandGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: var(--mm-space-3);
+}
+
+.weatherBandWarm {
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.weatherBandMild {
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.weatherBandCold {
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.weatherBandIndoor {
+  padding: var(--mm-space-3);
+  border-radius: var(--mm-radius-lg);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.weatherCanvas {
+  position: relative;
+  width: 100%;
+  height: 260px;
+  background: var(--mm-gray-50);
+  border-radius: var(--mm-radius-lg);
+  border: 1px solid var(--mm-gray-200);
+  padding: 24px 32px 36px 44px;
+  box-sizing: border-box;
+}
+
+.weatherPlotArea {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.weatherYLabel {
+  position: absolute;
+  left: 8px;
+  top: 10px;
+  font-size: var(--mm-font-size-xs);
+  font-weight: 700;
+  color: var(--mm-gray-600);
+  text-transform: uppercase;
+}
+
+.weatherGridline {
+  position: absolute;
+  left: 44px;
+  right: 16px;
+  border-top: 1px dashed var(--mm-gray-200);
+}
+
+.weatherTick {
+  position: absolute;
+  left: -38px;
+  top: -8px;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  width: 32px;
+  text-align: right;
+}
+
+.weatherXAxis {
+  position: absolute;
+  left: 44px;
+  right: 16px;
+  bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--mm-font-size-xs);
+  color: var(--mm-gray-600);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.weatherTooltip {
+  position: absolute;
+  bottom: 44px;
+  right: 24px;
+  background: var(--mm-gray-900);
+  color: var(--mm-white);
+  padding: 10px 14px;
+  border-radius: var(--mm-radius-md, 10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 30;
+  max-width: 280px;
+  font-size: var(--mm-font-size-xs);
+  pointer-events: none;
+}
+
+.weatherTooltipDivider {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--mm-gray-700);
+  padding-top: 6px;
+  margin-top: 6px;
+}
+
+.weatherLegendDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.weatherLegendDotOutdoor {
+  background: var(--mm-gray-600);
+}
+
+.weatherLegendDotIndoor {
+  background: var(--mm-white);
+  border: 2px solid var(--mm-gray-600);
+}
+

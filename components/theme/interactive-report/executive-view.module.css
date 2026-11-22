@@ -835,3 +835,40 @@
     min-width: 28px;
   }
 }
+
+.pedestalLogoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.pedestalLogoGold {
+  border-color: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
+.pedestalNameGold {
+  font-weight: 800;
+  color: #92400e;
+}
+
+.pedestalCountGold {
+  font-weight: 700;
+  color: #b45309;
+  font-variant-numeric: tabular-nums;
+}
+
+.pedestalEmoji {
+  font-size: var(--mm-font-size-xl);
+}
+
+.rowEmoji {
+  font-size: var(--mm-font-size-xs);
+}
+
+.podiumEmptyState {
+  padding: var(--mm-space-6);
+  text-align: center;
+  color: var(--mm-gray-600);
+  font-size: var(--mm-font-size-sm);
+}
