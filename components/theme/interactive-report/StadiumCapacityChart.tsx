@@ -16,10 +16,11 @@ interface StadiumCapacityChartProps {
 
 export default function StadiumCapacityChart({ matches, analytics }: StadiumCapacityChartProps) {
   // Aggregate venues by unique name
-  const venueLeaderboard = React.useMemo(() => {
+  const { venueLeaderboard, allCap, allAtt } = React.useMemo(() => {
     const map = new Map<string, {
       name: string;
       capacity: number;
+      cumulativeCapacity: number;
       isIndoor: boolean;
       totalAttendance: number;
       totalPhotos: number;
@@ -33,6 +34,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
 
       const existing = map.get(vName);
       if (existing) {
+        existing.cumulativeCapacity += m.venueCapacity;
         existing.totalAttendance += m.attendance || 0;
         existing.totalPhotos += m.submitted || 0;
         existing.eventsCount += 1;
@@ -41,6 +43,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
         map.set(vName, {
           name: vName,
           capacity: m.venueCapacity,
+          cumulativeCapacity: m.venueCapacity,
           isIndoor: Boolean(m.weather?.isIndoor),
           totalAttendance: m.attendance || 0,
           totalPhotos: m.submitted || 0,
@@ -50,16 +53,19 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
       }
     }
 
-    return Array.from(map.values())
-      .sort((a, b) => b.capacity - a.capacity)
-      .slice(0, 8); // Top 8 venues
+    const allVenues = Array.from(map.values());
+    return {
+      venueLeaderboard: allVenues.sort((a, b) => b.capacity - a.capacity).slice(0, 8),
+      allCap: allVenues.reduce((a, b) => a + b.cumulativeCapacity, 0),
+      allAtt: allVenues.reduce((a, b) => a + b.totalAttendance, 0),
+    };
   }, [matches]);
 
   if (venueLeaderboard.length === 0) return null;
 
-  const totalCap = analytics?.totalVenueCapacity || venueLeaderboard.reduce((a, b) => a + b.capacity * b.eventsCount, 0);
-  const totalAtt = analytics?.totalGateAttendance || venueLeaderboard.reduce((a, b) => a + b.totalAttendance, 0);
-  const avgFill = analytics?.avgCapacityUtilization || (totalCap > 0 ? Math.round((totalAtt / totalCap) * 1000) / 10 : 0);
+  const totalCap = analytics?.totalVenueCapacity ?? allCap;
+  const totalAtt = analytics?.totalGateAttendance ?? allAtt;
+  const avgFill = analytics?.avgCapacityUtilization ?? (totalCap > 0 ? Math.round((totalAtt / totalCap) * 1000) / 10 : 0);
 
   return (
     <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -71,11 +77,11 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>Avg Fill Rate</div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: '#059669' }}>{avgFill}%</div>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: 'var(--report-primary, #059669)', fontVariantNumeric: 'tabular-nums' }}>{avgFill}%</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '11px', color: '#6b7280', textTransform: 'uppercase', fontWeight: 600 }}>Total Footprint</div>
-            <div style={{ fontSize: '18px', fontWeight: 700, color: '#111827' }}>{totalCap.toLocaleString()}</div>
+            <div style={{ fontSize: '18px', fontWeight: 700, color: '#111827', fontVariantNumeric: 'tabular-nums' }}>{totalCap.toLocaleString()}</div>
           </div>
         </div>
       </div>
@@ -83,8 +89,8 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
       {/* Venues Bar Leaderboard */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         {venueLeaderboard.map((v) => {
-          const cumulativeCap = v.capacity * v.eventsCount;
-          const fillRate = cumulativeCap > 0 ? Math.min(100, Math.round((v.totalAttendance / cumulativeCap) * 1000) / 10) : 0;
+          const cumulativeCap = v.cumulativeCapacity;
+          const fillRate = cumulativeCap > 0 ? Math.round((v.totalAttendance / cumulativeCap) * 1000) / 10 : 0;
           return (
             <div
               key={v.name}
@@ -161,7 +167,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
                 <div
                   style={{
                     height: '100%',
-                    width: `${fillRate}%`,
+                    width: `${Math.min(100, fillRate)}%`,
                     backgroundColor: fillRate > 75 ? 'var(--report-primary, #1d4ed8)' : fillRate > 40 ? 'var(--report-accent, #3b82f6)' : '#f59e0b',
                     borderRadius: '4px',
                     transition: 'width 0.4s ease',

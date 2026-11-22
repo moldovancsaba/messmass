@@ -51,14 +51,14 @@ export default function WeatherTurnoutCorrelationMatrix({
     return validMatches.filter((m) => m.sport === selectedSport);
   }, [validMatches, selectedSport]);
 
-  // Aggregate statistics by climate bands
+  // Aggregate statistics by climate bands (respecting active sport filter)
   const climateBands = useMemo(() => {
     const warm: number[] = [];
     const mild: number[] = [];
     const cold: number[] = [];
     const indoor: number[] = [];
 
-    validMatches.forEach((m) => {
+    filteredMatches.forEach((m) => {
       const fillRate = m.capacityUtilizationRate ?? (m.attendance && m.venueCapacity ? (m.attendance / m.venueCapacity) * 100 : 0);
       if (m.weather?.isIndoor) {
         indoor.push(fillRate);
@@ -77,13 +77,14 @@ export default function WeatherTurnoutCorrelationMatrix({
       cold: { count: cold.length, avgFill: avg(cold) },
       indoor: { count: indoor.length, avgFill: avg(indoor) },
     };
-  }, [validMatches]);
+  }, [filteredMatches]);
 
   if (validMatches.length === 0) return null;
 
-  // Scatter plot boundaries
-  const minTemp = Math.min(...validMatches.map((m) => m.weather!.tempC), 0);
-  const maxTemp = Math.max(...validMatches.map((m) => m.weather!.tempC), 30);
+  // Scatter plot boundaries (respecting active sport filter)
+  const tempSource = filteredMatches.length > 0 ? filteredMatches : validMatches;
+  const minTemp = Math.min(...tempSource.map((m) => m.weather!.tempC), 0);
+  const maxTemp = Math.max(...tempSource.map((m) => m.weather!.tempC), 30);
   const tempRange = Math.max(maxTemp - minTemp, 10);
 
   return (
@@ -214,8 +215,13 @@ export default function WeatherTurnoutCorrelationMatrix({
             return (
               <div
                 key={m.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`${m.cleanName || m.matchName}: ${m.weather?.tempC}°C, ${Math.round(fillRate)}% capacity`}
                 onMouseEnter={() => setHoveredMatch(m)}
                 onMouseLeave={() => setHoveredMatch(null)}
+                onFocus={() => setHoveredMatch(m)}
+                onBlur={() => setHoveredMatch(null)}
                 style={{
                   position: 'absolute',
                   left: `${leftPct}%`,
@@ -281,15 +287,20 @@ export default function WeatherTurnoutCorrelationMatrix({
 
       {/* Legend & Insight Footer */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#64748b' }}>
-        <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {sportsList.map((sp) => (
+            <span key={sp} style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+              <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: SPORT_COLORS[sp] || '#059669', display: 'inline-block' }} /> {sp}
+            </span>
+          ))}
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: 'var(--report-primary, #1d4ed8)', display: 'inline-block' }} /> Outdoor Match
+            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#475569', display: 'inline-block' }} /> Outdoor
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#ffffff', border: '2px solid var(--report-primary, #1d4ed8)', display: 'inline-block' }} /> Indoor Arena
+            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#ffffff', border: '2px solid #475569', display: 'inline-block' }} /> Indoor Arena
           </span>
         </div>
-        <span>Hover over any plot point for fixture turnout details</span>
+        <span>Hover or focus any plot point for fixture turnout details</span>
       </div>
     </div>
   );

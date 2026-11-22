@@ -58,32 +58,38 @@ export default function MarketingCommercialSuite({
 
   const resolvedCampaignTitle = campaignTitle || (
     isSzrtOrTippmix
-      ? 'TIPPMIX DIGITÁLIS FAN AKTIVÁCIÓ'
-      : `${partnerName ? partnerName.toUpperCase() : 'SPONSOR'} FAN AKTIVÁCIÓ`
+      ? 'TIPPMIX DIGITAL FAN ACTIVATION'
+      : `${partnerName ? partnerName.toUpperCase() : 'SPONSOR'} FAN ACTIVATION`
   );
 
   const resolvedCtaText = ctaText || (
     isSzrtOrTippmix
-      ? 'KATTINTS AZ EXKLUZÍV TIPPMIX AJÁNLATÉRT'
-      : 'KATTINTS AZ EXKLUZÍV AJÁNLATÉRT'
+      ? 'CLAIM EXCLUSIVE TIPPMIX OFFER'
+      : 'CLAIM EXCLUSIVE SPONSOR OFFER'
   );
 
   const resolvedClicksSubtitle = isSzrtOrTippmix
-    ? 'Közvetlen kattintások a Tippmix digitális aktivációs felületére'
+    ? 'Direct clicks to the Tippmix digital activation portal'
     : 'Direct clicks to official sponsor activation portal';
 
   // 1. Direct Marketing & Opt-in Metrics (Empirical Verified Leads)
   const effectiveFans = totalFansEngaged > 0 ? totalFansEngaged : 0;
   const effectiveOptIns = totalOptIns > 0 ? totalOptIns : 0;
   const effectiveRegistered = totalRegistered > 0 ? totalRegistered : effectiveOptIns;
+  const rightsDenom = totalPhotosProcessed > 0 ? totalPhotosProcessed : effectiveRegistered;
+  const rightsConsentPct = rightsDenom > 0 && effectiveRegistered > 0
+    ? Math.min(100, Math.round((effectiveRegistered / rightsDenom) * 1000) / 10)
+    : null;
   const optInPct = effectiveRegistered > 0 && effectiveOptIns > 0
     ? Math.min(Math.round((effectiveOptIns / effectiveRegistered) * 10000) / 100, 100)
     : (effectiveOptIns > 0 ? 100 : 0);
 
-  // 2. Pop-up Performance (Empirical Digital Activation)
+  // 2. Pop-up Performance (Empirical Digital Activation — never invent impressions)
   const bannerClicks = totalCtaClicks > 0 ? totalCtaClicks : 0;
-  const bannerImpressions = bannerClicks > 0 ? Math.max(bannerClicks, effectiveRegistered > 0 ? effectiveRegistered : totalPhotosProcessed) : 0;
-  const popUpCtr = bannerImpressions > 0 ? Math.min(Math.round((bannerClicks / bannerImpressions) * 1000) / 10, 100) : 0;
+  const bannerImpressions = effectiveRegistered > 0 ? effectiveRegistered : 0;
+  const popUpCtr = bannerImpressions > 0 && bannerClicks > 0
+    ? Math.min(Math.round((bannerClicks / bannerImpressions) * 1000) / 10, 100)
+    : null;
 
   // 3. Real Gender Breakdown (from measured face classifications)
   const male = genders?.male ?? 0;
@@ -153,11 +159,11 @@ export default function MarketingCommercialSuite({
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
-              {/* PP, GTC & Image Usage Rights */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: '20px' }}>
+              {/* Privacy, Terms & Image Usage Rights */}
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>PP, GTC & Image Rights</span>
+                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Privacy, Terms & Image Rights</span>
                   <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -166,11 +172,11 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
-                    {effectiveRegistered > 0 ? '100.0%' : '0.0%'}
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
+                    {rightsConsentPct !== null ? `${rightsConsentPct.toFixed(1)}%` : 'Not measured'}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                    {effectiveRegistered.toLocaleString()} fans accepted PP, GTC & full image usage rights
+                    {effectiveRegistered.toLocaleString()} of {rightsDenom.toLocaleString()} consented to Privacy, Terms & image rights
                   </div>
                 </div>
               </div>
@@ -187,7 +193,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
                     {optInPct.toFixed(1)}%
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -199,7 +205,7 @@ export default function MarketingCommercialSuite({
               {/* Verified Direct Leads */}
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>GDPR Marketing Leads</span>
+                  <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Verified Marketing Leads</span>
                   <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
@@ -209,7 +215,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
                     {effectiveOptIns.toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -231,7 +237,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
                     {(totalPhotosProcessed > 0 ? totalPhotosProcessed : effectiveRegistered).toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -259,7 +265,7 @@ export default function MarketingCommercialSuite({
               </span>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '20px' }}>
               {/* Banner Graphic Card */}
               <div
                 className={styles.executiveCard}
@@ -318,7 +324,7 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Pop-up banner clicks</span>
-                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#059669' }}>
+                  <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--report-primary-soft, #eff6ff)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--report-primary, #1d4ed8)' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z" />
                       <path d="m13 13 6 6" />
@@ -326,7 +332,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
                     {bannerClicks.toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
@@ -339,16 +345,20 @@ export default function MarketingCommercialSuite({
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Pop-up Click Through Rate</span>
-                  <span style={{ fontSize: '12px', fontWeight: 700, padding: '3px 8px', borderRadius: '6px', background: '#ecfdf5', color: '#059669' }}>
-                    High Intent
-                  </span>
+                  {popUpCtr !== null && popUpCtr >= 10 && (
+                    <span style={{ fontSize: '12px', fontWeight: 700, padding: '3px 8px', borderRadius: '6px', background: 'var(--report-primary-soft, #eff6ff)', color: 'var(--report-primary, #1d4ed8)' }}>
+                      High Intent
+                    </span>
+                  )}
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
-                    {popUpCtr.toFixed(1)}%
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
+                    {popUpCtr !== null ? `${popUpCtr.toFixed(1)}%` : 'Not measured'}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
-                    From {bannerImpressions.toLocaleString()} banner impressions
+                    {bannerImpressions > 0
+                      ? `From ${bannerImpressions.toLocaleString()} consented submissions`
+                      : 'No impression denominator recorded'}
                   </div>
                 </div>
               </div>
@@ -401,14 +411,14 @@ export default function MarketingCommercialSuite({
               </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(320px, 100%), 1fr))', gap: '20px' }}>
               {/* Gender Distribution Donut */}
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <h4 style={{ margin: '0 0 16px', fontSize: '15px', fontWeight: 700, color: '#0f172a' }}>Gender Distribution</h4>
                 {totalGender > 0 ? (
                   <>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '14px 0', position: 'relative' }}>
-                      <svg width="144" height="144" viewBox="0 0 140 140">
+                      <svg width="144" height="144" viewBox="0 0 140 140" role="img" aria-label={`Gender split: ${malePct}% male, ${femalePct}% female`}>
                         <circle cx="70" cy="70" r="54" fill="transparent" stroke="#f1f5f9" strokeWidth="18" />
                         <circle
                           cx="70"
@@ -515,7 +525,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
-                  <div style={{ fontSize: '42px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1 }}>
+                  <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
                     {effectiveFans.toLocaleString()}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>

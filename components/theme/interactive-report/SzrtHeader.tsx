@@ -272,12 +272,15 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
       </div>
 
       {/* Navigation Tab Pills */}
-      <nav className={styles.tabNav}>
+      <nav className={styles.tabNav} role="tablist" aria-label="Report sections">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
               onClick={() => onTabChange(tab.id)}
               className={`${styles.tabBtn} ${isActive ? styles.tabBtnActive : ''}`}
             >

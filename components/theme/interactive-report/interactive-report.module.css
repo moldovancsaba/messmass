@@ -184,16 +184,18 @@
 }
 
 .kpiValue {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
   color: #ffffff;
   margin-top: var(--mm-space-1);
   line-height: 1.15;
 }
 
 .kpiValueHighlight {
-  font-size: 1.75rem;
+  font-size: 2rem;
   font-weight: 800;
+  font-variant-numeric: tabular-nums;
   margin-top: var(--mm-space-1);
   line-height: 1.15;
   color: var(--report-accent, #38bdf8);
@@ -249,7 +251,8 @@
 }
 
 /* Card General */
-.reportCard {
+.reportCard,
+.executiveCard {
   background: var(--mm-white);
   border-radius: var(--mm-radius-xl);
   border: 1px solid var(--mm-gray-200);
@@ -2331,14 +2334,16 @@
     display: none !important;
   }
 
-  .dashboardContainer {
+  .pageContainer {
     max-width: 100% !important;
     padding: 0 !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  .reportCard {
+  .reportCard,
+  .executiveCard,
+  .visionCard {
     box-shadow: none !important;
     border: 1px solid #e2e8f0 !important;
     break-inside: avoid;

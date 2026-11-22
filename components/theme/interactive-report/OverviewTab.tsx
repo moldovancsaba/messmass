@@ -169,7 +169,7 @@ export default function OverviewTab({
   const resolvedOptIns = vision?.marketingOptInImages !== undefined
     ? vision.marketingOptInImages
     : Math.max(summary.totalOptIns, vision?.optInImages ?? 0);
-  const resolvedRegistered = Math.max(summary.totalRegistered, vision?.optInImages ?? 0, resolvedOptIns);
+  const resolvedRegistered = summary.totalRegistered > 0 ? summary.totalRegistered : (vision?.optInImages ?? 0);
   const resolvedCtaClicks = summary.totalCtaClicks > 0 ? summary.totalCtaClicks : (vision?.ctaClickImages ?? 0);
   const resolvedPhotosProcessed = analyzedImages ?? (summary.totalPhotos > 0 ? summary.totalPhotos : 0);
 
@@ -523,7 +523,7 @@ export default function OverviewTab({
         )}
 
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))', gap: '20px' }}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
             {data.scope?.type !== 'event' && (data.matches?.length ?? 0) > 1 && (
               <MatchOutcomesChart
