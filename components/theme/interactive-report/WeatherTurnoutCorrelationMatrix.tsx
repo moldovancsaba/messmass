@@ -159,7 +159,7 @@ export default function WeatherTurnoutCorrelationMatrix({
       <div className={styles.weatherCanvas}>
         <div className={styles.weatherYLabel}>Fill %</div>
         {[100, 75, 50, 25, 0].map((tick) => {
-          const topPct = (1 - tick / 100) * 80 + 10;
+          const topPct = (1 - tick / 100) * 76 + 14;
           return (
             <div key={tick} className={styles.weatherGridline} style={{ top: `${topPct}%` }}>
               <span className={styles.weatherTick}>{tick}%</span>
@@ -182,7 +182,7 @@ export default function WeatherTurnoutCorrelationMatrix({
             );
             const temp = m.weather!.tempC;
             const leftPct = ((temp - minTemp) / tempRange) * 94 + 3;
-            const topPct = (1 - fillRate / 100) * 82 + 9;
+            const topPct = (1 - fillRate / 100) * 76 + 14;
             const isHovered = hoveredMatch?.id === m.id;
             const sportColor = SPORT_COLORS[m.sport] || '#059669';
 

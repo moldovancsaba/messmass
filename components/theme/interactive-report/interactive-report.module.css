@@ -2832,12 +2832,13 @@
 
 .weatherYLabel {
   position: absolute;
-  left: 8px;
-  top: 10px;
+  left: 44px;
+  top: 6px;
   font-size: var(--mm-font-size-xs);
   font-weight: 700;
   color: var(--mm-gray-600);
   text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .weatherGridline {
