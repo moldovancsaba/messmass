@@ -5,6 +5,7 @@ export interface MatchItem {
   matchName: string;
   cleanName: string;
   date: string;
+  kickoffTime?: string;
   partnerName: string;
   venue: string;
   sport: 'Football' | 'Ice Hockey' | 'Basketball' | 'Handball' | 'Other';

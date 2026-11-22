@@ -21,6 +21,7 @@ import {
 import StadiumCapacityChart from './StadiumCapacityChart';
 import MatchOutcomesChart from './MatchOutcomesChart';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
+import MatchdayAnalyticsSuite from './MatchdayAnalyticsSuite';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
 import styles from './interactive-report.module.css';
 
@@ -533,6 +534,10 @@ export default function OverviewTab({
 
         {data.matches && data.matches.some((m) => m.weather && m.attendance) && (
           <WeatherTurnoutCorrelationMatrix matches={data.matches} />
+        )}
+
+        {data.matches && data.matches.length > 0 && (
+          <MatchdayAnalyticsSuite matches={data.matches} vision={vision} />
         )}
       </div>
 

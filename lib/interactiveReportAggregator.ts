@@ -481,11 +481,22 @@ export async function getScopedInteractiveReportData(
       const sport = detectSport(`${p.eventName} ${partnerName}`);
       if (hasVettingData) vettedMatchKeys.add(key);
 
+      const rawKickoff =
+        (typeof p.match?.kickoffTime === 'string' && p.match.kickoffTime.trim()) ||
+        (typeof p.footballDataFixture?.utcDate === 'string' && p.footballDataFixture.utcDate.includes('T')
+          ? p.footballDataFixture.utcDate.split('T')[1]?.slice(0, 5)
+          : '') ||
+        (typeof p.eventDate === 'string' && p.eventDate.includes('T')
+          ? p.eventDate.split('T')[1]?.slice(0, 5)
+          : '');
+      const kickoffTime = /^\d{1,2}:\d{2}$/.test(rawKickoff) ? rawKickoff : undefined;
+
       matchesMap.set(key, {
         id: key,
         matchName: p.eventName,
         cleanName,
         date,
+        ...(kickoffTime ? { kickoffTime } : {}),
         partnerName,
         venue: p.venue?.name || s.venueName || '',
         venueCapacity: venueCap,
@@ -1519,7 +1530,7 @@ const PARTNER_LOOKUP_FIELDS = Object.fromEntries([
 const REPORT_PROJECT_FIELDS = Object.fromEntries(
   [
     'eventName', 'eventDate', 'viewSlug', 'slug', 'partner1Id', 'partner2Id', 'organizationId', 'organizationIds', 'competition', 'categorizedHashtags', 'hashtags',
-    'venue', 'match', 'weather',
+    'venue', 'match', 'weather', 'footballDataFixture.utcDate',
     ...[
       'userRegistration', 'marketingOptin', 'camera_consents_accepted',
       'allImages', 'approvedImages', 'rejectedImages', 'remoteImages', 'hostessImages', 'totalFans',

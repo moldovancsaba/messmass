@@ -23,6 +23,7 @@ function eventRow(event: HashtagReport['measured']['events'][number], baseMatch?
     matchName: event.name,
     cleanName: event.name.replace(/\s*#\s*/g, ' x ').trim(),
     date: event.date ?? baseMatch?.date ?? '',
+    ...(baseMatch?.kickoffTime ? { kickoffTime: baseMatch.kickoffTime } : {}),
     partnerName: baseMatch?.partnerName ?? '',
     venue: baseMatch?.venue ?? '',
     venueCapacity: baseMatch?.venueCapacity,

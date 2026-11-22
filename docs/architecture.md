@@ -140,7 +140,7 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 136 | `components/` |
+| **UI Components** | 137 | `components/` |
 | **Utility Modules** | 260 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
@@ -165,9 +165,9 @@ largest, and the ones to read first:
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
+| `components/theme/interactive-report/types.ts` | 20 | 252 |
 | `lib/permissions.ts` | 19 | 146 |
 | `lib/report-calculator.ts` | 19 | 995 |
-| `components/theme/interactive-report/types.ts` | 19 | 251 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
