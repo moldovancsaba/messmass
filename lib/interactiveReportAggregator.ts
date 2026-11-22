@@ -284,12 +284,15 @@ export async function getScopedInteractiveReportData(
 
   const { partner, campaignProjects, scopeHeader } = resolvedScope;
 
-  // 2. Resolve partner style
+  // 2. Resolve partner / event style
   let style = null;
-  if (partner?.styleId) {
+  const resolvedStyleId = campaignProjects.length === 1 && campaignProjects[0]?.styleId
+    ? campaignProjects[0].styleId
+    : partner?.styleId;
+  if (resolvedStyleId && ObjectId.isValid(String(resolvedStyleId))) {
     style =
-      (await db.collection('report_styles').findOne({ _id: new ObjectId(partner.styleId) })) ||
-      (await db.collection('reportStyles').findOne({ _id: new ObjectId(partner.styleId) }));
+      (await db.collection('report_styles').findOne({ _id: new ObjectId(String(resolvedStyleId)) })) ||
+      (await db.collection('reportStyles').findOne({ _id: new ObjectId(String(resolvedStyleId)) }));
   }
 
   // 3. Find partner name lookup
@@ -1953,12 +1956,19 @@ export async function resolveScopeProjectIds(
     }
 
     campaignProjects = [project];
+    const homePartnerRef = project.partner1Id || project.partner2Id || project.partner1 || project.partner2;
+    if (homePartnerRef) {
+      const pidStr = String(homePartnerRef);
+      partner = await db.collection("partners").findOne(
+        ObjectId.isValid(pidStr) ? { $or: [{ _id: new ObjectId(pidStr) }, { _id: pidStr as any }] } : { _id: pidStr as any }
+      );
+    }
     scopeHeader = {
       type: "event",
       id: String(project._id),
       name: project.eventName || "Event Analytics Report",
       viewSlug: project.slug || scopeIdentifier,
-      emoji: "🏟️",
+      emoji: partner?.emoji || "🏟️",
       subtitle: `Match telemetry, photo activation, and attendee demographics for ${project.eventName}.`,
       organizationId: project.organizationId ? String(project.organizationId) : organizationId,
     };
