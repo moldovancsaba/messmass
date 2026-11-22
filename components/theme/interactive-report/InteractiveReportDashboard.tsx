@@ -13,7 +13,7 @@ import MatchesTable from './MatchesTable';
 import { getReportSlug } from './reportSlug';
 import HashtagReportView from '@/components/hashtagReport/HashtagReportView';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
-import { resolvePartnerTheme } from '@/lib/theme/interactiveReportPalette';
+import { getContrastTextHex, resolvePartnerTheme } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportDashboardProps {
@@ -94,9 +94,11 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
 
   const themeVars = {
     '--report-primary': partnerTheme.primary,
+    '--report-primary-text': getContrastTextHex(partnerTheme.primary),
     '--report-primary-dark': partnerTheme.primaryDark,
     '--report-primary-soft': partnerTheme.primarySoft,
     '--report-accent': partnerTheme.accent,
+    '--report-accent-text': getContrastTextHex(partnerTheme.accent),
     '--report-hero-bg': partnerTheme.heroBg,
     '--report-hero-glow': partnerTheme.heroGlow,
     '--report-pill-bg': partnerTheme.pillBg,
@@ -130,6 +132,8 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
           onViewTerritoryMap={() => setActiveTab('territory')}
           onViewMatches={() => setActiveTab('table')}
           isFanmass={Boolean(fanmass)}
+          primaryColor={partnerTheme.primary}
+          accentColor={partnerTheme.accent}
         />
       )}
 

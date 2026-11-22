@@ -13,6 +13,8 @@ interface ChartLibraryShowcaseProps {
   vision?: VisionProgressData | null;
   brands: Array<{ brand: string; count: number }>;
   clubs: Array<{ club: string; count: number }>;
+  primaryColor?: string;
+  accentColor?: string;
 }
 
 type InsightDomain = 'all' | 'events' | 'attendance' | 'weather' | 'brands';
@@ -120,8 +122,10 @@ function EChartsPanel({
 
 function D3LollipopPanel({
   items,
+  primaryColor = REPORT_CHART_PALETTE.blue,
 }: {
   items: Array<{ name: string; rate: number; photos: number; attendance: number }>;
+  primaryColor?: string;
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
 
@@ -173,7 +177,7 @@ function D3LollipopPanel({
       .attr('x2', (d) => x(d.rate))
       .attr('y1', (d) => (y(d.name) ?? 0) + y.bandwidth() / 2)
       .attr('y2', (d) => (y(d.name) ?? 0) + y.bandwidth() / 2)
-      .attr('stroke', REPORT_CHART_PALETTE.blue)
+      .attr('stroke', primaryColor)
       .attr('stroke-width', 2.5);
 
     g.selectAll('circle.dot')
@@ -197,7 +201,7 @@ function D3LollipopPanel({
       .attr('font-size', '10px')
       .attr('font-weight', '700')
       .text((d) => `${d.rate}`);
-  }, [items]);
+  }, [items, primaryColor]);
 
   return (
     <article className={styles.bentoPanel}>
@@ -220,6 +224,7 @@ export default function ChartLibraryShowcase({
   vision,
   brands,
   clubs,
+  primaryColor = REPORT_CHART_PALETTE.blue,
 }: ChartLibraryShowcaseProps) {
   const [domain, setDomain] = useState<InsightDomain>('all');
 
@@ -906,7 +911,7 @@ export default function ChartLibraryShowcase({
               />
             )}
           </div>
-          {lollipopItems.length > 0 && <D3LollipopPanel items={lollipopItems} />}
+          {lollipopItems.length > 0 && <D3LollipopPanel items={lollipopItems} primaryColor={primaryColor} />}
         </>
       )}
 

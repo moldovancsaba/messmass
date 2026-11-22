@@ -280,6 +280,22 @@ function darkenHex(hex: string, factor = 0.42): string {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
+function isChromaticHex(hex: string | null): hex is string {
+  if (!hex) return false;
+  const rgb = hexToRgb(hex);
+  if (!rgb) return false;
+  const max = Math.max(rgb.r, rgb.g, rgb.b);
+  const min = Math.min(rgb.r, rgb.g, rgb.b);
+  return max - min > 22;
+}
+
+export function getContrastTextHex(hex: string): '#102242' | '#ffffff' {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return '#ffffff';
+  const lum = (0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b) / 255;
+  return lum > 0.6 ? '#102242' : '#ffffff';
+}
+
 export interface ReportStyleInput {
   name?: string;
   heroBackground?: string;
@@ -293,7 +309,7 @@ export interface ReportStyleInput {
 
 /**
  * Resolves the report theme directly from the partner's Messmass `report_styles` document
- * in MongoDB. Falls back to neutral slate only when no partner style is configured.
+ * in MongoDB. Falls back to partner brand palette or neutral slate when no chromatic style is configured.
  */
 export function resolvePartnerTheme(
   style?: ReportStyleInput | null,
@@ -306,17 +322,24 @@ export function resolvePartnerTheme(
   const pie2 = normalizeHex(style?.pieColor2);
   const textHex = normalizeHex(style?.textColor);
   const bar1 = normalizeHex(style?.barColor1);
+  const kpiIcon = normalizeHex(style?.kpiIconColor);
 
-  if (heroHex || pie1 || pie2 || textHex) {
-    // Primary dark brand anchor (e.g. MTK's #004c87 textColor/pieColor2, or darkened hero)
-    const primary = textHex || pie2 || pie1 || heroHex || NEUTRAL_DEFAULT_THEME.primary;
-    const accent = heroHex || pie1 || bar1 || primary;
+  const chromaticHero = isChromaticHex(heroHex) ? heroHex : null;
+  const chromaticText = isChromaticHex(textHex) ? textHex : null;
+  const chromaticPie1 = isChromaticHex(pie1) ? pie1 : null;
+  const chromaticPie2 = isChromaticHex(pie2) ? pie2 : null;
+  const chromaticBar1 = isChromaticHex(bar1) ? bar1 : null;
+  const chromaticKpi = isChromaticHex(kpiIcon) ? kpiIcon : null;
+
+  if (chromaticHero || chromaticPie1 || chromaticPie2 || chromaticBar1 || chromaticKpi || chromaticText) {
+    const primary = chromaticText || chromaticPie2 || chromaticPie1 || chromaticBar1 || chromaticKpi || chromaticHero!;
+    const accent = chromaticHero || chromaticPie1 || chromaticBar1 || primary;
     const primaryDark = darkenHex(primary, 0.45);
     const midTone = darkenHex(primary, 0.72);
     const accentRgb = hexToRgb(accent);
-    const glowColor = accentRgb ? `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.24)` : 'rgba(56, 189, 248, 0.2)';
+    const glowColor = accentRgb ? `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.24)` : 'rgba(27, 121, 223, 0.2)';
     const primaryRgb = hexToRgb(primary);
-    const primarySoft = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.08)` : '#eff6ff';
+    const primarySoft = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.1)` : '#eef3fb';
 
     return {
       id: (style?.name || partnerName || 'custom').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -327,13 +350,18 @@ export function resolvePartnerTheme(
       heroBg: `linear-gradient(135deg, ${primaryDark} 0%, ${midTone} 55%, ${primaryDark} 100%)`,
       heroGlow: `radial-gradient(120% 120% at 90% 10%, ${glowColor} 0%, transparent 65%)`,
       pillBg: accent,
-      pillText: '#ffffff',
+      pillText: getContrastTextHex(accent),
       genderMale: pie2 || primary,
       genderFemale: pie1 || accent,
     };
   }
 
   const candidates = [partnerName, viewSlug].filter(Boolean).join(' ');
+  for (const entry of PARTNER_THEMES) {
+    if (entry.match.test(candidates)) {
+      return entry.theme;
+    }
+  }
   if (scopeType === 'hashtag' && /tippmix|szrt|szerencsej/i.test(candidates)) {
     const szrtEntry = PARTNER_THEMES[PARTNER_THEMES.length - 1];
     if (szrtEntry) return szrtEntry.theme;

@@ -43,6 +43,8 @@ interface OverviewTabProps {
   onViewTerritoryMap?: () => void;
   onViewMatches?: () => void;
   isFanmass?: boolean;
+  primaryColor?: string;
+  accentColor?: string;
 }
 
 const SPORT_ICONS: Record<string, string> = {
@@ -122,6 +124,8 @@ export default function OverviewTab({
   onViewTerritoryMap = onViewBubble,
   onViewMatches,
   isFanmass = false,
+  primaryColor,
+  accentColor,
 }: OverviewTabProps) {
   const { summary, sports, timeline, vision } = data;
 
@@ -546,6 +550,8 @@ export default function OverviewTab({
               vision={vision}
               brands={filteredBrands}
               clubs={filteredClubs}
+              primaryColor={primaryColor}
+              accentColor={accentColor}
             />
           </>
         )}

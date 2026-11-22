@@ -1924,9 +1924,9 @@
 }
 
 .sportFilterBtnActive {
-  background: #1b79df !important;
-  border-color: #1b79df !important;
-  color: var(--mm-white) !important;
+  background: var(--report-primary, #1b79df) !important;
+  border-color: var(--report-primary, #1b79df) !important;
+  color: var(--report-primary-text, #ffffff) !important;
   font-weight: 700;
   box-shadow: 0 3px 8px rgba(27, 121, 223, 0.14);
 }
@@ -3116,7 +3116,7 @@
 
 .donutArcPrimary {
   fill: none;
-  stroke: #1b79df;
+  stroke: var(--report-primary, #1b79df);
   stroke-width: 5.5;
   stroke-linecap: round;
 }
@@ -3216,7 +3216,7 @@
 }
 
 .bentoBarFillRect {
-  fill: #1b79df;
+  fill: var(--report-primary, #1b79df);
 }
 
 .bentoBarFillTeal {
@@ -3433,8 +3433,8 @@
 }
 
 .bentoToggleBtnActive {
-  background: #1b79df;
-  color: var(--mm-white);
+  background: var(--report-primary, #1b79df);
+  color: var(--report-primary-text, #ffffff);
 }
 
 .bentoPodiumArea {
@@ -3644,7 +3644,7 @@
 }
 
 .svgBarPrimary {
-  fill: #1b79df;
+  fill: var(--report-primary, #1b79df);
 }
 
 .svgBarTeal {
