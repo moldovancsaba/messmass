@@ -86,6 +86,7 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
   };
 
   const partnerTheme = resolvePartnerTheme(
+    data.style,
     data.partner?.name || data.scope?.name,
     data.scope?.type,
     data.partner?.viewSlug || data.scope?.viewSlug

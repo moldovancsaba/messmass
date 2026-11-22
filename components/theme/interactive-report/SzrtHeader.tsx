@@ -117,7 +117,16 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
         <div className={styles.brandTop}>
           <div>
             <div className={styles.brandTitleGroup}>
-              {emoji && <span className={styles.partnerEmoji}>{emoji}</span>}
+              {partner.logoUrl ? (
+                /* eslint-disable-next-line @next/next/no-img-element */
+                <img
+                  src={partner.logoUrl}
+                  alt={titleText}
+                  style={{ width: '44px', height: '44px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.92)', padding: '4px' }}
+                />
+              ) : (
+                emoji && <span className={styles.partnerEmoji}>{emoji}</span>
+              )}
               <span className={styles.badgePill}>
                 {badgeText}
               </span>

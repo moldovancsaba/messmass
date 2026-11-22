@@ -24,6 +24,7 @@ import MatchOutcomesChart from './MatchOutcomesChart';
 import MarketingCommercialSuite from './MarketingCommercialSuite';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
 import AudienceInvolvementFunnel from './AudienceInvolvementFunnel';
+import SportsExecutiveInsights from './SportsExecutiveInsights';
 import styles from './interactive-report.module.css';
 
 interface OverviewTabProps {
@@ -509,7 +510,18 @@ export default function OverviewTab({
           onViewTerritoryMap={onViewTerritoryMap}
         />
 
-        {/* ACT 7: Sporting Context & Environmental Turnout Matrix (Venue Capacities, Outcomes & Weather Correlation) */}
+        {/* ACT 7: Sporting Context & Environmental Turnout Matrix (Executive Insights, Venue Capacities, Outcomes & Weather Correlation) */}
+        {isFanmass && data.matches && data.matches.length > 0 && (
+          <SportsExecutiveInsights
+            matches={data.matches}
+            partnerName={data.partner?.name || scopeName}
+            scopeType={data.scope?.type}
+            totalPhotosProcessed={resolvedPhotosProcessed}
+            totalPeopleDetected={fanAppearances ?? 0}
+            totalBrandsDetected={filteredBrands.length}
+          />
+        )}
+
         {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px' }}>
             <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />

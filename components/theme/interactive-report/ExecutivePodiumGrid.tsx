@@ -246,7 +246,7 @@ export default function ExecutivePodiumGrid({
                   <div className={styles.rowBarTrack}>
                     <div
                       className={styles.rowBarFill}
-                      style={{ width: `${fillWidth}%`, background: '#3b82f6' }}
+                      style={{ width: `${fillWidth}%`, background: 'var(--report-accent, #3b82f6)' }}
                     />
                   </div>
                 </div>
@@ -416,7 +416,7 @@ export default function ExecutivePodiumGrid({
                   <div className={styles.rowBarTrack}>
                     <div
                       className={styles.rowBarFill}
-                      style={{ width: `${fillWidth}%`, background: '#2563eb' }}
+                      style={{ width: `${fillWidth}%`, background: 'var(--report-primary, #2563eb)' }}
                     />
                   </div>
                 </div>

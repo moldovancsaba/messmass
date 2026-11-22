@@ -193,12 +193,18 @@ export interface InteractiveReportData {
     name: string;
     viewSlug: string;
     emoji: string;
+    logoUrl?: string;
   };
   style: {
     name: string;
     heroBackground: string;
     pieColor1: string;
     pieColor2: string;
+    textColor?: string;
+    kpiIconColor?: string;
+    barColor1?: string;
+    barColor2?: string;
+    headingColor?: string;
   };
   summary: {
     totalPhotos: number;

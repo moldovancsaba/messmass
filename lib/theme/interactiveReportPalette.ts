@@ -257,19 +257,86 @@ const NEUTRAL_DEFAULT_THEME: PartnerReportTheme = {
   genderFemale: '#6366f1',
 };
 
+function normalizeHex(raw?: string): string | null {
+  if (!raw || typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  if (/^#[0-9a-f]{8}$/i.test(trimmed)) return trimmed.slice(0, 7);
+  if (/^#[0-9a-f]{6}$/i.test(trimmed)) return trimmed;
+  return null;
+}
+
+function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
+  const m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hex);
+  if (!m) return null;
+  return { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) };
+}
+
+function darkenHex(hex: string, factor = 0.42): string {
+  const rgb = hexToRgb(hex);
+  if (!rgb) return '#0f172a';
+  const r = Math.max(0, Math.round(rgb.r * factor));
+  const g = Math.max(0, Math.round(rgb.g * factor));
+  const b = Math.max(0, Math.round(rgb.b * factor));
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}
+
+export interface ReportStyleInput {
+  name?: string;
+  heroBackground?: string;
+  pieColor1?: string;
+  pieColor2?: string;
+  textColor?: string;
+  kpiIconColor?: string;
+  barColor1?: string;
+  barColor2?: string;
+}
+
+/**
+ * Resolves the report theme directly from the partner's Messmass `report_styles` document
+ * in MongoDB. Falls back to neutral slate only when no partner style is configured.
+ */
 export function resolvePartnerTheme(
+  style?: ReportStyleInput | null,
   partnerName?: string,
   scopeType?: string,
   viewSlug?: string
 ): PartnerReportTheme {
-  const candidates = [partnerName, viewSlug].filter(Boolean).join(' ');
-  for (const entry of PARTNER_THEMES) {
-    if (entry.match.test(candidates)) {
-      return entry.theme;
-    }
+  const heroHex = normalizeHex(style?.heroBackground);
+  const pie1 = normalizeHex(style?.pieColor1);
+  const pie2 = normalizeHex(style?.pieColor2);
+  const textHex = normalizeHex(style?.textColor);
+  const bar1 = normalizeHex(style?.barColor1);
+
+  if (heroHex || pie1 || pie2 || textHex) {
+    // Primary dark brand anchor (e.g. MTK's #004c87 textColor/pieColor2, or darkened hero)
+    const primary = textHex || pie2 || pie1 || heroHex || NEUTRAL_DEFAULT_THEME.primary;
+    const accent = heroHex || pie1 || bar1 || primary;
+    const primaryDark = darkenHex(primary, 0.45);
+    const midTone = darkenHex(primary, 0.72);
+    const accentRgb = hexToRgb(accent);
+    const glowColor = accentRgb ? `rgba(${accentRgb.r}, ${accentRgb.g}, ${accentRgb.b}, 0.24)` : 'rgba(56, 189, 248, 0.2)';
+    const primaryRgb = hexToRgb(primary);
+    const primarySoft = primaryRgb ? `rgba(${primaryRgb.r}, ${primaryRgb.g}, ${primaryRgb.b}, 0.08)` : '#eff6ff';
+
+    return {
+      id: (style?.name || partnerName || 'custom').toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+      primary,
+      primaryDark,
+      primarySoft,
+      accent,
+      heroBg: `linear-gradient(135deg, ${primaryDark} 0%, ${midTone} 55%, ${primaryDark} 100%)`,
+      heroGlow: `radial-gradient(120% 120% at 90% 10%, ${glowColor} 0%, transparent 65%)`,
+      pillBg: accent,
+      pillText: '#ffffff',
+      genderMale: pie2 || primary,
+      genderFemale: pie1 || accent,
+    };
   }
-  if (scopeType === 'hashtag' && /tippmix/i.test(candidates)) {
-    return PARTNER_THEMES[PARTNER_THEMES.length - 1].theme;
+
+  const candidates = [partnerName, viewSlug].filter(Boolean).join(' ');
+  if (scopeType === 'hashtag' && /tippmix|szrt|szerencsej/i.test(candidates)) {
+    const szrtEntry = PARTNER_THEMES[PARTNER_THEMES.length - 1];
+    if (szrtEntry) return szrtEntry.theme;
   }
   return NEUTRAL_DEFAULT_THEME;
 }

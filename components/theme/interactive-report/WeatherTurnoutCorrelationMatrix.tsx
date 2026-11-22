@@ -283,10 +283,10 @@ export default function WeatherTurnoutCorrelationMatrix({
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px', fontSize: '12px', color: '#64748b' }}>
         <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#059669', display: 'inline-block' }} /> Outdoor Match
+            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: 'var(--report-primary, #1d4ed8)', display: 'inline-block' }} /> Outdoor Match
           </span>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#ffffff', border: '2px solid #059669', display: 'inline-block' }} /> Indoor Arena
+            <span style={{ width: '10px', height: '10px', borderRadius: '999px', background: '#ffffff', border: '2px solid var(--report-primary, #1d4ed8)', display: 'inline-block' }} /> Indoor Arena
           </span>
         </div>
         <span>Hover over any plot point for fixture turnout details</span>

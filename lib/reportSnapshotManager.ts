@@ -36,8 +36,9 @@ export interface SnapshotResult {
  *       strict measured-event isolation (zero manual clicker stat mixing).
  *  - 10: explicit separation of PP, GTC & image usage rights (100% consent) vs. optional marketing communication opt-ins
  *        and Camera in-flow CTA popup clicks.
+ *  - 11: full Messmass report_styles colors & partner.logoUrl propagated into InteractiveReportData.
  */
-export const SNAPSHOT_SCHEMA_VERSION = 10;
+export const SNAPSHOT_SCHEMA_VERSION = 11;
 
 // In-flight request stampede deduplication lock (INV-003)
 const inFlightSnapshots = new Map<string, Promise<SnapshotResult>>();

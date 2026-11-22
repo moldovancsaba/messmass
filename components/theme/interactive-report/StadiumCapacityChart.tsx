@@ -142,7 +142,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
                       {v.isIndoor ? `Outside: ${v.sampleWeather.tempC}°C · Indoor 🏟️` : `${v.sampleWeather.tempC}°C ${v.sampleWeather.condition}`}
                     </span>
                   )}
-                  <span style={{ fontSize: '13px', fontWeight: 600, color: '#059669' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--report-primary, #1d4ed8)' }}>
                     {v.totalAttendance.toLocaleString()} fans ({fillRate}% fill)
                   </span>
                 </div>
@@ -162,7 +162,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
                   style={{
                     height: '100%',
                     width: `${fillRate}%`,
-                    backgroundColor: fillRate > 75 ? '#059669' : fillRate > 40 ? '#2563eb' : '#f59e0b',
+                    backgroundColor: fillRate > 75 ? 'var(--report-primary, #1d4ed8)' : fillRate > 40 ? 'var(--report-accent, #3b82f6)' : '#f59e0b',
                     borderRadius: '4px',
                     transition: 'width 0.4s ease',
                   }}
