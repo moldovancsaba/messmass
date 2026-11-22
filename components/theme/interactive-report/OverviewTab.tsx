@@ -716,6 +716,68 @@ export default function OverviewTab({
           )}
         </div>
       )}
+
+      {/* Executive Next-Activation Decisions Strip */}
+      {(() => {
+        const topBrand = [...filteredBrands].sort((a, b) => b.count - a.count)[0] ?? null;
+        const topMatch = topEvents[0] ?? null;
+        const topMatchShare =
+          topMatch && summary.totalPhotos > 0
+            ? Math.round((topMatch.submitted / summary.totalPhotos) * 1000) / 10
+            : null;
+
+        return (
+          <section className={styles.decisionsPanel} aria-label="Next activation decisions">
+            <div className={styles.decisionsIdentity}>
+              <span className={`${styles.decisionsKicker} ${styles.gdsEyebrow}`}>
+                NEXT ACTIVATION
+              </span>
+              <span className={`${styles.decisionsHeading} ${styles.gdsCardTitle}`}>
+                Decisions
+              </span>
+            </div>
+            <div className={styles.decisionList}>
+              <div className={styles.decisionItem}>
+                <div className={styles.gdsEyebrow}>COMMERCIAL · BRAND EXPOSURE</div>
+                <div className={styles.gdsCardTitle}>
+                  {topBrand ? `Review ${topBrand.brand} placement` : 'Run AI Vision brand scan'}
+                </div>
+                <div className={styles.gdsCaption}>
+                  {topBrand
+                    ? `${topBrand.count.toLocaleString()} AI-detected appearances${analyzedImages ? ` across ${analyzedImages.toLocaleString()} analyzed images` : ''}. Select the brand podium card to inspect sample frames.`
+                    : 'No commercial brand logos counted in this scope yet. Process event photos in AI Vision to quantify sponsor exposure.'}
+                </div>
+              </div>
+
+              <div className={styles.decisionItem}>
+                <div className={styles.gdsEyebrow}>EVENTS · PHOTO CONCENTRATION</div>
+                <div className={styles.gdsCardTitle}>
+                  {topMatch ? `Benchmark ${topMatch.cleanName}` : 'Capture fixture-level volume'}
+                </div>
+                <div className={styles.gdsCaption}>
+                  {topMatch
+                    ? `${topMatch.submitted.toLocaleString()} submitted photos${topMatchShare !== null ? ` (${topMatchShare}% of scope total)` : ''}. Open the fixture AI report to inspect peak fan activation.`
+                    : 'No fixture-level submitted photos recorded in this scope yet.'}
+                </div>
+              </div>
+
+              <div className={styles.decisionItem}>
+                <div className={styles.gdsEyebrow}>CONVERSION · OPT-IN FUNNEL</div>
+                <div className={styles.gdsCardTitle}>
+                  {summary.optInRate !== null && summary.totalRegistered > 0
+                    ? `${summary.optInRate}% marketing opt-in`
+                    : 'Track gate-to-opt-in funnel'}
+                </div>
+                <div className={styles.gdsCaption}>
+                  {summary.optInRate !== null && summary.totalRegistered > 0
+                    ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered fans opted in. Review the Conversion Funnel tab to isolate drop-off stages.`
+                    : `${summary.totalPhotos.toLocaleString()} total photos recorded in this scope. Connect registration and opt-in tracking to measure conversion.`}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
     </div>
   );
 }

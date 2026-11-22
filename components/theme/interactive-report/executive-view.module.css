@@ -872,3 +872,27 @@
   color: var(--mm-gray-600);
   font-size: var(--mm-font-size-sm);
 }
+
+.podiumStandalone {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-4);
+  border: 1px solid #ffe09b;
+  background: linear-gradient(120deg, #fff6d7, var(--mm-white));
+  padding: var(--mm-space-4);
+  border-radius: var(--mm-radius-xl);
+  margin: var(--mm-space-3) 0;
+  cursor: pointer;
+}
+
+.podiumStandalone:hover {
+  box-shadow: 0 4px 12px rgba(212, 142, 11, 0.15);
+}
+
+.podiumStandaloneCount {
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #b67e15;
+  line-height: 1.1;
+}

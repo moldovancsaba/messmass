@@ -205,6 +205,28 @@ export default function ExecutivePodiumGrid({
           <div className={styles.podiumEmptyState}>
             n/a (no brand appearances counted)
           </div>
+        ) : brand1 ? (
+          <div
+            role="button"
+            tabIndex={0}
+            className={styles.podiumStandalone}
+            onClick={() => onSelectBrand?.(brand1)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectBrand?.(brand1);
+              }
+            }}
+          >
+            <div className={styles.gdsEyebrow}>
+              {sortedBrands.length === 1 ? 'ONLY RECORDED BRAND' : 'TOP BRAND'}
+            </div>
+            <div className={styles.gdsCardTitle}>{brand1.brand}</div>
+            <div className={`${styles.podiumStandaloneCount} ${styles.gdsNum}`}>
+              {brand1.count.toLocaleString()}
+            </div>
+            <div className={styles.gdsCaption}>detections</div>
+          </div>
         ) : null}
 
         {/* Ranked List Below Podium */}
@@ -364,6 +386,28 @@ export default function ExecutivePodiumGrid({
         ) : sortedClubs.length === 0 ? (
           <div className={styles.podiumEmptyState}>
             n/a (no club appearances counted)
+          </div>
+        ) : club1 ? (
+          <div
+            role="button"
+            tabIndex={0}
+            className={styles.podiumStandalone}
+            onClick={() => onSelectClub?.(club1)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelectClub?.(club1);
+              }
+            }}
+          >
+            <div className={styles.gdsEyebrow}>
+              {sortedClubs.length === 1 ? 'ONLY RECORDED CLUB' : 'TOP CLUB'}
+            </div>
+            <div className={styles.gdsCardTitle}>{club1.club}</div>
+            <div className={`${styles.podiumStandaloneCount} ${styles.gdsNum}`}>
+              {club1.count.toLocaleString()}
+            </div>
+            <div className={styles.gdsCaption}>detections</div>
           </div>
         ) : null}
 

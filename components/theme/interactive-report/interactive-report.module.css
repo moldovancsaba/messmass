@@ -2881,3 +2881,70 @@
   color: var(--mm-gray-600);
 }
 
+/* Decisions Strip (from Messmass Interactive Report Reference) */
+.decisionsPanel {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-xl);
+  box-shadow: 0 8px 24px rgba(25, 51, 91, 0.06);
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.decisionsIdentity {
+  background: var(--report-hero-bg, #102242);
+  color: var(--mm-white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--mm-space-5) var(--mm-space-6);
+  gap: 4px;
+}
+
+.decisionsKicker {
+  font-size: var(--mm-font-size-xs);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--report-accent, #38bdf8);
+}
+
+.decisionsHeading {
+  margin: 0;
+  font-size: var(--mm-font-size-2xl);
+  font-weight: 800;
+  color: var(--mm-white);
+}
+
+.decisionList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: var(--mm-space-4) var(--mm-space-2);
+}
+
+.decisionItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--mm-space-2) var(--mm-space-4);
+  min-width: 0;
+}
+
+.decisionItem + .decisionItem {
+  border-left: 1px solid var(--mm-gray-200);
+}
+
+@media (max-width: 900px) {
+  .decisionsPanel {
+    grid-template-columns: 1fr;
+  }
+  .decisionList {
+    grid-template-columns: 1fr;
+  }
+  .decisionItem + .decisionItem {
+    border-left: 0;
+    border-top: 1px solid var(--mm-gray-200);
+  }
+}
+
