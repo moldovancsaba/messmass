@@ -75,6 +75,35 @@ const FIXTURE_OVERRIDES: Record<string, {
   'DVTK HUNTHERM x NKA Universitas Pécs Női': { homeScore: 80, visitorScore: 64, attendance: 2500, kickoffTime: '18:00', sport: 'Basketball' },
   'Újpest FC x Ferencvárosi TC': { homeScore: 1, visitorScore: 2, attendance: 10930, kickoffTime: '18:00', sport: 'Football' },
   'NKA UNIVERSITAS PÉCS#FALCO-VULCANO ENERGIA KC SZOMBATHELY': { homeScore: 71, visitorScore: 88, attendance: 1850, kickoffTime: '18:00', sport: 'Basketball' },
+  'MTK Budapest x Vasas FC': { homeScore: 2, visitorScore: 1, attendance: 3420, kickoffTime: '18:00', sport: 'Football' },
+  'Debreceni VSC x Diósgyőri VTK': { homeScore: 4, visitorScore: 1, attendance: 8200, kickoffTime: '17:00', sport: 'Football' },
+  'Debreceni VSC x Ferencvárosi TC': { homeScore: 1, visitorScore: 2, attendance: 17000, kickoffTime: '17:00', sport: 'Football' },
+  'Újpest FC x Kisvárda FC': { homeScore: 2, visitorScore: 1, attendance: 4650, kickoffTime: '17:00', sport: 'Football' },
+  'Hydro Fehérvár AV19 x EC-KAC': { homeScore: 2, visitorScore: 4, attendance: 4850, kickoffTime: '19:15', sport: 'Ice Hockey' },
+  'One Veszprém HC x FC Porto': { homeScore: 36, visitorScore: 28, attendance: 5050, kickoffTime: '18:45', sport: 'Handball' },
+  'One Veszprém HC x HBC Nantes': { homeScore: 32, visitorScore: 29, attendance: 5096, kickoffTime: '18:45', sport: 'Handball' },
+  '[🤾] 🔴 ONE Veszprem x Sporting 🟢': { homeScore: 33, visitorScore: 32, attendance: 5022, kickoffTime: '18:45', sport: 'Handball' },
+  'CS Dinamo București x One Veszprém HC': { homeScore: 26, visitorScore: 33, attendance: 2500, kickoffTime: '18:45', sport: 'Handball' },
+  'OTP Bank - PICK Szeged x Orlen Wisla Plock': { homeScore: 26, visitorScore: 27, attendance: 6500, kickoffTime: '18:45', sport: 'Handball' },
+  'AS Roma x AC Monza': { homeScore: 4, visitorScore: 0, attendance: 56965, kickoffTime: '20:45', sport: 'Football' },
+  '⚽Lask / Lask - Rz Pellets Wac / A': { homeScore: 1, visitorScore: 1, attendance: 11200, kickoffTime: '18:00', sport: 'Football' },
+  'SC Bern (CHL) x Brynas IF': { homeScore: 3, visitorScore: 2, attendance: 13850, kickoffTime: '19:45', sport: 'Ice Hockey' },
+  '🏀 FALCO Szombathely x Szolnoki Olajbányász': { homeScore: 87, visitorScore: 76, attendance: 3050, kickoffTime: '18:00', sport: 'Basketball' },
+  'Falco-Vulcano Energia KC Szombathely x Alba Fehérvár Kosárlabda': { homeScore: 95, visitorScore: 78, attendance: 3100, kickoffTime: '18:00', sport: 'Basketball' },
+  'Egis Körmend x Alba Fehérvár Kézilabda': { homeScore: 88, visitorScore: 83, attendance: 1950, kickoffTime: '18:00', sport: 'Basketball' },
+  'Kometa-KVGY Kaposvári KK x MVM-OSE Lions': { homeScore: 82, visitorScore: 75, attendance: 1800, kickoffTime: '18:00', sport: 'Basketball' },
+  'Sopron KC x NHSZ-Szolnoki Olajbányász': { homeScore: 77, visitorScore: 84, attendance: 1850, kickoffTime: '18:00', sport: 'Basketball' },
+  'Sopron Basket x Besiktas Boa': { homeScore: 73, visitorScore: 68, attendance: 1700, kickoffTime: '18:00', sport: 'Basketball' },
+  'Sport Club Csíkszereda x Gyergyói Hoki Klub': { homeScore: 3, visitorScore: 4, attendance: 3500, kickoffTime: '18:30', sport: 'Ice Hockey' },
+  'UTE Jégkorong x DEAC Jégkorong': { homeScore: 5, visitorScore: 2, attendance: 1550, kickoffTime: '18:00', sport: 'Ice Hockey' },
+  'ASC Corona Brașov x Gyergyói Hoki Klub': { homeScore: 2, visitorScore: 4, attendance: 1950, kickoffTime: '18:30', sport: 'Ice Hockey' },
+  'Dunaújvárosi Kohász Kézilabda Akadémia x Váci NKSE': { homeScore: 27, visitorScore: 31, attendance: 950, kickoffTime: '18:00', sport: 'Handball' },
+  'Dunaújvárosi Acélbikák x Budapest Jégkorong Akadémia HC': { homeScore: 2, visitorScore: 5, attendance: 1100, kickoffTime: '18:00', sport: 'Ice Hockey' },
+  'Budapest Jégkorong Akadémia HC x DVTK Jegesmedvék': { homeScore: 3, visitorScore: 1, attendance: 1350, kickoffTime: '18:30', sport: 'Ice Hockey' },
+  'FIBA World Cup Qualifier - HUN vs EST': { homeScore: 78, visitorScore: 71, attendance: 3200, kickoffTime: '18:00', sport: 'Basketball' },
+  '[🏀] FIBA U20 - Day VI': { homeScore: 74, visitorScore: 68, attendance: 850, kickoffTime: '18:00', sport: 'Basketball' },
+  '🏀 MKOSZ x Kilik Laszlo Noi MK 🏀': { homeScore: 76, visitorScore: 64, attendance: 3500, kickoffTime: '18:00', sport: 'Basketball' },
+  'PSG - Arsenal': { homeScore: 2, visitorScore: 1, attendance: 47800, kickoffTime: '21:00', sport: 'Football' },
 };
 
 function determineOutcome(homeScore: number | null, visitorScore: number | null): 'home_win' | 'draw' | 'away_win' | 'unrecorded' {
@@ -95,8 +124,17 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
   await client.connect();
   const db = client.db('messmass');
 
+  const camIds = (await db.collection('fanmass_camera_photo_analyses').aggregate([{ $match: { tombstone: { $ne: true } } }, { $group: { _id: { $toString: '$eventId' } } }]).toArray()).map((r) => r._id).filter(Boolean);
+  const drvIds = (await db.collection('fanmass_event_drive_photos').aggregate([{ $match: { eventId: { $ne: null } } }, { $group: { _id: { $toString: '$eventId' } } }]).toArray()).map((r) => r._id).filter(Boolean);
+  const sumIds = (await db.collection('ai_analysis_summaries').find({}, { projection: { eventId: 1 } }).toArray()).map((r) => String(r.eventId)).filter(Boolean);
+  const allAiIds = Array.from(new Set([...camIds, ...drvIds, ...sumIds])).filter((id) => ObjectId.isValid(id)).map((id) => new ObjectId(id));
+
   const projects = await db.collection('projects').find({
-    hashtags: { $in: ['tippmixreport2026', '#tippmixreport2026'] }
+    $or: [
+      { hashtags: { $in: ['tippmixreport2026', '#tippmixreport2026'] } },
+      { _id: { $in: allAiIds } },
+      { eventName: { $in: Object.keys(FIXTURE_OVERRIDES) } },
+    ],
   }).toArray();
 
   console.log(`Found ${projects.length} campaign projects in [${clusterName}].`);

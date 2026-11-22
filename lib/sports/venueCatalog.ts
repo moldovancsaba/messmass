@@ -50,8 +50,10 @@ export function resolveVenueFromMatch(matchName: string, explicitVenue?: string)
   // In Messmass match names, the match fixture delimiter between home and away team
   // is " x " (or " vs " or "#"). We do not split on "-" because Hungarian sponsor-club names
   // contain hyphens with spaces (e.g., "FTC - Telekom Jégkorong", "OTP Bank - PICK Szeged").
-  const rawClean = (matchName || '').replace(/^[⚽🏀🤾🏒]\s*/, '').trim();
-  const parts = rawClean.split(/\s+(?:x|vs\.?)\s+|\s*#\s*/i);
+  const rawClean = (matchName || '').replace(/^(\[?[⚽🏀🤾🏒]\]?\s*|[🔴🟢\s]*)+/g, '').trim();
+  const parts = /\s+(?:x|vs\.?)\s+|\s*#\s*/i.test(rawClean)
+    ? rawClean.split(/\s+(?:x|vs\.?)\s+|\s*#\s*/i)
+    : rawClean.split(/\s+-\s+|\/|\s+vs\.?\s+/i);
   const homeTeam = clean(parts[0] || '');
 
   // Check specific sport overrides before generic loop

@@ -386,6 +386,105 @@
       "tenantClubs": ["MOL Esztergom", "Esztergom"],
       "aliases": ["suzuki arena", "esztergom csarnok", "mol esztergom arena"],
       "coordinates": { "lat": 47.7856, "lon": 18.7411 }
+    },
+    {
+      "id": "stadio-olimpico-roma",
+      "name": "Stadio Olimpico",
+      "city": "Rome",
+      "capacity": 70634,
+      "isIndoor": false,
+      "primarySport": "Football",
+      "tenantClubs": ["AS Roma", "SS Lazio"],
+      "aliases": ["stadio olimpico", "roma stadium"],
+      "coordinates": { "lat": 41.9341, "lon": 12.4547 }
+    },
+    {
+      "id": "postfinance-arena-bern",
+      "name": "PostFinance Arena",
+      "city": "Bern",
+      "capacity": 17031,
+      "isIndoor": true,
+      "primarySport": "Ice Hockey",
+      "tenantClubs": ["SC Bern", "SC Bern (CHL)"],
+      "aliases": ["postfinance arena", "bern arena"],
+      "coordinates": { "lat": 46.9589, "lon": 7.4686 }
+    },
+    {
+      "id": "raiffeisen-arena-linz",
+      "name": "Raiffeisen Arena",
+      "city": "Linz",
+      "capacity": 19080,
+      "isIndoor": false,
+      "primarySport": "Football",
+      "tenantClubs": ["LASK", "Lask"],
+      "aliases": ["raiffeisen arena", "linz stadium", "lask stadium"],
+      "coordinates": { "lat": 48.2931, "lon": 14.2767 }
+    },
+    {
+      "id": "sala-polivalenta-dinamo",
+      "name": "Sala Polivalentă Dinamo",
+      "city": "Bucharest",
+      "capacity": 2538,
+      "isIndoor": true,
+      "primarySport": "Handball",
+      "tenantClubs": ["CS Dinamo București", "Dinamo Bucuresti"],
+      "aliases": ["sala dinamo", "dinamo bucuresti arena"],
+      "coordinates": { "lat": 44.4553, "lon": 26.1031 }
+    },
+    {
+      "id": "vakar-lajos-mujegpalya",
+      "name": "Vákár Lajos Műjégpálya",
+      "city": "Csíkszereda",
+      "capacity": 3500,
+      "isIndoor": true,
+      "primarySport": "Ice Hockey",
+      "tenantClubs": ["Sport Club Csíkszereda", "SC Csíkszereda"],
+      "aliases": ["vakar lajos", "csikszereda jegpalya"],
+      "coordinates": { "lat": 46.3556, "lon": 25.8017 }
+    },
+    {
+      "id": "patinoarul-olimpic-brasov",
+      "name": "Patinoarul Olimpic Brașov",
+      "city": "Brașov",
+      "capacity": 2000,
+      "isIndoor": true,
+      "primarySport": "Ice Hockey",
+      "tenantClubs": ["ASC Corona Brașov", "Corona Brasov"],
+      "aliases": ["patinoarul olimpic", "brasov ice arena"],
+      "coordinates": { "lat": 45.6578, "lon": 25.6114 }
+    },
+    {
+      "id": "dunaujvarosi-sportcsarnok",
+      "name": "Dunaújvárosi Városi Sportcsarnok",
+      "city": "Dunaújváros",
+      "capacity": 1200,
+      "isIndoor": true,
+      "primarySport": "Handball",
+      "tenantClubs": ["Dunaújvárosi Kohász Kézilabda Akadémia", "DKKA"],
+      "aliases": ["dunaujvarosi sportcsarnok", "kohasz csarnok"],
+      "coordinates": { "lat": 46.9619, "lon": 18.9358 }
+    },
+    {
+      "id": "dunaujvarosi-jegcsarnok",
+      "name": "Dunaújvárosi Jégcsarnok",
+      "city": "Dunaújváros",
+      "capacity": 4500,
+      "isIndoor": true,
+      "primarySport": "Ice Hockey",
+      "tenantClubs": ["Dunaújvárosi Acélbikák", "DAB"],
+      "aliases": ["dunaujvarosi jegcsarnok", "acelbikak csarnok"],
+      "coordinates": { "lat": 46.9631, "lon": 18.9403 }
+    },
+    {
+      "id": "parc-des-princes",
+      "name": "Parc des Princes",
+      "city": "Paris",
+      "capacity": 47929,
+      "isIndoor": false,
+      "primarySport": "Football",
+      "tenantClubs": ["PSG", "Paris Saint-Germain"],
+      "aliases": ["parc des princes", "psg stadium"],
+      "coordinates": { "lat": 48.8414, "lon": 2.2530 }
     }
   ]
 }
