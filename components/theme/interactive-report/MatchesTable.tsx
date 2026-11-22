@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { MatchItem } from './types';
+import { REPORT_CHART_PALETTE } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
 
 interface MatchesTableProps {
@@ -11,11 +12,11 @@ interface MatchesTableProps {
 }
 
 const SPORT_COLORS: Record<string, string> = {
-  Football: '#059669',
-  'Ice Hockey': '#0284c7',
-  Basketball: '#b45309',
-  Handball: '#e11d48',
-  Other: '#64748b',
+  Football: REPORT_CHART_PALETTE.blue,
+  'Ice Hockey': REPORT_CHART_PALETTE.teal,
+  Basketball: REPORT_CHART_PALETTE.amber,
+  Handball: REPORT_CHART_PALETTE.rose,
+  Other: REPORT_CHART_PALETTE.slate,
 };
 
 export default function MatchesTable({ matches, isFanmass = false }: MatchesTableProps) {

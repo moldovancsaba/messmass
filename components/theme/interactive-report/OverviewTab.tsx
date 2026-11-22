@@ -24,7 +24,15 @@ import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
 import MatchdayAnalyticsSuite from './MatchdayAnalyticsSuite';
 import ChartLibraryShowcase from './ChartLibraryShowcase';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
+import { REPORT_CHART_PALETTE } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
+
+const SPORT_COLORS: Record<string, string> = {
+  Football: REPORT_CHART_PALETTE.blue,
+  'Ice Hockey': REPORT_CHART_PALETTE.teal,
+  Basketball: REPORT_CHART_PALETTE.amber,
+  Handball: REPORT_CHART_PALETTE.rose,
+};
 
 interface OverviewTabProps {
   data: InteractiveReportData;
@@ -42,13 +50,6 @@ const SPORT_ICONS: Record<string, string> = {
   'Ice Hockey': '🏒',
   Basketball: '🏀',
   Handball: '🤾',
-};
-
-const SPORT_COLORS: Record<string, string> = {
-  Football: '#059669',
-  'Ice Hockey': '#0284c7',
-  Basketball: '#b45309',
-  Handball: '#e11d48',
 };
 
 function resolveClubSport(name: string, explicitSport?: string): string {
@@ -651,7 +652,7 @@ export default function OverviewTab({
               <div key={s.sport} className={styles.sportCard}>
                 <div
                   className={styles.sportTopBar}
-                  style={{ background: SPORT_COLORS[s.sport] || '#64748b' }}
+                  style={{ background: SPORT_COLORS[s.sport] || REPORT_CHART_PALETTE.slate }}
                 />
                 <div className={styles.sportHeader}>
                   <span className={styles.sportIcon}>{SPORT_ICONS[s.sport] || '🏅'}</span>
