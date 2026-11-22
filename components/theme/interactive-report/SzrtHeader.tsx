@@ -216,7 +216,9 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
               return cards.map((card, i) => (
                 <div key={card.label} className={`${styles.kpiCard} ${tileClasses[i % tileClasses.length]}`}>
                   <span className={styles.kpiLabel}>{card.label}</span>
-                  <span className={styles.kpiValue}>{card.valueText}</span>
+                  <span className={card.valueText === 'Not measured' ? styles.kpiValueStatus : styles.kpiValue}>
+                    {card.valueText}
+                  </span>
                   {card.subtext && <span className={styles.kpiSubtext}>{card.subtext}</span>}
                 </div>
               ));

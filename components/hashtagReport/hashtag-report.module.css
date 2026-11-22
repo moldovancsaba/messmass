@@ -2,12 +2,12 @@
 /* WHAT: Styles of the unified hashtag report. Design tokens only; every token used here is defined (tests/interactive-report-styles.test.ts). */
 
 .page {
-  max-width: 1120px;
+  max-width: var(--mm-content-max-width);
   margin: 0 auto;
-  padding: var(--mm-space-6) var(--mm-space-4) var(--mm-space-12);
+  padding: var(--mm-space-4) 0 var(--mm-space-12);
   display: flex;
   flex-direction: column;
-  gap: var(--mm-space-6);
+  gap: var(--mm-space-5);
   color: var(--mm-gray-900);
 }
 
@@ -49,7 +49,7 @@
 .kpi {
   background: var(--mm-white);
   border: 1px solid var(--mm-border-light);
-  border-radius: var(--mm-radius-lg);
+  border-radius: var(--mm-radius-xl);
   box-shadow: var(--mm-shadow-sm);
   padding: var(--mm-space-5);
   display: flex;
@@ -85,8 +85,8 @@
 .card {
   background: var(--mm-white);
   border: 1px solid var(--mm-border-light);
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-sm);
+  border-radius: var(--mm-radius-2xl);
+  box-shadow: var(--mm-shadow-md);
   padding: var(--mm-space-6);
   display: flex;
   flex-direction: column;
@@ -122,12 +122,21 @@
 
 .bar {
   width: 100%;
-  height: var(--mm-space-3);
-  accent-color: var(--mm-color-primary-600);
+  height: 9px;
+  display: block;
+}
+
+.barTrack {
+  fill: var(--mm-gray-100);
+}
+
+.barFill {
+  fill: var(--mm-color-primary-600);
 }
 
 .barCount {
   font-weight: var(--mm-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
   color: var(--mm-gray-700);
 }
 

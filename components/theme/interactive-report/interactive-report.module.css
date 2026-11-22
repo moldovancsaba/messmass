@@ -173,6 +173,7 @@
 .kpiCard {
   position: relative;
   overflow: hidden;
+  min-width: 0;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.32);
   border-radius: 16px;
@@ -217,12 +218,21 @@
 }
 
 .kpiValue {
-  font-size: 2rem;
+  font-size: clamp(1.35rem, 1.8vw, 1.95rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: #ffffff;
   margin-top: var(--mm-space-1);
   line-height: 1.15;
+  overflow-wrap: break-word;
+}
+
+.kpiValueStatus {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.92);
+  margin-top: var(--mm-space-2);
+  line-height: 1.2;
 }
 
 .kpiValueHighlight {
@@ -3057,8 +3067,9 @@
 
 .bentoPanelHeader {
   min-height: 53px;
-  padding: 0 16px;
+  padding: 10px 16px;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--mm-gray-100);

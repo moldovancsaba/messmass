@@ -50,7 +50,10 @@ function Bars({ title, counts, note }: { title: string; counts: Record<string, n
       {rows.slice(0, 12).map(([name, count]) => (
         <div key={name} className={styles.barRow}>
           <span>{name}</span>
-          <progress className={styles.bar} value={count} max={max} aria-label={`${name}: ${fmt(count)}`} />
+          <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bar} aria-label={`${name}: ${fmt(count)}`}>
+            <rect x="0" y="0" width="100" height="8" rx="4" className={styles.barTrack} />
+            <rect x="0" y="0" width={Math.max(2, Math.round((count / max) * 100))} height="8" rx="4" className={styles.barFill} />
+          </svg>
           <span className={styles.barCount}>{fmt(count)}</span>
         </div>
       ))}
@@ -77,7 +80,10 @@ function Names({ title, list, note }: { title: string; list: NamedCount[]; note:
           }
         >
           <span>{row.name}</span>
-          <progress className={styles.bar} value={row.count} max={top} aria-label={`${row.name}: ${fmt(row.count)}`} />
+          <svg viewBox="0 0 100 8" preserveAspectRatio="none" className={styles.bar} aria-label={`${row.name}: ${fmt(row.count)}`}>
+            <rect x="0" y="0" width="100" height="8" rx="4" className={styles.barTrack} />
+            <rect x="0" y="0" width={Math.max(2, Math.round((row.count / top) * 100))} height="8" rx="4" className={styles.barFill} />
+          </svg>
           <span className={styles.barCount}>
             {fmt(row.count)}
             {row.weightedCount !== undefined && row.coOccurrencePhotos ? ` (${row.weightedCount}w)` : ''}
