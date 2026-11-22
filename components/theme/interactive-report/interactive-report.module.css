@@ -1308,47 +1308,25 @@
   margin-top: 6px;
 }
 
-.agePill {
-  font-size: 10px;
+.agePill,
+.brandChip,
+.emotionChip,
+.clubChip {
+  font-size: 11px;
   font-weight: var(--mm-font-weight-semibold);
-  background: #f1f5f9;
-  color: #334155;
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: #eef3fc;
+  border: 1px solid #dde7f5;
+  color: #334663;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
 }
 
 .tagChipsWrap {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
-}
-
-.brandChip {
-  font-size: 11px;
-  font-weight: var(--mm-font-weight-bold);
-  background: #fef3c7;
-  color: #92400e;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.emotionChip {
-  font-size: 11px;
-  font-weight: var(--mm-font-weight-bold);
-  background: #dcfce7;
-  color: #166534;
-  padding: 2px 8px;
-  border-radius: 12px;
-}
-
-.clubChip {
-  font-size: 11px;
-  font-weight: var(--mm-font-weight-bold);
-  background: #e0f2fe;
-  color: #0369a1;
-  padding: 2px 8px;
-  border-radius: 12px;
+  gap: 5px;
+  margin-top: 8px;
 }
 
 .recentStreamWrap {

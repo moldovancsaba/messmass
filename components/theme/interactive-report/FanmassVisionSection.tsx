@@ -234,100 +234,124 @@ export default function FanmassVisionSection({
       {/* 4 Pillars Executive KPI Highlights */}
       <div className={styles.visionGrid}>
         {/* KPI 1: People Detected */}
-        <div className={styles.visionMiniCard}>
-          <div className={styles.miniCardIcon}>👥</div>
-          <div className={styles.miniCardTitle}>
-            {isAll ? 'People Detected' : `${selectedSport} People`}
+        <article className={styles.bentoPanel}>
+          <header className={styles.bentoPanelHeader}>
+            <div className={styles.bentoPanelTitle}>
+              <span className={styles.bentoPanelIcon} aria-hidden="true">👥</span>
+              <h3 className={styles.gdsCardTitle}>
+                {isAll ? 'People detected' : `${selectedSport} people`}
+              </h3>
+            </div>
+          </header>
+          <div className={styles.bentoPanelBody}>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {displayPeople === null ? 'n/a' : displayPeople.toLocaleString()}
+            </div>
+            <div className={styles.gdsCaption}>
+              {displayGender
+                ? `${displayGender.malePct}% Male / ${displayGender.femalePct}% Female`
+                : 'n/a'}
+            </div>
+            <div className={styles.tagChipsWrap}>
+              {displayAge ? (
+                <>
+                  <span className={styles.agePill}>Adults: {displayAge.adults.toLocaleString()}</span>
+                  <span className={styles.agePill}>Teens: {displayAge.teens.toLocaleString()}</span>
+                  <span className={styles.agePill}>Children: {displayAge.children.toLocaleString()}</span>
+                  <span className={styles.agePill}>Seniors: {displayAge.seniors.toLocaleString()}</span>
+                </>
+              ) : (
+                <span className={styles.agePill}>Age: n/a</span>
+              )}
+            </div>
           </div>
-          <div className={styles.miniCardVal}>
-            {displayPeople === null ? 'n/a' : displayPeople.toLocaleString()}
-          </div>
-          <div className={styles.miniCardSub}>
-            {displayGender
-              ? `${displayGender.malePct}% Male / ${displayGender.femalePct}% Female`
-              : 'n/a'}
-          </div>
-          <div className={styles.agePillsGroup}>
-            {displayAge ? (
-              <>
-                <span className={styles.agePill}>Adults: {displayAge.adults.toLocaleString()}</span>
-                <span className={styles.agePill}>Teens: {displayAge.teens.toLocaleString()}</span>
-                <span className={styles.agePill}>Children: {displayAge.children.toLocaleString()}</span>
-                <span className={styles.agePill}>Seniors: {displayAge.seniors.toLocaleString()}</span>
-              </>
-            ) : (
-              <span className={styles.agePill}>Age: n/a</span>
-            )}
-          </div>
-        </div>
+        </article>
 
         {/* KPI 2: Detected Brands & Logos */}
-        <div className={styles.visionMiniCard}>
-          <div className={styles.miniCardIcon}>🏷️</div>
-          <div className={styles.miniCardTitle}>
-            {isAll ? 'Detected Brands & Logos' : `${selectedSport} Brands & Logos`}
+        <article className={styles.bentoPanel}>
+          <header className={styles.bentoPanelHeader}>
+            <div className={styles.bentoPanelTitle}>
+              <span className={styles.bentoPanelIcon} aria-hidden="true">🏷️</span>
+              <h3 className={styles.gdsCardTitle}>
+                {isAll ? 'Detected brands' : `${selectedSport} brands`}
+              </h3>
+            </div>
+          </header>
+          <div className={styles.bentoPanelBody}>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {displayBrandCount} Brands
+            </div>
+            <div className={styles.gdsCaption}>
+              {isAll ? 'Sponsor emblems, kits & arena signage' : `Sponsor emblems & kit wear in ${selectedSport}`}
+            </div>
+            <div className={styles.tagChipsWrap}>
+              {displayBrands.slice(0, 5).map((b) => (
+                <span key={b.brand} className={styles.brandChip}>
+                  {b.brand} ({b.count.toLocaleString()})
+                </span>
+              ))}
+            </div>
           </div>
-          <div className={styles.miniCardVal}>
-            {displayBrandCount} Brands
-          </div>
-          <div className={styles.miniCardSub}>
-            {isAll ? 'Sponsor emblems, kits & arena partner signage' : `Sponsor emblems & kit wear in ${selectedSport}`}
-          </div>
-          <div className={styles.tagChipsWrap}>
-            {displayBrands.slice(0, 5).map((b) => (
-              <span key={b.brand} className={styles.brandChip}>
-                {b.brand} ({b.count})
-              </span>
-            ))}
-          </div>
-        </div>
+        </article>
 
         {/* KPI 3: Valence & Atmosphere */}
-        <div className={styles.visionMiniCard}>
-          <div className={styles.miniCardIcon}>😊</div>
-          <div className={styles.miniCardTitle}>
-            {isAll ? 'Atmosphere & Valence' : `${selectedSport} Atmosphere`}
+        <article className={styles.bentoPanel}>
+          <header className={styles.bentoPanelHeader}>
+            <div className={styles.bentoPanelTitle}>
+              <span className={styles.bentoPanelIcon} aria-hidden="true">😊</span>
+              <h3 className={styles.gdsCardTitle}>
+                {isAll ? 'Atmosphere & valence' : `${selectedSport} atmosphere`}
+              </h3>
+            </div>
+          </header>
+          <div className={styles.bentoPanelBody}>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {celebrationValence}
+            </div>
+            <div className={styles.gdsCaption}>
+              {isAll ? 'Share of positive emotions detected' : `Share of positive emotions in ${selectedSport}`}
+            </div>
+            <div className={styles.tagChipsWrap}>
+              {displayEmotions.slice(0, 4).map((e) => (
+                <span key={e.emotion} className={styles.emotionChip}>
+                  {e.emotion} ({e.count.toLocaleString()})
+                </span>
+              ))}
+            </div>
           </div>
-          <div className={styles.miniCardVal}>
-            {celebrationValence}
-          </div>
-          <div className={styles.miniCardSub}>
-            {isAll ? 'Share of positive emotions among detected emotions' : `Share of positive emotions in ${selectedSport}`}
-          </div>
-          <div className={styles.tagChipsWrap}>
-            {displayEmotions.slice(0, 4).map((e) => (
-              <span key={e.emotion} className={styles.emotionChip}>
-                {e.emotion} ({e.count})
-              </span>
-            ))}
-          </div>
-        </div>
+        </article>
 
         {/* KPI 4: Sports covered */}
-        <div className={styles.visionMiniCard}>
-          <div className={styles.miniCardIcon}>🏆</div>
-          <div className={styles.miniCardTitle}>
-            {isAll ? 'Sports Covered' : `Active Sport: ${selectedSport}`}
+        <article className={styles.bentoPanel}>
+          <header className={styles.bentoPanelHeader}>
+            <div className={styles.bentoPanelTitle}>
+              <span className={styles.bentoPanelIcon} aria-hidden="true">🏆</span>
+              <h3 className={styles.gdsCardTitle}>
+                {isAll ? 'Sports covered' : selectedSport}
+              </h3>
+            </div>
+          </header>
+          <div className={styles.bentoPanelBody}>
+            <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+              {isAll
+                ? `${sportKeys.length} ${sportKeys.length === 1 ? 'Sport' : 'Sports'}`
+                : `${activeSportData ? activeSportData.images.toLocaleString() : 'n/a'} Photos`}
+            </div>
+            <div className={styles.gdsCaption}>
+              {isAll ? sportKeys.join(', ') || 'n/a' : `Photos analysed in ${selectedSport}`}
+            </div>
+            <div className={styles.tagChipsWrap}>
+              {sportKeys.map((sp) => (
+                <span
+                  key={sp}
+                  className={`${styles.clubChip} ${selectedSport === sp ? styles.brandTagSponsor : ''}`}
+                >
+                  {sportIcon(sp)} {sp}
+                </span>
+              ))}
+            </div>
           </div>
-          <div className={styles.miniCardVal}>
-            {isAll
-              ? `${sportKeys.length} ${sportKeys.length === 1 ? 'Sport' : 'Sports'}`
-              : `${activeSportData ? activeSportData.images.toLocaleString() : 'n/a'} Photos Analyzed`}
-          </div>
-          <div className={styles.miniCardSub}>
-            {isAll ? sportKeys.join(', ') || 'n/a' : `Photos analysed in ${selectedSport}`}
-          </div>
-          <div className={styles.tagChipsWrap}>
-            {sportKeys.map((sp) => (
-              <span
-                key={sp}
-                className={`${styles.clubChip} ${selectedSport === sp ? styles.brandTagSponsor : ''}`}
-              >
-                {sportIcon(sp)} {sp}
-              </span>
-            ))}
-          </div>
-        </div>
+        </article>
       </div>
 
       {/* View Full Dashboard Call-to-Action for Overview mode, or Full Suite of Visual Analytics Charts */}
