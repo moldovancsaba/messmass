@@ -151,29 +151,62 @@
 /* KPI Strip */
 .kpiGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: var(--mm-space-3);
-  margin-top: var(--mm-space-8);
-  padding-top: var(--mm-space-6);
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 11px;
+  margin-top: var(--mm-space-6);
+  padding-top: var(--mm-space-5);
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+@media (max-width: 1160px) {
+  .kpiGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 670px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .kpiCard {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--mm-radius-xl);
-  padding: var(--mm-space-4) var(--mm-space-5);
+  position: relative;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 16px;
+  padding: 13px 14px 12px;
+  min-height: 112px;
   display: flex;
   flex-direction: column;
-  backdrop-filter: blur(10px);
-  transition: all 0.18s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.34), 0 6px 14px rgba(0, 19, 41, 0.28);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.kpiCard::after {
+  content: '';
+  position: absolute;
+  right: -36px;
+  top: -31px;
+  width: 105px;
+  height: 105px;
+  border-radius: 50%;
+  border: 15px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
 }
 
 .kpiCard:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.22);
   transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 10px 20px rgba(0, 19, 41, 0.34);
 }
+
+.kpiTile1 { background: linear-gradient(125deg, #1669b4, #268ad7); }
+.kpiTile2 { background: linear-gradient(125deg, #068b79, #16b68d); }
+.kpiTile3 { background: linear-gradient(125deg, #4d45b8, #7c4dff); }
+.kpiTile4 { background: linear-gradient(125deg, #04768f, #15a5ba); }
+.kpiTile5 { background: linear-gradient(125deg, #941c32, #c82942); }
+.kpiTile6 { background: linear-gradient(125deg, #1459a4, #2885cb); }
 
 .kpiLabel {
   font-size: 11px;
@@ -2945,6 +2978,520 @@
   .decisionItem + .decisionItem {
     border-left: 0;
     border-top: 1px solid var(--mm-gray-200);
+  }
+}
+
+/* ============================================================================
+   12-Column Executive Bento Grid (Reference Report Architecture)
+   ============================================================================ */
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.bentoPanel {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: 19px;
+  box-shadow: 0 8px 28px rgba(25, 51, 91, 0.065), 0 1px 4px rgba(25, 51, 91, 0.04);
+  overflow: hidden;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bentoAudience,
+.bentoActivation,
+.bentoProtection,
+.bentoRankings {
+  grid-column: span 3;
+  min-height: 347px;
+}
+
+.bentoLocation {
+  grid-column: span 3;
+  min-height: 258px;
+}
+
+.bentoCommercial {
+  grid-column: span 5;
+  min-height: 258px;
+}
+
+.bentoMerchandise {
+  grid-column: span 4;
+  min-height: 258px;
+}
+
+.bentoPanelHeader {
+  min-height: 53px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--mm-gray-100);
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.bentoPanelTitle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+}
+
+.bentoPanelIcon {
+  height: 31px;
+  width: 31px;
+  border-radius: 9px;
+  background: rgba(27, 121, 223, 0.09);
+  color: var(--report-accent, #1b79df);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex: 0 0 auto;
+}
+
+.bentoPanelStatus {
+  color: var(--mm-gray-500);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.bentoPanelBody {
+  padding: 15px 17px 14px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.bentoFootnote {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--mm-gray-500);
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.bentoSubhead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 6px;
+  border-top: 1px solid var(--mm-gray-100);
+  padding-top: 10px;
+  margin-top: 10px;
+  margin-bottom: 8px;
+}
+
+.bentoDonutMajor {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 12px;
+}
+
+.bentoDonut {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.donutSvg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donutTrack {
+  fill: none;
+  stroke: var(--mm-gray-200);
+  stroke-width: 5.5;
+}
+
+.donutArcPrimary {
+  fill: none;
+  stroke: var(--report-accent, #1b79df);
+  stroke-width: 5.5;
+  stroke-linecap: round;
+}
+
+.donutArcSuccess {
+  fill: none;
+  stroke: #19bd77;
+  stroke-width: 5.5;
+  stroke-linecap: round;
+}
+
+.bentoDonutCenter {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.bentoLegend {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bentoLegendRow {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+
+.bentoLegendDotPrimary {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--report-accent, #1b79df);
+}
+
+.bentoLegendDotMuted {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--mm-gray-300);
+}
+
+.bentoLegendDotSuccess {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #19bd77;
+}
+
+.bentoBarList {
+  display: grid;
+  gap: 8px;
+}
+
+.bentoBarRow {
+  display: grid;
+  grid-template-columns: minmax(66px, 0.9fr) minmax(32px, 1.4fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.bentoBarRowClickable {
+  cursor: pointer;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.bentoBarRowClickable:hover {
+  background: var(--mm-gray-50);
+}
+
+.bentoBarSvg {
+  width: 100%;
+  height: 9px;
+  display: block;
+}
+
+.bentoBarTrackRect {
+  fill: var(--mm-gray-100);
+}
+
+.bentoBarFillRect {
+  fill: var(--report-accent, #1b79df);
+}
+
+.bentoBarFillTeal {
+  fill: #03ad9f;
+}
+
+.bentoFunnelSteps {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.bentoFunnelStage {
+  width: 100%;
+  min-height: 62px;
+  color: var(--mm-white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  clip-path: polygon(0 0, 100% 0, 94% 100%, 6% 100%);
+  padding: 9px 20px;
+  background: linear-gradient(114deg, #1b79df, #03ad9f);
+}
+
+.bentoFunnelStage2 {
+  width: 89%;
+  background: linear-gradient(114deg, #376cf1, #8641de);
+}
+
+.bentoFunnelStage3 {
+  width: 78%;
+  background: linear-gradient(114deg, #068b79, #19bd77);
+}
+
+.bentoFunnelSummary {
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: 12px;
+  padding: 9px 12px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.bentoConsentList {
+  display: grid;
+  gap: 14px;
+  padding: 4px 0;
+}
+
+.bentoConsentRow {
+  display: grid;
+  gap: 4px;
+}
+
+.bentoConsentHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.bentoToggle {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--mm-gray-100);
+  padding: 3px;
+  border-radius: 9px;
+  flex: 0 0 auto;
+}
+
+.bentoToggleBtn {
+  border: 0;
+  background: transparent;
+  border-radius: 7px;
+  padding: 5px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--mm-gray-600);
+  cursor: pointer;
+}
+
+.bentoToggleBtnActive {
+  background: var(--report-accent, #1b79df);
+  color: var(--mm-white);
+}
+
+.bentoPodiumArea {
+  display: grid;
+  grid-template-columns: 1fr 1.13fr 1fr;
+  gap: 7px;
+  align-items: end;
+  flex: 1;
+  min-height: 210px;
+  padding: 12px 1px 2px;
+}
+
+.bentoPodiumUnit {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.bentoPlinth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 13px 13px 8px 8px;
+  color: var(--mm-white);
+  padding: 10px 5px 9px;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.38), 0 8px 12px rgba(14, 43, 80, 0.22);
+  text-align: center;
+  transition: transform 0.16s ease;
+}
+
+.bentoPodiumUnit:hover .bentoPlinth {
+  transform: translateY(-3px);
+}
+
+.bentoPlinthGold {
+  min-height: 178px;
+  background: linear-gradient(160deg, #ffcd55, #e78c00);
+  border: 2px solid #ffdf88;
+}
+
+.bentoPlinthSilver {
+  min-height: 142px;
+  background: linear-gradient(160deg, #91b4d9, #4f77a6);
+}
+
+.bentoPlinthBronze {
+  min-height: 114px;
+  background: linear-gradient(160deg, #d59b74, #9b5536);
+}
+
+.bentoCommercialGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(150px, 0.75fr);
+  gap: 15px;
+  align-items: center;
+  flex: 1;
+}
+
+.bentoCommercialSide {
+  border-left: 1px solid var(--mm-gray-200);
+  display: grid;
+  gap: 10px;
+  padding-left: 14px;
+}
+
+.bentoSummaryStat {
+  background: var(--mm-gray-50);
+  padding: 10px 12px;
+  border: 1px solid var(--mm-gray-200);
+  border-radius: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bentoMerchGrid {
+  display: grid;
+  grid-template-columns: 115px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  flex: 1;
+}
+
+.bentoMerchFeature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  border-right: 1px solid var(--mm-gray-200);
+  padding-right: 12px;
+  min-height: 150px;
+}
+
+.bentoFooterLine {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 13px;
+  margin-top: 4px;
+}
+
+.bentoNotesBtn {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  border: 1px solid var(--mm-gray-300);
+  border-radius: 9px;
+  background: var(--mm-white);
+  color: var(--mm-gray-700);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.bentoNotesBtn:hover {
+  background: var(--mm-gray-50);
+}
+
+.bentoNotesDrawer {
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: 13px;
+  padding: 18px 22px;
+  color: var(--mm-gray-700);
+}
+
+.bentoNotesList {
+  padding-left: 18px;
+  margin: 8px 0 0;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1160px) {
+  .bentoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .bentoAudience,
+  .bentoActivation,
+  .bentoProtection,
+  .bentoRankings,
+  .bentoLocation,
+  .bentoMerchandise {
+    grid-column: span 1;
+    min-height: unset;
+  }
+  .bentoCommercial {
+    grid-column: span 2;
+    min-height: unset;
+  }
+}
+
+@media (max-width: 670px) {
+  .bentoGrid {
+    grid-template-columns: 1fr;
+  }
+  .bentoAudience,
+  .bentoActivation,
+  .bentoProtection,
+  .bentoRankings,
+  .bentoLocation,
+  .bentoCommercial,
+  .bentoMerchandise {
+    grid-column: span 1;
+  }
+  .bentoCommercialGrid,
+  .bentoMerchGrid {
+    grid-template-columns: 1fr;
+  }
+  .bentoCommercialSide {
+    border-left: 0;
+    border-top: 1px solid var(--mm-gray-200);
+    padding-left: 0;
+    padding-top: 12px;
+  }
+  .bentoMerchFeature {
+    border-right: 0;
+    border-bottom: 1px solid var(--mm-gray-200);
+    padding-right: 0;
+    padding-bottom: 12px;
+    min-height: unset;
   }
 }
 

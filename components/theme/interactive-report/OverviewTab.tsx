@@ -5,7 +5,8 @@ import React, { useState, useMemo } from 'react';
 import { InteractiveReportData } from './types';
 import D3TimelineScrubber from './D3TimelineScrubber';
 import ExecutiveHeroKpis from './ExecutiveHeroKpis';
-import ExecutivePodiumGrid, { ClubPodiumStat, CommercialBrandStat } from './ExecutivePodiumGrid';
+import { ClubPodiumStat, CommercialBrandStat } from './ExecutivePodiumGrid';
+import ExecutiveBentoGrid from './ExecutiveBentoGrid';
 import ConnectedSelfiesModal from './ConnectedSelfiesModal';
 import BrandDetailModal from './BrandDetailModal';
 import AllBrandsModal from './AllBrandsModal';
@@ -16,14 +17,10 @@ import {
   isVenue,
   canonicalizeClub,
   mergeBrandVariants,
-  isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
-import { getReportSlug } from './reportSlug';
 import StadiumCapacityChart from './StadiumCapacityChart';
 import MatchOutcomesChart from './MatchOutcomesChart';
-import MarketingCommercialSuite from './MarketingCommercialSuite';
 import WeatherTurnoutCorrelationMatrix from './WeatherTurnoutCorrelationMatrix';
-import AudienceInvolvementFunnel from './AudienceInvolvementFunnel';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
 import styles from './interactive-report.module.css';
 
@@ -131,6 +128,7 @@ export default function OverviewTab({
   const [selectedBrandForModal, setSelectedBrandForModal] = useState<CommercialBrandStat | null>(null);
   const [isAllBrandsOpen, setIsAllBrandsOpen] = useState(false);
   const [isAllClubsOpen, setIsAllClubsOpen] = useState(false);
+  const [notesOpen, setNotesOpen] = useState(false);
 
   // Selected period override if active
   const activePeriod = selectedPeriodId ? timeline.find((t) => t.id === selectedPeriodId) : null;
@@ -173,18 +171,7 @@ export default function OverviewTab({
   const resolvedCtaClicks = summary.totalCtaClicks > 0 ? summary.totalCtaClicks : (vision?.ctaClickImages ?? 0);
   const resolvedPhotosProcessed = analyzedImages ?? (summary.totalPhotos > 0 ? summary.totalPhotos : 0);
 
-  const reportSlug = getReportSlug(data);
   const scopeName = data.scope?.name || data.partner.name || '';
-
-  // Distinct venue names of this scope's events, in order of appearance.
-  const venues = useMemo(() => {
-    const seen = new Set<string>();
-    for (const match of data.matches || []) {
-      const venue = (match.venue || '').trim();
-      if (venue) seen.add(venue);
-    }
-    return Array.from(seen);
-  }, [data.matches]);
 
   // Strict separation: Filter commercial brands vs sports clubs
   const filteredBrands = useMemo(() => {
@@ -353,18 +340,95 @@ export default function OverviewTab({
           </div>
         ) : null}
 
-        {/* ACT 2: Visual Brand Visibility & Club Podiums (#1 Gold, #2 Silver, #3 Bronze + Connected Photo Proof) */}
-        {vision && (
-          <ExecutivePodiumGrid
-            brands={filteredBrands}
-            clubs={filteredClubs}
-            totalPhotosProcessed={analyzedImages ?? 0}
-            onSelectClub={(club) => setSelectedClubForModal(club)}
-            onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
-            onViewAllBrands={() => setIsAllBrandsOpen(true)}
-            onViewAllClubs={() => setIsAllClubsOpen(true)}
-          />
-        )}
+        {/* ACT 2: 12-Column Executive Bento Grid */}
+        <ExecutiveBentoGrid
+          scopeName={scopeName}
+          eventsCount={summary.totalMatches > 0 ? summary.totalMatches : (data.matches?.length ?? 0)}
+          totalPhotos={summary.totalPhotos}
+          analyzedImages={analyzedImages}
+          fanAppearances={fanAppearances}
+          registeredFans={registeredFans}
+          resolvedOptIns={resolvedOptIns}
+          resolvedRegistered={resolvedRegistered}
+          resolvedCtaClicks={resolvedCtaClicks}
+          optInRate={summary.optInRate}
+          vettingApprovalRate={summary.vettingApprovalRate}
+          genders={currentGenders}
+          ageGroups={currentAgeGroups}
+          brands={filteredBrands}
+          clubs={filteredClubs}
+          indoorMatchesCount={data.matchdayAnalytics?.indoorMatchesCount ?? 0}
+          outdoorMatchesCount={data.matchdayAnalytics?.outdoorMatchesCount ?? 0}
+          topEmotions={vision?.aggregates?.topEmotions || []}
+          onSelectBrand={(brand) => setSelectedBrandForModal(brand)}
+          onSelectClub={(club) => setSelectedClubForModal(club)}
+          onViewAllBrands={() => setIsAllBrandsOpen(true)}
+          onViewAllClubs={() => setIsAllClubsOpen(true)}
+          onViewFunnel={onViewFunnel}
+          onViewTerritoryMap={onViewTerritoryMap}
+        />
+
+        {/* ACT 3: Executive Next-Activation Decisions Strip */}
+        {(() => {
+          const topBrand = [...filteredBrands].sort((a, b) => b.count - a.count)[0] ?? null;
+          const topMatch = topEvents[0] ?? null;
+          const topMatchShare =
+            topMatch && summary.totalPhotos > 0
+              ? Math.round((topMatch.submitted / summary.totalPhotos) * 1000) / 10
+              : null;
+
+          return (
+            <section className={styles.decisionsPanel} aria-label="Next activation decisions">
+              <div className={styles.decisionsIdentity}>
+                <span className={`${styles.decisionsKicker} ${styles.gdsEyebrow}`}>
+                  NEXT ACTIVATION
+                </span>
+                <span className={`${styles.decisionsHeading} ${styles.gdsCardTitle}`}>
+                  Decisions
+                </span>
+              </div>
+              <div className={styles.decisionList}>
+                <div className={styles.decisionItem}>
+                  <div className={styles.gdsEyebrow}>COMMERCIAL · BRAND EXPOSURE</div>
+                  <div className={styles.gdsCardTitle}>
+                    {topBrand ? `Review ${topBrand.brand} placement` : 'Run AI Vision brand scan'}
+                  </div>
+                  <div className={styles.gdsCaption}>
+                    {topBrand
+                      ? `${topBrand.count.toLocaleString()} AI-detected appearances${analyzedImages ? ` across ${analyzedImages.toLocaleString()} analyzed images` : ''}. Click any brand bar or podium card to inspect sample frames.`
+                      : 'No commercial brand logos counted in this scope yet. Process event photos in AI Vision to quantify sponsor exposure.'}
+                  </div>
+                </div>
+
+                <div className={styles.decisionItem}>
+                  <div className={styles.gdsEyebrow}>EVENTS · PHOTO CONCENTRATION</div>
+                  <div className={styles.gdsCardTitle}>
+                    {topMatch ? `Benchmark ${topMatch.cleanName}` : 'Capture fixture-level volume'}
+                  </div>
+                  <div className={styles.gdsCaption}>
+                    {topMatch
+                      ? `${topMatch.submitted.toLocaleString()} submitted photos${topMatchShare !== null ? ` (${topMatchShare}% of scope total)` : ''}. Open the fixture AI report to inspect peak fan activation.`
+                      : 'No fixture-level submitted photos recorded in this scope yet.'}
+                  </div>
+                </div>
+
+                <div className={styles.decisionItem}>
+                  <div className={styles.gdsEyebrow}>CONVERSION · OPT-IN FUNNEL</div>
+                  <div className={styles.gdsCardTitle}>
+                    {summary.optInRate !== null && summary.totalRegistered > 0
+                      ? `${summary.optInRate}% marketing opt-in`
+                      : 'Track gate-to-opt-in funnel'}
+                  </div>
+                  <div className={styles.gdsCaption}>
+                    {summary.optInRate !== null && summary.totalRegistered > 0
+                      ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered fans opted in. Review the Conversion Funnel tab to isolate drop-off stages.`
+                      : `${summary.totalPhotos.toLocaleString()} total photos recorded in this scope. Connect registration and opt-in tracking to measure conversion.`}
+                  </div>
+                </div>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ACT 3: Analyzed Events & Direct Event AI Report Links */}
         {isFanmass && data.matches && data.matches.length > 0 && (
@@ -437,47 +501,7 @@ export default function OverviewTab({
           </div>
         )}
 
-        {/* ACT 4: Multi-Tier Audience Involvement Funnel (Stadium Capacity -> Gate Turnout -> Vision Capture -> Consent & Opt-in) */}
-        {data.matchdayAnalytics && data.matchdayAnalytics.totalVenueCapacity > 0 && (
-          <AudienceInvolvementFunnel
-            totalVenueCapacity={data.matchdayAnalytics.totalVenueCapacity}
-            totalGateAttendance={data.matchdayAnalytics.totalGateAttendance}
-            totalPeopleDetected={fanAppearances ?? 0}
-            totalOptIns={resolvedOptIns}
-            totalRegistered={resolvedRegistered}
-            totalPhotosProcessed={resolvedPhotosProcessed}
-            eventCount={summary.totalMatches > 0 ? summary.totalMatches : data.matches?.length || 1}
-          />
-        )}
-
-        {/* ACT 5: Verified Direct Fan Engagement & Digital Conversion */}
-        <MarketingCommercialSuite
-          variant="commercial"
-          partnerName={data.partner?.name || scopeName}
-          reportSlug={reportSlug}
-          totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
-          totalOptIns={resolvedOptIns}
-          totalRegistered={resolvedRegistered}
-          totalPhotosProcessed={resolvedPhotosProcessed}
-          totalCtaClicks={resolvedCtaClicks}
-        />
-
-        {/* ACT 6: Audience DNA & Facial Sentiment (Gender Donut, Age Brackets, Emotion Breakdown & Territory Map) */}
-        <MarketingCommercialSuite
-          variant="demographics"
-          partnerName={data.partner?.name || scopeName}
-          reportSlug={reportSlug}
-          totalFansEngaged={fanAppearances ?? registeredFans ?? summary.totalPhotos}
-          totalOptIns={resolvedOptIns}
-          totalRegistered={resolvedRegistered}
-          genders={currentGenders}
-          ageGroups={currentAgeGroups}
-          topEmotions={vision?.aggregates?.topEmotions || []}
-          venues={venues}
-          onViewTerritoryMap={onViewTerritoryMap}
-        />
-
-        {/* ACT 7: Sporting Context & Environmental Turnout Matrix (Executive Insights, Venue Capacities, Outcomes & Weather Correlation) */}
+        {/* ACT 5: Sporting Context & Environmental Turnout Matrix (Executive Insights, Venue Capacities, Outcomes & Weather Correlation) */}
         {isFanmass && data.matches && data.matches.length > 0 && (
           <SportsExecutiveInsights
             matches={data.matches}
@@ -717,67 +741,45 @@ export default function OverviewTab({
         </div>
       )}
 
-      {/* Executive Next-Activation Decisions Strip */}
-      {(() => {
-        const topBrand = [...filteredBrands].sort((a, b) => b.count - a.count)[0] ?? null;
-        const topMatch = topEvents[0] ?? null;
-        const topMatchShare =
-          topMatch && summary.totalPhotos > 0
-            ? Math.round((topMatch.submitted / summary.totalPhotos) * 1000) / 10
-            : null;
+      {/* Methodological Notes & Source Audit Footer */}
+      <div className={styles.bentoFooterLine}>
+        <p className={styles.gdsCaption}>
+          <strong>{scopeName || 'Messmass'}</strong> · Detection counts represent AI-recognized visual occurrences, not unique audience reach or confirmed revenue.
+        </p>
+        <button
+          type="button"
+          className={styles.bentoNotesBtn}
+          aria-expanded={notesOpen}
+          onClick={() => setNotesOpen((v) => !v)}
+        >
+          <span>Metric definitions</span>
+          <span>{notesOpen ? '−' : '+'}</span>
+        </button>
+      </div>
 
-        return (
-          <section className={styles.decisionsPanel} aria-label="Next activation decisions">
-            <div className={styles.decisionsIdentity}>
-              <span className={`${styles.decisionsKicker} ${styles.gdsEyebrow}`}>
-                NEXT ACTIVATION
-              </span>
-              <span className={`${styles.decisionsHeading} ${styles.gdsCardTitle}`}>
-                Decisions
-              </span>
-            </div>
-            <div className={styles.decisionList}>
-              <div className={styles.decisionItem}>
-                <div className={styles.gdsEyebrow}>COMMERCIAL · BRAND EXPOSURE</div>
-                <div className={styles.gdsCardTitle}>
-                  {topBrand ? `Review ${topBrand.brand} placement` : 'Run AI Vision brand scan'}
-                </div>
-                <div className={styles.gdsCaption}>
-                  {topBrand
-                    ? `${topBrand.count.toLocaleString()} AI-detected appearances${analyzedImages ? ` across ${analyzedImages.toLocaleString()} analyzed images` : ''}. Select the brand podium card to inspect sample frames.`
-                    : 'No commercial brand logos counted in this scope yet. Process event photos in AI Vision to quantify sponsor exposure.'}
-                </div>
-              </div>
-
-              <div className={styles.decisionItem}>
-                <div className={styles.gdsEyebrow}>EVENTS · PHOTO CONCENTRATION</div>
-                <div className={styles.gdsCardTitle}>
-                  {topMatch ? `Benchmark ${topMatch.cleanName}` : 'Capture fixture-level volume'}
-                </div>
-                <div className={styles.gdsCaption}>
-                  {topMatch
-                    ? `${topMatch.submitted.toLocaleString()} submitted photos${topMatchShare !== null ? ` (${topMatchShare}% of scope total)` : ''}. Open the fixture AI report to inspect peak fan activation.`
-                    : 'No fixture-level submitted photos recorded in this scope yet.'}
-                </div>
-              </div>
-
-              <div className={styles.decisionItem}>
-                <div className={styles.gdsEyebrow}>CONVERSION · OPT-IN FUNNEL</div>
-                <div className={styles.gdsCardTitle}>
-                  {summary.optInRate !== null && summary.totalRegistered > 0
-                    ? `${summary.optInRate}% marketing opt-in`
-                    : 'Track gate-to-opt-in funnel'}
-                </div>
-                <div className={styles.gdsCaption}>
-                  {summary.optInRate !== null && summary.totalRegistered > 0
-                    ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered fans opted in. Review the Conversion Funnel tab to isolate drop-off stages.`
-                    : `${summary.totalPhotos.toLocaleString()} total photos recorded in this scope. Connect registration and opt-in tracking to measure conversion.`}
-                </div>
-              </div>
-            </div>
-          </section>
-        );
-      })()}
+      {notesOpen && (
+        <aside className={styles.bentoNotesDrawer}>
+          <h3 className={styles.gdsCardTitle}>Source and measurement definitions</h3>
+          <ul className={styles.bentoNotesList}>
+            <li>
+              <strong>Analyzed images &amp; people detections:</strong>{' '}
+              {resolvedPhotosProcessed.toLocaleString()} photos processed
+              {fanAppearances !== null ? ` with ${fanAppearances.toLocaleString()} detected face/person appearances` : ''}.
+              People detections may include repeated appearances across frames.
+            </li>
+            <li>
+              <strong>Consent &amp; marketing opt-in denominators:</strong>{' '}
+              {resolvedRegistered > 0
+                ? `${resolvedOptIns.toLocaleString()} opt-ins out of ${resolvedRegistered.toLocaleString()} registered records.`
+                : `${resolvedOptIns.toLocaleString()} opt-ins recorded.`}
+            </li>
+            <li>
+              <strong>Sample-based visual classifications:</strong>{' '}
+              Gender and age distributions reflect AI-classified face samples in this scope and are not general stadium attendance demographics.
+            </li>
+          </ul>
+        </aside>
+      )}
     </div>
   );
 }

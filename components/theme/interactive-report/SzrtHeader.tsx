@@ -170,54 +170,61 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
         {fanmass ? (
           /* Fanmass figures only: what the local AI measured (lib/hashtagReport), n/a when nothing is measured */
           <div className={styles.kpiGrid}>
-            {[
-              {
-                label: 'Analysed Fan Photos',
-                value: vision?.processedCount ?? (fanmass.measured.drive.analysed + fanmass.measured.photos.analysed),
-                text: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} total photos` : null,
-              },
-              {
-                label: 'People Detected',
-                value: vision?.aggregates?.totalPeople ?? (fanmass.measured.drive.people + fanmass.measured.photos.people.measured),
-                text: null,
-              },
-              {
-                label: 'Brands Detected',
-                value: commercialBrands.length,
-                text: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
-              },
-              { label: 'Events', value: fanmass.coverage.events, text: null },
-            ].map((card) => (
-              <div key={card.label} className={styles.kpiCard}>
-                <span className={styles.kpiLabel}>{card.label}</span>
-                <span className={styles.kpiValue}>{card.value > 0 ? card.value.toLocaleString() : 'n/a'}</span>
-                {card.value > 0 && card.text && <span className={styles.kpiSubtext}>{card.text}</span>}
-              </div>
-            ))}
-            {optIn && (
-              <div className={styles.kpiCard}>
-                <span className={styles.kpiLabel}>PP, GTC & Image Rights</span>
-                <span className={styles.kpiValueHighlight}>{optIn.value !== null ? `${optIn.value}%` : 'Not measured'}</span>
-                {optIn.numerator !== null && optIn.denominator !== null && (
-                  <span className={styles.kpiSubtext}>{optIn.numerator.toLocaleString()} of {optIn.denominator.toLocaleString()} {optIn.basis}</span>
-                )}
-              </div>
-            )}
-            {vision?.marketingOptInImages !== undefined && (vision.optInImages ?? 0) > 0 && (
-              <div className={styles.kpiCard}>
-                <span className={styles.kpiLabel}>Marketing Opt-in</span>
-                <span className={styles.kpiValueHighlight}>
-                  {`${Math.round((vision.marketingOptInImages / (vision.optInImages || 1)) * 1000) / 10}%`}
-                </span>
-                <span className={styles.kpiSubtext}>
-                  {vision.marketingOptInImages.toLocaleString()} of {(vision.optInImages || 0).toLocaleString()} consented
-                </span>
-              </div>
-            )}
+            {(() => {
+              const photosVal = vision?.processedCount ?? (fanmass.measured.drive.analysed + fanmass.measured.photos.analysed);
+              const peopleVal = vision?.aggregates?.totalPeople ?? (fanmass.measured.drive.people + fanmass.measured.photos.people.measured);
+              const peoplePerPhoto = photosVal > 0 && peopleVal > 0 ? (peopleVal / photosVal).toFixed(2) : null;
+              const tileClasses = [styles.kpiTile1, styles.kpiTile2, styles.kpiTile3, styles.kpiTile4, styles.kpiTile5, styles.kpiTile6];
+              const cards: Array<{ label: string; valueText: string; subtext: string | null }> = [
+                {
+                  label: 'Analysed Fan Photos',
+                  valueText: photosVal > 0 ? photosVal.toLocaleString() : 'n/a',
+                  subtext: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} total photos` : null,
+                },
+                {
+                  label: 'People Detected',
+                  valueText: peopleVal > 0 ? peopleVal.toLocaleString() : 'n/a',
+                  subtext: peoplePerPhoto ? `${peoplePerPhoto} people / photo` : null,
+                },
+                {
+                  label: 'Brands Detected',
+                  valueText: commercialBrands.length > 0 ? commercialBrands.length.toLocaleString() : 'n/a',
+                  subtext: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
+                },
+                {
+                  label: 'Events',
+                  valueText: fanmass.coverage.events > 0 ? fanmass.coverage.events.toLocaleString() : 'n/a',
+                  subtext: `${data.matches?.length ?? fanmass.coverage.events} fixtures in scope`,
+                },
+              ];
+              if (optIn) {
+                cards.push({
+                  label: 'PP, GTC & Image Rights',
+                  valueText: optIn.value !== null ? `${optIn.value}%` : 'Not measured',
+                  subtext: optIn.numerator !== null && optIn.denominator !== null
+                    ? `${optIn.numerator.toLocaleString()} of ${optIn.denominator.toLocaleString()} ${optIn.basis}`
+                    : null,
+                });
+              }
+              if (vision?.marketingOptInImages !== undefined && (vision.optInImages ?? 0) > 0) {
+                cards.push({
+                  label: 'Marketing Opt-in',
+                  valueText: `${Math.round((vision.marketingOptInImages / (vision.optInImages || 1)) * 1000) / 10}%`,
+                  subtext: `${vision.marketingOptInImages.toLocaleString()} of ${(vision.optInImages || 0).toLocaleString()} consented`,
+                });
+              }
+              return cards.map((card, i) => (
+                <div key={card.label} className={`${styles.kpiCard} ${tileClasses[i % tileClasses.length]}`}>
+                  <span className={styles.kpiLabel}>{card.label}</span>
+                  <span className={styles.kpiValue}>{card.valueText}</span>
+                  {card.subtext && <span className={styles.kpiSubtext}>{card.subtext}</span>}
+                </div>
+              ));
+            })()}
           </div>
         ) : (
         <div className={styles.kpiGrid}>
-          <div className={styles.kpiCard}>
+          <div className={`${styles.kpiCard} ${styles.kpiTile1}`}>
             <span className={styles.kpiLabel}>Total Photos Taken</span>
             <span className={styles.kpiValue}>
               {summary.totalPhotos > 0 ? summary.totalPhotos.toLocaleString() : 'n/a'}
@@ -229,17 +236,17 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
             )}
           </div>
 
-          <div className={styles.kpiCard}>
+          <div className={`${styles.kpiCard} ${styles.kpiTile2}`}>
             <span className={styles.kpiLabel}>Fan Registrations</span>
             <span className={styles.kpiValue}>
               {summary.totalRegistered > 0 ? summary.totalRegistered.toLocaleString() : 'n/a'}
             </span>
           </div>
 
-          <div className={styles.kpiCard}>
+          <div className={`${styles.kpiCard} ${styles.kpiTile3}`}>
             <span className={styles.kpiLabel}>Marketing Opt-In</span>
             {/* The stored count is the figure; the rate is shown under it only when it can be derived from the stored counts */}
-            <span className={styles.kpiValueHighlight}>
+            <span className={styles.kpiValue}>
               {summary.totalOptIns > 0 ? summary.totalOptIns.toLocaleString() : 'n/a'}
             </span>
             {summary.optInRate !== null ? (
@@ -251,7 +258,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
             ) : null}
           </div>
 
-          <div className={styles.kpiCard}>
+          <div className={`${styles.kpiCard} ${styles.kpiTile4}`}>
             <span className={styles.kpiLabel}>Vetting Approval</span>
             <span className={styles.kpiValue}>
               {summary.vettingApprovalRate !== null ? `${summary.vettingApprovalRate}%` : 'n/a'}
@@ -261,7 +268,21 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
             )}
           </div>
 
-          <div className={styles.kpiCard}>
+          <div className={`${styles.kpiCard} ${styles.kpiTile5}`}>
+            <span className={styles.kpiLabel}>People / Photo</span>
+            <span className={styles.kpiValue}>
+              {vision && vision.processedCount > 0 && (vision.aggregates?.totalPeople ?? 0) > 0
+                ? ((vision.aggregates?.totalPeople ?? 0) / vision.processedCount).toFixed(2)
+                : 'n/a'}
+            </span>
+            {vision && (vision.aggregates?.totalPeople ?? 0) > 0 && (
+              <span className={styles.kpiSubtext}>
+                {(vision.aggregates?.totalPeople ?? 0).toLocaleString()} detected appearances
+              </span>
+            )}
+          </div>
+
+          <div className={`${styles.kpiCard} ${styles.kpiTile6}`}>
             <span className={styles.kpiLabel}>Events</span>
             <span className={styles.kpiValue}>
               {summary.totalMatches > 0 ? summary.totalMatches.toLocaleString() : 'n/a'}
