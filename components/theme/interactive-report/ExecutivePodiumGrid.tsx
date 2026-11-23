@@ -283,8 +283,7 @@ export default function ExecutivePodiumGrid({
           </div>
           <div className={styles.podiumHeaderActions}>
             <span
-              className={styles.podiumBadge}
-              style={{ background: '#dbeafe', color: '#1e40af' }}
+              className={`${styles.podiumBadge} ${styles.modalBadge}`}
             >
               Club Gear & Merch
             </span>

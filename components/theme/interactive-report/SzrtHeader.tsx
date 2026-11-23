@@ -122,7 +122,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                 <img
                   src={partner.logoUrl}
                   alt={titleText}
-                  style={{ width: '44px', height: '44px', objectFit: 'contain', borderRadius: '10px', background: 'rgba(255,255,255,0.92)', padding: '4px' }}
+                  className={styles.heroPartnerLogo}
                 />
               ) : (
                 emoji && <span className={styles.partnerEmoji}>{emoji}</span>

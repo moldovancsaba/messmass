@@ -50,7 +50,7 @@
   width: 8px;
   height: 8px;
   border-radius: var(--mm-radius-full, 9999px);
-  background: #03ad9f;
+  background: var(--report-accent, #03ad9f);
   display: inline-block;
   box-shadow: 0 0 0 2px rgba(27, 121, 223, 0.14);
 }
@@ -739,7 +739,7 @@
 .territoryBadge {
   font-size: 10px;
   font-weight: 800;
-  background: #03ad9f;
+  background: var(--report-accent, #03ad9f);
   color: #0a264e;
   padding: 2px 8px;
   border-radius: var(--mm-radius-full, 9999px);
@@ -765,7 +765,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: #03ad9f;
+  background: var(--report-accent, #03ad9f);
   color: #0a264e;
   padding: 10px 20px;
   border-radius: var(--mm-radius-md, 10px);
@@ -780,7 +780,7 @@
 }
 
 .territoryCtaBtn:hover {
-  background: #03ad9f;
+  background: var(--report-accent, #03ad9f);
   transform: translateY(-2px);
 }
 

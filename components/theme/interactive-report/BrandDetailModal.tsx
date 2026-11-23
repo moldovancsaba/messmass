@@ -6,6 +6,7 @@ import React, { useMemo } from 'react';
 import { getBrandCluster } from '@/lib/brandEntityClustering';
 import BrandEvidenceGallery from './BrandEvidenceGallery';
 import { findCameraProof, type CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
+import styles from './interactive-report.module.css';
 
 export interface BrandDetailStat {
   brand: string;
@@ -89,91 +90,39 @@ export default function BrandDetailModal({
     <div
       role="dialog"
       aria-modal="true"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(4px)',
-        zIndex: 9999,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '16px',
-      }}
+      className={styles.modalBackdrop}
       onClick={onClose}
     >
       <div
         role="document"
-        style={{
-          backgroundColor: '#ffffff',
-          borderRadius: '16px',
-          maxWidth: '800px',
-          width: '100%',
-          maxHeight: '90vh',
-          display: 'flex',
-          flexDirection: 'column',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          overflow: 'hidden',
-          border: '1px solid #e2e8f0',
-        }}
+        className={styles.modalDialog}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div
-          style={{
-            padding: '18px 24px',
-            borderBottom: '1px solid #e2e8f0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: '#f8fafc',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-            <div
-              style={{
-                width: '52px',
-                height: '52px',
-                borderRadius: '12px',
-                background: '#ffffff',
-                border: '1px solid #cbd5e1',
-                padding: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-              }}
-            >
+        <div className={styles.modalHeader}>
+          <div className={styles.modalHeaderLead}>
+            <div className={styles.modalHeaderThumb}>
               {brand.logoUrl ? (
                 <img
                   src={brand.logoUrl}
                   alt={brand.brand}
-                  style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+                  className={styles.modalEntityThumbImg}
                 />
               ) : (
-                <span style={{ fontSize: '24px' }}>🏷️</span>
+                <span className={styles.gdsSectionTitle}>🏷️</span>
               )}
             </div>
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0f2c4a' }}>
+              <div className={styles.modalTitleRow}>
+                <h3 className={styles.modalTitle}>
                   {brand.brand}
                 </h3>
-                <span
-                  style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    background: cluster.badgeBg,
-                    color: cluster.badgeColor,
-                    padding: '2px 8px',
-                    borderRadius: '9999px',
-                  }}
-                >
+                <span className={styles.modalBadge}>
                   {cluster.icon} {cluster.label}
                 </span>
               </div>
-              <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>
-                Computer Vision Identification • <strong>{brand.count.toLocaleString()}</strong> appearances
+              <div className={styles.modalSub}>
+                Computer Vision Identification • <strong className={styles.gdsNum}>{brand.count.toLocaleString()}</strong> appearances
               </div>
             </div>
           </div>
@@ -181,19 +130,7 @@ export default function BrandDetailModal({
           <button
             type="button"
             onClick={onClose}
-            style={{
-              background: '#f1f5f9',
-              border: 'none',
-              borderRadius: '8px',
-              width: '32px',
-              height: '32px',
-              cursor: 'pointer',
-              fontSize: '16px',
-              color: '#64748b',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
+            className={styles.modalCloseBtn}
             aria-label="Close brand modal"
           >
             ✕
@@ -201,68 +138,42 @@ export default function BrandDetailModal({
         </div>
 
         {/* Modal Body */}
-        <div style={{ padding: '20px 24px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {/* Context note */}
-          <div
-            style={{
-              background: '#eff6ff',
-              border: '1px solid #bfdbfe',
-              borderRadius: '10px',
-              padding: '12px 16px',
-              fontSize: '12px',
-              color: '#1e40af',
-              lineHeight: 1.5,
-            }}
-          >
+        <div className={styles.modalBodyScroll}>
+          <div className={styles.modalCallout}>
             💡 This brand was visually identified on fan attire, kit emblems, or venue gear in the analysed photos.
           </div>
 
           {/* Detection counts */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-              gap: '10px',
-            }}
-          >
-            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Detected Photos</div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#0f2c4a', marginTop: '2px' }}>
+          <div className={styles.modalStatGrid}>
+            <div className={styles.modalStatCard}>
+              <div className={styles.modalStatLabel}>Detected Photos</div>
+              <div className={`${styles.modalStatVal} ${styles.gdsNum}`}>
                 {brand.count.toLocaleString()}
               </div>
-              <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>Photos with this brand</div>
+              <div className={styles.modalStatSub}>Photos with this brand</div>
             </div>
 
-            <div style={{ background: '#f8fafc', padding: '12px 14px', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
-              <div style={{ fontSize: '11px', fontWeight: 600, color: '#64748b' }}>Photo Share</div>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: '#2563eb', marginTop: '2px' }}>
+            <div className={styles.modalStatCard}>
+              <div className={styles.modalStatLabel}>Photo Share</div>
+              <div className={`${styles.modalStatVal} ${styles.gdsNum}`}>
                 {photoShare === null ? 'n/a' : `${photoShare}%`}
               </div>
-              <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '2px' }}>Of all analysed photos</div>
+              <div className={styles.modalStatSub}>Of all analysed photos</div>
             </div>
           </div>
 
           {/* Sports in the sampled photos */}
           {sportBreakdown.length > 0 && (
             <div>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: 700, color: '#0f2c4a' }}>
+              <h4 className={styles.modalSectionHeading}>
                 🏆 Sports in the Sampled Photos ({matchingImages.length})
               </h4>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(110px, 1fr))', gap: '10px' }}>
+              <div className={styles.modalSportGrid}>
                 {sportBreakdown.map((s) => (
-                  <div
-                    key={s.sport}
-                    style={{
-                      background: '#f8fafc',
-                      border: '1px solid #e2e8f0',
-                      borderRadius: '8px',
-                      padding: '10px',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ fontSize: '18px', marginBottom: '2px' }}>{s.icon}</div>
-                    <div style={{ fontSize: '11px', fontWeight: 700, color: '#1e293b' }}>{s.sport}</div>
-                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#2563eb', marginTop: '2px' }}>
+                  <div key={s.sport} className={styles.modalSportCard}>
+                    <div className={styles.gdsSectionTitle}>{s.icon}</div>
+                    <div className={styles.modalStatLabel}>{s.sport}</div>
+                    <div className={`${styles.modalEntityCount} ${styles.gdsNum}`}>
                       {s.count} ({s.pct}%)
                     </div>
                   </div>
@@ -271,7 +182,7 @@ export default function BrandDetailModal({
             </div>
           )}
 
-          {/* Proof from the pictures: crops where the name was read, the box and how it was identified */}
+          {/* Proof from the pictures */}
           <BrandEvidenceGallery kind="brand" name={brand.brand} camera={findCameraProof(cameraProof, 'brand', brand.brand)} />
         </div>
       </div>
