@@ -346,12 +346,24 @@ export async function getScopedInteractiveReportData(
       (await db.collection('reportStyles').findOne({ _id: new ObjectId(String(resolvedStyleId)) }));
   }
 
-  // 3. Find partner name lookup
+  // 3. Find partner name & contracted sport lookup
   // Only the partner fields the report shows: name, badge, venue and sport come from a handful of them
   const allPartners = await db.collection('partners').find({}, { projection: PARTNER_LOOKUP_FIELDS }).toArray().catch(() => []);
   const partnerNameMap = new Map<string, string>();
+  const partnerSportMap = new Map<string, MatchItem['sport']>();
   for (const tp of allPartners) {
-    partnerNameMap.set(String(tp._id), tp.name);
+    const idStr = String(tp._id);
+    partnerNameMap.set(idStr, tp.name);
+    const sportHint =
+      (typeof tp.sportsDb?.strSport === 'string' && tp.sportsDb.strSport) ||
+      (typeof tp.sport === 'string' && tp.sport) ||
+      (Array.isArray(tp.sports) && typeof tp.sports[0] === 'string' && tp.sports[0]) ||
+      (Array.isArray(tp.categorizedHashtags?.sport) && typeof tp.categorizedHashtags.sport[0] === 'string' && tp.categorizedHashtags.sport[0]) ||
+      '';
+    const resolvedPartnerSport = detectSport(`${sportHint} ${tp.name || ''}`);
+    if (resolvedPartnerSport !== 'Other') {
+      partnerSportMap.set(idStr, resolvedPartnerSport);
+    }
   }
 
   // 4. Parse matches from markdown tables and individual projects
@@ -403,7 +415,13 @@ export async function getScopedInteractiveReportData(
       const hasVettingData = approvedCell !== null && submitted > 0;
       const approvalRate = hasVettingData ? Math.round((approved / submitted) * 100) : 0;
 
-      const sport = detectSport(`${rawMatchName} ${partnerName} ${venue}`);
+      let sport = detectSport(`${rawMatchName} ${partnerName} ${venue}`);
+      if (sport === 'Other') {
+        sport =
+          partnerSportMap.get(String(p.partner1Id)) ||
+          partnerSportMap.get(String(p.partner2Id)) ||
+          'Other';
+      }
 
       const cleanName = rawMatchName
 
@@ -508,8 +526,15 @@ export async function getScopedInteractiveReportData(
       if (sport === 'Other' && p.footballDataFixture) {
         sport = 'Football';
       }
+      if (sport === 'Other') {
+        sport =
+          partnerSportMap.get(String(p.partner1Id)) ||
+          partnerSportMap.get(String(p.partner2Id)) ||
+          'Other';
+      }
       if (sport === 'Other' && scopeType === 'partner' && partner) {
         const partnerSportHint =
+          (typeof partner.sportsDb?.strSport === 'string' && partner.sportsDb.strSport) ||
           (typeof partner.sport === 'string' && partner.sport) ||
           (Array.isArray(partner.sports) && typeof partner.sports[0] === 'string' && partner.sports[0]) ||
           (Array.isArray(partner.categorizedHashtags?.sport) && partner.categorizedHashtags.sport[0]) ||
@@ -1588,7 +1613,7 @@ export interface UniversalAggregateMetrics {
 const PARTNER_LOOKUP_FIELDS = Object.fromEntries([
   'name', 'emoji', 'logoUrl', 'logo', 'viewSlug',
   'sportsDb.strSport', 'sportsDb.strTeamBadge', 'sportsDb.badge', 'sportsDb.strStadium', 'sportsDb.intStadiumCapacity',
-  'sportsDb.venueCapacity', 'sportsDb.strWebsite', 'sportsDb.website', 'categorizedHashtags.sport',
+  'sportsDb.venueCapacity', 'sportsDb.strWebsite', 'sportsDb.website', 'categorizedHashtags.sport', 'sport', 'sports',
 ].map((field) => [field, 1]));
 
 /** The project fields getScopedInteractiveReportData reads. Every scope fetches nothing else: a full stats document of every project of a scope times the page out. */
