@@ -332,7 +332,50 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
 
   return (
     <div className={styles.suiteStack}>
-      {/* 1. Monthly Stadium Attendance Column + Fill % Trend Line Chart */}
+      {/* Tier 2 & 3: Photo Engagement & Crowd Composition First */}
+      {sportVisionStats.length > 1 && (
+        <article className={styles.bentoPanel}>
+          <header className={styles.bentoPanelHeader}>
+            <div className={styles.bentoPanelTitle}>
+              <span className={styles.bentoPanelIcon} aria-hidden="true">📸</span>
+              <h2 className={styles.gdsCardTitle}>Men vs. women in the crowd by sport</h2>
+            </div>
+            <span className={styles.bentoPanelStatus}>Primary: Male · Teal: Female</span>
+          </header>
+          <div className={styles.bentoPanelBody}>
+            <p className={styles.bentoBenefit}>
+              Compares gender balance and group size per photo across sports to guide sponsor targeting.
+            </p>
+            <svg viewBox={`0 0 ${880} ${sportVisionStats.length * 36 + 16}`} className={styles.svgChart} role="img" aria-label="Gender split by sport">
+              {sportVisionStats.map((row, idx) => {
+                const y = idx * 36 + 8;
+                const barX = 120;
+                const barMaxW = 480;
+                const maleW = (row.malePct / 100) * barMaxW;
+                const femaleW = Math.max(0, barMaxW - maleW);
+                return (
+                  <g key={row.sport}>
+                    <text x={0} y={y + 16} className={styles.svgValueLabel}>
+                      {row.sport}
+                    </text>
+                    <rect x={barX} y={y + 4} width={maleW} height={16} rx={3} className={styles.svgBarPrimary}>
+                      <title>{`${row.sport}: ${row.malePct}% Male`}</title>
+                    </rect>
+                    <rect x={barX + maleW} y={y + 4} width={femaleW} height={16} rx={3} className={styles.svgBarTeal}>
+                      <title>{`${row.sport}: ${row.femalePct}% Female`}</title>
+                    </rect>
+                    <text x={barX + barMaxW + 12} y={y + 16} className={styles.svgAxisText}>
+                      {row.malePct}% M / {row.femalePct}% F · {row.peoplePerPhoto} p/photo
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </article>
+      )}
+
+      {/* 1. Monthly Stadium Attendance Column + Seat Occupancy Trend Line Chart */}
       {monthlyStats.length > 0 && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
@@ -471,31 +514,30 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
         )}
       </div>
 
-      {/* Row B: Precipitation & Wind Chart + Sport Scatter/Bubble Plot */}
+      {/* Row B: Photo Engagement vs Seat Occupancy & Score Margin */}
       <div className={styles.bentoTwoCol}>
-        {weatherConditionsStats.length > 0 && (
+        {competitivenessStats.length > 0 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
-                <span className={styles.bentoPanelIcon} aria-hidden="true">🌧️</span>
-                <h2 className={styles.gdsCardTitle}>Rain &amp; wind impact on outdoor games</h2>
+                <span className={styles.bentoPanelIcon} aria-hidden="true">⚡</span>
+                <h2 className={styles.gdsCardTitle}>Do close games drive more photos?</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Outdoor fixtures</span>
+              <span className={styles.bentoPanelStatus}>Scored fixtures</span>
             </header>
             <div className={styles.bentoPanelBody}>
               <p className={styles.bentoBenefit}>
-                Measures how much rain or strong wind reduces outdoor attendance compared to dry matchdays.
+                Compares average fan photos in tight, nail-biting matches versus blowouts.
               </p>
               <ColumnChartSvg
-                data={weatherConditionsStats.map((r) => ({
+                data={competitivenessStats.map((r) => ({
                   label: r.label,
                   subLabel: `${r.count}m`,
-                  value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.count} outdoor matches)`,
+                  value: r.avgPhotos,
+                  tooltip: `${r.label}: ${r.avgPhotos.toLocaleString()} avg photos (${r.count} matches)`,
                 }))}
-                maxValue={100}
-                unitSuffix="%"
-                barClass={styles.svgBarTeal}
+                maxValue={Math.ceil(maxPhotoScore * 1.15)}
+                yTicks={[0, Math.round(maxPhotoScore * 0.5), Math.ceil(maxPhotoScore * 1.15)]}
               />
             </div>
           </article>
@@ -556,30 +598,31 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
         )}
       </div>
 
-      {/* Row C: Score Margin Chart + Venue Capacity Tier Chart */}
+      {/* Row C: Venue Capacity Tier + Background Weather Context */}
       <div className={styles.bentoTwoCol}>
-        {competitivenessStats.length > 0 && (
+        {weatherConditionsStats.length > 0 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
-                <span className={styles.bentoPanelIcon} aria-hidden="true">⚡</span>
-                <h2 className={styles.gdsCardTitle}>Do close games drive more photos?</h2>
+                <span className={styles.bentoPanelIcon} aria-hidden="true">🌧️</span>
+                <h2 className={styles.gdsCardTitle}>Rain &amp; wind impact on outdoor games</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Scored fixtures</span>
+              <span className={styles.bentoPanelStatus}>Outdoor fixtures</span>
             </header>
             <div className={styles.bentoPanelBody}>
               <p className={styles.bentoBenefit}>
-                Compares average fan photos in tight, nail-biting matches versus blowouts.
+                Measures how much rain or strong wind reduces outdoor attendance compared to dry matchdays.
               </p>
               <ColumnChartSvg
-                data={competitivenessStats.map((r) => ({
+                data={weatherConditionsStats.map((r) => ({
                   label: r.label,
                   subLabel: `${r.count}m`,
-                  value: r.avgPhotos,
-                  tooltip: `${r.label}: ${r.avgPhotos.toLocaleString()} avg photos (${r.count} matches)`,
+                  value: r.avgFill,
+                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.count} outdoor matches)`,
                 }))}
-                maxValue={Math.ceil(maxPhotoScore * 1.15)}
-                yTicks={[0, Math.round(maxPhotoScore * 0.5), Math.ceil(maxPhotoScore * 1.15)]}
+                maxValue={100}
+                unitSuffix="%"
+                barClass={styles.svgBarTeal}
               />
             </div>
           </article>
@@ -613,49 +656,6 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           </article>
         )}
       </div>
-
-      {/* Row D: Sport Gender Split 100% Stacked Bar Chart */}
-      {sportVisionStats.length > 1 && (
-        <article className={styles.bentoPanel}>
-          <header className={styles.bentoPanelHeader}>
-            <div className={styles.bentoPanelTitle}>
-              <span className={styles.bentoPanelIcon} aria-hidden="true">📸</span>
-              <h2 className={styles.gdsCardTitle}>Men vs. women in the crowd by sport</h2>
-            </div>
-            <span className={styles.bentoPanelStatus}>Primary: Male · Teal: Female</span>
-          </header>
-          <div className={styles.bentoPanelBody}>
-            <p className={styles.bentoBenefit}>
-              Compares gender balance and group size per photo across sports to guide sponsor targeting.
-            </p>
-            <svg viewBox={`0 0 880 ${sportVisionStats.length * 36 + 16}`} className={styles.svgChart} role="img" aria-label="Gender split by sport">
-              {sportVisionStats.map((row, idx) => {
-                const y = idx * 36 + 8;
-                const barX = 120;
-                const barMaxW = 480;
-                const maleW = (row.malePct / 100) * barMaxW;
-                const femaleW = Math.max(0, barMaxW - maleW);
-                return (
-                  <g key={row.sport}>
-                    <text x={0} y={y + 16} className={styles.svgValueLabel}>
-                      {row.sport}
-                    </text>
-                    <rect x={barX} y={y + 4} width={maleW} height={16} rx={3} className={styles.svgBarPrimary}>
-                      <title>{`${row.sport}: ${row.malePct}% Male`}</title>
-                    </rect>
-                    <rect x={barX + maleW} y={y + 4} width={femaleW} height={16} rx={3} className={styles.svgBarTeal}>
-                      <title>{`${row.sport}: ${row.femalePct}% Female`}</title>
-                    </rect>
-                    <text x={barX + barMaxW + 12} y={y + 16} className={styles.svgAxisText}>
-                      {row.malePct}% M / {row.femalePct}% F · {row.peoplePerPhoto} p/photo
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
-        </article>
-      )}
     </div>
   );
 }

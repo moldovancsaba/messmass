@@ -885,10 +885,10 @@ export default function ChartLibraryShowcase({
             {(
               [
                 { id: 'all', label: 'All Insights' },
+                { id: 'brands', label: 'Brands & Audience' },
                 { id: 'events', label: 'Events & Photos' },
                 { id: 'attendance', label: 'Attendance & Venues' },
-                { id: 'weather', label: 'Weather & Sports' },
-                { id: 'brands', label: 'Brands & Audience' },
+                { id: 'weather', label: 'Weather' },
               ] as const
             ).map((tab) => (
               <button
@@ -906,7 +906,51 @@ export default function ChartLibraryShowcase({
         </header>
       </div>
 
-      {/* Events & Photo Volume */}
+      {/* Tier 1 & 2: Brands, Merch & Audience */}
+      {showBrands && (
+        <>
+          <div className={styles.bentoTwoCol}>
+            {brands.length > 0 && (
+              <EChartsPanel
+                title="Share of sponsor brand visibility"
+                icon="🏷️"
+                status={`Top ${Math.min(18, brands.length)} brands`}
+                description="Shows each commercial brand's share of total logo detections—useful for sponsor tiering and pitch decks."
+                option={treemapOption}
+              />
+            )}
+            {clubs.length > 0 && (
+              <EChartsPanel
+                title="Team merch &amp; jersey share"
+                icon="🌹"
+                status={`Top ${Math.min(8, clubs.length)} clubs`}
+                description="Compares which clubs' jerseys and scarves fans wear most often in the stands."
+                option={roseOption}
+              />
+            )}
+          </div>
+          <div className={styles.bentoTwoCol}>
+            {ageGroups && (ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors) > 0 && (
+              <ChartJsPanel
+                title="Age groups in the crowd"
+                icon="🧭"
+                description="Breaks down kids, teens, adults, and seniors so sponsors can match products to the actual crowd."
+                config={agePolarConfig}
+              />
+            )}
+            {emotions.length > 0 && (
+              <ChartJsPanel
+                title="How fans feel in photos"
+                icon="😊"
+                description="Measures happiness, excitement, and calm expressions so you can prove positive brand sentiment."
+                config={emotionDoughnutConfig}
+              />
+            )}
+          </div>
+        </>
+      )}
+
+      {/* Tier 2 & 3: Events & Photo Volume */}
       {showEvents && (
         <>
           {eventsWithPhotos.length > 0 && (
@@ -941,7 +985,7 @@ export default function ChartLibraryShowcase({
         </>
       )}
 
-      {/* Attendance & Venues */}
+      {/* Tier 3: Attendance & Venues */}
       {showAttendance && (
         <>
           {matches.some((m) => (m.attendance ?? 0) > 0) && (
@@ -1001,7 +1045,7 @@ export default function ChartLibraryShowcase({
         </>
       )}
 
-      {/* Weather & Sports */}
+      {/* Tier 4: Background Weather Context (Lowest Priority) */}
       {showWeather && (
         <>
           {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
@@ -1044,50 +1088,6 @@ export default function ChartLibraryShowcase({
                 icon="🫧"
                 description="Shows whether warmer matchdays bring bigger crowds and larger fan photo volumes (bubble size)."
                 config={bubbleConfig}
-              />
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Brands & Audience */}
-      {showBrands && (
-        <>
-          <div className={styles.bentoTwoCol}>
-            {brands.length > 0 && (
-              <EChartsPanel
-                title="Share of sponsor brand visibility"
-                icon="🏷️"
-                status={`Top ${Math.min(18, brands.length)} brands`}
-                description="Shows each commercial brand's share of total logo detections—useful for sponsor tiering and pitch decks."
-                option={treemapOption}
-              />
-            )}
-            {clubs.length > 0 && (
-              <EChartsPanel
-                title="Team merch &amp; jersey share"
-                icon="🌹"
-                status={`Top ${Math.min(8, clubs.length)} clubs`}
-                description="Compares which clubs' jerseys and scarves fans wear most often in the stands."
-                option={roseOption}
-              />
-            )}
-          </div>
-          <div className={styles.bentoTwoCol}>
-            {ageGroups && (ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors) > 0 && (
-              <ChartJsPanel
-                title="Age groups in the crowd"
-                icon="🧭"
-                description="Breaks down kids, teens, adults, and seniors so sponsors can match products to the actual crowd."
-                config={agePolarConfig}
-              />
-            )}
-            {emotions.length > 0 && (
-              <ChartJsPanel
-                title="How fans feel in photos"
-                icon="😊"
-                description="Measures happiness, excitement, and calm expressions so you can prove positive brand sentiment."
-                config={emotionDoughnutConfig}
               />
             )}
           </div>

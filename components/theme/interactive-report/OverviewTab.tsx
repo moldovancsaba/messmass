@@ -593,10 +593,6 @@ export default function OverviewTab({
           </div>
         )}
 
-        {scopedMatches.some((m) => m.weather && m.attendance) && (
-          <WeatherTurnoutCorrelationMatrix matches={scopedMatches} />
-        )}
-
         {scopedMatches.length > 0 && (
           <>
             <MatchdayAnalyticsSuite matches={scopedMatches} vision={vision} />
@@ -609,6 +605,10 @@ export default function OverviewTab({
               accentColor={accentColor}
             />
           </>
+        )}
+
+        {scopedMatches.some((m) => m.weather && m.attendance) && (
+          <WeatherTurnoutCorrelationMatrix matches={scopedMatches} />
         )}
       </div>
 
