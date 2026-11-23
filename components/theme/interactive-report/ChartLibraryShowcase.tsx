@@ -510,10 +510,19 @@ export default function ChartLibraryShowcase({
     [monthlySeries, partnerPalette]
   );
 
-  // 9. Chart.js: Sport Performance Radar
+  // 9. Chart.js: Sport Performance Radar (only meaningful for multi-sport scopes)
+  const radarSportCount = useMemo(() => {
+    const set = new Set<string>();
+    for (const m of matches) {
+      if (m.sport && m.sport !== 'Other') set.add(m.sport);
+    }
+    return set.size;
+  }, [matches]);
+
   const radarConfig = useMemo<ChartConfiguration>(() => {
     const bySport = new Map<string, { n: number; fillSum: number; fillN: number; att: number; photos: number; homeWins: number; scored: number }>();
     for (const m of matches) {
+      if (!m.sport || m.sport === 'Other') continue;
       const cur = bySport.get(m.sport) ?? { n: 0, fillSum: 0, fillN: 0, att: 0, photos: 0, homeWins: 0, scored: 0 };
       cur.n += 1;
       cur.att += m.attendance || 0;
@@ -1000,11 +1009,13 @@ export default function ChartLibraryShowcase({
             )}
           </div>
           <div className={styles.bentoTwoCol}>
-            <ChartJsPanel
-              title="Multi-axis sport performance radar"
-              icon="🕸️"
-              config={radarConfig}
-            />
+            {radarSportCount >= 2 && (
+              <ChartJsPanel
+                title="Multi-axis sport performance radar"
+                icon="🕸️"
+                config={radarConfig}
+              />
+            )}
             {matches.some((m) => m.weather) && (
               <ChartJsPanel
                 title="Temperature × fill % × photo volume"

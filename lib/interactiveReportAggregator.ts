@@ -172,9 +172,33 @@ export function detectSport(text: string): MatchItem['sport'] {
     combined.includes('labdarugo') ||
     combined.includes('futball') ||
     combined.includes('football') ||
-    combined.includes('soccer')
+    combined.includes('soccer') ||
+    combined.includes('fizz liga') ||
+    combined.includes('otp bank liga') ||
+    combined.includes('nb i') ||
+    combined.includes('nb1') ||
+    combined.includes('magyar kupa') ||
+    combined.includes('mtk') ||
+    combined.includes('kisvárda') ||
+    combined.includes('kisvarda') ||
+    combined.includes('paks') ||
+    combined.includes('zalaegerszeg') ||
+    combined.includes('nyíregyháza') ||
+    combined.includes('nyiregyhaza') ||
+    combined.includes('kecskemét') ||
+    combined.includes('kecskemet')
   ) {
     return 'Football';
+  }
+  const franchise = getFranchiseInfo(text);
+  if (
+    franchise &&
+    (franchise.sport === 'Football' ||
+      franchise.sport === 'Ice Hockey' ||
+      franchise.sport === 'Basketball' ||
+      franchise.sport === 'Handball')
+  ) {
+    return franchise.sport;
   }
   return 'Other';
 }
@@ -478,7 +502,31 @@ export async function getScopedInteractiveReportData(
       const hasVettingData = approved > 0;
       const rejected = toCount(s.rejectedImages) || (hasVettingData ? Math.max(0, submitted - approved) : 0);
 
-      const sport = detectSport(`${p.eventName} ${partnerName}`);
+      let sport = detectSport(
+        `${p.eventName} ${partnerName} ${p.competition || ''} ${Array.isArray(p.hashtags) ? p.hashtags.join(' ') : ''}`
+      );
+      if (sport === 'Other' && p.footballDataFixture) {
+        sport = 'Football';
+      }
+      if (sport === 'Other' && scopeType === 'partner' && partner) {
+        const partnerSportHint =
+          (typeof partner.sport === 'string' && partner.sport) ||
+          (Array.isArray(partner.sports) && typeof partner.sports[0] === 'string' && partner.sports[0]) ||
+          (Array.isArray(partner.categorizedHashtags?.sport) && partner.categorizedHashtags.sport[0]) ||
+          partner.name ||
+          '';
+        const inferred = detectSport(partnerSportHint);
+        if (inferred !== 'Other') sport = inferred;
+      }
+
+      const partnerRole: 'home' | 'away' | undefined =
+        scopeType === 'partner' && partner?._id
+          ? (String(p.partner1Id || p.partner1 || '') === String(partner._id)
+              ? 'home'
+              : String(p.partner2Id || p.partner2 || '') === String(partner._id)
+                ? 'away'
+                : undefined)
+          : undefined;
       if (hasVettingData) vettedMatchKeys.add(key);
 
       const rawKickoff =
@@ -498,6 +546,7 @@ export async function getScopedInteractiveReportData(
         date,
         ...(kickoffTime ? { kickoffTime } : {}),
         partnerName,
+        ...(partnerRole ? { partnerRole } : {}),
         venue: p.venue?.name || s.venueName || '',
         venueCapacity: venueCap,
         attendance: matchAtt,
@@ -527,6 +576,22 @@ export async function getScopedInteractiveReportData(
   }
 
   const matchesList = Array.from(matchesMap.values()).sort((a, b) => b.submitted - a.submitted);
+
+  // Contracted partners operate per sport: turn any 'Other' matches into the partner's primary sport
+  if (scopeType === 'partner' && matchesList.length > 0) {
+    const sportCounts = new Map<MatchItem['sport'], number>();
+    for (const m of matchesList) {
+      if (m.sport !== 'Other') {
+        sportCounts.set(m.sport, (sportCounts.get(m.sport) || 0) + 1);
+      }
+    }
+    const dominantSport = Array.from(sportCounts.entries()).sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (dominantSport) {
+      for (const m of matchesList) {
+        if (m.sport === 'Other') m.sport = dominantSport;
+      }
+    }
+  }
 
   // 5. Build timeline periods (the SZRT campaign's cycles; the global report draws its own months below)
   const campaignTimeline: TimelinePeriod[] = campaignProjects

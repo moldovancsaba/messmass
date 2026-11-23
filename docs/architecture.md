@@ -164,7 +164,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 42 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
-| `components/theme/interactive-report/types.ts` | 22 | 252 |
+| `components/theme/interactive-report/types.ts` | 22 | 253 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 146 |
 | `lib/report-calculator.ts` | 19 | 995 |

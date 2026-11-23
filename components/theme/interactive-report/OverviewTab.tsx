@@ -132,11 +132,29 @@ export default function OverviewTab({
 
   // Active sport filter state for Executive View drill-down
   const [selectedSport, setSelectedSport] = useState<string>('all');
+  const [partnerMatchScope, setPartnerMatchScope] = useState<'home' | 'all'>('home');
   const [selectedClubForModal, setSelectedClubForModal] = useState<ClubPodiumStat | null>(null);
   const [selectedBrandForModal, setSelectedBrandForModal] = useState<CommercialBrandStat | null>(null);
   const [isAllBrandsOpen, setIsAllBrandsOpen] = useState(false);
   const [isAllClubsOpen, setIsAllClubsOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
+
+  const isPartnerScope = data.scope?.type === 'partner';
+  const { homeMatches, awayMatches, hasPartnerHomeAllSplit, scopedMatches } = useMemo(() => {
+    const all = data.matches || [];
+    if (!isPartnerScope || all.length === 0) {
+      return { homeMatches: all, awayMatches: [] as typeof all, hasPartnerHomeAllSplit: false, scopedMatches: all };
+    }
+    const home = all.filter((m) => m.partnerRole !== 'away');
+    const away = all.filter((m) => m.partnerRole === 'away');
+    const hasSplit = home.length > 0 && away.length > 0;
+    return {
+      homeMatches: home,
+      awayMatches: away,
+      hasPartnerHomeAllSplit: hasSplit,
+      scopedMatches: hasSplit && partnerMatchScope === 'home' ? home : all,
+    };
+  }, [data.matches, isPartnerScope, partnerMatchScope]);
 
   // Selected period override if active
   const activePeriod = selectedPeriodId ? timeline.find((t) => t.id === selectedPeriodId) : null;
@@ -348,10 +366,10 @@ export default function OverviewTab({
           </div>
         ) : null}
 
-        {/* ACT 2: 12-Column Executive Bento Grid */}
+        {/* ACT 2: Top Where the Money Is — Executive Bento (Photos, Demographics, Emotions, Brands, Clubs) + Commercial & Media Valuation */}
         <ExecutiveBentoGrid
           scopeName={scopeName}
-          eventsCount={summary.totalMatches > 0 ? summary.totalMatches : (data.matches?.length ?? 0)}
+          eventsCount={summary.totalMatches > 0 ? summary.totalMatches : (scopedMatches.length)}
           totalPhotos={summary.totalPhotos}
           analyzedImages={analyzedImages}
           fanAppearances={fanAppearances}
@@ -376,6 +394,16 @@ export default function OverviewTab({
           onViewAllClubs={() => setIsAllClubsOpen(true)}
           onViewFunnel={onViewFunnel}
           onViewTerritoryMap={onViewTerritoryMap}
+        />
+
+        <MessmassAlgorithmsSuite
+          data={data}
+          fanAppearances={fanAppearances}
+          resolvedOptIns={resolvedOptIns}
+          resolvedPhotosProcessed={resolvedPhotosProcessed}
+          resolvedCtaClicks={resolvedCtaClicks}
+          clubsCountSum={filteredClubs.reduce((s, c) => s + c.count, 0)}
+          primaryColor={primaryColor}
         />
 
         {/* ACT 3: Executive Next-Activation Decisions Strip */}
@@ -440,21 +468,25 @@ export default function OverviewTab({
           );
         })()}
 
-        {/* ACT 3: Analyzed Events & Direct Event AI Report Links */}
-        {isFanmass && data.matches && data.matches.length > 0 && (
+        {/* ACT 3: Analyzed Events & Partner HOME vs ALL Comparison */}
+        {isFanmass && scopedMatches.length > 0 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">📋</span>
-                <h2 className={styles.gdsCardTitle}>Analyzed fixtures &amp; event reports ({data.matches.length})</h2>
+                <h2 className={styles.gdsCardTitle}>
+                  {hasPartnerHomeAllSplit && partnerMatchScope === 'home'
+                    ? `Home fixtures & event reports (${scopedMatches.length})`
+                    : `Analyzed fixtures & event reports (${scopedMatches.length})`}
+                </h2>
               </div>
-              {onViewMatches && data.matches.length > 8 && (
+              {onViewMatches && scopedMatches.length > 8 && (
                 <button
                   type="button"
                   onClick={onViewMatches}
                   className={styles.actionLinkBtn}
                 >
-                  View All {data.matches.length} Events →
+                  View All {scopedMatches.length} Events →
                 </button>
               )}
             </header>
@@ -472,7 +504,7 @@ export default function OverviewTab({
                   </tr>
                 </thead>
                 <tbody>
-                  {[...data.matches]
+                  {[...scopedMatches]
                     .sort((a, b) => (b.submitted ?? 0) - (a.submitted ?? 0) || (b.attendance ?? 0) - (a.attendance ?? 0))
                     .slice(0, 8)
                     .map((m, idx) => {
@@ -513,7 +545,29 @@ export default function OverviewTab({
           </article>
         )}
 
-        {/* ACT 5: Sporting Context & Environmental Turnout Matrix (Executive Insights, Venue Capacities, Outcomes & Weather Correlation) */}
+        {/* ACT 5: Sporting Context, HOME vs ALL Split & General Statistics (Weather, Trends, Deep-Dive Charts) */}
+        {hasPartnerHomeAllSplit && (
+          <div className={`${styles.executiveCard} ${styles.gdsRowBetween}`}>
+            <span className={styles.gdsEyebrow}>Fixture Scope (Home Primary vs. All incl. Team 2)</span>
+            <div className={styles.gdsRow}>
+              <button
+                type="button"
+                onClick={() => setPartnerMatchScope('home')}
+                className={`${styles.sportFilterBtn} ${partnerMatchScope === 'home' ? styles.sportFilterBtnActive : ''}`}
+              >
+                🏠 Home Only ({homeMatches.length})
+              </button>
+              <button
+                type="button"
+                onClick={() => setPartnerMatchScope('all')}
+                className={`${styles.sportFilterBtn} ${partnerMatchScope === 'all' ? styles.sportFilterBtnActive : ''}`}
+              >
+                🏟️ All incl. Team 2 ({(data.matches || []).length})
+              </button>
+            </div>
+          </div>
+        )}
+
         {isFanmass && data.matches && data.matches.length > 0 && (
           <SportsExecutiveInsights
             matches={data.matches}
@@ -525,29 +579,29 @@ export default function OverviewTab({
           />
         )}
 
-        {(data.matchdayAnalytics || (data.matches && data.matches.length > 0)) && (
+        {(data.matchdayAnalytics || scopedMatches.length > 0) && (
           <div className={styles.bentoTwoCol}>
-            <StadiumCapacityChart matches={data.matches} analytics={data.matchdayAnalytics} />
-            {data.scope?.type !== 'event' && (data.matches?.length ?? 0) > 1 && (
+            <StadiumCapacityChart matches={scopedMatches} analytics={partnerMatchScope === 'home' && hasPartnerHomeAllSplit ? undefined : data.matchdayAnalytics} />
+            {data.scope?.type !== 'event' && scopedMatches.length > 1 && (
               <MatchOutcomesChart
-                matches={data.matches}
+                matches={scopedMatches}
                 scopeType={data.scope?.type}
                 partnerName={data.partner?.name || scopeName}
-                analytics={data.matchdayAnalytics}
+                analytics={partnerMatchScope === 'home' && hasPartnerHomeAllSplit ? undefined : data.matchdayAnalytics}
               />
             )}
           </div>
         )}
 
-        {data.matches && data.matches.some((m) => m.weather && m.attendance) && (
-          <WeatherTurnoutCorrelationMatrix matches={data.matches} />
+        {scopedMatches.some((m) => m.weather && m.attendance) && (
+          <WeatherTurnoutCorrelationMatrix matches={scopedMatches} />
         )}
 
-        {data.matches && data.matches.length > 0 && (
+        {scopedMatches.length > 0 && (
           <>
-            <MatchdayAnalyticsSuite matches={data.matches} vision={vision} />
+            <MatchdayAnalyticsSuite matches={scopedMatches} vision={vision} />
             <ChartLibraryShowcase
-              matches={data.matches}
+              matches={scopedMatches}
               vision={vision}
               brands={filteredBrands}
               clubs={filteredClubs}
@@ -556,16 +610,6 @@ export default function OverviewTab({
             />
           </>
         )}
-
-        <MessmassAlgorithmsSuite
-          data={data}
-          fanAppearances={fanAppearances}
-          resolvedOptIns={resolvedOptIns}
-          resolvedPhotosProcessed={resolvedPhotosProcessed}
-          resolvedCtaClicks={resolvedCtaClicks}
-          clubsCountSum={filteredClubs.reduce((s, c) => s + c.count, 0)}
-          primaryColor={primaryColor}
-        />
       </div>
 
       {/* Connected Selfies Modal (Launched when any club in the podium or list is clicked) */}
