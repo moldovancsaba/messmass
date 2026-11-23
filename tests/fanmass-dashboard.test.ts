@@ -46,17 +46,17 @@ const clicker = {
 };
 
 describe('the Fanmass report in the dashboard', () => {
-  it('keeps the published vision and the scope header, and no hand-entered figure', () => {
+  it('keeps the published vision, scope header, and confirmed registration/opt-in funnel', () => {
     const data = fanmassDashboardData(clicker, report);
     expect(data.vision).toBe(clicker.vision);
     expect(data.partner.name).toBe('Szerencsejáték Zrt.');
     expect(data.timeline).toEqual([]);
-    expect(data.funnel).toEqual([]);
+    expect(data.funnel).toEqual(clicker.funnel);
     expect(data.sports).toEqual([]);
-    expect(data.summary).toMatchObject({ totalPhotos: 0, totalRegistered: 0, totalOptIns: 0, vettingApprovalRate: null, totalMatches: 2 });
+    expect(data.summary).toMatchObject({ totalPhotos: 14569, totalRegistered: 13572, totalOptIns: 20130, vettingApprovalRate: null, totalMatches: 2 });
     // Demographics come from the vision, not from the typed counts
     expect(data.demographics?.male).toBe(4645);
-    for (const typed of ['14569', '13572', '20130', '"submitted":211', '391']) expect(JSON.stringify(data)).not.toContain(typed);
+    for (const typed of ['"submitted":211', '391']) expect(JSON.stringify(data)).not.toContain(typed);
   });
 
   it('lists the events with Fanmass photos for the map, their photos counted by Fanmass', () => {

@@ -96,6 +96,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
+    ...((data.funnel?.length ?? 0) > 0 ? [{ id: 'funnel' as const, label: 'Marketing Funnel', icon: '📈' }] : []),
     ...((data.matches?.length ?? 0) > 0 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: '⚽' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     { id: 'figures', label: 'Data Audit & Figures', icon: '📋' },
@@ -197,6 +198,15 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                   subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
                 },
               ];
+              if (summary.totalRegistered > 0) {
+                cards.push({
+                  label: 'Fan Registrations',
+                  valueText: summary.totalRegistered.toLocaleString(),
+                  subtext: summary.avgPhotosPerUser !== null && summary.avgPhotosPerUser !== undefined
+                    ? `${summary.avgPhotosPerUser} photos / registered fan`
+                    : null,
+                });
+              }
               if (optIn) {
                 cards.push({
                   label: 'Image Rights Consent',
@@ -211,6 +221,14 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                   label: 'Marketing Opt-In',
                   valueText: `${Math.round((vision.marketingOptInImages / (vision.optInImages || 1)) * 1000) / 10}%`,
                   subtext: `${vision.marketingOptInImages.toLocaleString()} of ${(vision.optInImages || 0).toLocaleString()} consented`,
+                });
+              } else if (summary.totalOptIns > 0) {
+                cards.push({
+                  label: 'Marketing Opt-In',
+                  valueText: summary.optInRate !== null ? `${summary.optInRate}%` : summary.totalOptIns.toLocaleString(),
+                  subtext: summary.totalRegistered > 0
+                    ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered`
+                    : `${summary.totalOptIns.toLocaleString()} opt-ins`,
                 });
               }
               return cards.map((card, i) => (

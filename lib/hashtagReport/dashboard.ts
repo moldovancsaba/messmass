@@ -243,14 +243,20 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
       : { type: report.scope.type === 'all' ? 'global' : report.scope.type, id: report.scope.id, name: label },
     partner: base?.partner ?? { id: '', name: label, viewSlug: '', emoji: '📊' },
     style: base?.style ?? { name: 'default', heroBackground: '', pieColor1: '', pieColor2: '' },
-    summary: {
-      ...EMPTY_SUMMARY,
-      totalMatches: report.coverage.events,
-    },
+    summary: base?.summary
+      ? {
+          ...base.summary,
+          vettingApprovalRate: null,
+          totalMatches: report.coverage.events,
+        }
+      : {
+          ...EMPTY_SUMMARY,
+          totalMatches: report.coverage.events,
+        },
     timeline: [],
     matches: mergedMatches,
     sports: [],
-    funnel: [],
+    funnel: base?.funnel ?? [],
     demographics: buildDemographicsFromVision(vision),
     vision,
     matchdayAnalytics,
