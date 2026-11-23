@@ -33,7 +33,7 @@ function clean(str: string): string {
 /**
  * Resolves venue details from match name (e.g. "MTK x ETO FC Győr" -> home team is MTK -> Új Hidegkuti Nándor Stadion).
  */
-export function resolveVenueFromMatch(matchName: string, explicitVenue?: string): VenueInfo {
+export function resolveVenueFromMatch(matchName: string, explicitVenue?: string): VenueInfo | null {
   if (explicitVenue) {
     const cleanVenue = clean(explicitVenue);
     for (const v of VENUES) {
@@ -132,16 +132,8 @@ export function resolveVenueFromMatch(matchName: string, explicitVenue?: string)
     if (matchesAlias) return v;
   }
 
-  // Default fallback if unknown: generic national venue
-  return {
-    id: 'generic-venue',
-    name: explicitVenue || 'Városi Stadion',
-    city: 'Magyarország',
-    capacity: 5000,
-    isIndoor: matchName.toLowerCase().includes('basket') || matchName.toLowerCase().includes('handball'),
-    primarySport: 'Football',
-    coordinates: { lat: 47.4979, lon: 19.0402 },
-  };
+  // Never fabricate a generic venue or capacity when unknown
+  return null;
 }
 
 export function getAllVenues(): VenueInfo[] {

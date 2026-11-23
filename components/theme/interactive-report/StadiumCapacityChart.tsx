@@ -25,12 +25,13 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
       totalAttendance: number;
       totalPhotos: number;
       eventsCount: number;
+      sport?: MatchItem['sport'];
       sampleWeather?: MatchItem['weather'];
     }>();
 
     for (const m of matches) {
-      const vName = m.venue || 'Városi Stadion';
-      if (!m.venueCapacity || m.venueCapacity <= 0) continue;
+      const vName = m.venue?.trim();
+      if (!vName || !m.venueCapacity || m.venueCapacity <= 0) continue;
 
       const existing = map.get(vName);
       if (existing) {
@@ -45,6 +46,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
           capacity: m.venueCapacity,
           cumulativeCapacity: m.venueCapacity,
           isIndoor: Boolean(m.weather?.isIndoor),
+          sport: m.sport,
           totalAttendance: m.attendance || 0,
           totalPhotos: m.submitted || 0,
           eventsCount: 1,
@@ -91,7 +93,16 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
               <div key={v.name} className={styles.bentoVenueRow}>
                 <div className={styles.bentoVenueHead}>
                   <span className={styles.gdsBody}>
-                    {v.isIndoor ? '🏟️' : '⚽'} <strong>{v.name}</strong>
+                    {v.sport === 'Basketball'
+                      ? '🏀'
+                      : v.sport === 'Ice Hockey'
+                        ? '🏒'
+                        : v.sport === 'Handball'
+                          ? '🤾'
+                          : v.isIndoor
+                            ? '🏟️'
+                            : '⚽'}{' '}
+                    <strong>{v.name}</strong>
                     {v.eventsCount > 1 && (
                       <span className={styles.gdsCaption}> · {v.eventsCount} events</span>
                     )}

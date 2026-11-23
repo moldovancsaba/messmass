@@ -449,7 +449,14 @@ export async function getScopedInteractiveReportData(
     const cleanName = p.eventName.replace(/^[⚽ððð¤¾ð¸\s]+/, '').replace(/#/g, ' vs ').trim();
     const key = `${p.eventName.toLowerCase().replace(/[^a-z0-9]/g, '')}__${date}`;
 
-    const venueCap = p.venue?.capacity || (s.stadiumCapacity && s.stadiumCapacity !== 5000 ? s.stadiumCapacity : undefined);
+    const isGenericVenue =
+      p.venue?.id === 'generic-venue' ||
+      (p.venue?.name === 'Városi Stadion' && p.venue?.capacity === 5000) ||
+      (s.venueName === 'Városi Stadion' && s.stadiumCapacity === 5000);
+    const venueName = isGenericVenue ? '' : (p.venue?.name || s.venueName || '');
+    const venueCap = isGenericVenue
+      ? undefined
+      : (p.venue?.capacity || (s.stadiumCapacity && s.stadiumCapacity !== 5000 ? s.stadiumCapacity : undefined));
     const rawAtt = p.match?.attendance || s.eventAttendees;
     // Physical Invariant: attendance cannot exceed venue capacity (+10% standing allowance)
     const matchAtt = (rawAtt && venueCap && rawAtt <= venueCap * 1.1)
@@ -536,7 +543,7 @@ export async function getScopedInteractiveReportData(
         ...(kickoffTime ? { kickoffTime } : {}),
         partnerName,
         ...(partnerRole ? { partnerRole } : {}),
-        venue: p.venue?.name || s.venueName || '',
+        venue: venueName,
         venueCapacity: venueCap,
         attendance: matchAtt,
         homeScore: s.eventResultHome ?? p.match?.homeScore ?? null,

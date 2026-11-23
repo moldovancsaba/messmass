@@ -154,7 +154,8 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
     const date = dateMatch ? dateMatch[0].replace(/\./g, '-') : '2025-08-15';
 
     const isSynthetic = name.includes('Statisztika') || name.includes('AI Analytics');
-    const venue = resolveVenueFromMatch(name);
+    const venue = isSynthetic ? null : resolveVenueFromMatch(name);
+    if (!venue) continue;
 
     // Check existing or override score
     const override = FIXTURE_OVERRIDES[name] || {};
@@ -168,11 +169,8 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
       visitorScore = Number(p.stats.eventResultVisitor);
     }
 
-    // Attendance
-    let attendance = override.attendance || (p.stats?.eventAttendees ? Number(p.stats.eventAttendees) : 0);
-    if (!attendance && !isSynthetic && venue.capacity > 0) {
-      attendance = Math.round(venue.capacity * 0.45); // realistic conservative fill fallback
-    }
+    // Attendance (only use recorded attendance; never invent a 45% fallback)
+    const attendance = override.attendance || (p.stats?.eventAttendees ? Number(p.stats.eventAttendees) : 0);
 
     const outcome = determineOutcome(homeScore, visitorScore);
     if (outcome === 'home_win') homeWins++;
@@ -184,7 +182,7 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
       totalAttendanceSum += attendance;
     }
 
-    // Weather retrieval
+    // Weather retrieval (only store real API weather; never store fallback weather)
     let weatherData: any = null;
     if (!isSynthetic && venue.coordinates) {
       try {
@@ -196,17 +194,7 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
           isIndoor: venue.isIndoor,
         });
       } catch {
-        // Fallback
-        weatherData = {
-          tempC: 18.0,
-          condition: venue.isIndoor ? 'Indoor Arena' : 'Fair',
-          weatherCode: 1,
-          precipitationMm: 0,
-          windKmh: 10,
-          isIndoor: venue.isIndoor,
-          source: 'fallback',
-          recordedAt: `${date}T17:00:00`,
-        };
+        weatherData = null;
       }
     }
 
