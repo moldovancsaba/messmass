@@ -3078,6 +3078,18 @@
   min-height: 58px;
 }
 
+.bentoTwoCol .bentoBenefit {
+  min-height: 42px;
+}
+
+.bentoGrid .bentoPanelHeader {
+  min-height: 68px;
+}
+
+.bentoTwoCol .bentoPanelHeader {
+  min-height: 62px;
+}
+
 .bentoFootnote {
   font-size: 11px;
   line-height: 1.4;
@@ -3623,7 +3635,11 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 13px;
-  align-items: start;
+  align-items: stretch;
+}
+
+.bentoTwoCol > .bentoPanel {
+  height: 100%;
 }
 
 .bentoVenueRow {
@@ -4247,6 +4263,10 @@
   .bentoTwoCol {
     grid-template-columns: 1fr;
   }
+  .bentoTwoCol .bentoBenefit,
+  .bentoTwoCol .bentoPanelHeader {
+    min-height: unset;
+  }
   .bentoGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -4268,6 +4288,10 @@
 @media (max-width: 670px) {
   .bentoGrid {
     grid-template-columns: 1fr;
+  }
+  .bentoGrid .bentoBenefit,
+  .bentoGrid .bentoPanelHeader {
+    min-height: unset;
   }
   .bentoAudience,
   .bentoActivation,
