@@ -278,7 +278,7 @@ export default function MessmassAlgorithmsSuite({
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🔗</span>
-                <h2 className={styles.gdsCardTitle}>Digital touchpoints &amp; clicker ROI</h2>
+                <h2 className={styles.gdsCardTitle}>Digital touchpoints &amp; referral traffic</h2>
               </div>
               <span className={styles.bentoPanelStatus}>Portal &amp; Bitly traffic</span>
             </header>
