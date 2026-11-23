@@ -341,7 +341,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
               <h2 className={styles.gdsCardTitle}>Monthly attendance &amp; stadium fill</h2>
             </div>
             <span className={styles.bentoPanelStatus}>
-              Bars: Attendance · Line: Fill % ({monthlyStats.length} months)
+              Bars: Attendance · Line: Seat Occupancy % ({monthlyStats.length} months)
             </span>
           </header>
           <div className={styles.bentoPanelBody}>
@@ -395,7 +395,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
               )}
               {trendPoints.map((p) => (
                 <circle key={p.label} cx={p.cx} cy={p.cy} r={4} className={styles.svgTrendDot}>
-                  <title>{`${p.label}: ${p.avgFill}% avg fill rate`}</title>
+                  <title>{`${p.label}: ${p.avgFill}% avg seat occupancy`}</title>
                 </circle>
               ))}
             </svg>
@@ -425,7 +425,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                   label: r.label,
                   subLabel: `${r.matches}m`,
                   value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg fill (${r.avgAttendance.toLocaleString()} avg gate across ${r.matches} matches)`,
+                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg gate across ${r.matches} matches)`,
                 }))}
                 maxValue={100}
                 unitSuffix="%"
@@ -461,7 +461,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                   label: r.label,
                   subLabel: `${r.matches}m`,
                   value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg fill (${r.avgAttendance.toLocaleString()} avg attendance, ${r.matches} matches)`,
+                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg attendance, ${r.matches} matches)`,
                 }))}
                 maxValue={100}
                 unitSuffix="%"
@@ -491,7 +491,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                   label: r.label,
                   subLabel: `${r.count}m`,
                   value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg fill (${r.count} outdoor matches)`,
+                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.count} outdoor matches)`,
                 }))}
                 maxValue={100}
                 unitSuffix="%"
@@ -528,7 +528,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                 })}
                 <line x1={42} y1={160} x2={424} y2={160} className={styles.svgAxisLine} />
                 <text x={233} y={185} textAnchor="middle" className={styles.svgAxisText}>
-                  Avg Stadium Fill Rate (0% → 100%)
+                  Avg Stadium Seat Occupancy (0% → 100%)
                 </text>
                 {sportStats.map((row, idx) => {
                   const cx = 42 + (row.avgFill / 100) * 370;
@@ -603,7 +603,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                   label: r.label,
                   subLabel: `${r.count}m`,
                   value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg fill (${r.count} matches)`,
+                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.count} matches)`,
                 }))}
                 maxValue={100}
                 unitSuffix="%"

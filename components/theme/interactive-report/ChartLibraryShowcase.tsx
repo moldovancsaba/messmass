@@ -354,7 +354,7 @@ export default function ChartLibraryShowcase({
         formatter: (params: unknown) => {
           const p = params as { value?: [number, number, number] };
           if (!p.value) return '';
-          return `${months[p.value[0]]} · ${DAY_LABELS[DAY_ORDER[p.value[1]]]}: ${p.value[2]}% avg fill`;
+          return `${months[p.value[0]]} · ${DAY_LABELS[DAY_ORDER[p.value[1]]]}: ${p.value[2]}% avg seat occupancy`;
         },
       },
       grid: { left: 48, right: 20, top: 14, bottom: 76 },
@@ -550,7 +550,7 @@ export default function ChartLibraryShowcase({
     return {
       type: 'radar',
       data: {
-        labels: ['Avg Fill %', 'Home Win %', 'Match Share %', 'Photo Density (scaled)', 'Attendance Share %'],
+        labels: ['Seat Occupancy %', 'Home Win %', 'Match Share %', 'Photo Density (scaled)', 'Attendance Share %'],
         datasets: sports.map(([sport, v], idx) => {
           const avgFill = v.fillN > 0 ? Math.round(v.fillSum / v.fillN) : 0;
           const hwPct = v.scored > 0 ? Math.round((v.homeWins / v.scored) * 100) : 0;
@@ -672,7 +672,7 @@ export default function ChartLibraryShowcase({
         maintainAspectRatio: false,
         scales: {
           x: { title: { display: true, text: 'Temperature (°C)' } },
-          y: { min: 0, max: 100, title: { display: true, text: 'Fill Rate (%)' } },
+          y: { min: 0, max: 100, title: { display: true, text: 'Stadium Seat Occupancy (%)' } },
         },
       },
     };
@@ -855,7 +855,7 @@ export default function ChartLibraryShowcase({
         { dim: 0, name: 'Temp °C' },
         { dim: 1, name: 'Capacity' },
         { dim: 2, name: 'Attendance' },
-        { dim: 3, name: 'Fill %', max: 100 },
+        { dim: 3, name: 'Seat Occupancy %', max: 100 },
         { dim: 4, name: 'Photos' },
       ],
       series: {
@@ -1008,7 +1008,7 @@ export default function ChartLibraryShowcase({
             <EChartsPanel
               title="Match profile: weather, seats &amp; photos"
               icon="🧬"
-              status="Temp · Capacity · Attendance · Fill % · Photos"
+              status="Temp · Capacity · Attendance · Seat Occupancy % · Photos"
               description="Connects temperature, stadium size, turnout, and photo counts to show what conditions produce peak matchdays."
               option={parallelOption}
             />
@@ -1017,7 +1017,7 @@ export default function ChartLibraryShowcase({
             <EChartsPanel
               title="Attendance range by sport"
               icon="📦"
-              description="Shows the typical, peak, and lowest stadium fill rates so you can benchmark consistency."
+              description="Shows the typical, peak, and lowest stadium seat occupancy so you can benchmark consistency."
               option={boxplotOption}
             />
             {matches.some((m) => m.weather && !m.weather.isIndoor) && (
@@ -1034,13 +1034,13 @@ export default function ChartLibraryShowcase({
               <ChartJsPanel
                 title="Sport-by-sport performance comparison"
                 icon="🕸️"
-                description="Compares fill rate, win rate, and photo density across sports to show where activation performs best."
+                description="Compares stadium seat occupancy, win rate, and photo density across sports to show where activation performs best."
                 config={radarConfig}
               />
             )}
             {matches.some((m) => m.weather) && (
               <ChartJsPanel
-                title="Temperature, fill rate &amp; photo volume"
+                title="Temperature, seat occupancy &amp; photo volume"
                 icon="🫧"
                 description="Shows whether warmer matchdays bring bigger crowds and larger fan photo volumes (bubble size)."
                 config={bubbleConfig}

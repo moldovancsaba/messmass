@@ -163,7 +163,7 @@ export default function WeatherTurnoutCorrelationMatrix({
 
       {/* Interactive Scatter Canvas */}
       <div className={styles.weatherCanvas}>
-        <div className={styles.weatherYLabel}>Fill %</div>
+        <div className={styles.weatherYLabel}>Seat Occupancy %</div>
         {[100, 75, 50, 25, 0].map((tick) => {
           const topPct = (1 - tick / 100) * 72 + 18;
           return (

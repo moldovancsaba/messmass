@@ -62,7 +62,7 @@ export default function AudienceInvolvementFunnel({
       title: 'Actual Gate Attendance',
       icon: '🎟️',
       value: att,
-      conversionFromPrev: `${fillRate}% Fill Rate`,
+      conversionFromPrev: `${fillRate}% Seat Occupancy`,
       conversionDetail: `${Math.round(100 - fillRate)}% Unoccupied Seats`,
       badgeText: `${fillRate}% Utilization`,
       description: 'Official ticketed gate turnout recorded by venues & leagues',

@@ -75,7 +75,7 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
           <h2 className={styles.gdsCardTitle}>How full are the stadiums?</h2>
         </div>
         <span className={styles.bentoPanelStatus}>
-          Avg fill {avgFill}% · {totalCap.toLocaleString()} seats
+          Avg seat occupancy {avgFill}% · {totalCap.toLocaleString()} seats
         </span>
       </header>
 

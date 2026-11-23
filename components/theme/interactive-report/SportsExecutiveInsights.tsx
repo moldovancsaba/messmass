@@ -172,7 +172,7 @@ export default function SportsExecutiveInsights({
                   {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
                 </div>
                 <div className={styles.gdsCaption}>
-                  {insights.homeFillPct}% avg fill • <strong>{insights.homeRecord}</strong>
+                  {insights.homeFillPct}% avg seat occupancy • <strong>{insights.homeRecord}</strong>
                 </div>
               </div>
 
@@ -192,7 +192,7 @@ export default function SportsExecutiveInsights({
                   {insights.allAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
                 </div>
                 <div className={styles.gdsCaption}>
-                  {insights.allFillPct}% avg fill • <strong>{insights.allRecord}</strong>
+                  {insights.allFillPct}% avg seat occupancy • <strong>{insights.allRecord}</strong>
                 </div>
               </div>
             </div>
@@ -224,7 +224,7 @@ export default function SportsExecutiveInsights({
                   {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
                 </div>
                 <div className={styles.gdsCaption}>
-                  {insights.homeFillPct}% avg fill • <strong>{insights.homeRecord}</strong>
+                  {insights.homeFillPct}% avg seat occupancy • <strong>{insights.homeRecord}</strong>
                 </div>
               </div>
             )}

@@ -176,7 +176,7 @@ export default function ExecutiveHeroKpis({
         key: 'gate-attendance',
         label: 'Gate Attendance',
         value: matchdayAnalytics.totalGateAttendance.toLocaleString(),
-        subtext: `${matchdayAnalytics.avgCapacityUtilization}% average stadium fill rate`,
+        subtext: `${matchdayAnalytics.avgCapacityUtilization}% average stadium seat occupancy`,
         icon: '🎟️',
         iconBackground: '#eff6ff',
         iconColor: '#2563eb',
