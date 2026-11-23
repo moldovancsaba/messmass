@@ -174,7 +174,7 @@ export default function ExecutiveHeroKpis({
     if (matchdayAnalytics.totalGateAttendance > 0) {
       cards.push({
         key: 'gate-attendance',
-        label: 'Gate Attendance',
+        label: 'Attendance',
         value: matchdayAnalytics.totalGateAttendance.toLocaleString(),
         subtext: `${matchdayAnalytics.avgCapacityUtilization}% average stadium seat occupancy`,
         icon: '🎟️',
@@ -185,9 +185,9 @@ export default function ExecutiveHeroKpis({
     if (matchdayAnalytics.avgVisualCaptureRate > 0) {
       cards.push({
         key: 'visual-capture',
-        label: 'Visual Capture Rate',
+        label: 'Photo Participation Rate',
         value: `${matchdayAnalytics.avgVisualCaptureRate}%`,
-        subtext: 'Fans on photo vs actual turnstiles',
+        subtext: 'People in photos vs. attendance',
         icon: '📸',
         iconBackground: '#fdf2f8',
         iconColor: '#db2777',

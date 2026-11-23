@@ -167,7 +167,7 @@ export default function WeatherTurnoutCorrelationMatrix({
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {climateBands.indoor.avgFill}%
               </strong>
-              <span className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</span>
+              <span className={styles.gdsCaption}>{climateBands.indoor.count} indoor matches</span>
             </div>
           )}
         </div>
@@ -266,7 +266,7 @@ export default function WeatherTurnoutCorrelationMatrix({
             <span className={`${styles.weatherLegendDot} ${styles.weatherLegendDotIndoor}`} /> Indoor Arena
           </span>
         </div>
-        <span className={styles.gdsCaption}>Hover or focus any plot point for fixture turnout details</span>
+        <span className={styles.gdsCaption}>Hover or focus any plot point for match attendance details</span>
       </div>
       </div>
     </article>

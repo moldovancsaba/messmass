@@ -136,7 +136,7 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">👥</span>
-            <h2 className={styles.gdsCardTitle}>Who is in the crowd</h2>
+            <h2 className={styles.gdsCardTitle}>Audience Demographics</h2>
           </div>
           <span className={styles.bentoPanelStatus}>
             {genderTotal > 0 ? `${genderTotal.toLocaleString()} faces` : 'No face sample'}
@@ -220,10 +220,10 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">📈</span>
-            <h2 className={styles.gdsCardTitle}>Fan journey: seat to opt-in</h2>
+            <h2 className={styles.gdsCardTitle}>Fan Journey: Attendance to Opt-In</h2>
           </div>
           <span className={styles.bentoPanelStatus}>
-            {eventsCount > 0 ? `${eventsCount} ${eventsCount === 1 ? 'event' : 'events'}` : 'Scope'}
+            {eventsCount > 0 ? `${eventsCount} ${eventsCount === 1 ? 'match' : 'matches'}` : 'Scope'}
           </span>
         </header>
         <div className={styles.bentoPanelBody}>
@@ -253,7 +253,7 @@ export default function ExecutiveBentoGrid({
                   <span className={styles.bentoFunnelTitle}>Photo audience</span>
                   <span className={styles.bentoFunnelSub}>
                     {stage2Val > 0 && totalGateAttendance > 0
-                      ? `${Math.round((stage2Val / totalGateAttendance) * 1000) / 10}% visual capture`
+                      ? `${Math.round((stage2Val / totalGateAttendance) * 1000) / 10}% photo participation`
                       : 'Detected fans'}
                   </span>
                 </div>
@@ -332,7 +332,7 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">🛡️</span>
-            <h2 className={styles.gdsCardTitle}>Photo rights &amp; consent</h2>
+            <h2 className={styles.gdsCardTitle}>Image Rights Consent</h2>
           </div>
           <span className={styles.bentoPanelStatus}>
             {hasVetting ? 'Moderation' : 'Consent check'}
@@ -403,7 +403,7 @@ export default function ExecutiveBentoGrid({
               {resolvedCtaClicks > 0 && (
                 <div className={styles.bentoConsentRow}>
                   <div className={styles.bentoConsentHead}>
-                    <span className={styles.gdsCardTitle}>Digital CTA Clicks</span>
+                    <span className={styles.gdsCardTitle}>Link Clicks</span>
                     <strong className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
                       {resolvedCtaClicks.toLocaleString()}
                     </strong>
@@ -428,7 +428,7 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">🏆</span>
-            <h2 className={styles.gdsCardTitle}>Most visible brands &amp; clubs</h2>
+            <h2 className={styles.gdsCardTitle}>Sponsor Brands &amp; Clubs</h2>
           </div>
           {sortedBrands.length > 0 && sortedClubs.length > 0 && (
             <div className={styles.bentoToggle} role="tablist" aria-label="Ranking type">
@@ -549,7 +549,7 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">📍</span>
-            <h2 className={styles.gdsCardTitle}>Indoor vs. outdoor &amp; mood</h2>
+            <h2 className={styles.gdsCardTitle}>Venue Type &amp; Fan Sentiment</h2>
           </div>
           <button type="button" onClick={onViewTerritoryMap} className={styles.actionLinkBtn}>
             Map →
@@ -613,9 +613,9 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">📊</span>
-            <h2 className={styles.gdsCardTitle}>Top sponsor brands in photos</h2>
+            <h2 className={styles.gdsCardTitle}>Sponsor Brand Visibility</h2>
           </div>
-          <span className={styles.bentoPanelStatus}>Visible logos</span>
+          <span className={styles.bentoPanelStatus}>Brand exposures</span>
         </header>
         <div className={styles.bentoPanelBody}>
           <p className={styles.bentoBenefit}>
@@ -677,7 +677,7 @@ export default function ExecutiveBentoGrid({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">🛍️</span>
-            <h2 className={styles.gdsCardTitle}>Team gear &amp; merch worn</h2>
+            <h2 className={styles.gdsCardTitle}>Team Merchandise</h2>
           </div>
         </header>
         <div className={styles.bentoPanelBody}>

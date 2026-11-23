@@ -216,13 +216,13 @@ function D3LollipopPanel({
           <span className={styles.bentoPanelIcon} aria-hidden="true">🎯</span>
           <h3 className={styles.gdsCardTitle}>Best matches for photo engagement</h3>
         </div>
-        <span className={styles.bentoPanelStatus}>Top 12 fixtures</span>
+        <span className={styles.bentoPanelStatus}>Top 12 matches</span>
       </header>
       <div className={styles.bentoPanelBody}>
         <p className={styles.bentoBenefit}>
-          Highlights which fixtures generated the most fan photos per 1,000 attendees so you can repeat what worked.
+          Highlights which matches generated the most fan photos per 1,000 attendees so you can repeat what worked.
         </p>
-        <svg ref={svgRef} className={styles.svgChart} role="img" aria-label="D3 lollipop chart of fixture photo capture rate" />
+        <svg ref={svgRef} className={styles.svgChart} role="img" aria-label="Chart of match photo participation rate" />
       </div>
     </article>
   );
@@ -678,7 +678,7 @@ export default function ChartLibraryShowcase({
       data: {
         datasets: [
           {
-            label: 'Fixtures (size = fan photos)',
+            label: 'Matches (size = fan photos)',
             data: pts,
             backgroundColor: partnerPalette.primarySoft,
             borderColor: partnerPalette.primary,
@@ -994,7 +994,7 @@ export default function ChartLibraryShowcase({
               <EChartsPanel
                 title="Photo breakdown by sport &amp; match"
                 icon="☀️"
-                description="Groups fan photos by sport and fixture so you can see which competitions contribute the most."
+                description="Groups fan photos by sport and match so you can see which competitions contribute the most."
                 option={sportSunburstOption}
               />
             )}
@@ -1010,7 +1010,7 @@ export default function ChartLibraryShowcase({
             <EChartsPanel
               title="How attendance flows across venues &amp; results"
               icon="🔀"
-              status="Gate turnout flow"
+              status="Attendance flow"
               description="Traces how total ticketed fans split between indoor/outdoor venues, sports, and match outcomes."
               option={attendanceSankeyOption}
               tall

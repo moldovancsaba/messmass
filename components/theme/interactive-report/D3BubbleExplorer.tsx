@@ -205,7 +205,7 @@ export default function D3BubbleExplorer({ matches, onSelectMatch }: D3BubbleExp
               </div>
             </div>
             <div className={styles.tooltipFooter}>
-              <span>Brand Protection Pass:</span>
+              <span>Image Rights Consent:</span>
               <strong className={styles.valApproved}>{hoveredMatch.approvalRate}%</strong>
             </div>
           </div>

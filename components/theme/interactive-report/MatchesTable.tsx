@@ -125,16 +125,16 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
           <thead>
             <tr className={styles.tableHeadRow}>
               <th className={styles.thCell}>Sport</th>
-              <th className={styles.thCell}>Event / Match</th>
+              <th className={styles.thCell}>Match</th>
               <th
                 onClick={() => handleSort('date')}
                 className={styles.thSortable}
               >
                 Date {sortBy === 'date' ? (sortDesc ? '↓' : '↑') : ''}
               </th>
-              <th className={styles.thCell}>Venue & Capacity</th>
+              <th className={styles.thCell}>Venue &amp; Capacity</th>
               <th className={styles.thCell}>Result</th>
-              <th className={styles.thCell}>Gate Attendance</th>
+              <th className={styles.thCell}>Attendance</th>
               <th className={styles.thCell}>Weather</th>
                 <th
                   onClick={() => handleSort('submitted')}

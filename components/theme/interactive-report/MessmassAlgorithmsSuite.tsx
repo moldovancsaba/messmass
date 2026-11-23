@@ -167,44 +167,44 @@ export default function MessmassAlgorithmsSuite({
           </p>
           <div className={styles.bentoFourCol}>
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Crowd captured in photos</span>
+              <span className={styles.gdsEyebrow}>Photo Participation Rate</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {fanEngagementPct !== null ? `${fanEngagementPct}%` : 'n/a'}
               </strong>
               <span className={styles.gdsCaption}>
                 {fanEngagementPct !== null
-                  ? `${fanAppearances?.toLocaleString()} fans / ${totalGate.toLocaleString()} gate`
-                  : 'Requires gate attendance'}
+                  ? `${fanAppearances?.toLocaleString()} fans / ${totalGate.toLocaleString()} attendance`
+                  : 'Requires attendance'}
               </span>
             </div>
 
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Merch wearers vs. casuals</span>
+              <span className={styles.gdsEyebrow}>Merchandise Wearers vs. Casual Fans</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {frontRunnersPct !== null ? `${frontRunnersPct}% / ${casualsPct}%` : 'n/a'}
               </strong>
               <span className={styles.gdsCaption}>
                 {frontRunnersPct !== null
-                  ? `${merchedFans.toLocaleString()} merched vs. ${Math.max(0, totalFansBase - merchedFans).toLocaleString()} casual`
+                  ? `${merchedFans.toLocaleString()} wearing merch vs. ${Math.max(0, totalFansBase - merchedFans).toLocaleString()} casual`
                   : 'No merchandise detections'}
               </span>
             </div>
 
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Estimated loyal fanbase</span>
+              <span className={styles.gdsEyebrow}>Estimated Core Fanbase</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {coreFanTeamProjection !== null ? coreFanTeamProjection.toLocaleString() : 'n/a'}
               </strong>
               <span className={styles.gdsCaption}>
                 {coreFanTeamProjection !== null
-                  ? 'Projected merched attendees (sample-based)'
-                  : 'Requires merch & gate counts'}
+                  ? 'Projected merchandise-wearing attendees'
+                  : 'Requires merch & attendance'}
               </span>
             </div>
 
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>
-                {fanaticalsPct !== null ? 'Super-fan share' : 'Under-60 crowd share'}
+                {fanaticalsPct !== null ? 'Die-Hard Supporters' : 'Under-60 Audience Share'}
               </span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {fanaticalsPct !== null
@@ -259,7 +259,7 @@ export default function MessmassAlgorithmsSuite({
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">💶</span>
-                <h2 className={styles.gdsCardTitle}>Estimated sponsor &amp; media value</h2>
+                <h2 className={styles.gdsCardTitle}>Estimated Media Value (EMV)</h2>
               </div>
               <span className={styles.bentoPanelStatus}>
                 €{totalModelledEur.toLocaleString()} estimated total
@@ -284,9 +284,9 @@ export default function MessmassAlgorithmsSuite({
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🔗</span>
-                <h2 className={styles.gdsCardTitle}>Online clicks &amp; QR traffic</h2>
+                <h2 className={styles.gdsCardTitle}>Digital Engagement</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Links &amp; QR scans</span>
+              <span className={styles.bentoPanelStatus}>Link Clicks &amp; QR Scans</span>
             </header>
             <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
               <p className={styles.bentoBenefit}>
@@ -294,14 +294,14 @@ export default function MessmassAlgorithmsSuite({
               </p>
               <div className={styles.bentoTwoCol}>
                 <div className={styles.bentoSummaryStat}>
-                  <span className={styles.gdsEyebrow}>Fan interaction rate</span>
+                  <span className={styles.gdsEyebrow}>Engagement Rate</span>
                   <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                     {fanInteractionPct !== null ? `${fanInteractionPct}%` : 'n/a'}
                   </strong>
-                  <span className={styles.gdsCaption}>Social + CTA clicks / photos</span>
+                  <span className={styles.gdsCaption}>Social + link clicks / photos</span>
                 </div>
                 <div className={styles.bentoSummaryStat}>
-                  <span className={styles.gdsEyebrow}>Modelled CPM &amp; branding</span>
+                  <span className={styles.gdsEyebrow}>Estimated CPM &amp; Branding</span>
                   <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                     €{((cpmValue ?? 0) + (brandingValue ?? 0)).toLocaleString()}
                   </strong>

@@ -65,14 +65,14 @@ export default function AudienceInvolvementFunnel({
       conversionFromPrev: `${fillRate}% Seat Occupancy`,
       conversionDetail: `${Math.round(100 - fillRate)}% Unoccupied Seats`,
       badgeText: `${fillRate}% Utilization`,
-      description: 'Official ticketed gate turnout recorded by venues & leagues',
+      description: 'Official ticketed attendance recorded by venues & leagues',
     },
     {
       id: 'photos',
       title: 'Detected Photo Audience',
       icon: '📸',
       value: photo,
-      conversionFromPrev: `${captureRate}% Visual Capture`,
+      conversionFromPrev: `${captureRate}% Photo Participation`,
       conversionDetail: `from ${totalPhotosProcessed.toLocaleString()} analyzed photos`,
       badgeText: `${captureRate}% Exposure`,
       description: 'Total fan appearances detected across analyzed matchday photos',
@@ -169,7 +169,7 @@ export default function AudienceInvolvementFunnel({
 
       {/* Summary Narrative Callout */}
       <div className={`${styles.gdsFooterNote} ${styles.gdsCaption}`}>
-        💡 <strong>Executive Summary:</strong> Across {eventCount} matchday fixtures, the nominal venue footprint of{' '}
+        💡 <strong>Executive Summary:</strong> Across {eventCount} matches, the total venue capacity of{' '}
         <strong className={styles.gdsNum}>{totalVenueCapacity.toLocaleString()} seats</strong> yielded{' '}
         <strong className={styles.gdsNum}>{totalGateAttendance.toLocaleString()} attendees</strong> ({fillRate}% utilization). Photographic sampling
         captured <strong className={styles.gdsNum}>{totalPeopleDetected.toLocaleString()} fan exposures</strong> ({captureRate}% visual reach),

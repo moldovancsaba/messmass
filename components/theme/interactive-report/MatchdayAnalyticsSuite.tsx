@@ -469,7 +469,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                 label: r.label,
                 subLabel: `${r.matches}m`,
                 value: r.avgFill,
-                tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg gate across ${r.matches} matches)`,
+                tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg attendance across ${r.matches} matches)`,
               }))}
               maxValue={100}
               unitSuffix="%"
@@ -517,7 +517,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                 <span className={styles.bentoPanelIcon} aria-hidden="true">⚡</span>
                 <h2 className={styles.gdsCardTitle}>Do close games drive more photos?</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Scored fixtures</span>
+              <span className={styles.bentoPanelStatus}>Scored matches</span>
             </header>
             <div className={styles.bentoPanelBody}>
               <p className={styles.bentoBenefit}>
@@ -601,7 +601,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🌧️</span>
                 <h2 className={styles.gdsCardTitle}>Rain &amp; wind impact on outdoor games</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Outdoor fixtures</span>
+              <span className={styles.bentoPanelStatus}>Outdoor matches</span>
             </header>
             <div className={styles.bentoPanelBody}>
               <p className={styles.bentoBenefit}>

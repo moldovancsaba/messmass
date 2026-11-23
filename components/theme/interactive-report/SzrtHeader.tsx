@@ -177,29 +177,29 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
               const tileClasses = [styles.kpiTile1, styles.kpiTile2, styles.kpiTile3, styles.kpiTile4, styles.kpiTile5, styles.kpiTile6];
               const cards: Array<{ label: string; valueText: string; subtext: string | null }> = [
                 {
-                  label: 'Analysed Fan Photos',
+                  label: 'Fan Photos',
                   valueText: photosVal > 0 ? photosVal.toLocaleString() : 'n/a',
-                  subtext: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} total photos` : null,
+                  subtext: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} analyzed photos` : null,
                 },
                 {
-                  label: 'People Detected',
+                  label: 'People in Photos',
                   valueText: peopleVal > 0 ? peopleVal.toLocaleString() : 'n/a',
                   subtext: peoplePerPhoto ? `${peoplePerPhoto} people / photo` : null,
                 },
                 {
-                  label: 'Brands Detected',
+                  label: 'Sponsor Brands',
                   valueText: commercialBrands.length > 0 ? commercialBrands.length.toLocaleString() : 'n/a',
                   subtext: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
                 },
                 {
-                  label: 'Events',
+                  label: 'Matches',
                   valueText: fanmass.coverage.events > 0 ? fanmass.coverage.events.toLocaleString() : 'n/a',
-                  subtext: `${data.matches?.length ?? fanmass.coverage.events} fixtures in scope`,
+                  subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
                 },
               ];
               if (optIn) {
                 cards.push({
-                  label: 'PP, GTC & Image Rights',
+                  label: 'Image Rights Consent',
                   valueText: optIn.value !== null ? `${optIn.value}%` : 'Not measured',
                   subtext: optIn.numerator !== null && optIn.denominator !== null
                     ? `${optIn.numerator.toLocaleString()} of ${optIn.denominator.toLocaleString()} ${optIn.basis}`
@@ -208,7 +208,7 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
               }
               if (vision?.marketingOptInImages !== undefined && (vision.optInImages ?? 0) > 0) {
                 cards.push({
-                  label: 'Marketing Opt-in',
+                  label: 'Marketing Opt-In',
                   valueText: `${Math.round((vision.marketingOptInImages / (vision.optInImages || 1)) * 1000) / 10}%`,
                   subtext: `${vision.marketingOptInImages.toLocaleString()} of ${(vision.optInImages || 0).toLocaleString()} consented`,
                 });

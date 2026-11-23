@@ -120,7 +120,7 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
             {clubMode ? `${partnerName} match results` : 'Match results & win rate'}
           </h2>
         </div>
-        <span className={styles.bentoPanelStatus}>{totalMatches} fixtures</span>
+        <span className={styles.bentoPanelStatus}>{totalMatches} matches</span>
       </header>
 
       <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>

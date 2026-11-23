@@ -143,21 +143,21 @@ export default function SportsExecutiveInsights({
           <h2 className={styles.gdsCardTitle}>Home games vs. full season</h2>
         </div>
         <span className={styles.bentoPanelStatus}>
-          {matches.length} {matches.length === 1 ? 'fixture' : 'fixtures'}
+          {matches.length} {matches.length === 1 ? 'match' : 'matches'}
         </span>
       </header>
 
       <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
         <p className={styles.bentoBenefit}>
           {isPartnerScope && insights.awayCount > 0
-            ? 'Shows your own home matchdays first, compared against your full season (including away games as Team 2).'
+            ? 'Shows your own home matches first, compared against all matches (including away games as Team 2).'
             : 'Summarizes how many fans in the stands were captured in photos and how full your home matches were.'}
         </p>
         {isPartnerScope && insights.awayCount > 0 ? (
           <>
             <div className={styles.bentoFourCol}>
               <div className={styles.bentoSummaryStat}>
-                <div className={styles.gdsEyebrow}>Home fixtures (Primary)</div>
+                <div className={styles.gdsEyebrow}>Home Matches (Primary)</div>
                 <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                   {insights.homeCount} <span className={styles.gdsCaption}>matches</span>
                 </div>
@@ -167,9 +167,9 @@ export default function SportsExecutiveInsights({
               </div>
 
               <div className={styles.bentoSummaryStat}>
-                <div className={styles.gdsEyebrow}>Home avg gate &amp; record</div>
+                <div className={styles.gdsEyebrow}>Home Average Attendance &amp; Record</div>
                 <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                  {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+                  {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg attendance</span>
                 </div>
                 <div className={styles.gdsCaption}>
                   {insights.homeFillPct}% avg seat occupancy • <strong>{insights.homeRecord}</strong>
@@ -177,7 +177,7 @@ export default function SportsExecutiveInsights({
               </div>
 
               <div className={styles.bentoSummaryStat}>
-                <div className={styles.gdsEyebrow}>All fixtures (incl. Team 2)</div>
+                <div className={styles.gdsEyebrow}>All Matches (Home + Away)</div>
                 <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                   {matches.length} <span className={styles.gdsCaption}>matches</span>
                 </div>
@@ -187,9 +187,9 @@ export default function SportsExecutiveInsights({
               </div>
 
               <div className={styles.bentoSummaryStat}>
-                <div className={styles.gdsEyebrow}>All avg gate &amp; record</div>
+                <div className={styles.gdsEyebrow}>All Average Attendance &amp; Record</div>
                 <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                  {insights.allAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+                  {insights.allAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg attendance</span>
                 </div>
                 <div className={styles.gdsCaption}>
                   {insights.allFillPct}% avg seat occupancy • <strong>{insights.allRecord}</strong>
@@ -200,15 +200,15 @@ export default function SportsExecutiveInsights({
         ) : (
           <div className={styles.bentoFourCol}>
             <div className={styles.bentoSummaryStat}>
-              <div className={styles.gdsEyebrow}>Visual capture efficiency</div>
+              <div className={styles.gdsEyebrow}>Photo Participation Rate</div>
               <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>{insights.visualReachPct}%</div>
               <div className={styles.gdsCaption}>
-                {totalPeopleDetected.toLocaleString()} fans captured • {insights.fansPerPhoto} fans/photo
+                {totalPeopleDetected.toLocaleString()} people in photos • {insights.fansPerPhoto} people/photo
               </div>
             </div>
 
             <div className={styles.bentoSummaryStat}>
-              <div className={styles.gdsEyebrow}>Avg matchday output</div>
+              <div className={styles.gdsEyebrow}>Average Match Output</div>
               <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {insights.avgPhotosPerMatch.toLocaleString()} <span className={styles.gdsCaption}>photos</span>
               </div>
@@ -219,9 +219,9 @@ export default function SportsExecutiveInsights({
 
             {insights.homeCount > 0 && (
               <div className={styles.bentoSummaryStat}>
-                <div className={styles.gdsEyebrow}>Home fixtures ({insights.homeCount})</div>
+                <div className={styles.gdsEyebrow}>Home Matches ({insights.homeCount})</div>
                 <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                  {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg gate</span>
+                  {insights.homeAvgAtt.toLocaleString()} <span className={styles.gdsCaption}>avg attendance</span>
                 </div>
                 <div className={styles.gdsCaption}>
                   {insights.homeFillPct}% avg seat occupancy • <strong>{insights.homeRecord}</strong>

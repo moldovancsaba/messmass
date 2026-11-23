@@ -441,12 +441,12 @@ export default function OverviewTab({
                 <div className={styles.decisionItem}>
                   <div className={styles.gdsEyebrow}>EVENTS · PHOTO CONCENTRATION</div>
                   <div className={styles.gdsCardTitle}>
-                    {topMatch ? `Benchmark ${topMatch.cleanName}` : 'Capture fixture-level volume'}
+                    {topMatch ? `Benchmark ${topMatch.cleanName}` : 'Capture match-level volume'}
                   </div>
                   <div className={styles.gdsCaption}>
                     {topMatch
-                      ? `${topMatch.submitted.toLocaleString()} submitted photos${topMatchShare !== null ? ` (${topMatchShare}% of scope total)` : ''}. Open the fixture AI report to inspect peak fan activation.`
-                      : 'No fixture-level submitted photos recorded in this scope yet.'}
+                      ? `${topMatch.submitted.toLocaleString()} fan photos${topMatchShare !== null ? ` (${topMatchShare}% of scope total)` : ''}. Open the match report to inspect peak fan activation.`
+                      : 'No match-level fan photos recorded in this scope yet.'}
                   </div>
                 </div>
 
@@ -476,8 +476,8 @@ export default function OverviewTab({
                 <span className={styles.bentoPanelIcon} aria-hidden="true">📋</span>
                 <h2 className={styles.gdsCardTitle}>
                   {hasPartnerHomeAllSplit && partnerMatchScope === 'home'
-                    ? `Home fixtures & event reports (${scopedMatches.length})`
-                    : `Analyzed fixtures & event reports (${scopedMatches.length})`}
+                    ? `Home matches (${scopedMatches.length})`
+                    : `Analyzed matches (${scopedMatches.length})`}
                 </h2>
               </div>
               {onViewMatches && scopedMatches.length > 8 && (
@@ -486,7 +486,7 @@ export default function OverviewTab({
                   onClick={onViewMatches}
                   className={styles.actionLinkBtn}
                 >
-                  View All {scopedMatches.length} Events →
+                  View All {scopedMatches.length} Matches →
                 </button>
               )}
             </header>
@@ -495,7 +495,7 @@ export default function OverviewTab({
               <table className={styles.tableRoot}>
                 <thead>
                   <tr className={styles.tableHeadRow}>
-                    <th className={styles.thCell}>Event / Fixture</th>
+                    <th className={styles.thCell}>Match</th>
                     <th className={styles.thCell}>Date</th>
                     <th className={styles.thCell}>Venue</th>
                     <th className={styles.thCell}>Score</th>
@@ -548,21 +548,21 @@ export default function OverviewTab({
         {/* ACT 5: Sporting Context, HOME vs ALL Split & General Statistics (Weather, Trends, Deep-Dive Charts) */}
         {hasPartnerHomeAllSplit && (
           <div className={`${styles.executiveCard} ${styles.gdsRowBetween}`}>
-            <span className={styles.gdsEyebrow}>Fixture Scope (Home Primary vs. All incl. Team 2)</span>
+            <span className={styles.gdsEyebrow}>Match Scope (Home Matches vs. All Matches)</span>
             <div className={styles.gdsRow}>
               <button
                 type="button"
                 onClick={() => setPartnerMatchScope('home')}
                 className={`${styles.sportFilterBtn} ${partnerMatchScope === 'home' ? styles.sportFilterBtnActive : ''}`}
               >
-                🏠 Home Only ({homeMatches.length})
+                🏠 Home Matches ({homeMatches.length})
               </button>
               <button
                 type="button"
                 onClick={() => setPartnerMatchScope('all')}
                 className={`${styles.sportFilterBtn} ${partnerMatchScope === 'all' ? styles.sportFilterBtnActive : ''}`}
               >
-                🏟️ All incl. Team 2 ({(data.matches || []).length})
+                🏟️ All Matches ({(data.matches || []).length})
               </button>
             </div>
           </div>
