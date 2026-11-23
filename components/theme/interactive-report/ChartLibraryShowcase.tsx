@@ -5,7 +5,7 @@ import Chart, { type ChartConfiguration } from 'chart.js/auto';
 import * as echarts from 'echarts';
 import * as d3 from 'd3';
 import { MatchItem, VisionProgressData } from './types';
-import { REPORT_CHART_PALETTE } from '@/lib/theme/interactiveReportPalette';
+import { REPORT_CHART_PALETTE, buildPartnerChartSeries } from '@/lib/theme/interactiveReportPalette';
 import styles from './interactive-report.module.css';
 
 interface ChartLibraryShowcaseProps {
@@ -225,7 +225,12 @@ export default function ChartLibraryShowcase({
   brands,
   clubs,
   primaryColor = REPORT_CHART_PALETTE.blue,
+  accentColor = REPORT_CHART_PALETTE.teal,
 }: ChartLibraryShowcaseProps) {
+  const partnerPalette = useMemo(
+    () => buildPartnerChartSeries(primaryColor, accentColor),
+    [primaryColor, accentColor]
+  );
   const [domain, setDomain] = useState<InsightDomain>('all');
 
   // Chronological monthly aggregates
@@ -270,9 +275,9 @@ export default function ChartLibraryShowcase({
           name: 'Cumulative Attendance',
           type: 'line',
           smooth: true,
-          areaStyle: { color: REPORT_CHART_PALETTE.blueSoft },
-          lineStyle: { color: REPORT_CHART_PALETTE.blue, width: 2.5 },
-          itemStyle: { color: REPORT_CHART_PALETTE.blue },
+          areaStyle: { color: partnerPalette.primarySoft },
+          lineStyle: { color: partnerPalette.primary, width: 2.5 },
+          itemStyle: { color: partnerPalette.primary },
           data: monthlySeries.map((m) => m.cumAtt),
         },
         {
@@ -280,21 +285,21 @@ export default function ChartLibraryShowcase({
           type: 'line',
           yAxisIndex: 1,
           smooth: true,
-          areaStyle: { color: REPORT_CHART_PALETTE.tealSoft },
+          areaStyle: { color: partnerPalette.accentSoft },
           lineStyle: { color: REPORT_CHART_PALETTE.teal, width: 2.5 },
           itemStyle: { color: REPORT_CHART_PALETTE.teal },
           data: monthlySeries.map((m) => m.cumPhotos),
         },
       ],
     }),
-    [monthlySeries]
+    [monthlySeries, partnerPalette]
   );
 
   // 2. ECharts: Brand Treemap
   const treemapOption = useMemo<echarts.EChartsOption>(
     () => ({
       tooltip: { formatter: '{b}: {c} detections' },
-      color: [...REPORT_CHART_PALETTE.series],
+      color: [...partnerPalette.series],
       series: [
         {
           type: 'treemap',
@@ -305,7 +310,7 @@ export default function ChartLibraryShowcase({
         },
       ],
     }),
-    [brands]
+    [brands, partnerPalette]
   );
 
   // 3. ECharts: Day-of-Week x Month Fill % Heatmap
@@ -359,17 +364,17 @@ export default function ChartLibraryShowcase({
         bottom: 4,
         itemWidth: 12,
         itemHeight: 90,
-        inRange: { color: [REPORT_CHART_PALETTE.blueSoft, REPORT_CHART_PALETTE.teal, REPORT_CHART_PALETTE.blue] },
+        inRange: { color: [partnerPalette.primarySoft, REPORT_CHART_PALETTE.teal, partnerPalette.primary] },
       },
       series: [{ type: 'heatmap', data, label: { show: months.length <= 8 } }],
     };
-  }, [matches, monthlySeries]);
+  }, [matches, monthlySeries, partnerPalette]);
 
   // 4. ECharts: Club Apparel Nightingale Rose
   const roseOption = useMemo<echarts.EChartsOption>(
     () => ({
       tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
-      color: [...REPORT_CHART_PALETTE.series],
+      color: [...partnerPalette.series],
       series: [
         {
           type: 'pie',
@@ -381,7 +386,7 @@ export default function ChartLibraryShowcase({
         },
       ],
     }),
-    [clubs]
+    [clubs, partnerPalette]
   );
 
   // 5. ECharts: Stadium Utilization Gauge
@@ -396,7 +401,7 @@ export default function ChartLibraryShowcase({
           endAngle: -20,
           min: 0,
           max: 100,
-          progress: { show: true, width: 14, itemStyle: { color: REPORT_CHART_PALETTE.blue } },
+          progress: { show: true, width: 14, itemStyle: { color: partnerPalette.primary } },
           axisLine: { lineStyle: { width: 14, color: [[1, REPORT_CHART_PALETTE.grid]] } },
           pointer: { show: false },
           axisTick: { show: false },
@@ -404,11 +409,11 @@ export default function ChartLibraryShowcase({
           axisLabel: { distance: 20, color: REPORT_CHART_PALETTE.muted, fontSize: 10 },
           detail: { valueAnimation: true, formatter: '{value}%', fontSize: 28, fontWeight: 800, color: REPORT_CHART_PALETTE.ink, offsetCenter: [0, '10%'] },
           data: [{ value: avg, name: 'Avg Stadium Fill' }],
-          title: { offsetCenter: [0, '42%'], fontSize: 12, color: REPORT_CHART_PALETTE.muted },
+          title: { offsetCenter: [0, '42%'], fontSize: 11, color: REPORT_CHART_PALETTE.muted },
         },
       ],
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 6. ECharts: Fill Rate Spread by Sport (Boxplot)
   const boxplotOption = useMemo<echarts.EChartsOption>(() => {
@@ -436,11 +441,11 @@ export default function ChartLibraryShowcase({
         {
           type: 'boxplot',
           data: boxData,
-          itemStyle: { color: REPORT_CHART_PALETTE.blueSoft, borderColor: REPORT_CHART_PALETTE.blue, borderWidth: 2 },
+          itemStyle: { color: partnerPalette.primarySoft, borderColor: partnerPalette.primary, borderWidth: 2 },
         },
       ],
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 7. ECharts: Wind Speed vs Fill % (Dry vs Rain)
   const windScatterOption = useMemo<echarts.EChartsOption>(() => {
@@ -460,11 +465,11 @@ export default function ChartLibraryShowcase({
       xAxis: { type: 'value', name: 'Wind km/h', axisLabel: { color: REPORT_CHART_PALETTE.muted } },
       yAxis: { type: 'value', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: REPORT_CHART_PALETTE.muted } },
       series: [
-        { name: 'Dry (0 mm)', type: 'scatter', symbolSize: 10, itemStyle: { color: REPORT_CHART_PALETTE.blue }, data: dryPts },
+        { name: 'Dry (0 mm)', type: 'scatter', symbolSize: 10, itemStyle: { color: partnerPalette.primary }, data: dryPts },
         { name: 'Rain (>0 mm)', type: 'scatter', symbolSize: 11, itemStyle: { color: REPORT_CHART_PALETTE.rose }, data: wetPts },
       ],
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 8. Chart.js: Dual-Axis Monthly Attendance vs Fan Photos
   const monthlyChartJsConfig = useMemo<ChartConfiguration>(
@@ -477,8 +482,8 @@ export default function ChartLibraryShowcase({
             type: 'bar',
             label: 'Gate Attendance',
             data: monthlySeries.map((m) => m.attendance),
-            backgroundColor: REPORT_CHART_PALETTE.blue,
-            borderRadius: 5,
+            backgroundColor: partnerPalette.primary,
+            borderRadius: 6,
             yAxisID: 'y',
           },
           {
@@ -502,7 +507,7 @@ export default function ChartLibraryShowcase({
         },
       },
     }),
-    [monthlySeries]
+    [monthlySeries, partnerPalette]
   );
 
   // 9. Chart.js: Sport Performance Radar
@@ -538,8 +543,8 @@ export default function ChartLibraryShowcase({
           return {
             label: sport,
             data: [avgFill, hwPct, matchShare, density, attShare],
-            borderColor: REPORT_CHART_PALETTE.series[idx % REPORT_CHART_PALETTE.series.length],
-            backgroundColor: idx % 2 === 0 ? REPORT_CHART_PALETTE.blueSoft : REPORT_CHART_PALETTE.tealSoft,
+            borderColor: partnerPalette.series[idx % partnerPalette.series.length],
+            backgroundColor: idx % 2 === 0 ? partnerPalette.primarySoft : partnerPalette.accentSoft,
           };
         }),
       },
@@ -549,7 +554,7 @@ export default function ChartLibraryShowcase({
         scales: { r: { min: 0, max: 100, ticks: { stepSize: 25 } } },
       },
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 10. Chart.js: Age Polar Area
   const ageGroups = vision?.aggregates?.ageGroups;
@@ -564,7 +569,7 @@ export default function ChartLibraryShowcase({
             backgroundColor: [
               REPORT_CHART_PALETTE.cyan,
               REPORT_CHART_PALETTE.teal,
-              REPORT_CHART_PALETTE.blue,
+              partnerPalette.primary,
               REPORT_CHART_PALETTE.violet,
             ],
           },
@@ -572,7 +577,7 @@ export default function ChartLibraryShowcase({
       },
       options: { responsive: true, maintainAspectRatio: false },
     }),
-    [ageGroups]
+    [ageGroups, partnerPalette]
   );
 
   // 11. Chart.js: Emotion Doughnut
@@ -585,13 +590,13 @@ export default function ChartLibraryShowcase({
         datasets: [
           {
             data: emotions.slice(0, 6).map((e) => e.count),
-            backgroundColor: [...REPORT_CHART_PALETTE.series],
+            backgroundColor: [...partnerPalette.series],
           },
         ],
       },
       options: { responsive: true, maintainAspectRatio: false },
     }),
-    [emotions]
+    [emotions, partnerPalette]
   );
 
   // 12. Chart.js: Top Venues Attended vs Empty Seats (Horizontal Stacked)
@@ -610,7 +615,7 @@ export default function ChartLibraryShowcase({
       data: {
         labels: top.map(([name]) => name.length > 22 ? `${name.slice(0, 20)}…` : name),
         datasets: [
-          { label: 'Attended', data: top.map(([, v]) => v.att), backgroundColor: REPORT_CHART_PALETTE.blue },
+          { label: 'Attended', data: top.map(([, v]) => v.att), backgroundColor: partnerPalette.primary },
           { label: 'Unoccupied', data: top.map(([, v]) => Math.max(0, v.cap - v.att)), backgroundColor: REPORT_CHART_PALETTE.grid },
         ],
       },
@@ -621,7 +626,7 @@ export default function ChartLibraryShowcase({
         scales: { x: { stacked: true }, y: { stacked: true } },
       },
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 13. Chart.js: Temp x Fill % x Photos Bubble Chart
   const bubbleConfig = useMemo<ChartConfiguration>(() => {
@@ -639,8 +644,8 @@ export default function ChartLibraryShowcase({
           {
             label: 'Fixtures (size = fan photos)',
             data: pts,
-            backgroundColor: REPORT_CHART_PALETTE.blueSoft,
-            borderColor: REPORT_CHART_PALETTE.blue,
+            backgroundColor: partnerPalette.primarySoft,
+            borderColor: partnerPalette.primary,
           },
         ],
       },
@@ -653,7 +658,7 @@ export default function ChartLibraryShowcase({
         },
       },
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 14. D3: Top 12 Fixtures Capture Rate
   const lollipopItems = useMemo(
@@ -686,7 +691,7 @@ export default function ChartLibraryShowcase({
           return `<strong>${item.name ?? ''}</strong><br/>${(item.value ?? 0).toLocaleString()} photos${meta ? `<br/>${meta}` : ''}`;
         },
       },
-      color: [...REPORT_CHART_PALETTE.series],
+      color: [...partnerPalette.series],
       series: [
         {
           name: 'Events by Photos',
@@ -707,7 +712,7 @@ export default function ChartLibraryShowcase({
         },
       ],
     }),
-    [eventsWithPhotos]
+    [eventsWithPhotos, partnerPalette]
   );
 
   // 16. ECharts: Top 15 Events Photo Concentration Pareto
@@ -732,11 +737,11 @@ export default function ChartLibraryShowcase({
         { type: 'value', name: 'Cum %', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: REPORT_CHART_PALETTE.muted } },
       ],
       series: [
-        { name: 'Photos', type: 'bar', data: top15.map((m) => m.submitted), itemStyle: { color: REPORT_CHART_PALETTE.blue, borderRadius: [4, 4, 0, 0] } },
+        { name: 'Photos', type: 'bar', data: top15.map((m) => m.submitted), itemStyle: { color: partnerPalette.primary, borderRadius: [6, 6, 0, 0] } },
         { name: 'Cumulative %', type: 'line', yAxisIndex: 1, smooth: true, data: cumPct, itemStyle: { color: REPORT_CHART_PALETTE.amber }, lineStyle: { width: 2.5 } },
       ],
     };
-  }, [eventsWithPhotos]);
+  }, [eventsWithPhotos, partnerPalette]);
 
   // 17. ECharts: Sport -> Top Events Sunburst
   const sportSunburstOption = useMemo<echarts.EChartsOption>(() => {
@@ -755,7 +760,7 @@ export default function ChartLibraryShowcase({
     }));
     return {
       tooltip: { trigger: 'item', formatter: '{b}: {c} photos' },
-      color: [...REPORT_CHART_PALETTE.series],
+      color: [...partnerPalette.series],
       series: [
         {
           type: 'sunburst',
@@ -766,7 +771,7 @@ export default function ChartLibraryShowcase({
         },
       ],
     };
-  }, [eventsWithPhotos]);
+  }, [eventsWithPhotos, partnerPalette]);
 
   // 18. ECharts: Environment -> Sport -> Outcome Attendance Sankey
   const attendanceSankeyOption = useMemo<echarts.EChartsOption>(() => {
@@ -802,7 +807,7 @@ export default function ChartLibraryShowcase({
     const nodes = Array.from(nodeSet).map((name) => ({ name }));
     return {
       tooltip: { trigger: 'item', triggerOn: 'mousemove' },
-      color: [...REPORT_CHART_PALETTE.series],
+      color: [...partnerPalette.series],
       series: [
         {
           type: 'sankey',
@@ -813,7 +818,7 @@ export default function ChartLibraryShowcase({
         },
       ],
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   // 19. ECharts: Multi-Dimensional Fixture Parallel Coordinates
   const parallelOption = useMemo<echarts.EChartsOption>(() => {
@@ -837,11 +842,11 @@ export default function ChartLibraryShowcase({
       ],
       series: {
         type: 'parallel',
-        lineStyle: { width: 1.5, opacity: 0.45, color: REPORT_CHART_PALETTE.blue },
+        lineStyle: { width: 1.5, opacity: 0.45, color: partnerPalette.primary },
         data: rows,
       },
     };
-  }, [matches]);
+  }, [matches, partnerPalette]);
 
   if (matches.length === 0 && brands.length === 0) return null;
 

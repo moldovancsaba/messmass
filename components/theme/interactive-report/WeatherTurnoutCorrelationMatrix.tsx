@@ -187,7 +187,7 @@ export default function WeatherTurnoutCorrelationMatrix({
             const leftPct = ((temp - minTemp) / tempRange) * 94 + 3;
             const topPct = (1 - fillRate / 100) * 72 + 18;
             const isHovered = hoveredMatch?.id === m.id;
-            const sportColor = SPORT_COLORS[m.sport] || '#059669';
+            const sportColor = SPORT_COLORS[m.sport] || 'var(--report-primary, #059669)';
 
             return (
               <div
@@ -199,20 +199,11 @@ export default function WeatherTurnoutCorrelationMatrix({
                 onMouseLeave={() => setHoveredMatch(null)}
                 onFocus={() => setHoveredMatch(m)}
                 onBlur={() => setHoveredMatch(null)}
+                className={`${styles.weatherDot} ${isHovered ? styles.weatherDotHovered : ''} ${m.weather?.isIndoor ? styles.weatherDotIndoor : ''}`}
                 style={{
-                  position: 'absolute',
                   left: `${leftPct}%`,
                   top: `${topPct}%`,
-                  width: isHovered ? '18px' : '12px',
-                  height: isHovered ? '18px' : '12px',
-                  borderRadius: '999px',
-                  background: m.weather?.isIndoor ? '#ffffff' : sportColor,
-                  border: m.weather?.isIndoor ? `3px solid ${sportColor}` : '2px solid #ffffff',
-                  boxShadow: isHovered ? '0 0 0 4px rgba(15, 23, 42, 0.15)' : '0 1px 3px rgba(0,0,0,0.15)',
-                  cursor: 'pointer',
-                  transform: 'translate(-50%, -50%)',
-                  transition: 'all 0.15s ease',
-                  zIndex: isHovered ? 10 : 2,
+                  ['--dot-color' as string]: sportColor,
                 }}
               />
             );

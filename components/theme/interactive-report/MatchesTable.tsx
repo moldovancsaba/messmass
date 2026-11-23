@@ -154,11 +154,11 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                 m.visitorScore !== undefined;
               const outcomeBadge =
                 m.outcome === 'home_win'
-                  ? { label: 'Home Win', bg: '#ecfdf5', color: '#065f46' }
+                  ? { label: 'Home Win', cls: styles.matchOutcomeWin }
                   : m.outcome === 'draw'
-                    ? { label: 'Draw', bg: '#f3f4f6', color: '#374151' }
+                    ? { label: 'Draw', cls: styles.matchOutcomeDraw }
                     : m.outcome === 'away_win'
-                      ? { label: 'Away Win', bg: '#eff6ff', color: '#1e40af' }
+                      ? { label: 'Away Win', cls: styles.matchOutcomeLoss }
                       : null;
 
               const teamParts = m.cleanName.split(/\s+[x×#]\s+/i);
@@ -169,10 +169,7 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   className={`${styles.tableRow} ${idx % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd}`}
                 >
                   <td className={`${styles.thCell} ${styles.gdsNowrap}`}>
-                    <span
-                      className={`${styles.sportTag} ${styles.gdsNowrap}`}
-                      style={{ background: SPORT_COLORS[m.sport] || '#64748b' }}
-                    >
+                    <span className={`${styles.sportTag} ${styles.gdsNowrap}`}>
                       {m.sport}
                     </span>
                   </td>
@@ -195,7 +192,7 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   </td>
                   <td className={`${styles.thCell} ${styles.gdsNum} ${styles.gdsNowrap}`}>{m.date}</td>
                   <td className={styles.thCell}>
-                    <div style={{ fontWeight: 500, color: '#111827' }}>
+                    <div className={styles.matchVenueTitle}>
                       {m.venue || m.partnerName || '—'}
                     </div>
                     {m.venueCapacity && (
@@ -207,24 +204,12 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   </td>
                   <td className={`${styles.thCell} ${styles.gdsNowrap}`}>
                     {hasScore ? (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        <span style={{ fontWeight: 700, fontSize: '14px', color: '#111827' }}>
+                      <div className={styles.matchScoreCol}>
+                        <span className={`${styles.matchScoreNum} ${styles.gdsNum}`}>
                           {m.homeScore} : {m.visitorScore}
                         </span>
                         {outcomeBadge && (
-                          <span
-                            className={styles.gdsNowrap}
-                            style={{
-                              fontSize: '10px',
-                              fontWeight: 600,
-                              padding: '1px 6px',
-                              borderRadius: '4px',
-                              backgroundColor: outcomeBadge.bg,
-                              color: outcomeBadge.color,
-                              display: 'inline-block',
-                              width: 'fit-content',
-                            }}
-                          >
+                          <span className={`${styles.matchOutcomeBadge} ${outcomeBadge.cls} ${styles.gdsNowrap}`}>
                             {outcomeBadge.label}
                           </span>
                         )}
@@ -236,11 +221,11 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   <td className={styles.thCell}>
                     {m.attendance && m.attendance > 0 ? (
                       <div>
-                        <span style={{ fontWeight: 600, color: '#111827' }}>
+                        <span className={`${styles.matchAttNum} ${styles.gdsNum}`}>
                           {m.attendance.toLocaleString()}
                         </span>
                         {m.capacityUtilizationRate && (
-                          <div className={styles.cardSubtitle} style={{ color: '#059669', fontWeight: 600 }}>
+                          <div className={`${styles.matchFillRate} ${styles.gdsNum}`}>
                             {m.capacityUtilizationRate}% fill
                           </div>
                         )}
@@ -251,16 +236,7 @@ export default function MatchesTable({ matches, isFanmass = false }: MatchesTabl
                   </td>
                   <td className={styles.thCell}>
                     {m.weather ? (
-                      <div
-                        style={{
-                          fontSize: '12px',
-                          color: '#374151',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
+                      <div className={styles.matchWeatherCell}>
                         {m.weather.isIndoor ? (
                           <span title={`Outside: ${m.weather.tempC}°C, ${m.weather.condition}`}>
                             Outside: {m.weather.tempC}°C · 🏟️

@@ -526,8 +526,7 @@ export default function TerritoryMapCanvas({
                 href={`/interactive-report/${reportSlug}/map`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={styles.backBtn}
-                style={{ background: '#1d4ed8', color: '#ffffff' }}
+                className={`${styles.backBtn} ${styles.backBtnPrimary}`}
               >
                 🗺️ Fullscreen Dedicated Map ↗
               </a>
@@ -562,23 +561,15 @@ export default function TerritoryMapCanvas({
           ))}
 
           {/* Search Box */}
-          <div style={{ marginLeft: 'auto', position: 'relative', width: '220px' }}>
+          <div className={styles.searchWrap}>
             <input
               type="text"
               placeholder="Filter venue or city..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '6px 10px 6px 28px',
-                borderRadius: '9999px',
-                border: '1px solid #cbd5e1',
-                fontSize: '12px',
-                background: 'rgba(255,255,255,0.95)',
-                outline: 'none',
-              }}
+              className={styles.searchInput}
             />
-            <span style={{ position: 'absolute', left: '10px', top: '6px', fontSize: '11px', color: '#94a3b8' }}>
+            <span className={styles.searchIcon} aria-hidden="true">
               🔍
             </span>
           </div>
@@ -619,31 +610,17 @@ export default function TerritoryMapCanvas({
 
               {/* Clubs detected by the vision analysis at this venue */}
               <div className={styles.venueFeatureCard}>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f2c4a', marginBottom: '6px' }}>
+                <div className={styles.sectionLabel}>
                   🛡️ Clubs Detected
                 </div>
                 {selectedVenue.detectedClubs.length > 0 ? (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div className={styles.venueClubsStack}>
                     {selectedVenue.detectedClubs.map((c) => (
                       <button
                         key={c.club}
                         type="button"
                         onClick={() => setModalClub(c)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          gap: '8px',
-                          padding: '8px 12px',
-                          borderRadius: '8px',
-                          background: '#1d4ed8',
-                          color: '#ffffff',
-                          border: 'none',
-                          fontWeight: 700,
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                        }}
+                        className={styles.venueClubBtn}
                       >
                         <span>📸 {c.partnerName || c.club}</span>
                         <span>{c.count.toLocaleString()}</span>
@@ -651,42 +628,30 @@ export default function TerritoryMapCanvas({
                     ))}
                   </div>
                 ) : (
-                  <div style={{ fontSize: '12px', color: '#475569' }}>n/a</div>
+                  <div className={styles.venueItemMeta}>n/a</div>
                 )}
               </div>
 
               {/* Quick Venue List Switcher */}
               <div>
-                <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f2c4a', marginBottom: '8px' }}>
+                <div className={styles.sectionLabel}>
                   🏟️ {filteredVenues.length} Venues
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                <div className={styles.venueListScroll}>
                   {filteredVenues.map((v) => (
                     <button
                       key={v.id}
                       onClick={() => handleSelectVenue(v)}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        padding: '8px 10px',
-                        borderRadius: '8px',
-                        border: '1px solid',
-                        borderColor: v.id === selectedVenue.id ? '#88ca45' : '#e2e8f0',
-                        background: v.id === selectedVenue.id ? '#f0fdf4' : '#ffffff',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.15s ease',
-                      }}
+                      className={`${styles.venueListItem} ${v.id === selectedVenue.id ? styles.venueListItemActive : ''}`}
                     >
                       <div>
-                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#0f172a' }}>{v.name}</div>
-                        <div style={{ fontSize: '11px', color: '#64748b' }}>
+                        <div className={styles.venueItemName}>{v.name}</div>
+                        <div className={styles.venueItemMeta}>
                           {v.city}
                           {v.detectedClubs.length > 0 && ` • ${v.detectedClubs.map((c) => c.club).join(', ')}`}
                         </div>
                       </div>
-                      <span style={{ fontSize: '11px', fontWeight: 700, color: '#0f2c4a' }}>
+                      <span className={styles.venueItemCount}>
                         {v.totalSightings.toLocaleString()} 📸
                       </span>
                     </button>
@@ -697,7 +662,7 @@ export default function TerritoryMapCanvas({
           </>
         ) : (
           <div className={styles.panelContent}>
-            <div style={{ fontSize: '13px', color: '#475569', padding: '16px 0' }}>
+            <div className={styles.emptyNotice}>
               n/a (no venue is linked to the matches or detected clubs of this report)
             </div>
           </div>

@@ -47,7 +47,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   padding: 8px 16px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
 }
@@ -59,10 +59,10 @@
   background: #f1f5f9;
   color: #334155;
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
   text-decoration: none;
   transition: background 0.15s ease;
@@ -87,9 +87,9 @@
   font-size: 10px;
   font-weight: 800;
   background: rgba(136, 202, 69, 0.2);
-  color: #1b4332;
+  color: var(--report-primary-text, #1b4332);
   padding: 2px 8px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -113,9 +113,9 @@
   color: #334155;
   border: 1px solid #cbd5e1;
   padding: 6px 14px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
+  border-radius: var(--mm-radius-full, 9999px);
+  font-size: 13px;
+  font-weight: 700;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   white-space: nowrap;
@@ -129,9 +129,9 @@
 }
 
 .chipBtnActive {
-  background: #0f2c4a !important;
+  background: var(--report-primary, #0f2c4a) !important;
   color: #ffffff !important;
-  border-color: #0f2c4a !important;
+  border-color: var(--report-primary, #0f2c4a) !important;
   box-shadow: 0 4px 10px rgba(15, 44, 74, 0.25);
 }
 
@@ -141,7 +141,7 @@
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
   border: 1px solid #cbd5e1;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   padding: 3px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
@@ -153,9 +153,9 @@
   background: none;
   border: none;
   padding: 5px 12px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   color: #64748b;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -163,7 +163,7 @@
 
 .lensBtnActive {
   background: #88ca45;
-  color: #1b4332;
+  color: var(--report-primary-text, #1b4332);
   font-weight: 700;
   box-shadow: 0 2px 6px rgba(136, 202, 69, 0.3);
 }
@@ -179,7 +179,7 @@
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   border: 1px solid #cbd5e1;
-  border-radius: 16px;
+  border-radius: var(--mm-radius-lg, 16px);
   box-shadow: 0 12px 36px rgba(0, 0, 0, 0.12);
   z-index: 25;
   display: flex;
@@ -198,14 +198,14 @@
 }
 
 .panelTitle {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
-  color: #0f2c4a;
+  color: var(--report-primary, #0f2c4a);
   margin: 0 0 4px 0;
 }
 
 .panelSubtitle {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748b;
   margin: 0;
   display: flex;
@@ -226,7 +226,7 @@
 .venueFeatureCard {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: var(--mm-radius-md, 10px);
   padding: 14px;
 }
 
@@ -237,10 +237,10 @@
   background: #eff6ff;
   color: #1d4ed8;
   border: 1px solid #bfdbfe;
-  border-radius: 8px;
+  border-radius: var(--mm-radius-md, 10px);
   padding: 6px 12px;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   text-decoration: none;
   margin-top: 8px;
   transition: background 0.15s ease;
@@ -260,7 +260,7 @@
 .statBox {
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  border-radius: 10px;
+  border-radius: var(--mm-radius-md, 10px);
   padding: 10px 12px;
 }
 
@@ -283,7 +283,7 @@
 .barTrack {
   height: 8px;
   background: #e2e8f0;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   overflow: hidden;
   display: flex;
   margin: 6px 0;
@@ -313,11 +313,11 @@
 .ctrlBtn {
   width: 40px;
   height: 40px;
-  border-radius: 10px;
+  border-radius: var(--mm-radius-md, 10px);
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  color: #0f2c4a;
-  font-size: 16px;
+  color: var(--report-primary, #0f2c4a);
+  font-size: 18px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -338,11 +338,11 @@
   gap: 6px;
   height: 40px;
   padding: 0 14px;
-  border-radius: 10px;
+  border-radius: var(--mm-radius-md, 10px);
   background: #ffffff;
   border: 1px solid #cbd5e1;
-  color: #0f2c4a;
-  font-size: 12px;
+  color: var(--report-primary, #0f2c4a);
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
@@ -354,12 +354,125 @@
   border-color: #94a3b8;
 }
 
+.backBtnPrimary {
+  background: var(--report-primary, #1b79df);
+  color: #ffffff;
+}
+
+.backBtnPrimary:hover {
+  background: var(--report-primary-dark, #0f2c4a);
+  color: #ffffff;
+}
+
+.searchWrap {
+  margin-left: auto;
+  position: relative;
+  width: 220px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 6px 10px 6px 28px;
+  border-radius: var(--mm-radius-full, 9999px);
+  border: 1px solid #cbd5e1;
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.95);
+  outline: none;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 7px;
+  font-size: 11px;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.sectionLabel {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--report-primary-text, #0f2c4a);
+  margin-bottom: 6px;
+}
+
+.venueClubsStack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.venueClubBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--mm-radius-md, 10px);
+  background: var(--report-primary, #1b79df);
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.venueListScroll {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.venueListItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: var(--mm-radius-md, 10px);
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s ease;
+}
+
+.venueListItemActive {
+  border-color: var(--report-primary, #1b79df);
+  background: var(--report-primary-soft, #eef3fb);
+}
+
+.venueItemName {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.venueItemMeta {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.venueItemCount {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--report-primary-text, #0f2c4a);
+}
+
+.emptyNotice {
+  font-size: 13px;
+  color: #475569;
+  padding: 16px 0;
+}
+
 /* Embedded Canvas within Executive Report */
 .embeddedRoot {
   position: relative;
   width: 100%;
   height: 540px;
-  border-radius: 14px;
+  border-radius: var(--mm-radius-lg, 16px);
   overflow: hidden;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);

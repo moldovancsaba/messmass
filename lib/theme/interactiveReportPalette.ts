@@ -390,3 +390,29 @@ export const REPORT_CHART_PALETTE = {
   surface: '#ffffff',
   series: ['#1b79df', '#03ad9f', '#7c3aed', '#f59e0b', '#e11d48'],
 } as const;
+
+export function buildPartnerChartSeries(
+  primaryColor: string = REPORT_CHART_PALETTE.blue,
+  accentColor: string = REPORT_CHART_PALETTE.teal
+) {
+  const pRgb = hexToRgb(primaryColor);
+  const aRgb = hexToRgb(accentColor);
+  const primarySoft = pRgb ? `rgba(${pRgb.r}, ${pRgb.g}, ${pRgb.b}, 0.14)` : REPORT_CHART_PALETTE.blueSoft;
+  const accentSoft = aRgb ? `rgba(${aRgb.r}, ${aRgb.g}, ${aRgb.b}, 0.14)` : REPORT_CHART_PALETTE.tealSoft;
+  const baseSeries = [
+    primaryColor,
+    accentColor,
+    REPORT_CHART_PALETTE.teal,
+    REPORT_CHART_PALETTE.violet,
+    REPORT_CHART_PALETTE.amber,
+    REPORT_CHART_PALETTE.rose,
+  ];
+  const series = Array.from(new Set(baseSeries));
+  return {
+    primary: primaryColor,
+    primarySoft,
+    accent: accentColor,
+    accentSoft,
+    series,
+  };
+}

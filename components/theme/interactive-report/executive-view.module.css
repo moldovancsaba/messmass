@@ -18,7 +18,7 @@
   gap: 16px;
   background: #ffffff;
   border: 1px solid #dde7f5;
-  border-radius: 16px;
+  border-radius: var(--mm-radius-lg, 16px);
   padding: 18px 24px;
   box-shadow: 0 2px 10px rgba(16, 34, 66, 0.08);
 }
@@ -43,13 +43,13 @@
   background: rgba(27, 121, 223, 0.14);
   color: #0a264e;
   padding: 2px 8px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
 }
 
 .liveDot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--mm-radius-full, 9999px);
   background: #03ad9f;
   display: inline-block;
   box-shadow: 0 0 0 2px rgba(27, 121, 223, 0.14);
@@ -78,7 +78,7 @@
   gap: 6px;
   background: #eef3fb;
   padding: 4px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   border: 1px solid #dde7f5;
   overflow-x: auto;
 }
@@ -89,7 +89,7 @@
   gap: 6px;
   background: transparent;
   border: none;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   padding: 6px 14px;
   font-size: 11px;
   font-weight: 500;
@@ -121,7 +121,7 @@
 .kpiCard {
   background: #ffffff;
   border: 1px solid #dde7f5;
-  border-radius: 14px;
+  border-radius: var(--mm-radius-lg, 16px);
   padding: 18px 20px;
   display: flex;
   align-items: flex-start;
@@ -140,7 +140,7 @@
 .kpiIconWrap {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: var(--mm-radius-md, 10px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -198,7 +198,7 @@
 .podiumCard {
   background: #ffffff;
   border: 1px solid #dde7f5;
-  border-radius: 16px;
+  border-radius: var(--mm-radius-lg, 16px);
   padding: 22px;
   box-shadow: 0 4px 16px rgba(16, 34, 66, 0.08);
   display: flex;
@@ -226,10 +226,10 @@
   gap: 4px;
   font-size: 11px;
   font-weight: 700;
-  color: #1b79df;
+  color: var(--report-primary-text, #1b79df);
   background: #eef3fb;
   border: 1px solid #dde7f5;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   padding: 4px 10px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -239,7 +239,7 @@
 
 .exploreAllBtn:hover {
   background: #eef3fb;
-  color: #1b79df;
+  color: var(--report-primary-text, #1b79df);
   border-color: #dde7f5;
   transform: translateY(-1px);
 }
@@ -265,7 +265,7 @@
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   background: #eef3fb;
   color: #102242;
   white-space: nowrap;
@@ -281,7 +281,7 @@
   margin-bottom: 20px;
   background: #eef3fb;
   border: 1px solid #dde7f5;
-  border-radius: 14px;
+  border-radius: var(--mm-radius-lg, 16px);
 }
 
 .pedestalColumn {
@@ -301,7 +301,7 @@
 .pedestalLogoCircle {
   width: 54px;
   height: 54px;
-  border-radius: 12px;
+  border-radius: var(--mm-radius-md, 10px);
   background: #ffffff;
   border: 1px solid #dde7f5;
   padding: 6px;
@@ -375,7 +375,7 @@
   align-items: center;
   gap: 12px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: var(--mm-radius-md, 10px);
   border: 1px solid #eef3fb;
   background: #ffffff;
   cursor: pointer;
@@ -401,7 +401,7 @@
 .rowLogoWrap {
   width: 28px;
   height: 28px;
-  border-radius: 6px;
+  border-radius: var(--mm-radius-sm, 6px);
   border: 1px solid #dde7f5;
   background: #ffffff;
   padding: 2px;
@@ -434,14 +434,14 @@
   flex: 1;
   height: 6px;
   background: #dde7f5;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   overflow: hidden;
 }
 
 .rowBarFill {
   height: 100%;
-  border-radius: 9999px;
-  background: #1b79df;
+  border-radius: var(--mm-radius-full, 9999px);
+  background: var(--report-primary, #1b79df);
 }
 
 .rowPercent {
@@ -474,7 +474,7 @@
 .quadrantCard {
   background: #ffffff;
   border: 1px solid #dde7f5;
-  border-radius: 16px;
+  border-radius: var(--mm-radius-lg, 16px);
   padding: 20px;
   box-shadow: 0 4px 14px rgba(16, 34, 66, 0.08);
   display: flex;
@@ -516,7 +516,7 @@
   align-items: center;
   background: #eef3fb;
   border: 1px solid #dde7f5;
-  border-radius: 8px;
+  border-radius: var(--mm-radius-md, 10px);
   padding: 2px;
   gap: 2px;
 }
@@ -527,7 +527,7 @@
   color: #64748b;
   background: transparent;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--mm-radius-sm, 6px);
   padding: 4px 8px;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -544,7 +544,7 @@
   color: #0a264e;
   background: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--mm-radius-sm, 6px);
   padding: 4px 8px;
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(16, 34, 66, 0.08);
@@ -594,13 +594,13 @@
   flex: 1;
   height: 6px;
   background: #dde7f5;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   overflow: hidden;
 }
 
 .merchBarFill {
   height: 100%;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   transition: width 0.3s ease;
 }
 
@@ -609,7 +609,7 @@
   text-align: right;
   font-size: 11px;
   font-weight: 700;
-  color: #1b79df;
+  color: var(--report-primary-text, #1b79df);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
@@ -663,7 +663,7 @@
   gap: 6px;
   font-size: 11px;
   padding: 2px 4px;
-  border-radius: 4px;
+  border-radius: var(--mm-radius-sm, 6px);
   transition: background 0.15s ease;
 }
 
@@ -674,7 +674,7 @@
 .pieLegendDot {
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: var(--mm-radius-full, 9999px);
   flex-shrink: 0;
 }
 
@@ -704,7 +704,7 @@
 .merchFootnote {
   margin-top: 10px;
   padding: 6px 10px;
-  border-radius: 8px;
+  border-radius: var(--mm-radius-md, 10px);
   background: #eef3fb;
   border: 1px solid #dde7f5;
   font-size: 10px;
@@ -719,7 +719,7 @@
 .territoryCard {
   background: #0a264e;
   color: #ffffff;
-  border-radius: 16px;
+  border-radius: var(--mm-radius-lg, 16px);
   padding: 22px;
   display: flex;
   align-items: center;
@@ -742,7 +742,7 @@
   background: #03ad9f;
   color: #0a264e;
   padding: 2px 8px;
-  border-radius: 9999px;
+  border-radius: var(--mm-radius-full, 9999px);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   align-self: flex-start;
@@ -768,7 +768,7 @@
   background: #03ad9f;
   color: #0a264e;
   padding: 10px 20px;
-  border-radius: 10px;
+  border-radius: var(--mm-radius-md, 10px);
   font-size: 13px;
   font-weight: 800;
   text-decoration: none;
@@ -880,7 +880,7 @@
   border: 1px solid #dde7f5;
   background: linear-gradient(120deg, #eef3fb, var(--mm-white));
   padding: var(--mm-space-4);
-  border-radius: var(--mm-radius-xl);
+  border-radius: var(--mm-radius-lg, 16px);
   margin: var(--mm-space-3) 0;
   cursor: pointer;
 }
