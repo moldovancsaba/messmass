@@ -80,7 +80,8 @@ export default function WeatherTurnoutCorrelationMatrix({
     };
   }, [filteredMatches]);
 
-  if (validMatches.length === 0) return null;
+  const outdoorValidCount = validMatches.filter((m) => !m.weather?.isIndoor).length;
+  if (validMatches.length < 2 || outdoorValidCount < 2) return null;
 
   // Scatter plot boundaries (respecting active sport filter)
   const tempSource = filteredMatches.length > 0 ? filteredMatches : validMatches;
@@ -96,69 +97,79 @@ export default function WeatherTurnoutCorrelationMatrix({
           <h2 className={styles.gdsCardTitle}>Does weather affect crowd size?</h2>
         </div>
 
-        {/* Sport Filter Toggle */}
-        <div className={styles.bentoToggle} role="tablist" aria-label="Filter weather by sport">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={selectedSport === 'all'}
-            onClick={() => setSelectedSport('all')}
-            className={`${styles.bentoToggleBtn} ${selectedSport === 'all' ? styles.bentoToggleBtnActive : ''}`}
-          >
-            All ({validMatches.length})
-          </button>
-          {sportsList.map((sport) => (
+        {/* Sport Filter Toggle (only shown when 2+ sports exist) */}
+        {sportsList.length >= 2 && (
+          <div className={styles.bentoToggle} role="tablist" aria-label="Filter weather by sport">
             <button
-              key={sport}
               type="button"
               role="tab"
-              aria-selected={selectedSport === sport}
-              onClick={() => setSelectedSport(sport)}
-              className={`${styles.bentoToggleBtn} ${selectedSport === sport ? styles.bentoToggleBtnActive : ''}`}
+              aria-selected={selectedSport === 'all'}
+              onClick={() => setSelectedSport('all')}
+              className={`${styles.bentoToggleBtn} ${selectedSport === 'all' ? styles.bentoToggleBtnActive : ''}`}
             >
-              {sport}
+              All ({validMatches.length})
             </button>
-          ))}
-        </div>
+            {sportsList.map((sport) => (
+              <button
+                key={sport}
+                type="button"
+                role="tab"
+                aria-selected={selectedSport === sport}
+                onClick={() => setSelectedSport(sport)}
+                className={`${styles.bentoToggleBtn} ${selectedSport === sport ? styles.bentoToggleBtnActive : ''}`}
+              >
+                {sport}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
         <p className={styles.bentoBenefit}>
           Compares outdoor attendance in cold, mild, and rainy weather against indoor arenas so you can forecast turnout.
         </p>
-        {/* Climate Tier Comparison */}
+        {/* Climate Tier Comparison (only render bands with data) */}
         <div className={styles.bentoFourCol}>
-          <div className={styles.bentoSummaryStat}>
-            <span className={styles.gdsEyebrow}>☀️ Warm (&gt;18°C)</span>
-            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-              {climateBands.warm.avgFill !== null ? `${climateBands.warm.avgFill}%` : 'n/a'}
-            </strong>
-            <span className={styles.gdsCaption}>{climateBands.warm.count} outdoor matches</span>
-          </div>
+          {climateBands.warm.count > 0 && climateBands.warm.avgFill !== null && (
+            <div className={styles.bentoSummaryStat}>
+              <span className={styles.gdsEyebrow}>☀️ Warm (&gt;18°C)</span>
+              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {climateBands.warm.avgFill}%
+              </strong>
+              <span className={styles.gdsCaption}>{climateBands.warm.count} outdoor matches</span>
+            </div>
+          )}
 
-          <div className={styles.bentoSummaryStat}>
-            <span className={styles.gdsEyebrow}>⛅ Mild (10–18°C)</span>
-            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-              {climateBands.mild.avgFill !== null ? `${climateBands.mild.avgFill}%` : 'n/a'}
-            </strong>
-            <span className={styles.gdsCaption}>{climateBands.mild.count} outdoor matches</span>
-          </div>
+          {climateBands.mild.count > 0 && climateBands.mild.avgFill !== null && (
+            <div className={styles.bentoSummaryStat}>
+              <span className={styles.gdsEyebrow}>⛅ Mild (10–18°C)</span>
+              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {climateBands.mild.avgFill}%
+              </strong>
+              <span className={styles.gdsCaption}>{climateBands.mild.count} outdoor matches</span>
+            </div>
+          )}
 
-          <div className={styles.bentoSummaryStat}>
-            <span className={styles.gdsEyebrow}>❄️ Cold (&lt;10°C)</span>
-            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-              {climateBands.cold.avgFill !== null ? `${climateBands.cold.avgFill}%` : 'n/a'}
-            </strong>
-            <span className={styles.gdsCaption}>{climateBands.cold.count} outdoor matches</span>
-          </div>
+          {climateBands.cold.count > 0 && climateBands.cold.avgFill !== null && (
+            <div className={styles.bentoSummaryStat}>
+              <span className={styles.gdsEyebrow}>❄️ Cold (&lt;10°C)</span>
+              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {climateBands.cold.avgFill}%
+              </strong>
+              <span className={styles.gdsCaption}>{climateBands.cold.count} outdoor matches</span>
+            </div>
+          )}
 
-          <div className={styles.bentoSummaryStat}>
-            <span className={styles.gdsEyebrow}>🏟️ Indoor arenas</span>
-            <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-              {climateBands.indoor.avgFill !== null ? `${climateBands.indoor.avgFill}%` : 'n/a'}
-            </strong>
-            <span className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</span>
-          </div>
+          {climateBands.indoor.count > 0 && climateBands.indoor.avgFill !== null && (
+            <div className={styles.bentoSummaryStat}>
+              <span className={styles.gdsEyebrow}>🏟️ Indoor arenas</span>
+              <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
+                {climateBands.indoor.avgFill}%
+              </strong>
+              <span className={styles.gdsCaption}>{climateBands.indoor.count} arena fixtures</span>
+            </div>
+          )}
         </div>
 
       {/* Interactive Scatter Canvas */}
