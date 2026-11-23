@@ -3067,6 +3067,13 @@
   flex-direction: column;
 }
 
+.bentoBenefit {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--mm-gray-600);
+  margin: 0 0 8px 0;
+}
+
 .bentoFootnote {
   font-size: 11px;
   line-height: 1.4;

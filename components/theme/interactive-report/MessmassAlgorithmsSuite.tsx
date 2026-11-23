@@ -157,14 +157,17 @@ export default function MessmassAlgorithmsSuite({
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
             <span className={styles.bentoPanelIcon} aria-hidden="true">🧮</span>
-            <h2 className={styles.gdsCardTitle}>Supporter segmentation &amp; engagement indices</h2>
+            <h2 className={styles.gdsCardTitle}>How loyal &amp; engaged are your fans?</h2>
           </div>
-          <span className={styles.bentoPanelStatus}>Empirical Messmass algorithms</span>
+          <span className={styles.bentoPanelStatus}>Fan loyalty</span>
         </header>
         <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+          <p className={styles.bentoBenefit}>
+            Separates merch-wearing supporters from casual visitors so you know how big your loyal core fanbase is.
+          </p>
           <div className={styles.bentoFourCol}>
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Visual fan engagement</span>
+              <span className={styles.gdsEyebrow}>Crowd captured in photos</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {fanEngagementPct !== null ? `${fanEngagementPct}%` : 'n/a'}
               </strong>
@@ -176,7 +179,7 @@ export default function MessmassAlgorithmsSuite({
             </div>
 
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Front-runners vs. casuals</span>
+              <span className={styles.gdsEyebrow}>Merch wearers vs. casuals</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {frontRunnersPct !== null ? `${frontRunnersPct}% / ${casualsPct}%` : 'n/a'}
               </strong>
@@ -188,7 +191,7 @@ export default function MessmassAlgorithmsSuite({
             </div>
 
             <div className={styles.bentoSummaryStat}>
-              <span className={styles.gdsEyebrow}>Core fan team projection</span>
+              <span className={styles.gdsEyebrow}>Estimated loyal fanbase</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {coreFanTeamProjection !== null ? coreFanTeamProjection.toLocaleString() : 'n/a'}
               </strong>
@@ -201,7 +204,7 @@ export default function MessmassAlgorithmsSuite({
 
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>
-                {fanaticalsPct !== null ? 'Fanaticals index' : 'Non-senior (<60) share'}
+                {fanaticalsPct !== null ? 'Super-fan share' : 'Under-60 crowd share'}
               </span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {fanaticalsPct !== null
@@ -256,13 +259,16 @@ export default function MessmassAlgorithmsSuite({
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">💶</span>
-                <h2 className={styles.gdsCardTitle}>Modelled commercial &amp; media value</h2>
+                <h2 className={styles.gdsCardTitle}>Estimated sponsor &amp; media value</h2>
               </div>
               <span className={styles.bentoPanelStatus}>
-                €{totalModelledEur.toLocaleString()} illustrative total
+                €{totalModelledEur.toLocaleString()} estimated total
               </span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Turns fan photos, opt-ins, and un-merched fans into euro estimates so you can price sponsorships and spot missed merch sales.
+              </p>
               <div className={styles.chartCanvasBox}>
                 <canvas ref={valCanvasRef} />
               </div>
@@ -278,11 +284,14 @@ export default function MessmassAlgorithmsSuite({
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🔗</span>
-                <h2 className={styles.gdsCardTitle}>Digital touchpoints &amp; referral traffic</h2>
+                <h2 className={styles.gdsCardTitle}>Online clicks &amp; QR traffic</h2>
               </div>
-              <span className={styles.bentoPanelStatus}>Portal &amp; Bitly traffic</span>
+              <span className={styles.bentoPanelStatus}>Links &amp; QR scans</span>
             </header>
             <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+              <p className={styles.bentoBenefit}>
+                Shows how many fans scanned QR codes or clicked sponsor links after taking a photo—proving post-match digital action.
+              </p>
               <div className={styles.bentoTwoCol}>
                 <div className={styles.bentoSummaryStat}>
                   <span className={styles.gdsEyebrow}>Fan interaction rate</span>

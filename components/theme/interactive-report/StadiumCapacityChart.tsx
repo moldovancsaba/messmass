@@ -72,14 +72,17 @@ export default function StadiumCapacityChart({ matches, analytics }: StadiumCapa
       <header className={styles.bentoPanelHeader}>
         <div className={styles.bentoPanelTitle}>
           <span className={styles.bentoPanelIcon} aria-hidden="true">🏟️</span>
-          <h2 className={styles.gdsCardTitle}>Venue capacity vs. gate turnout</h2>
+          <h2 className={styles.gdsCardTitle}>How full are the stadiums?</h2>
         </div>
         <span className={styles.bentoPanelStatus}>
           Avg fill {avgFill}% · {totalCap.toLocaleString()} seats
         </span>
       </header>
 
-      <div className={styles.bentoPanelBody}>
+      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        <p className={styles.bentoBenefit}>
+          Shows which venues sell out and where empty seats remain—helping you plan ticket promos and matchday staffing.
+        </p>
         <div className={styles.bentoBarList}>
           {venueLeaderboard.map((v) => {
             const cumulativeCap = v.cumulativeCapacity;

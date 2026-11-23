@@ -36,12 +36,14 @@ function ChartJsPanel({
   title,
   icon,
   status,
+  description,
   config,
   tall = false,
 }: {
   title: string;
   icon: string;
   status?: string;
+  description?: string;
   config: ChartConfiguration;
   tall?: boolean;
 }) {
@@ -66,6 +68,7 @@ function ChartJsPanel({
         {status && <span className={styles.bentoPanelStatus}>{status}</span>}
       </header>
       <div className={styles.bentoPanelBody}>
+        {description && <p className={styles.bentoBenefit}>{description}</p>}
         <div className={tall ? styles.chartCanvasBoxTall : styles.chartCanvasBox}>
           <canvas ref={canvasRef} />
         </div>
@@ -78,12 +81,14 @@ function EChartsPanel({
   title,
   icon,
   status,
+  description,
   option,
   tall = false,
 }: {
   title: string;
   icon: string;
   status?: string;
+  description?: string;
   option: echarts.EChartsOption;
   tall?: boolean;
 }) {
@@ -114,6 +119,7 @@ function EChartsPanel({
         {status && <span className={styles.bentoPanelStatus}>{status}</span>}
       </header>
       <div className={styles.bentoPanelBody}>
+        {description && <p className={styles.bentoBenefit}>{description}</p>}
         <div ref={boxRef} className={tall ? styles.chartCanvasBoxTall : styles.chartCanvasBox} />
       </div>
     </article>
@@ -208,11 +214,14 @@ function D3LollipopPanel({
       <header className={styles.bentoPanelHeader}>
         <div className={styles.bentoPanelTitle}>
           <span className={styles.bentoPanelIcon} aria-hidden="true">🎯</span>
-          <h3 className={styles.gdsCardTitle}>Top fixtures by photo capture rate (photos / 1k attendees)</h3>
+          <h3 className={styles.gdsCardTitle}>Best matches for photo engagement</h3>
         </div>
         <span className={styles.bentoPanelStatus}>Top 12 fixtures</span>
       </header>
       <div className={styles.bentoPanelBody}>
+        <p className={styles.bentoBenefit}>
+          Highlights which fixtures generated the most fan photos per 1,000 attendees so you can repeat what worked.
+        </p>
         <svg ref={svgRef} className={styles.svgChart} role="img" aria-label="D3 lollipop chart of fixture photo capture rate" />
       </div>
     </article>
@@ -902,9 +911,10 @@ export default function ChartLibraryShowcase({
         <>
           {eventsWithPhotos.length > 0 && (
             <EChartsPanel
-              title={`All events by photo volume — largest to smallest (${eventsWithPhotos.length} events)`}
+              title={`Which matches drove the most photos (${eventsWithPhotos.length} events)`}
               icon="🖼️"
               status="Click to zoom"
+              description="Larger blocks mean more fan photos—spot your biggest matchday activations at a glance."
               option={allEventsTreemapOption}
               tall
             />
@@ -912,15 +922,17 @@ export default function ChartLibraryShowcase({
           <div className={styles.bentoTwoCol}>
             {eventsWithPhotos.length > 0 && (
               <EChartsPanel
-                title="Top 15 events photo concentration (Pareto)"
+                title="Top 15 matches driving total photo volume"
                 icon="📊"
+                description="Shows whether a few marquee games generate most of your photos or if volume is spread evenly."
                 option={eventsParetoOption}
               />
             )}
             {eventsWithPhotos.length > 0 && (
               <EChartsPanel
-                title="Sport → event photo hierarchy (Sunburst)"
+                title="Photo breakdown by sport &amp; match"
                 icon="☀️"
+                description="Groups fan photos by sport and fixture so you can see which competitions contribute the most."
                 option={sportSunburstOption}
               />
             )}
@@ -934,18 +946,20 @@ export default function ChartLibraryShowcase({
         <>
           {matches.some((m) => (m.attendance ?? 0) > 0) && (
             <EChartsPanel
-              title="Venue environment → sport → outcome attendance flow"
+              title="How attendance flows across venues &amp; results"
               icon="🔀"
               status="Gate turnout flow"
+              description="Traces how total ticketed fans split between indoor/outdoor venues, sports, and match outcomes."
               option={attendanceSankeyOption}
               tall
             />
           )}
           {monthlySeries.length > 1 && (
             <EChartsPanel
-              title="Cumulative season attendance & photo growth"
+              title="Season growth in attendance &amp; photos"
               icon="📈"
               status={`${monthlySeries.length} months`}
+              description="Tracks cumulative crowd and photo momentum over the season to show long-term campaign growth."
               option={cumulativeOption}
               tall
             />
@@ -953,29 +967,33 @@ export default function ChartLibraryShowcase({
           <div className={styles.bentoTwoCol}>
             {monthlySeries.length > 0 && (
               <EChartsPanel
-                title="Month × day-of-week stadium fill % heatmap"
+                title="Best days &amp; months for stadium fill"
                 icon="🗓️"
+                description="Reveals which days of the week and months draw the fullest crowds to help plan future schedules."
                 option={heatmapOption}
               />
             )}
             <EChartsPanel
-              title="Portfolio average stadium utilization"
+              title="Average stadium fill across all games"
               icon="⏱️"
+              description="Gives a single headline score for how full your venues are across the selected matches."
               option={gaugeOption}
             />
           </div>
           <div className={styles.bentoTwoCol}>
             {monthlySeries.length > 0 && (
               <ChartJsPanel
-                title="Monthly gate attendance vs. fan photos"
+                title="Monthly crowd size vs. fan photos"
                 icon="📊"
+                description="Compares monthly ticketed attendance against photo counts to spot months with high or low fan engagement."
                 config={monthlyChartJsConfig}
               />
             )}
             {matches.some((m) => m.venueCapacity) && (
               <ChartJsPanel
-                title="Top venues: attended vs. unoccupied seats"
+                title="Filled vs. empty seats by venue"
                 icon="🏟️"
+                description="Shows where empty seats still exist in top stadiums—highlighting ticket and fan-zone growth opportunities."
                 config={venueStackConfig}
               />
             )}
@@ -988,22 +1006,25 @@ export default function ChartLibraryShowcase({
         <>
           {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
             <EChartsPanel
-              title="Multi-dimensional fixture profile"
+              title="Match profile: weather, seats &amp; photos"
               icon="🧬"
               status="Temp · Capacity · Attendance · Fill % · Photos"
+              description="Connects temperature, stadium size, turnout, and photo counts to show what conditions produce peak matchdays."
               option={parallelOption}
             />
           )}
           <div className={styles.bentoTwoCol}>
             <EChartsPanel
-              title="Stadium fill % distribution by sport"
+              title="Attendance range by sport"
               icon="📦"
+              description="Shows the typical, peak, and lowest stadium fill rates so you can benchmark consistency."
               option={boxplotOption}
             />
             {matches.some((m) => m.weather && !m.weather.isIndoor) && (
               <EChartsPanel
-                title="Wind speed vs. fill % (dry vs. rain)"
+                title="Wind &amp; rain impact on outdoor crowds"
                 icon="💨"
+                description="Tests whether windy or rainy matchdays noticeably reduce outdoor stadium turnout."
                 option={windScatterOption}
               />
             )}
@@ -1011,15 +1032,17 @@ export default function ChartLibraryShowcase({
           <div className={styles.bentoTwoCol}>
             {radarSportCount >= 2 && (
               <ChartJsPanel
-                title="Multi-axis sport performance radar"
+                title="Sport-by-sport performance comparison"
                 icon="🕸️"
+                description="Compares fill rate, win rate, and photo density across sports to show where activation performs best."
                 config={radarConfig}
               />
             )}
             {matches.some((m) => m.weather) && (
               <ChartJsPanel
-                title="Temperature × fill % × photo volume"
+                title="Temperature, fill rate &amp; photo volume"
                 icon="🫧"
+                description="Shows whether warmer matchdays bring bigger crowds and larger fan photo volumes (bubble size)."
                 config={bubbleConfig}
               />
             )}
@@ -1033,17 +1056,19 @@ export default function ChartLibraryShowcase({
           <div className={styles.bentoTwoCol}>
             {brands.length > 0 && (
               <EChartsPanel
-                title="Commercial brand exposure treemap"
+                title="Share of sponsor brand visibility"
                 icon="🏷️"
                 status={`Top ${Math.min(18, brands.length)} brands`}
+                description="Shows each commercial brand's share of total logo detections—useful for sponsor tiering and pitch decks."
                 option={treemapOption}
               />
             )}
             {clubs.length > 0 && (
               <EChartsPanel
-                title="Club apparel share breakdown"
+                title="Team merch &amp; jersey share"
                 icon="🌹"
                 status={`Top ${Math.min(8, clubs.length)} clubs`}
+                description="Compares which clubs' jerseys and scarves fans wear most often in the stands."
                 option={roseOption}
               />
             )}
@@ -1051,15 +1076,17 @@ export default function ChartLibraryShowcase({
           <div className={styles.bentoTwoCol}>
             {ageGroups && (ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors) > 0 && (
               <ChartJsPanel
-                title="Age cohort distribution"
+                title="Age groups in the crowd"
                 icon="🧭"
+                description="Breaks down kids, teens, adults, and seniors so sponsors can match products to the actual crowd."
                 config={agePolarConfig}
               />
             )}
             {emotions.length > 0 && (
               <ChartJsPanel
-                title="Fan facial sentiment mix"
+                title="How fans feel in photos"
                 icon="😊"
+                description="Measures happiness, excitement, and calm expressions so you can prove positive brand sentiment."
                 config={emotionDoughnutConfig}
               />
             )}

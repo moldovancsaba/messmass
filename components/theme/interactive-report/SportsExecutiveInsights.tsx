@@ -140,7 +140,7 @@ export default function SportsExecutiveInsights({
       <header className={styles.bentoPanelHeader}>
         <div className={styles.bentoPanelTitle}>
           <span className={styles.bentoPanelIcon} aria-hidden="true">🎯</span>
-          <h2 className={styles.gdsCardTitle}>Matchday activation efficiency &amp; home/away split</h2>
+          <h2 className={styles.gdsCardTitle}>Home games vs. full season</h2>
         </div>
         <span className={styles.bentoPanelStatus}>
           {matches.length} {matches.length === 1 ? 'fixture' : 'fixtures'}
@@ -148,6 +148,11 @@ export default function SportsExecutiveInsights({
       </header>
 
       <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        <p className={styles.bentoBenefit}>
+          {isPartnerScope && insights.awayCount > 0
+            ? 'Shows your own home matchdays first, compared against your full season (including away games as Team 2).'
+            : 'Summarizes how many fans in the stands were captured in photos and how full your home matches were.'}
+        </p>
         {isPartnerScope && insights.awayCount > 0 ? (
           <>
             <div className={styles.bentoFourCol}>

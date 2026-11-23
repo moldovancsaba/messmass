@@ -93,7 +93,7 @@ export default function WeatherTurnoutCorrelationMatrix({
       <header className={styles.bentoPanelHeader}>
         <div className={styles.bentoPanelTitle}>
           <span className={styles.bentoPanelIcon} aria-hidden="true">🌤️</span>
-          <h2 className={styles.gdsCardTitle}>Weather vs. stadium attendance</h2>
+          <h2 className={styles.gdsCardTitle}>Does weather affect crowd size?</h2>
         </div>
 
         {/* Sport Filter Toggle */}
@@ -123,6 +123,9 @@ export default function WeatherTurnoutCorrelationMatrix({
       </header>
 
       <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        <p className={styles.bentoBenefit}>
+          Compares outdoor attendance in cold, mild, and rainy weather against indoor arenas so you can forecast turnout.
+        </p>
         {/* Climate Tier Comparison */}
         <div className={styles.bentoFourCol}>
           <div className={styles.bentoSummaryStat}>

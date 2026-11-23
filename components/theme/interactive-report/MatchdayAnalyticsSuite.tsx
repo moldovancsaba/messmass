@@ -338,13 +338,16 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
               <span className={styles.bentoPanelIcon} aria-hidden="true">📅</span>
-              <h2 className={styles.gdsCardTitle}>Monthly stadium attendance &amp; fill rate trend</h2>
+              <h2 className={styles.gdsCardTitle}>Monthly attendance &amp; stadium fill</h2>
             </div>
             <span className={styles.bentoPanelStatus}>
-              Bars: Gate Attendance · Line: Fill % ({monthlyStats.length} months)
+              Bars: Attendance · Line: Fill % ({monthlyStats.length} months)
             </span>
           </header>
           <div className={styles.bentoPanelBody}>
+            <p className={styles.bentoBenefit}>
+              Tracks seasonal peaks and dips in crowd size so you can schedule big sponsor campaigns during top months.
+            </p>
             <svg viewBox={`0 0 ${mW} ${mH}`} className={styles.svgChart} role="img" aria-label="Monthly stadium attendance and fill rate trend">
               {[0, 0.5, 1].map((frac) => {
                 const y = mPadT + mPlotH - frac * mPlotH;
@@ -406,13 +409,16 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
               <span className={styles.bentoPanelIcon} aria-hidden="true">🕒</span>
-              <h2 className={styles.gdsCardTitle}>Start time vs. stadium attendance</h2>
+              <h2 className={styles.gdsCardTitle}>Best kickoff times for turnout</h2>
             </div>
             <span className={styles.bentoPanelStatus}>
               {kickoffStats.hasAnyTime ? `${kickoffStats.rows.length} windows` : 'Kickoff time'}
             </span>
           </header>
           <div className={styles.bentoPanelBody}>
+            <p className={styles.bentoBenefit}>
+              Shows which match start times fill the stands best so you can optimize scheduling and fan-zone hours.
+            </p>
             {kickoffStats.hasAnyTime && kickoffStats.rows.length > 0 ? (
               <ColumnChartSvg
                 data={kickoffStats.rows.map((r) => ({
@@ -442,11 +448,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">📆</span>
-                <h2 className={styles.gdsCardTitle}>Day-of-week fill rate chart</h2>
+                <h2 className={styles.gdsCardTitle}>Best days of the week for turnout</h2>
               </div>
               <span className={styles.bentoPanelStatus}>{weekdayStats.length} days</span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Compares weekday vs. weekend stadium fill so you know when fans are most likely to show up.
+              </p>
               <ColumnChartSvg
                 data={weekdayStats.map((r) => ({
                   label: r.label,
@@ -469,11 +478,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🌧️</span>
-                <h2 className={styles.gdsCardTitle}>Precipitation &amp; wind vs. fill rate</h2>
+                <h2 className={styles.gdsCardTitle}>Rain &amp; wind impact on outdoor games</h2>
               </div>
               <span className={styles.bentoPanelStatus}>Outdoor fixtures</span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Measures how much rain or strong wind reduces outdoor attendance compared to dry matchdays.
+              </p>
               <ColumnChartSvg
                 data={weatherConditionsStats.map((r) => ({
                   label: r.label,
@@ -494,11 +506,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🏅</span>
-                <h2 className={styles.gdsCardTitle}>Fill rate vs. photo density by sport</h2>
+                <h2 className={styles.gdsCardTitle}>Crowd fill vs. fan photo rate</h2>
               </div>
               <span className={styles.bentoPanelStatus}>Bubble size = matches</span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Shows whether fuller stadiums also produce more fan photos per 1,000 attendees across sports.
+              </p>
               <svg viewBox="0 0 440 195" className={styles.svgChart} role="img" aria-label="Sport fill rate vs photos per 1k fans">
                 {[0, 50, 100].map((tick) => {
                   const y = 20 + 140 - (tick / 100) * 140;
@@ -548,11 +563,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">⚡</span>
-                <h2 className={styles.gdsCardTitle}>Score margin vs. avg fan photos</h2>
+                <h2 className={styles.gdsCardTitle}>Do close games drive more photos?</h2>
               </div>
               <span className={styles.bentoPanelStatus}>Scored fixtures</span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Compares average fan photos in tight, nail-biting matches versus blowouts.
+              </p>
               <ColumnChartSvg
                 data={competitivenessStats.map((r) => ({
                   label: r.label,
@@ -572,11 +590,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
                 <span className={styles.bentoPanelIcon} aria-hidden="true">🏛️</span>
-                <h2 className={styles.gdsCardTitle}>Venue capacity tier fill rate</h2>
+                <h2 className={styles.gdsCardTitle}>How full are small vs. large venues?</h2>
               </div>
               <span className={styles.bentoPanelStatus}>{capacityTierStats.length} tiers</span>
             </header>
             <div className={styles.bentoPanelBody}>
+              <p className={styles.bentoBenefit}>
+                Shows whether smaller arenas sell out more consistently than mega-stadiums.
+              </p>
               <ColumnChartSvg
                 data={capacityTierStats.map((r) => ({
                   label: r.label,
@@ -599,11 +620,14 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
               <span className={styles.bentoPanelIcon} aria-hidden="true">📸</span>
-              <h2 className={styles.gdsCardTitle}>Gender split &amp; density by sport (100% stacked)</h2>
+              <h2 className={styles.gdsCardTitle}>Men vs. women in the crowd by sport</h2>
             </div>
-            <span className={styles.bentoPanelStatus}>Blue: Male · Teal: Female</span>
+            <span className={styles.bentoPanelStatus}>Primary: Male · Teal: Female</span>
           </header>
           <div className={styles.bentoPanelBody}>
+            <p className={styles.bentoBenefit}>
+              Compares gender balance and group size per photo across sports to guide sponsor targeting.
+            </p>
             <svg viewBox={`0 0 880 ${sportVisionStats.length * 36 + 16}`} className={styles.svgChart} role="img" aria-label="Gender split by sport">
               {sportVisionStats.map((row, idx) => {
                 const y = idx * 36 + 8;

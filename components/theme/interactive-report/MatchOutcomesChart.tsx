@@ -117,13 +117,17 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
         <div className={styles.bentoPanelTitle}>
           <span className={styles.bentoPanelIcon} aria-hidden="true">🏆</span>
           <h2 className={styles.gdsCardTitle}>
-            {clubMode ? `${partnerName} results` : 'Home vs. visitor win distribution'}
+            {clubMode ? `${partnerName} match results` : 'Match results & win rate'}
           </h2>
         </div>
         <span className={styles.bentoPanelStatus}>{totalMatches} fixtures</span>
       </header>
 
-      <div className={`${styles.bentoPanelBody} ${styles.bentoOutcomesSplit}`}>
+      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
+        <p className={styles.bentoBenefit}>
+          Tracks wins, draws, and losses—winning runs typically boost crowd energy, attendance, and sponsor exposure.
+        </p>
+        <div className={styles.bentoOutcomesSplit}>
         <div className={styles.bentoOutcomesDonutWrap}>
           <div className={styles.bentoDonut}>
             <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
@@ -189,6 +193,7 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
               <span className={`${styles.gdsCaption} ${styles.gdsNum}`}>{row.rate}%</span>
             </div>
           ))}
+        </div>
         </div>
       </div>
     </article>
