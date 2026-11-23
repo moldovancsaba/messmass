@@ -174,14 +174,14 @@
   position: relative;
   overflow: hidden;
   min-width: 0;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.14);
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: var(--mm-radius-lg, 16px);
-  padding: 13px 14px 12px;
+  padding: 12px 12px 11px;
   min-height: 112px;
   display: flex;
   flex-direction: column;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 6px 14px rgba(16, 34, 66, 0.08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 6px 14px rgba(16, 34, 66, 0.08);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -202,12 +202,12 @@
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22), 0 10px 20px rgba(16, 34, 66, 0.08);
 }
 
-.kpiTile1 { background: linear-gradient(125deg, #1b79df, #1b79df); }
-.kpiTile2 { background: linear-gradient(125deg, #03ad9f, #03ad9f); }
-.kpiTile3 { background: linear-gradient(125deg, #7c3aed, #7c3aed); }
-.kpiTile4 { background: linear-gradient(125deg, #03ad9f, #03ad9f); }
-.kpiTile5 { background: linear-gradient(125deg, #e11d48, #e11d48); }
-.kpiTile6 { background: linear-gradient(125deg, #1b79df, #1b79df); }
+.kpiTile1 { background: linear-gradient(135deg, var(--report-primary, #1b79df), var(--report-primary-dark, #0f2c4a)); }
+.kpiTile2 { background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06)); }
+.kpiTile3 { background: linear-gradient(135deg, var(--report-primary, #1b79df), var(--report-primary-dark, #0f2c4a)); }
+.kpiTile4 { background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06)); }
+.kpiTile5 { background: linear-gradient(135deg, var(--report-primary, #1b79df), var(--report-primary-dark, #0f2c4a)); }
+.kpiTile6 { background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06)); }
 
 .kpiLabel {
   font-size: 11px;
@@ -218,7 +218,7 @@
 }
 
 .kpiValue {
-  font-size: 26px;
+  font-size: clamp(18px, 1.8vw, 26px);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: #ffffff;
@@ -1926,7 +1926,7 @@
 .sportFilterBtnActive {
   background: var(--report-primary, #1b79df) !important;
   border-color: var(--report-primary, #1b79df) !important;
-  color: var(--report-primary-text, #ffffff) !important;
+  color: var(--report-on-primary, #ffffff) !important;
   font-weight: 700;
   box-shadow: 0 3px 8px rgba(27, 121, 223, 0.14);
 }
@@ -3021,7 +3021,7 @@
 }
 
 .bentoPanelHeader {
-  min-height: 53px;
+  min-height: 60px;
   padding: 10px 16px;
   display: flex;
   flex-wrap: wrap;
@@ -3071,7 +3071,11 @@
   font-size: 13px;
   line-height: 1.45;
   color: var(--mm-gray-600);
-  margin: 0 0 8px 0;
+  margin: 0 0 10px 0;
+}
+
+.bentoGrid .bentoBenefit {
+  min-height: 58px;
 }
 
 .bentoFootnote {
@@ -3468,7 +3472,7 @@
 
 .bentoToggleBtnActive {
   background: var(--report-primary, #1b79df);
-  color: var(--report-primary-text, #ffffff);
+  color: var(--report-on-primary, #ffffff);
 }
 
 .bentoPodiumArea {

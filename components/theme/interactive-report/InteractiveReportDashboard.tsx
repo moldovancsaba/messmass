@@ -94,7 +94,8 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
 
   const themeVars = {
     '--report-primary': partnerTheme.primary,
-    '--report-primary-text': getContrastTextHex(partnerTheme.primary),
+    '--report-on-primary': getContrastTextHex(partnerTheme.primary),
+    '--report-primary-text': partnerTheme.primaryDark,
     '--report-primary-dark': partnerTheme.primaryDark,
     '--report-primary-soft': partnerTheme.primarySoft,
     '--report-accent': partnerTheme.accent,
