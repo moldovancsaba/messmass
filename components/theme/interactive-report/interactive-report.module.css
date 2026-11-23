@@ -2936,7 +2936,7 @@
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--report-primary-text, #1b79df);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .decisionsHeading {
