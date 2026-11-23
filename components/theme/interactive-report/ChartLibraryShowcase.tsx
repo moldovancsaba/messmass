@@ -398,6 +398,24 @@ export default function ChartLibraryShowcase({
     [clubs, partnerPalette]
   );
 
+  const hasFillData = useMemo(() => matches.some((m) => getFillPct(m) !== null), [matches]);
+  const hasBoxplotData = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const m of matches) {
+      if (getFillPct(m) === null) continue;
+      counts.set(m.sport, (counts.get(m.sport) || 0) + 1);
+    }
+    return Array.from(counts.values()).some((n) => n >= 2);
+  }, [matches]);
+  const hasOutdoorWindFillData = useMemo(
+    () => matches.some((m) => m.weather && !m.weather.isIndoor && getFillPct(m) !== null),
+    [matches]
+  );
+  const hasWeatherBubbleData = useMemo(
+    () => matches.some((m) => m.weather && getFillPct(m) !== null),
+    [matches]
+  );
+
   // 5. ECharts: Stadium Utilization Gauge
   const gaugeOption = useMemo<echarts.EChartsOption>(() => {
     const fills = matches.map(getFillPct).filter((v): v is number => v !== null);
@@ -1009,7 +1027,7 @@ export default function ChartLibraryShowcase({
             />
           )}
           <div className={styles.bentoTwoCol}>
-            {monthlySeries.length > 0 && (
+            {monthlySeries.length > 0 && hasFillData && (
               <EChartsPanel
                 title="Best days &amp; months for stadium fill"
                 icon="🗓️"
@@ -1017,15 +1035,17 @@ export default function ChartLibraryShowcase({
                 option={heatmapOption}
               />
             )}
-            <EChartsPanel
-              title="Average stadium fill across all games"
-              icon="⏱️"
-              description="Gives a single headline score for how full your venues are across the selected matches."
-              option={gaugeOption}
-            />
+            {hasFillData && (
+              <EChartsPanel
+                title="Average stadium fill across all games"
+                icon="⏱️"
+                description="Gives a single headline score for how full your venues are across the selected matches."
+                option={gaugeOption}
+              />
+            )}
           </div>
           <div className={styles.bentoTwoCol}>
-            {monthlySeries.length > 0 && (
+            {monthlySeries.some((m) => m.attendance > 0 || m.photos > 0) && (
               <ChartJsPanel
                 title="Monthly crowd size vs. fan photos"
                 icon="📊"
@@ -1033,7 +1053,7 @@ export default function ChartLibraryShowcase({
                 config={monthlyChartJsConfig}
               />
             )}
-            {matches.some((m) => m.venueCapacity) && (
+            {matches.some((m) => Boolean(m.venue?.trim()) && (m.venueCapacity ?? 0) > 0) && (
               <ChartJsPanel
                 title="Filled vs. empty seats by venue"
                 icon="🏟️"
@@ -1057,40 +1077,46 @@ export default function ChartLibraryShowcase({
               option={parallelOption}
             />
           )}
-          <div className={styles.bentoTwoCol}>
-            <EChartsPanel
-              title="Attendance range by sport"
-              icon="📦"
-              description="Shows the typical, peak, and lowest stadium seat occupancy so you can benchmark consistency."
-              option={boxplotOption}
-            />
-            {matches.some((m) => m.weather && !m.weather.isIndoor) && (
-              <EChartsPanel
-                title="Wind &amp; rain impact on outdoor crowds"
-                icon="💨"
-                description="Tests whether windy or rainy matchdays noticeably reduce outdoor stadium turnout."
-                option={windScatterOption}
-              />
-            )}
-          </div>
-          <div className={styles.bentoTwoCol}>
-            {radarSportCount >= 2 && (
-              <ChartJsPanel
-                title="Sport-by-sport performance comparison"
-                icon="🕸️"
-                description="Compares stadium seat occupancy, win rate, and photo density across sports to show where activation performs best."
-                config={radarConfig}
-              />
-            )}
-            {matches.some((m) => m.weather) && (
-              <ChartJsPanel
-                title="Temperature, seat occupancy &amp; photo volume"
-                icon="🫧"
-                description="Shows whether warmer matchdays bring bigger crowds and larger fan photo volumes (bubble size)."
-                config={bubbleConfig}
-              />
-            )}
-          </div>
+          {(hasBoxplotData || hasOutdoorWindFillData) && (
+            <div className={styles.bentoTwoCol}>
+              {hasBoxplotData && (
+                <EChartsPanel
+                  title="Attendance range by sport"
+                  icon="📦"
+                  description="Shows the typical, peak, and lowest stadium seat occupancy so you can benchmark consistency."
+                  option={boxplotOption}
+                />
+              )}
+              {hasOutdoorWindFillData && (
+                <EChartsPanel
+                  title="Wind &amp; rain impact on outdoor crowds"
+                  icon="💨"
+                  description="Tests whether windy or rainy matchdays noticeably reduce outdoor stadium turnout."
+                  option={windScatterOption}
+                />
+              )}
+            </div>
+          )}
+          {(radarSportCount >= 2 || hasWeatherBubbleData) && (
+            <div className={styles.bentoTwoCol}>
+              {radarSportCount >= 2 && (
+                <ChartJsPanel
+                  title="Sport-by-sport performance comparison"
+                  icon="🕸️"
+                  description="Compares stadium seat occupancy, win rate, and photo density across sports to show where activation performs best."
+                  config={radarConfig}
+                />
+              )}
+              {hasWeatherBubbleData && (
+                <ChartJsPanel
+                  title="Temperature, seat occupancy &amp; photo volume"
+                  icon="🫧"
+                  description="Shows whether warmer matchdays bring bigger crowds and larger fan photo volumes (bubble size)."
+                  config={bubbleConfig}
+                />
+              )}
+            </div>
+          )}
         </>
       )}
     </section>

@@ -447,7 +447,9 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
       )}
 
       {/* Row A: Start Time vs Attendance + Day of Week Turnout */}
+      {((kickoffStats.hasAnyTime && kickoffStats.rows.length > 0) || weekdayStats.length > 0) && (
       <div className={styles.bentoTwoCol}>
+        {kickoffStats.hasAnyTime && kickoffStats.rows.length > 0 && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -455,36 +457,27 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
               <h2 className={styles.gdsCardTitle}>Best kickoff times for turnout</h2>
             </div>
             <span className={styles.bentoPanelStatus}>
-              {kickoffStats.hasAnyTime ? `${kickoffStats.rows.length} windows` : 'Kickoff time'}
+              {`${kickoffStats.rows.length} windows`}
             </span>
           </header>
           <div className={styles.bentoPanelBody}>
             <p className={styles.bentoBenefit}>
               Shows which match start times fill the stands best so you can optimize scheduling and fan-zone hours.
             </p>
-            {kickoffStats.hasAnyTime && kickoffStats.rows.length > 0 ? (
-              <ColumnChartSvg
-                data={kickoffStats.rows.map((r) => ({
-                  label: r.label,
-                  subLabel: `${r.matches}m`,
-                  value: r.avgFill,
-                  tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg gate across ${r.matches} matches)`,
-                }))}
-                maxValue={100}
-                unitSuffix="%"
-                barClass={styles.svgBarTeal}
-              />
-            ) : (
-              <div className={styles.bentoSummaryStat}>
-                <span className={styles.gdsEyebrow}>KICKOFF TIMESTAMP AUDIT</span>
-                <strong className={styles.gdsCardTitle}>Start times not recorded on legacy fixtures</strong>
-                <span className={styles.gdsCaption}>
-                  Fixture dates are stored without kickoff hours for this portfolio. New Football-Data and match imports automatically populate kickoff times for this chart.
-                </span>
-              </div>
-            )}
+            <ColumnChartSvg
+              data={kickoffStats.rows.map((r) => ({
+                label: r.label,
+                subLabel: `${r.matches}m`,
+                value: r.avgFill,
+                tooltip: `${r.label}: ${r.avgFill}% avg seat occupancy (${r.avgAttendance.toLocaleString()} avg gate across ${r.matches} matches)`,
+              }))}
+              maxValue={100}
+              unitSuffix="%"
+              barClass={styles.svgBarTeal}
+            />
           </div>
         </article>
+        )}
 
         {weekdayStats.length > 0 && (
           <article className={styles.bentoPanel}>
@@ -513,6 +506,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           </article>
         )}
       </div>
+      )}
 
       {/* Row B: Photo Engagement vs Seat Occupancy & Score Margin */}
       <div className={styles.bentoTwoCol}>
