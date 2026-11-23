@@ -123,8 +123,8 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
         <span className={styles.bentoPanelStatus}>{totalMatches} fixtures</span>
       </header>
 
-      <div className={`${styles.bentoPanelBody} ${styles.gdsStack}`}>
-        <div className={styles.bentoDonutMajor}>
+      <div className={`${styles.bentoPanelBody} ${styles.bentoOutcomesSplit}`}>
+        <div className={styles.bentoOutcomesDonutWrap}>
           <div className={styles.bentoDonut}>
             <svg viewBox="0 0 42 42" className={styles.donutSvg} aria-hidden="true">
               <circle cx="21" cy="21" r="15.9155" className={styles.donutTrack} />
@@ -176,7 +176,7 @@ export default function MatchOutcomesChart({ matches, scopeType, partnerName, an
         <div className={styles.bentoBarList}>
           {[
             { label: firstLabel, count: homeWins, rate: homeWinRate, cls: styles.bentoBarFillRect },
-            { label: 'Draws', count: draws, rate: drawRate, cls: styles.bentoBarFillRect },
+            { label: 'Draws', count: draws, rate: drawRate, cls: styles.bentoBarFillMuted },
             { label: thirdLabel, count: awayWins, rate: awayWinRate, cls: styles.bentoBarFillTeal },
           ].map((row) => (
             <div key={row.label} className={styles.bentoBarRow}>

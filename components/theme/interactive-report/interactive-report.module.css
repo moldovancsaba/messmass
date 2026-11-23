@@ -3156,7 +3156,7 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #1b79df;
+  background: var(--report-primary, #1b79df);
 }
 
 .bentoLegendDotMuted {
@@ -3219,8 +3219,35 @@
   fill: var(--report-primary, #1b79df);
 }
 
+.bentoBarFillMuted {
+  fill: var(--mm-gray-300);
+}
+
 .bentoBarFillTeal {
   fill: #03ad9f;
+}
+
+.bentoOutcomesSplit {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.bentoOutcomesDonutWrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+@media (max-width: 760px) {
+  .bentoOutcomesSplit {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .bentoOutcomesDonutWrap {
+    justify-content: center;
+  }
 }
 
 .bentoFunnelSteps {
@@ -3609,7 +3636,7 @@
 
 .bentoFourCol {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 10px;
 }
 
@@ -3708,9 +3735,6 @@
 @media (max-width: 1160px) {
   .bentoTwoCol {
     grid-template-columns: 1fr;
-  }
-  .bentoFourCol {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .bentoGrid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
