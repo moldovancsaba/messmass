@@ -292,6 +292,12 @@ export default function OverviewTab({
       text: `${summary.optInRate}% of registered fans opted in to marketing (${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()}).`,
     });
   }
+  if (summary.avgPhotosPerUser !== null && summary.avgPhotosPerUser !== undefined) {
+    takeaways.push({
+      title: 'Fan Engagement Depth',
+      text: `Registered fans captured an average of ${summary.avgPhotosPerUser} photos each (${summary.totalPhotos.toLocaleString()} photos across ${summary.totalRegistered.toLocaleString()} registrations).`,
+    });
+  }
   if (summary.totalPhotos > 0 && summary.hostessPhotos > 0 && summary.selfies > 0) {
     takeaways.push({
       title: 'Photo Sources',
@@ -379,6 +385,7 @@ export default function OverviewTab({
           resolvedCtaClicks={resolvedCtaClicks}
           optInRate={summary.optInRate}
           vettingApprovalRate={summary.vettingApprovalRate}
+          avgPhotosPerUser={summary.avgPhotosPerUser ?? null}
           genders={currentGenders}
           ageGroups={currentAgeGroups}
           brands={filteredBrands}
@@ -459,7 +466,7 @@ export default function OverviewTab({
                   </div>
                   <div className={styles.gdsCaption}>
                     {summary.optInRate !== null && summary.totalRegistered > 0
-                      ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered fans opted in. Review the Conversion Funnel tab to isolate drop-off stages.`
+                      ? `${summary.totalOptIns.toLocaleString()} of ${summary.totalRegistered.toLocaleString()} registered fans opted in${summary.avgPhotosPerUser ? ` (${summary.avgPhotosPerUser} photos/fan avg)` : ''}. Review the Conversion Funnel tab to isolate drop-off stages.`
                       : `${summary.totalPhotos.toLocaleString()} total photos recorded in this scope. Connect registration and opt-in tracking to measure conversion.`}
                   </div>
                 </div>

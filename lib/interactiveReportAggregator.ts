@@ -714,6 +714,10 @@ export async function getScopedInteractiveReportData(
   // Opt-ins / registered, the same two counts that are printed next to it;
   // null when nobody registered or the stored opt-ins exceed the registrations
   const weightedOptInRate = consistentRate(totalOptIns, totalRegistered);
+  const avgPhotosPerUser =
+    totalPhotos > 0 && totalRegistered > 0
+      ? Number((totalPhotos / totalRegistered).toFixed(2))
+      : null;
 
   // The timeline: the campaign's cycles for a campaign scope; for the all-data scope every month that has events, from
   // the events themselves (owner answer 501: the timeline covers the Camera months too, not only the SZRT cycles)
@@ -826,7 +830,7 @@ export async function getScopedInteractiveReportData(
     {
       step: 'Photo Submissions',
       value: totalPhotos,
-      detail: `${hostessPhotos.toLocaleString()} Hostess Assisted + ${selfies.toLocaleString()} Direct Selfies`,
+      detail: `${hostessPhotos.toLocaleString()} Hostess Assisted + ${selfies.toLocaleString()} Direct Selfies${avgPhotosPerUser !== null ? ` • ${avgPhotosPerUser} photos/fan avg` : ''}`,
     },
     {
       step: 'Approved in Photo Vetting',
@@ -839,7 +843,7 @@ export async function getScopedInteractiveReportData(
     {
       step: 'Account Registrations',
       value: totalRegistered,
-      detail: `${totalRegistered.toLocaleString()} Accounts Registered`,
+      detail: `${totalRegistered.toLocaleString()} Accounts Registered${avgPhotosPerUser !== null ? ` (${avgPhotosPerUser} photos/fan avg)` : ''}`,
     },
     {
       step: 'Marketing Opt-In',
@@ -1404,6 +1408,7 @@ export async function getScopedInteractiveReportData(
       selfieShare: totalPhotos > 0 ? Math.round((selfies / totalPhotos) * 100) : 0,
       totalRegistered,
       totalOptIns,
+      avgPhotosPerUser,
       optInRate: weightedOptInRate !== null ? Number(weightedOptInRate.toFixed(1)) : null,
       vettingApprovalRate:
         vettingApprovalRate !== null ? Number(vettingApprovalRate.toFixed(1)) : null,

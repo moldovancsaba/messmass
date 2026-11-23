@@ -243,6 +243,11 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
             <span className={styles.kpiValue}>
               {summary.totalRegistered > 0 ? summary.totalRegistered.toLocaleString() : 'n/a'}
             </span>
+            {summary.avgPhotosPerUser !== null && summary.avgPhotosPerUser !== undefined && (
+              <span className={styles.kpiSubtext}>
+                {summary.avgPhotosPerUser} photos / registered fan
+              </span>
+            )}
           </div>
 
           <div className={`${styles.kpiCard} ${styles.kpiTile3}`}>

@@ -216,6 +216,8 @@ export interface InteractiveReportData {
     selfieShare: number;
     totalRegistered: number;
     totalOptIns: number;
+    /** Average photos captured per registered fan (totalPhotos / totalRegistered), null when registrations = 0. */
+    avgPhotosPerUser?: number | null;
     /** Opt-ins / registered, null when there are no registrations to divide by. */
     optInRate: number | null;
     /** Approved / submitted in photo vetting, null when nothing was submitted. Not a brand-safety measure. */

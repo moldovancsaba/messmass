@@ -11,6 +11,8 @@ interface D3FunnelFlowProps {
     optInRate: number | null;
     totalOptIns: number;
     totalRegistered: number;
+    avgPhotosPerUser?: number | null;
+    totalPhotos?: number;
     vettingApprovalRate: number | null;
     totalCtaClicks: number;
   };
@@ -39,7 +41,7 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
     );
   }
 
-  const { optInRate, totalOptIns, totalRegistered, vettingApprovalRate, totalCtaClicks } = summary;
+  const { optInRate, totalOptIns, totalRegistered, avgPhotosPerUser, totalPhotos, vettingApprovalRate, totalCtaClicks } = summary;
 
   return (
     <div className={styles.reportCard}>
@@ -160,6 +162,17 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
           </div>
           <div className={styles.cardSubtitle}>Call-to-action clicks recorded</div>
         </div>
+        {avgPhotosPerUser !== null && avgPhotosPerUser !== undefined && (
+          <div className={styles.highlightBoxGray}>
+            <div className={styles.highlightLabelGray}>Avg Photos / Fan</div>
+            <div className={styles.highlightValGray}>{avgPhotosPerUser}</div>
+            <div className={styles.cardSubtitle}>
+              {totalPhotos && totalRegistered > 0
+                ? `${totalPhotos.toLocaleString()} photos / ${totalRegistered.toLocaleString()} fans`
+                : 'Photos per registered fan'}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -16,6 +16,7 @@ export interface ExecutiveBentoGridProps {
   resolvedCtaClicks: number;
   optInRate: number | null;
   vettingApprovalRate: number | null;
+  avgPhotosPerUser?: number | null;
   genders: {
     male: number;
     female: number;
@@ -55,6 +56,7 @@ export default function ExecutiveBentoGrid({
   resolvedCtaClicks,
   optInRate,
   vettingApprovalRate,
+  avgPhotosPerUser = null,
   genders,
   ageGroups,
   brands,
@@ -264,7 +266,9 @@ export default function ExecutiveBentoGrid({
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage4}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Image usage rights</span>
-                  <span className={styles.bentoFunnelSub}>Consented photos</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {avgPhotosPerUser !== null ? `${avgPhotosPerUser} photos / fan avg` : 'Consented photos'}
+                  </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
                   {resolvedRegistered > 0 ? resolvedRegistered.toLocaleString() : 'n/a'}
@@ -287,7 +291,9 @@ export default function ExecutiveBentoGrid({
               <div className={styles.bentoFunnelStage}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Photos captured</span>
-                  <span className={styles.bentoFunnelSub}>Submitted &amp; analyzed</span>
+                  <span className={styles.bentoFunnelSub}>
+                    {avgPhotosPerUser !== null ? `${avgPhotosPerUser} photos / fan avg` : 'Submitted & analyzed'}
+                  </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
                   {stage1Val > 0 ? stage1Val.toLocaleString() : 'n/a'}
