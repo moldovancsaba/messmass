@@ -15,7 +15,6 @@ import {
   isSportFranchise,
   isVenue,
   getBrandCluster,
-  getFranchiseInfo,
   canonicalizeClub,
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
@@ -118,7 +117,7 @@ function parseCellCount(cell: string | undefined): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/** Sport label from event/partner text. Anything that is not recognised is 'Other'. */
+/** Sport label from generic sport/league/emoji text. Partner & fixture metadata are resolved via partnerSportMap / footballDataFixture. */
 export function detectSport(text: string): MatchItem['sport'] {
   const combined = text.toLowerCase();
   if (combined.includes('⚽')) return 'Football';
@@ -130,38 +129,22 @@ export function detectSport(text: string): MatchItem['sport'] {
     combined.includes('jegkorong') ||
     combined.includes('hoki') ||
     combined.includes('hockey') ||
-    combined.includes('av19') ||
-    combined.includes('feha19') ||
-    combined.includes('erste liga') ||
-    combined.includes('titánok') ||
-    combined.includes('jegesmedvék') ||
-    combined.includes('jegesmedvek') ||
-    combined.includes('acélbikák') ||
-    combined.includes('acelbikak') ||
-    combined.includes('csíkszereda') ||
-    combined.includes('csikszereda') ||
-    combined.includes('corona bra') ||
-    combined.includes('pustertal') ||
-    combined.includes('ec kac') ||
-    combined.includes('ec-kac') ||
-    combined.includes('vsv')
+    combined.includes('erste liga')
   ) {
     return 'Ice Hockey';
   }
   if (
     combined.includes('kézilabda') ||
-    combined.includes('veszprém') ||
-    combined.includes('szeged') ||
+    combined.includes('kezilabda') ||
     combined.includes('nb1 kézi') ||
-    combined.includes('handball')
+    combined.includes('handball') ||
+    combined.includes('ehf')
   ) {
     return 'Handball';
   }
   if (
     combined.includes('kosárlabda') ||
-    combined.includes('huntherm') ||
-    combined.includes('falco') ||
-    combined.includes('alba') ||
+    combined.includes('kosarlabda') ||
     combined.includes('fiba') ||
     combined.includes('basketball')
   ) {
@@ -177,28 +160,9 @@ export function detectSport(text: string): MatchItem['sport'] {
     combined.includes('otp bank liga') ||
     combined.includes('nb i') ||
     combined.includes('nb1') ||
-    combined.includes('magyar kupa') ||
-    combined.includes('mtk') ||
-    combined.includes('kisvárda') ||
-    combined.includes('kisvarda') ||
-    combined.includes('paks') ||
-    combined.includes('zalaegerszeg') ||
-    combined.includes('nyíregyháza') ||
-    combined.includes('nyiregyhaza') ||
-    combined.includes('kecskemét') ||
-    combined.includes('kecskemet')
+    combined.includes('magyar kupa')
   ) {
     return 'Football';
-  }
-  const franchise = getFranchiseInfo(text);
-  if (
-    franchise &&
-    (franchise.sport === 'Football' ||
-      franchise.sport === 'Ice Hockey' ||
-      franchise.sport === 'Basketball' ||
-      franchise.sport === 'Handball')
-  ) {
-    return franchise.sport;
   }
   return 'Other';
 }
