@@ -376,7 +376,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
       )}
 
       {/* 1. Monthly Stadium Attendance Column + Seat Occupancy Trend Line Chart */}
-      {monthlyStats.length > 0 && (
+      {monthlyStats.length >= 2 && monthlyStats.some((r) => r.attendance > 0 || (r.avgFill ?? 0) > 0) && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -479,7 +479,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
         </article>
         )}
 
-        {weekdayStats.length > 0 && (
+        {weekdayStats.length >= 2 && weekdayStats.some((r) => r.avgFill > 0 || r.avgAttendance > 0) && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
@@ -510,7 +510,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
 
       {/* Row B: Photo Engagement vs Seat Occupancy & Score Margin */}
       <div className={styles.bentoTwoCol}>
-        {competitivenessStats.length > 0 && (
+        {competitivenessStats.length >= 2 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
@@ -537,7 +537,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
           </article>
         )}
 
-        {sportStats.length > 0 && (
+        {sportStats.length >= 2 && sportStats.some((r) => r.avgFill > 0) && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
@@ -594,7 +594,7 @@ export default function MatchdayAnalyticsSuite({ matches, vision }: MatchdayAnal
 
       {/* Row C: Venue Capacity Tier + Background Weather Context */}
       <div className={styles.bentoTwoCol}>
-        {weatherConditionsStats.length > 0 && (
+        {weatherConditionsStats.length >= 2 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>

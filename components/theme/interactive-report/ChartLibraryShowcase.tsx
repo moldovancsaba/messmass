@@ -969,37 +969,31 @@ export default function ChartLibraryShowcase({
       )}
 
       {/* Tier 2 & 3: Events & Photo Volume */}
-      {showEvents && (
+      {showEvents && eventsWithPhotos.length >= 2 && (
         <>
-          {eventsWithPhotos.length > 0 && (
-            <EChartsPanel
-              title={`Which matches drove the most photos (${eventsWithPhotos.length} events)`}
-              icon="🖼️"
-              status="Click to zoom"
-              description="Larger blocks mean more fan photos—spot your biggest matchday activations at a glance."
-              option={allEventsTreemapOption}
-              tall
-            />
-          )}
+          <EChartsPanel
+            title={`Which matches drove the most photos (${eventsWithPhotos.length} events)`}
+            icon="🖼️"
+            status="Click to zoom"
+            description="Larger blocks mean more fan photos—spot your biggest matchday activations at a glance."
+            option={allEventsTreemapOption}
+            tall
+          />
           <div className={styles.bentoTwoCol}>
-            {eventsWithPhotos.length > 0 && (
-              <EChartsPanel
-                title="Top 15 matches driving total photo volume"
-                icon="📊"
-                description="Shows whether a few marquee games generate most of your photos or if volume is spread evenly."
-                option={eventsParetoOption}
-              />
-            )}
-            {eventsWithPhotos.length > 0 && (
-              <EChartsPanel
-                title="Photo breakdown by sport &amp; match"
-                icon="☀️"
-                description="Groups fan photos by sport and match so you can see which competitions contribute the most."
-                option={sportSunburstOption}
-              />
-            )}
+            <EChartsPanel
+              title="Top 15 matches driving total photo volume"
+              icon="📊"
+              description="Shows whether a few marquee games generate most of your photos or if volume is spread evenly."
+              option={eventsParetoOption}
+            />
+            <EChartsPanel
+              title="Photo breakdown by sport &amp; match"
+              icon="☀️"
+              description="Groups fan photos by sport and match so you can see which competitions contribute the most."
+              option={sportSunburstOption}
+            />
           </div>
-          {lollipopItems.length > 0 && <D3LollipopPanel items={lollipopItems} primaryColor={primaryColor} />}
+          {lollipopItems.length >= 2 && <D3LollipopPanel items={lollipopItems} primaryColor={primaryColor} />}
         </>
       )}
 
@@ -1027,7 +1021,7 @@ export default function ChartLibraryShowcase({
             />
           )}
           <div className={styles.bentoTwoCol}>
-            {monthlySeries.length > 0 && hasFillData && (
+            {monthlySeries.length >= 2 && hasFillData && (
               <EChartsPanel
                 title="Best days &amp; months for stadium fill"
                 icon="🗓️"

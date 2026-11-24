@@ -253,14 +253,28 @@ export async function loadMeasuredLayerForProjects(
 
   const cameraResults = { eventId: { $in: eventIds }, tombstone: { $ne: true }, status: 'completed' };
   const cameraOnlyFilter = { ...cameraResults, source: { $ne: 'local_storage' } };
-  const [withOptIn, withMarketingOptIn, withCtaClicks, proofRows] = eventIds.length > 0
+  const [optInAgg, proofRows] = eventIds.length > 0
     ? await Promise.all([
-        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.received': true }),
-        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.kinds': 'marketing' }),
-        db.collection('fanmass_camera_photo_analyses').countDocuments({ ...cameraOnlyFilter, 'optIn.ctaClicked': true }),
+        db.collection('fanmass_camera_photo_analyses').aggregate([
+          { $match: cameraOnlyFilter },
+          {
+            $group: {
+              _id: null,
+              analysed: { $sum: 1 },
+              withOptIn: { $sum: { $cond: [{ $eq: ['$optIn.received', true] }, 1, 0] } },
+              withMarketingOptIn: { $sum: { $cond: [{ $in: ['marketing', { $ifNull: ['$optIn.kinds', []] }] }, 1, 0] } },
+              withCtaClicks: { $sum: { $cond: [{ $eq: ['$optIn.ctaClicked', true] }, 1, 0] } },
+            },
+          },
+        ]).toArray(),
         db.collection('fanmass_camera_photo_analyses').aggregate(cameraProofPipeline(cameraResults)).toArray(),
       ])
-    : [0, 0, 0, []];
+    : [[], []];
+  const optInRow = (optInAgg[0] ?? {}) as Record<string, unknown>;
+  const analysedFromPhotos = Number(optInRow.analysed ?? 0) || 0;
+  const withOptIn = Number(optInRow.withOptIn ?? 0) || 0;
+  const withMarketingOptIn = Number(optInRow.withMarketingOptIn ?? 0) || 0;
+  const withCtaClicks = Number(optInRow.withCtaClicks ?? 0) || 0;
 
   const nameOf = new Map(projects.map((p) => [String(p._id), String(p.eventName ?? '')]));
   const cameraProof = readCameraProof(proofRows, (eventId) => nameOf.get(eventId) ?? '');
@@ -298,6 +312,9 @@ export async function loadMeasuredLayerForProjects(
     .sort((a, b) => String(a.date ?? '').localeCompare(String(b.date ?? '')) || a.name.localeCompare(b.name));
 
   const photos = mergePhotoSummaries(projects.map((p) => rollupByEvent.get(String(p._id))).filter((r): r is Record<string, unknown> => Boolean(r)));
+  if (analysedFromPhotos > photos.analysed) {
+    photos.analysed = analysedFromPhotos;
+  }
   photos.withOptIn = withOptIn;
   photos.withMarketingOptIn = withMarketingOptIn;
   photos.withCtaClicks = withCtaClicks;

@@ -195,11 +195,13 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                   valueText: commercialBrands.length > 0 ? commercialBrands.length.toLocaleString() : 'n/a',
                   subtext: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
                 },
-                {
-                  label: 'Matches',
-                  valueText: fanmass.coverage.events > 0 ? fanmass.coverage.events.toLocaleString() : 'n/a',
-                  subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
-                },
+                ...(data.scope?.type !== 'event' && fanmass.coverage.events > 0
+                  ? [{
+                      label: 'Matches',
+                      valueText: fanmass.coverage.events.toLocaleString(),
+                      subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
+                    }]
+                  : []),
               ];
               if (summary.totalRegistered > 0) {
                 cards.push({
@@ -210,10 +212,10 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
                     : null,
                 });
               }
-              if (optIn) {
+              if (optIn && optIn.value !== null) {
                 cards.push({
                   label: 'Image Rights Consent',
-                  valueText: optIn.value !== null ? `${optIn.value}%` : 'Not measured',
+                  valueText: `${optIn.value}%`,
                   subtext: optIn.numerator !== null && optIn.denominator !== null
                     ? `${optIn.numerator.toLocaleString()} of ${optIn.denominator.toLocaleString()} ${optIn.basis}`
                     : null,

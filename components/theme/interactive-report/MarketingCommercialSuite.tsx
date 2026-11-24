@@ -153,6 +153,7 @@ export default function MarketingCommercialSuite({
             </div>
 
             <div className={styles.suiteGrid4}>
+              {rightsConsentPct !== null && (
               <div className={`${styles.executiveCard} ${styles.suiteCardColumn}`}>
                 <div className={styles.suiteCardTop}>
                   <span className={styles.gdsBody}>Privacy, Terms & Image Rights</span>
@@ -165,13 +166,14 @@ export default function MarketingCommercialSuite({
                 </div>
                 <div className={styles.suiteCardBottom}>
                   <div className={styles.gdsSectionKpi}>
-                    {rightsConsentPct !== null ? `${rightsConsentPct.toFixed(1)}%` : 'Not measured'}
+                    {`${rightsConsentPct.toFixed(1)}%`}
                   </div>
                   <div className={styles.gdsCaption}>
                     {effectiveRegistered.toLocaleString()} of {rightsDenom.toLocaleString()} consented to Privacy, Terms & image rights
                   </div>
                 </div>
               </div>
+              )}
 
               <div className={`${styles.executiveCard} ${styles.suiteCardColumn}`}>
                 <div className={styles.suiteCardTop}>
@@ -275,10 +277,11 @@ export default function MarketingCommercialSuite({
               </div>
 
               {/* Pop-up Click Through Rate */}
+              {popUpCtr !== null && (
               <div className={styles.executiveCard} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                   <span style={{ fontSize: '14px', color: '#64748b', fontWeight: 500 }}>Pop-up Click Through Rate</span>
-                  {popUpCtr !== null && popUpCtr >= 10 && (
+                  {popUpCtr >= 10 && (
                     <span style={{ fontSize: '12px', fontWeight: 700, padding: '3px 8px', borderRadius: '6px', background: 'var(--report-primary-soft, #eff6ff)', color: 'var(--report-primary, #1d4ed8)' }}>
                       High Intent
                     </span>
@@ -286,7 +289,7 @@ export default function MarketingCommercialSuite({
                 </div>
                 <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
                   <div style={{ fontSize: '28px', fontWeight: 800, color: '#0f172a', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>
-                    {popUpCtr !== null ? `${popUpCtr.toFixed(1)}%` : 'Not measured'}
+                    {`${popUpCtr.toFixed(1)}%`}
                   </div>
                   <div style={{ fontSize: '12px', color: '#64748b', marginTop: '6px' }}>
                     {bannerImpressions > 0
@@ -295,6 +298,7 @@ export default function MarketingCommercialSuite({
                   </div>
                 </div>
               </div>
+              )}
             </div>
           </div>
           )}
