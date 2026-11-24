@@ -330,33 +330,49 @@ export async function loadMeasuredLayerForProjects(
   const proofBrands = cameraProof.filter((entry) => entry.kind === 'brand').map(toNamedCount);
   const proofClubs = cameraProof.filter((entry) => entry.kind === 'club').map(toNamedCount);
 
-  if (proofBrands.length > 0 || proofClubs.length > 0) {
-    photos.brands = proofBrands;
-    photos.clubs = proofClubs;
-  } else {
-    const brandMap = new Map<string, number>();
-    const clubMap = new Map<string, number>();
-    for (const r of rollupByEvent.values()) {
-      const bm = Array.isArray(r.brandMentions) ? r.brandMentions : [];
-      for (const item of bm) {
-        const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.brand === 'string' ? item.brand.trim() : '';
-        const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
-        if (name && count > 0 && name.toLowerCase() !== 'brand short name') {
-          brandMap.set(name, (brandMap.get(name) ?? 0) + count);
-        }
-      }
-      const cm = Array.isArray(r.clubMentions) ? r.clubMentions : [];
-      for (const item of cm) {
-        const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.club === 'string' ? item.club.trim() : '';
-        const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
-        if (name && count > 0) {
-          clubMap.set(name, (clubMap.get(name) ?? 0) + count);
-        }
+  const brandMap = new Map<string, number>();
+  const clubMap = new Map<string, number>();
+  for (const r of rollupByEvent.values()) {
+    const bm = Array.isArray(r.brandMentions) ? r.brandMentions : [];
+    for (const item of bm) {
+      const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.brand === 'string' ? item.brand.trim() : '';
+      const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
+      if (name && count > 0 && name.toLowerCase() !== 'brand short name') {
+        brandMap.set(name, (brandMap.get(name) ?? 0) + count);
       }
     }
-    photos.brands = topNames(brandMap);
-    photos.clubs = topNames(clubMap);
+    const cm = Array.isArray(r.clubMentions) ? r.clubMentions : [];
+    for (const item of cm) {
+      const name = typeof item?.name === 'string' ? item.name.trim() : typeof item?.club === 'string' ? item.club.trim() : '';
+      const count = Math.max(0, Math.round(Number(item?.count ?? 0)) || 0);
+      if (name && count > 0) {
+        clubMap.set(name, (clubMap.get(name) ?? 0) + count);
+      }
+    }
   }
+
+  const mergeWithProof = (
+    proofList: ReturnType<typeof toNamedCount>[],
+    rollupMap: Map<string, number>,
+  ): ReturnType<typeof toNamedCount>[] => {
+    const merged = new Map<string, ReturnType<typeof toNamedCount>>();
+    for (const entry of proofList) {
+      merged.set(entry.name.toLowerCase().trim(), { ...entry });
+    }
+    for (const [name, count] of rollupMap.entries()) {
+      const key = name.toLowerCase().trim();
+      const existing = merged.get(key);
+      if (existing) {
+        existing.count = Math.max(existing.count, count);
+      } else {
+        merged.set(key, { name, count });
+      }
+    }
+    return [...merged.values()].sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+  };
+
+  photos.brands = mergeWithProof(proofBrands, brandMap);
+  photos.clubs = mergeWithProof(proofClubs, clubMap);
   const activeEvents = events.filter((e) => e.drivePhotos > 0 || e.hasPhotoResults || e.hasCounters);
   return { events: activeEvents.length > 0 ? activeEvents : events, counters, photos, drive, cameraProof, months: monthsOf(events) };
 }
