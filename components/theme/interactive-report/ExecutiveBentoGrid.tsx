@@ -116,8 +116,8 @@ export default function ExecutiveBentoGrid({
   const sortedClubs = [...clubs].sort((a, b) => b.count - a.count);
   const activeItems =
     rankingTab === 'brands'
-      ? sortedBrands.map((b) => ({ key: b.brand, name: b.brand, count: b.count, rawBrand: b, rawClub: null }))
-      : sortedClubs.map((c) => ({ key: c.club, name: c.club, count: c.count, rawBrand: null, rawClub: c }));
+      ? sortedBrands.map((b) => ({ key: b.brand, name: b.brand, count: b.count, logoUrl: b.logoUrl, rawBrand: b, rawClub: null }))
+      : sortedClubs.map((c) => ({ key: c.club, name: c.club, count: c.count, logoUrl: c.logoUrl, rawBrand: null, rawClub: c }));
 
   // Location / Atmosphere split
   const totalVenueCoded = indoorMatchesCount + outdoorMatchesCount;
@@ -498,6 +498,12 @@ export default function ExecutiveBentoGrid({
                   >
                     <div className={`${styles.bentoPlinth} ${plinthClass}`}>
                       <span className={styles.gdsEyebrow}>#{place}</span>
+                      {item.logoUrl && (
+                        <div className={styles.bentoPlinthLogoWrap}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={item.logoUrl} alt={item.name} className={styles.bentoPlinthLogoImg} />
+                        </div>
+                      )}
                       <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                         {item.count.toLocaleString()}
                       </strong>
@@ -529,6 +535,12 @@ export default function ExecutiveBentoGrid({
               <span className={styles.gdsEyebrow}>
                 {activeItems.length === 1 ? 'ONLY RECORDED' : 'TOP DETECTED'}
               </span>
+              {activeItems[0].logoUrl && (
+                <div className={styles.bentoPlinthLogoWrap}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={activeItems[0].logoUrl} alt={activeItems[0].name} className={styles.bentoPlinthLogoImg} />
+                </div>
+              )}
               <strong className={styles.gdsCardTitle}>{activeItems[0].name}</strong>
               <span className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
                 {activeItems[0].count.toLocaleString()}
