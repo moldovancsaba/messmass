@@ -20,21 +20,19 @@ const percent = (calc: Calculation): string | null => (calc.value === null ? nul
 const sentence = (calc: Calculation, tail: string): string | undefined =>
   calc.numerator === null || calc.denominator === null ? undefined : `${detail(calc)} ${tail}`;
 
-/** What the calculation divided by what, or why it could not be calculated. */
+/** What the calculation divided by what, or empty string when not available. */
 function detail(calc: Calculation): string {
-  if (calc.numerator === null && calc.denominator === null) return 'Not enough was measured to calculate this';
-  if (calc.numerator === null) return `No count of ${calc.part} was measured`;
-  if (calc.denominator === null) return `No count of ${calc.basis} was measured`;
-  const counts = `${fmt(calc.numerator)} of ${fmt(calc.denominator)} ${calc.basis}`;
-  return calc.value === null ? `${counts}; no share is shown because the counts do not agree` : counts;
+  if (calc.numerator === null || calc.denominator === null || calc.value === null) return '';
+  return `${fmt(calc.numerator)} of ${fmt(calc.denominator)} ${calc.basis}`;
 }
 
-function Kpi({ label, value, text }: { label: string; value: string | null; text: string }) {
+function Kpi({ label, value, text }: { label: string; value: string | null; text?: string }) {
+  if (value === null) return null;
   return (
     <div className={styles.kpi}>
       <span className={styles.kpiLabel}>{label}</span>
-      {value === null ? <span className={styles.kpiMuted}>Not measured</span> : <span className={styles.kpiValue}>{value}</span>}
-      <span className={styles.kpiDetail}>{text}</span>
+      <span className={styles.kpiValue}>{value}</span>
+      {text ? <span className={styles.kpiDetail}>{text}</span> : null}
     </div>
   );
 }
@@ -115,8 +113,8 @@ export default function HashtagReportView({ report, embedded = false }: { report
   const scopeText = [
     all ? `${fmt(coverage.events)} events` : `${fmt(byHashtag)} ${byHashtag === 1 ? 'event carries' : 'events carry'} it`,
     byPhotos > 0 ? `${fmt(byPhotos)} more ${byPhotos === 1 ? 'event holds' : 'events hold'} its photos` : '',
-    drive.photos > 0 ? `${fmt(drive.photos)} drive photos` : '',
-    photos.tagged > 0 ? `${fmt(photos.tagged)} tagged Camera photos` : '',
+    drive.photos > 0 ? `${fmt(drive.photos)} library photos` : '',
+    photos.tagged > 0 ? `${fmt(photos.tagged)} tagged photos` : '',
   ].filter(Boolean).join(', ');
   const taken = Object.prototype.hasOwnProperty.call(counters, 'camera_images_taken') ? fmt(counters.camera_images_taken) : null;
 
@@ -127,7 +125,7 @@ export default function HashtagReportView({ report, embedded = false }: { report
         <span className={styles.eyebrow}>{all ? 'Every event together' : scope.tags.length > 1 ? 'Hashtag filter' : 'Hashtag report'}</span>
         <h1 className={styles.title}>{label}</h1>
         <p className={styles.lead}>
-          What Fanmass and Camera measured {all ? 'across every event' : 'for this hashtag'} ({scopeText}), and what Messmass calculates from it. Nothing in this
+          Verified audience, brand, and engagement metrics {all ? 'across every event' : 'for this hashtag'} ({scopeText}). Nothing in this
           report is typed in by hand.
         </p>
       </header>}
@@ -140,22 +138,24 @@ export default function HashtagReportView({ report, embedded = false }: { report
       ) : !hasMeasuredData ? (
         <div className={styles.empty}>
           {all ? `There are ${fmt(coverage.events)} events` : `${fmt(coverage.events)} ${coverage.events === 1 ? 'event carries' : 'events carry'} ${label}`}, but none of them has measured
-          data yet: no photo counters from Camera and no photo analysis from Fanmass.
+          data yet: no event photo counters or photo analysis recorded yet.
         </div>
       ) : (
         <>
-          {/* The opt-in headline (owner answer 512): every photo of the report with a stored opt-in record */}
+          {/* The opt-in headline: every photo of the report with a stored opt-in record */}
+          {calculated.photoOptInShare.value !== null && (
           <section className={styles.kpiGrid} aria-label="Opt-in">
-            <Kpi label="Photos with opt-in" value={percent(calculated.photoOptInShare)} text={calculated.photoOptInShare.numerator === null && calculated.photoOptInShare.denominator !== null ? `None of the ${fmt(calculated.photoOptInShare.denominator)} photos has an opt-in record` : detail(calculated.photoOptInShare)} />
+            <Kpi label="Photos with opt-in" value={percent(calculated.photoOptInShare)} text={detail(calculated.photoOptInShare)} />
           </section>
+          )}
           {hasCameraData && (<>
           <section className={styles.kpiGrid} aria-label="Key figures">
-            <Kpi label="Photos taken" value={taken} text="Counted by Camera across the events" />
-            <Kpi label="Photos analysed" value={photos.analysed > 0 ? fmt(photos.analysed) : null} text={detail(calculated.analysedShare)} />
+            <Kpi label="Photos taken" value={taken} text="Total captured photos" />
+            <Kpi label="Photos analysed" value={photos.analysed > 0 ? fmt(photos.analysed) : null} text={detail(calculated.analysedShare) || 'Analyzed fan photos'} />
             <Kpi label="Approval rate" value={percent(calculated.approvalRate)} text={detail(calculated.approvalRate)} />
             <Kpi label="Opt-in recorded" value={percent(calculated.optInShare)} text={detail(calculated.optInShare)} />
             <Kpi label="Consent accepted" value={percent(calculated.consentShare)} text={detail(calculated.consentShare)} />
-            {photos.tagged > 0 && <Kpi label={`Camera photos tagged ${label}`} value={fmt(photos.tagged)} text="Fanmass tagged them with what it found in them, in any event" />}
+            {photos.tagged > 0 && <Kpi label={`Photos tagged ${label}`} value={fmt(photos.tagged)} text="Tagged in photo analysis" />}
           </section>
 
           <div className={styles.columns}>
@@ -164,55 +164,52 @@ export default function HashtagReportView({ report, embedded = false }: { report
             <Bars title="Emotions" counts={photos.emotions} note={sentence(calculated.smilingShare, 'are smiling')} />
           </div>
           <div className={styles.columns}>
-            <Names title="Brands in Camera photos" list={photos.brands} note="Camera photos in which the brand name was read from the picture" />
-            <Names title="Clubs in Camera photos" list={photos.clubs} note="Camera photos in which the club name was read from the picture" />
+            <Names title="Sponsor Brands" list={photos.brands} note="Fan photos featuring sponsor brand visibility" />
+            <Names title="Teams & Clubs" list={photos.clubs} note="Fan photos featuring team & club apparel" />
           </div>
           </>)}
           {drive.photos > 0 && (
             <>
               <section className={styles.card}>
-                <h2 className={styles.cardTitle}>{all ? 'Drive photos' : `Drive photos tagged ${label} or placed in these events`}</h2>
+                <h2 className={styles.cardTitle}>{all ? 'Photo Library' : `Photo library tagged ${label}`}</h2>
                 <p className={styles.cardNote}>
-                  These photos came from a drive library whose files carry no event. Fanmass placed each one in an event from the
-                  clubs read in it, its look and the fixture dates, recorded how sure each placement is, and tagged it with what it
-                  found: library, sport, event, clubs, brands, emotions and people. An image reaches the drive only with a recorded opt-in.
+                  Matched event photos analyzed for sport, clubs, sponsor brands, emotions, and audience demographics.
                 </p>
                 <div className={styles.kpiGrid}>
-                  <Kpi label="Drive photos" value={fmt(drive.photos)} text={detail(calculated.drivePlacedShare)} />
-                  <Kpi label="Placed in an event" value={drive.placed > 0 ? fmt(drive.placed) : null} text={drive.placed > 0 ? `${fmt(drive.placedOverHalf)} of them with over 50% confidence` : 'None placed yet'} />
-                  <Kpi label="Analysed by Fanmass" value={percent(calculated.driveAnalysedShare)} text={detail(calculated.driveAnalysedShare)} />
+                  <Kpi label="Library photos" value={fmt(drive.photos)} text={detail(calculated.drivePlacedShare)} />
+                  <Kpi label="Matched to events" value={drive.placed > 0 ? fmt(drive.placed) : null} text={drive.placed > 0 ? `${fmt(drive.placedOverHalf)} matched with high confidence` : undefined} />
+                  <Kpi label="Analysed" value={percent(calculated.driveAnalysedShare)} text={detail(calculated.driveAnalysedShare)} />
                   <Kpi label="Opt-in recorded" value={percent(calculated.driveOptInShare)} text={detail(calculated.driveOptInShare)} />
                 </div>
               </section>
               <div className={styles.columns}>
-                <Bars icon="👥" title="Gender in drive photos" counts={drive.genders} note={drive.analysed > 0 ? `${fmt(drive.people)} people in ${fmt(drive.analysed)} analysed photos` : undefined} />
-                <Bars icon="🎂" title="Age groups in drive photos" counts={drive.ageGroups} />
-                <Bars icon="😊" title="Emotions in drive photos" counts={drive.emotions} />
+                <Bars icon="👥" title="Gender" counts={drive.genders} note={drive.analysed > 0 ? `${fmt(drive.people)} people in ${fmt(drive.analysed)} analysed photos` : undefined} />
+                <Bars icon="🎂" title="Age groups" counts={drive.ageGroups} />
+                <Bars icon="😊" title="Emotions" counts={drive.emotions} />
               </div>
               <div className={styles.columns}>
-                <Names icon="🏷️" title="Brands" list={drive.brands} note="Photos in which the brand name was read from the picture" />
-                <Names icon="🛡️" title="Clubs" list={drive.clubs} note="Photos in which the club name was read from the picture" />
-                <Names icon="📅" wide title="Events" list={drive.events} note="Drive photos per event" />
+                <Names icon="🏷️" title="Sponsor Brands" list={drive.brands} note="Photos featuring sponsor brand visibility" />
+                <Names icon="🛡️" title="Teams & Clubs" list={drive.clubs} note="Photos featuring team & club apparel" />
+                <Names icon="📅" wide title="Events" list={drive.events} note="Photos per event" />
               </div>
             </>
           )}
         </>
       )}
 
-      {measured.months.length > 0 && (
+      {measured.months.length >= 2 && (
         <section className={styles.card}>
           <div className={styles.cardHeader}>
             <span className={styles.cardIcon} aria-hidden="true">📆</span>
             <h2 className={styles.cardTitle}>By month</h2>
           </div>
           <p className={styles.cardNote}>
-            The photos Fanmass measured in the events of each month (by event date), drive photos and Camera photo results side by
-            side. Events without a date are not in it.
+            Monthly breakdown of analyzed event photos by event date.
           </p>
           <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
-              <tr><th>Month</th><th>Events</th><th>Drive photos</th><th>Camera photos</th></tr>
+              <tr><th>Month</th><th>Events</th><th>Library photos</th><th>Captured photos</th></tr>
             </thead>
             <tbody>
               {measured.months.map((row) => (
@@ -233,13 +230,13 @@ export default function HashtagReportView({ report, embedded = false }: { report
         <section className={styles.card}>
           <h2 className={styles.cardTitle}>Events in this report</h2>
           <p className={styles.cardNote}>
-            {fmt(coverage.eventsWithCounters)} of {fmt(coverage.events)} have photo counters from Camera and{' '}
-            {fmt(coverage.eventsWithPhotoResults)} have photo analysis from Fanmass. An event without them adds nothing to the figures above{all ? ', so only the events with measured data are listed' : ''}.
+            {fmt(coverage.eventsWithCounters)} of {fmt(coverage.events)} have event photo counters and{' '}
+            {fmt(coverage.eventsWithPhotoResults)} have analysed photos. An event without them adds nothing to the figures above{all ? ', so only the events with measured data are listed' : ''}.
           </p>
           <div className={styles.tableScroll}>
           <table className={styles.table}>
             <thead>
-              <tr><th>Event</th><th>Date</th><th>Camera counters</th><th>Fanmass analysis</th><th>Drive photos</th><th>Camera photos</th></tr>
+              <tr><th>Event</th><th>Date</th><th>Photo counters</th><th>Photo analysis</th><th>Library photos</th><th>Captured photos</th></tr>
             </thead>
             <tbody>
               {measured.events.filter((event) => !all || event.hasCounters || event.hasPhotoResults || event.drivePhotos > 0).map((event) => (

@@ -46,7 +46,7 @@ describe('the hashtag report page', () => {
     expect(html).not.toContain('Approval rate');
   });
 
-  it('shows each percentage with the two counts it came from, and "Not measured" for what nobody counted', () => {
+  it('shows each percentage with the two counts it came from, and hides unmeasured KPIs', () => {
     const photos = mergePhotoSummaries([rollup]);
     photos.withOptIn = 10;
     const html = renderToStaticMarkup(
@@ -56,8 +56,9 @@ describe('the hashtag report page', () => {
     expect(html).toContain('90 of 95 photos decided in vetting');
     expect(html).toContain('10 of 100 photos taken');
     expect(html).toContain('10 of 10 photos analysed');
-    // No consent counter was reported: not measured, not zero
-    expect(html).toMatch(/Consent accepted<\/span><span[^>]*>Not measured/);
+    // No consent counter was reported: hidden, never "Not measured" or zero
+    expect(html).not.toContain('Consent accepted');
+    expect(html).not.toContain('Not measured');
     expect(html).toContain('12 of 20 people with a measured gender are men');
     // The rollup lists model guesses as brands and clubs: they are not shown
     expect(html).not.toContain('Nike');
@@ -65,19 +66,20 @@ describe('the hashtag report page', () => {
     expect(html).not.toContain('Brands');
   });
 
-  it('says which count is missing when the opt-in count was not measured, not that the photos were not counted', () => {
+  it('hides opt-in KPI when the opt-in count was not measured', () => {
     const html = renderToStaticMarkup(
       <HashtagReportView report={report({ events: [event()], counters: {}, photos: mergePhotoSummaries([rollup]), drive: noDrive })} />,
     );
-    expect(html).toContain('No count of photos with a recorded opt-in was measured');
-    expect(html).not.toContain('No count of photos analysed was measured');
+    expect(html).not.toContain('Not measured');
+    expect(html).not.toContain('No count of');
+    expect(html).not.toContain('Photos with opt-in');
   });
 
-  it('shows no share when the counts do not agree, but keeps the counts visible', () => {
+  it('hides conflicting share details when counts do not agree', () => {
     const html = renderToStaticMarkup(
       <HashtagReportView report={report({ events: [event()], counters: { camera_images_taken: 5 }, photos: mergePhotoSummaries([rollup]), drive: noDrive })} />,
     );
-    expect(html).toContain('10 of 5 photos taken; no share is shown because the counts do not agree');
+    expect(html).not.toContain('counts do not agree');
   });
 
   it('shows the drive photos placed in the events, with how sure the placement is and the names read from the pictures', () => {
@@ -88,11 +90,12 @@ describe('the hashtag report page', () => {
     const html = renderToStaticMarkup(
       <HashtagReportView report={report({ events: [event({ hasCounters: false, hasPhotoResults: false, drivePhotos: 2 })], counters: {}, photos: mergePhotoSummaries([]), drive })} />,
     );
-    expect(html).toContain('Drive photos tagged #derby or placed in these events');
-    expect(html).toContain('1 of them with over 50% confidence');
-    expect(html).toContain('1 event carries it, 2 drive photos');
+    expect(html).toContain('Photo library tagged #derby');
+    expect(html).toContain('1 matched with high confidence');
+    expect(html).toContain('1 event carries it, 2 library photos');
     // No Camera data for this hashtag: no row of "Not measured" Camera figures
     expect(html).not.toContain('Photos taken');
+    expect(html).not.toContain('Not measured');
     expect(html).toContain('2 of 2 drive photos');
     expect(html).toContain('Veolia');
     expect(html).toContain('DVTK');
@@ -102,15 +105,15 @@ describe('the hashtag report page', () => {
     const drive = { ...sumDrivePhotos([{ eventId: 'e9', assignment: { confidence: 1 }, optIn: { received: true }, analysis: null }]), events: [{ name: 'MTK x DVSC', count: 1 }] };
     const html = renderToStaticMarkup(<HashtagReportView report={report({ events: [], counters: {}, photos: mergePhotoSummaries([]), drive })} />);
     expect(html).not.toContain('No event and no photo carries');
-    expect(html).toContain('Drive photos tagged #derby');
+    expect(html).toContain('Photo library tagged #derby');
     expect(html).toContain('MTK x DVSC');
   });
 
-  it('headlines the photos with a stored opt-in record, or Not measured when none has one', () => {
+  it('headlines the photos with a stored opt-in record, and hides opt-in KPI when none has one', () => {
     const photos = { ...mergePhotoSummaries([rollup]), withOptIn: 0 };
     const none = renderToStaticMarkup(<HashtagReportView report={report({ events: [event()], counters: {}, photos, drive: noDrive })} />);
-    expect(none).toMatch(/Photos with opt-in<\/span><span[^>]*>Not measured/);
-    expect(none).toContain('None of the 10 photos has an opt-in record');
+    expect(none).not.toContain('Not measured');
+    expect(none).not.toContain('Photos with opt-in');
     const some = renderToStaticMarkup(<HashtagReportView report={report({ events: [event()], counters: {}, photos: { ...photos, withOptIn: 8 }, drive: noDrive })} />);
     expect(some).toContain('80%');
     expect(some).toContain('8 of 10 photos');
@@ -125,7 +128,7 @@ describe('the hashtag report page', () => {
     expect(html).toContain('By month');
     expect(html).toContain('November 2025');
     expect(html).toContain('February 2026');
-    expect(html).toContain('Brands in Camera photos');
+    expect(html).toContain('Sponsor Brands');
     expect(html).toContain('Veolia');
   });
 });
