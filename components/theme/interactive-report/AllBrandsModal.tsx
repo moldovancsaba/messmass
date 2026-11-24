@@ -175,9 +175,11 @@ export default function AllBrandsModal({
                     <span className={styles.modalEntityMeta}>
                       {cluster.label}
                     </span>
+                    {pct !== null && (
                     <span className={`${styles.modalEntityShare} ${styles.gdsNum}`}>
-                      {pct === null ? 'n/a' : `${pct}% share`}
+                      {pct}% share
                     </span>
+                    )}
                   </div>
                 </div>
               </div>

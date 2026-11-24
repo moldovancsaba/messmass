@@ -203,36 +203,46 @@ export default function FanmassClubsMatrix({
             >
               All Franchises ({sportCounts.all})
             </button>
-            <button
-              onClick={() => setFilter('Basketball')}
-              className={`${styles.granularityBtn} ${filter === 'Basketball' ? styles.granularityBtnActive : ''}`}
-            >
-              🏀 Basketball ({sportCounts.Basketball})
-            </button>
-            <button
-              onClick={() => setFilter('Football')}
-              className={`${styles.granularityBtn} ${filter === 'Football' ? styles.granularityBtnActive : ''}`}
-            >
-              ⚽ Football ({sportCounts.Football})
-            </button>
-            <button
-              onClick={() => setFilter('Handball')}
-              className={`${styles.granularityBtn} ${filter === 'Handball' ? styles.granularityBtnActive : ''}`}
-            >
-              🤾 Handball ({sportCounts.Handball})
-            </button>
-            <button
-              onClick={() => setFilter('Ice Hockey')}
-              className={`${styles.granularityBtn} ${filter === 'Ice Hockey' ? styles.granularityBtnActive : ''}`}
-            >
-              🏒 Ice Hockey ({sportCounts['Ice Hockey']})
-            </button>
-            <button
-              onClick={() => setFilter('International')}
-              className={`${styles.granularityBtn} ${filter === 'International' ? styles.granularityBtnActive : ''}`}
-            >
-              🌍 International ({sportCounts.International})
-            </button>
+            {sportCounts.Basketball > 0 && (
+              <button
+                onClick={() => setFilter('Basketball')}
+                className={`${styles.granularityBtn} ${filter === 'Basketball' ? styles.granularityBtnActive : ''}`}
+              >
+                🏀 Basketball ({sportCounts.Basketball})
+              </button>
+            )}
+            {sportCounts.Football > 0 && (
+              <button
+                onClick={() => setFilter('Football')}
+                className={`${styles.granularityBtn} ${filter === 'Football' ? styles.granularityBtnActive : ''}`}
+              >
+                ⚽ Football ({sportCounts.Football})
+              </button>
+            )}
+            {sportCounts.Handball > 0 && (
+              <button
+                onClick={() => setFilter('Handball')}
+                className={`${styles.granularityBtn} ${filter === 'Handball' ? styles.granularityBtnActive : ''}`}
+              >
+                🤾 Handball ({sportCounts.Handball})
+              </button>
+            )}
+            {sportCounts['Ice Hockey'] > 0 && (
+              <button
+                onClick={() => setFilter('Ice Hockey')}
+                className={`${styles.granularityBtn} ${filter === 'Ice Hockey' ? styles.granularityBtnActive : ''}`}
+              >
+                🏒 Ice Hockey ({sportCounts['Ice Hockey']})
+              </button>
+            )}
+            {sportCounts.International > 0 && (
+              <button
+                onClick={() => setFilter('International')}
+                className={`${styles.granularityBtn} ${filter === 'International' ? styles.granularityBtnActive : ''}`}
+              >
+                🌍 International ({sportCounts.International})
+              </button>
+            )}
           </div>
 
           {/* Quick Search */}

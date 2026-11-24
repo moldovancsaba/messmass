@@ -139,7 +139,7 @@ export default function FanmassBrandsMatrix({
 
         {/* Search and Category Filter Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end', width: '100%' }}>
-          {/* Cluster Granularity Pills */}
+          {/* Cluster Granularity Pills (only non-zero categories) */}
           <div className={styles.granularityToggle} style={{ flexWrap: 'wrap', gap: '4px' }}>
             <button
               onClick={() => setFilter('all')}
@@ -147,48 +147,62 @@ export default function FanmassBrandsMatrix({
             >
               All Brands ({clusterCounts.all})
             </button>
-            <button
-              onClick={() => setFilter('title')}
-              className={`${styles.granularityBtn} ${filter === 'title' ? styles.granularityBtnActive : ''}`}
-            >
-              🏆 Title &amp; Partners ({clusterCounts.title})
-            </button>
-            <button
-              onClick={() => setFilter('apparel')}
-              className={`${styles.granularityBtn} ${filter === 'apparel' ? styles.granularityBtnActive : ''}`}
-            >
-              🏷️ Unclassified ({clusterCounts.apparel})
-            </button>
-            <button
-              onClick={() => setFilter('corporate')}
-              className={`${styles.granularityBtn} ${filter === 'corporate' ? styles.granularityBtnActive : ''}`}
-            >
-              ⚡ Corporate &amp; Energy ({clusterCounts.corporate})
-            </button>
-            <button
-              onClick={() => setFilter('finance')}
-              className={`${styles.granularityBtn} ${filter === 'finance' ? styles.granularityBtnActive : ''}`}
-            >
-              🏦 Banking &amp; Finance ({clusterCounts.finance})
-            </button>
-            <button
-              onClick={() => setFilter('automotive')}
-              className={`${styles.granularityBtn} ${filter === 'automotive' ? styles.granularityBtnActive : ''}`}
-            >
-              🚗 Automotive ({clusterCounts.automotive})
-            </button>
-            <button
-              onClick={() => setFilter('fmcg')}
-              className={`${styles.granularityBtn} ${filter === 'fmcg' ? styles.granularityBtnActive : ''}`}
-            >
-              🥤 Beverage &amp; FMCG ({clusterCounts.fmcg})
-            </button>
-            <button
-              onClick={() => setFilter('lifestyle')}
-              className={`${styles.granularityBtn} ${filter === 'lifestyle' ? styles.granularityBtnActive : ''}`}
-            >
-              🧢 Lifestyle &amp; Retail ({clusterCounts.lifestyle})
-            </button>
+            {clusterCounts.title > 0 && (
+              <button
+                onClick={() => setFilter('title')}
+                className={`${styles.granularityBtn} ${filter === 'title' ? styles.granularityBtnActive : ''}`}
+              >
+                🏆 Title &amp; Partners ({clusterCounts.title})
+              </button>
+            )}
+            {clusterCounts.apparel > 0 && (
+              <button
+                onClick={() => setFilter('apparel')}
+                className={`${styles.granularityBtn} ${filter === 'apparel' ? styles.granularityBtnActive : ''}`}
+              >
+                🏷️ Unclassified ({clusterCounts.apparel})
+              </button>
+            )}
+            {clusterCounts.corporate > 0 && (
+              <button
+                onClick={() => setFilter('corporate')}
+                className={`${styles.granularityBtn} ${filter === 'corporate' ? styles.granularityBtnActive : ''}`}
+              >
+                ⚡ Corporate &amp; Energy ({clusterCounts.corporate})
+              </button>
+            )}
+            {clusterCounts.finance > 0 && (
+              <button
+                onClick={() => setFilter('finance')}
+                className={`${styles.granularityBtn} ${filter === 'finance' ? styles.granularityBtnActive : ''}`}
+              >
+                🏦 Banking &amp; Finance ({clusterCounts.finance})
+              </button>
+            )}
+            {clusterCounts.automotive > 0 && (
+              <button
+                onClick={() => setFilter('automotive')}
+                className={`${styles.granularityBtn} ${filter === 'automotive' ? styles.granularityBtnActive : ''}`}
+              >
+                🚗 Automotive ({clusterCounts.automotive})
+              </button>
+            )}
+            {clusterCounts.fmcg > 0 && (
+              <button
+                onClick={() => setFilter('fmcg')}
+                className={`${styles.granularityBtn} ${filter === 'fmcg' ? styles.granularityBtnActive : ''}`}
+              >
+                🥤 Beverage &amp; FMCG ({clusterCounts.fmcg})
+              </button>
+            )}
+            {clusterCounts.lifestyle > 0 && (
+              <button
+                onClick={() => setFilter('lifestyle')}
+                className={`${styles.granularityBtn} ${filter === 'lifestyle' ? styles.granularityBtnActive : ''}`}
+              >
+                🧢 Lifestyle &amp; Retail ({clusterCounts.lifestyle})
+              </button>
+            )}
           </div>
 
           {/* Quick Search Input */}
@@ -285,10 +299,12 @@ export default function FanmassBrandsMatrix({
                     <span className={styles.brandMetricLabel}>Sightings</span>
                     <span className={styles.brandMetricVal}>{item.count.toLocaleString()}</span>
                   </div>
+                  {shareOfPhotos !== 'n/a' && (
                   <div className={styles.brandMetricItem} style={{ textAlign: 'right' }}>
                     <span className={styles.brandMetricLabel}>Photo Exposure</span>
                     <span className={styles.brandMetricVal}>{shareOfPhotos}</span>
                   </div>
+                  )}
                 </div>
 
                 {/* Progress bar */}

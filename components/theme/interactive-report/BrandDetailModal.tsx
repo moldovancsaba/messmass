@@ -153,13 +153,15 @@ export default function BrandDetailModal({
               <div className={styles.modalStatSub}>Photos with this brand</div>
             </div>
 
+            {photoShare !== null && (
             <div className={styles.modalStatCard}>
               <div className={styles.modalStatLabel}>Photo Share</div>
               <div className={`${styles.modalStatVal} ${styles.gdsNum}`}>
-                {photoShare === null ? 'n/a' : `${photoShare}%`}
+                {photoShare}%
               </div>
               <div className={styles.modalStatSub}>Of all analysed photos</div>
             </div>
+            )}
           </div>
 
           {/* Sports in the sampled photos */}

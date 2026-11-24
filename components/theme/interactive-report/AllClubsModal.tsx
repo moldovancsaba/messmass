@@ -193,9 +193,11 @@ export default function AllClubsModal({
                     <span className={styles.modalEntityMeta}>
                       {c.homeVenue || c.sport || ''}
                     </span>
+                    {pct !== null && (
                     <span className={`${styles.modalEntityShare} ${styles.gdsNum}`}>
-                      {pct === null ? 'n/a' : `${pct}% share`}
+                      {pct}% share
                     </span>
+                    )}
                   </div>
                 </div>
               </div>
