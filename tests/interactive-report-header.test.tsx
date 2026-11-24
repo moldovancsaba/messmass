@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import SzrtHeader from '@/components/theme/interactive-report/SzrtHeader';
+import InteractiveReportHeader from '@/components/theme/interactive-report/InteractiveReportHeader';
 import D3FunnelFlow from '@/components/theme/interactive-report/D3FunnelFlow';
 
 const summary = (over: Record<string, unknown> = {}) => ({
@@ -14,7 +14,7 @@ const summary = (over: Record<string, unknown> = {}) => ({
 });
 
 const header = (over: Record<string, unknown> = {}) => renderToStaticMarkup(
-  <SzrtHeader
+  <InteractiveReportHeader
     activeTab="overview"
     onTabChange={() => undefined}
     data={{ scope: { type: 'hashtag', id: 'tippmixreport2026', name: 'Szerencsejáték Zrt.' }, partner: { name: 'Szerencsejáték Zrt.' }, summary: summary(over), matches: [], vision: null } as never}

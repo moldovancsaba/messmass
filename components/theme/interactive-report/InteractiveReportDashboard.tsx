@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { InteractiveReportData, MatchItem } from './types';
-import SzrtHeader from './SzrtHeader';
+import InteractiveReportHeader from './InteractiveReportHeader';
 import OverviewTab from './OverviewTab';
 import FanmassVisionSection from './FanmassVisionSection';
 import TerritoryMapCanvas from './TerritoryMapCanvas';
@@ -112,7 +112,7 @@ export default function InteractiveReportDashboard({ initialData, fanmass }: Int
     /* eslint-disable-next-line react/forbid-dom-props */
     <div className={styles.pageContainer} style={themeVars}>
       {/* Client Header & Navigation */}
-      <SzrtHeader
+      <InteractiveReportHeader
         data={data}
         fanmass={fanmass}
         activeTab={activeTab}

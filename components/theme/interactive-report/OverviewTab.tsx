@@ -334,7 +334,7 @@ export default function OverviewTab({
           Act 7: Tactical Verification (Timeline Scrubber & Touchpoints)
           ========================================================================= */}
       <div className={styles.suiteStack}>
-        {/* ACT 1: Executive Bottom Line (Only in non-Fanmass clicker mode; Fanmass mode uses the unified SzrtHeader KPI strip) */}
+        {/* ACT 1: Executive Bottom Line (Only in non-Fanmass clicker mode; Fanmass mode uses the unified InteractiveReportHeader KPI strip) */}
         {!isFanmass ? (
           <ExecutiveHeroKpis
             title={scopeName}

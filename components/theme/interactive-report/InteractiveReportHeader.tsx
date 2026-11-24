@@ -10,7 +10,7 @@ import { proofNameKey } from '@/lib/hashtagReport/cameraProof';
 import { isSportFranchise, isVenue, mergeBrandVariants } from '@/lib/brandEntityClustering';
 import styles from './interactive-report.module.css';
 
-interface SzrtHeaderProps {
+interface InteractiveReportHeaderProps {
   data: InteractiveReportData;
   activeTab: DashboardTab;
   onTabChange: (tab: DashboardTab) => void;
@@ -18,7 +18,7 @@ interface SzrtHeaderProps {
   fanmass?: HashtagReport;
 }
 
-export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: SzrtHeaderProps) {
+export default function InteractiveReportHeader({ data, activeTab, onTabChange, fanmass }: InteractiveReportHeaderProps) {
   const [copied, setCopied] = useState(false);
   const { summary, partner, scope } = data;
 
