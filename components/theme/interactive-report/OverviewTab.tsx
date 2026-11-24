@@ -400,7 +400,12 @@ export default function OverviewTab({
           onViewAllBrands={() => setIsAllBrandsOpen(true)}
           onViewAllClubs={() => setIsAllClubsOpen(true)}
           onViewFunnel={onViewFunnel}
-          onViewTerritoryMap={onViewTerritoryMap}
+          onViewTerritoryMap={
+            data.scope?.type !== 'event' &&
+            (scopedMatches.some((m) => Boolean(m.venue && m.venue.trim())) || filteredClubs.length > 0)
+              ? onViewTerritoryMap
+              : undefined
+          }
         />
 
         <MessmassAlgorithmsSuite

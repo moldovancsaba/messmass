@@ -87,7 +87,11 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rawTopBrands, fanmass]);
 
-  const hasTerritoryData = (data.matches?.length ?? 0) > 0 || !!vision;
+  const isSingleEvent = scope?.type === 'event';
+  const hasVenueOrClubLocation =
+    (data.matches || []).some((m) => Boolean(m.venue && m.venue.trim())) ||
+    (vision?.aggregates?.topClubs?.length ?? 0) > 0;
+  const hasTerritoryData = !isSingleEvent && hasVenueOrClubLocation;
   const visionLabel =
     vision && vision.totalImages > 0
       ? `Fan Photo & Brand Proof (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
@@ -97,7 +101,7 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...((data.funnel?.length ?? 0) > 0 ? [{ id: 'funnel' as const, label: 'Marketing Funnel', icon: '📈' }] : []),
-    ...((data.matches?.length ?? 0) > 0 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: '⚽' }] : []),
+    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: '⚽' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     { id: 'figures', label: 'Data Audit & Figures', icon: '📋' },
   ] : [
@@ -105,10 +109,10 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
     // The vision tab only exists for scopes that have vision data.
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
-    { id: 'bubble', label: 'Match Explorer', icon: '🫧' },
+    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'bubble' as const, label: 'Match Explorer', icon: '🫧' }] : []),
     { id: 'funnel', label: 'Marketing Funnel', icon: '📈' },
     { id: 'demographics', label: 'Audience Demographics', icon: '👥' },
-    { id: 'table', label: 'All Match Data', icon: '📋' },
+    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: 'All Match Data', icon: '📋' }] : []),
   ];
 
   return (

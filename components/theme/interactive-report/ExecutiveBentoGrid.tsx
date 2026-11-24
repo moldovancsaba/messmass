@@ -41,7 +41,7 @@ export interface ExecutiveBentoGridProps {
   onViewAllBrands: () => void;
   onViewAllClubs: () => void;
   onViewFunnel: () => void;
-  onViewTerritoryMap: () => void;
+  onViewTerritoryMap?: () => void;
 }
 
 export default function ExecutiveBentoGrid({
@@ -562,9 +562,11 @@ export default function ExecutiveBentoGrid({
             <span className={styles.bentoPanelIcon} aria-hidden="true">📍</span>
             <h2 className={styles.gdsCardTitle}>Venue Type &amp; Fan Sentiment</h2>
           </div>
-          <button type="button" onClick={onViewTerritoryMap} className={styles.actionLinkBtn}>
-            Map →
-          </button>
+          {onViewTerritoryMap && (
+            <button type="button" onClick={onViewTerritoryMap} className={styles.actionLinkBtn}>
+              Map →
+            </button>
+          )}
         </header>
         <div className={styles.bentoPanelBody}>
           <p className={styles.bentoBenefit}>
