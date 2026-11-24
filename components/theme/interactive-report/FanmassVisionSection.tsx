@@ -234,6 +234,7 @@ export default function FanmassVisionSection({
       {/* 4 Pillars Executive KPI Highlights */}
       <div className={styles.visionGrid}>
         {/* KPI 1: People Detected */}
+        {displayPeople !== null && displayPeople > 0 && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -245,29 +246,27 @@ export default function FanmassVisionSection({
           </header>
           <div className={styles.bentoPanelBody}>
             <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-              {displayPeople === null ? 'n/a' : displayPeople.toLocaleString()}
+              {displayPeople.toLocaleString()}
             </div>
-            <div className={styles.gdsCaption}>
-              {displayGender
-                ? `${displayGender.malePct}% Male / ${displayGender.femalePct}% Female`
-                : 'n/a'}
-            </div>
-            <div className={styles.tagChipsWrap}>
-              {displayAge ? (
-                <>
-                  <span className={styles.agePill}>Adults: {displayAge.adults.toLocaleString()}</span>
-                  <span className={styles.agePill}>Teens: {displayAge.teens.toLocaleString()}</span>
-                  <span className={styles.agePill}>Children: {displayAge.children.toLocaleString()}</span>
-                  <span className={styles.agePill}>Seniors: {displayAge.seniors.toLocaleString()}</span>
-                </>
-              ) : (
-                <span className={styles.agePill}>Age: n/a</span>
-              )}
-            </div>
+            {displayGender && (
+              <div className={styles.gdsCaption}>
+                {`${displayGender.malePct}% Male / ${displayGender.femalePct}% Female`}
+              </div>
+            )}
+            {displayAge && (
+              <div className={styles.tagChipsWrap}>
+                <span className={styles.agePill}>Adults: {displayAge.adults.toLocaleString()}</span>
+                <span className={styles.agePill}>Teens: {displayAge.teens.toLocaleString()}</span>
+                <span className={styles.agePill}>Children: {displayAge.children.toLocaleString()}</span>
+                <span className={styles.agePill}>Seniors: {displayAge.seniors.toLocaleString()}</span>
+              </div>
+            )}
           </div>
         </article>
+        )}
 
         {/* KPI 2: Detected Brands & Logos */}
+        {displayBrandCount > 0 && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -293,8 +292,10 @@ export default function FanmassVisionSection({
             </div>
           </div>
         </article>
+        )}
 
         {/* KPI 3: Valence & Atmosphere */}
+        {celebrationValence !== 'n/a' && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -320,8 +321,10 @@ export default function FanmassVisionSection({
             </div>
           </div>
         </article>
+        )}
 
         {/* KPI 4: Sports covered */}
+        {(isAll ? sportKeys.length > 0 : Boolean(activeSportData && activeSportData.images > 0)) && (
         <article className={styles.bentoPanel}>
           <header className={styles.bentoPanelHeader}>
             <div className={styles.bentoPanelTitle}>
@@ -335,10 +338,10 @@ export default function FanmassVisionSection({
             <div className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
               {isAll
                 ? `${sportKeys.length} ${sportKeys.length === 1 ? 'Sport' : 'Sports'}`
-                : `${activeSportData ? activeSportData.images.toLocaleString() : 'n/a'} Photos`}
+                : `${activeSportData!.images.toLocaleString()} Photos`}
             </div>
             <div className={styles.gdsCaption}>
-              {isAll ? sportKeys.join(', ') || 'n/a' : `Photos analysed in ${selectedSport}`}
+              {isAll ? sportKeys.join(', ') : `Photos analysed in ${selectedSport}`}
             </div>
             <div className={styles.tagChipsWrap}>
               {sportKeys.map((sp) => (
@@ -352,6 +355,7 @@ export default function FanmassVisionSection({
             </div>
           </div>
         </article>
+        )}
       </div>
 
       {/* View Full Dashboard Call-to-Action for Overview mode, or Full Suite of Visual Analytics Charts */}

@@ -41,6 +41,11 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
     );
   }
 
+  const visibleSteps = funnel.filter((item) => typeof item.value === 'number' && item.value > 0);
+  if (visibleSteps.length === 0) {
+    return null;
+  }
+
   const { optInRate, totalOptIns, totalRegistered, avgPhotosPerUser, totalPhotos, vettingApprovalRate, totalCtaClicks } = summary;
 
   return (
@@ -57,14 +62,12 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
       </div>
 
       <div className={styles.funnelList}>
-        {funnel.map((item, index) => {
-          // A step with no recorded value is shown as n/a with an empty bar.
-          const hasValue = item.value > 0;
-          const valueText = hasValue ? item.value.toLocaleString() : 'n/a';
-          const widthPercent = hasValue ? Math.max(12, Math.round((item.value / maxValue) * 100)) : 0;
-          const prevValue = index > 0 ? funnel[index - 1].value : null;
+        {visibleSteps.map((item, index) => {
+          const valueText = item.value.toLocaleString();
+          const widthPercent = Math.max(12, Math.round((item.value / maxValue) * 100));
+          const prevValue = index > 0 ? visibleSteps[index - 1].value : null;
           const stepConversion =
-            hasValue && prevValue && prevValue > 0 ? Math.round((item.value / prevValue) * 100) : null;
+            prevValue && prevValue > 0 ? Math.round((item.value / prevValue) * 100) : null;
           const isOptIn = /opt-?in/i.test(item.step);
           const isRegistration = /registration/i.test(item.step);
 
@@ -119,11 +122,9 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
                   <span className={`${styles.conversionBadge} ${isOptIn ? styles.conversionBadgeHighlight : ''}`}>
                     {stepConversion}% step-through
                   </span>
-                ) : (
-                  <span className={styles.cardSubtitle}>
-                    {index === 0 && hasValue ? '100% Baseline' : 'n/a'}
-                  </span>
-                )}
+                ) : index === 0 ? (
+                  <span className={styles.cardSubtitle}>100% Baseline</span>
+                ) : null}
               </div>
             </div>
           );
@@ -131,37 +132,38 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
       </div>
 
       {/* Highlights Bar */}
+      {(totalOptIns > 0 || vettingApprovalRate !== null || totalCtaClicks > 0 || (avgPhotosPerUser !== null && avgPhotosPerUser !== undefined)) && (
       <div className={styles.highlightsGrid}>
+        {totalOptIns > 0 && (
         <div className={styles.highlightBoxGreen}>
           <div className={styles.highlightLabelGreen}>Marketing Opt-In</div>
           {/* The stored count is the figure; the rate is shown next to it only when it can be derived from the stored counts */}
-          <div className={styles.highlightValGreen}>{totalOptIns > 0 ? totalOptIns.toLocaleString() : 'n/a'}</div>
+          <div className={styles.highlightValGreen}>{totalOptIns.toLocaleString()}</div>
           <div className={styles.highlightLabelGreen}>
             {optInRate !== null
               ? `${optInRate}% of registrations`
-              : totalOptIns > 0
-                ? totalRegistered > 0
-                  ? `Rate not shown: more opt-ins (${totalOptIns.toLocaleString()}) than registrations (${totalRegistered.toLocaleString()}) are stored`
-                  : 'Rate not shown: no registrations stored'
-                : 'No opt-ins stored'}
+              : totalRegistered > 0
+                ? `Rate not shown: more opt-ins (${totalOptIns.toLocaleString()}) than registrations (${totalRegistered.toLocaleString()}) are stored`
+                : 'Rate not shown: no registrations stored'}
           </div>
         </div>
+        )}
+        {vettingApprovalRate !== null && (
         <div className={styles.highlightBoxGray}>
           <div className={styles.highlightLabelGray}>Vetting Approval</div>
           <div className={styles.highlightValGray}>{formatPercent(vettingApprovalRate)}</div>
-          <div className={styles.cardSubtitle}>
-            {vettingApprovalRate !== null
-              ? 'Approved of submitted photos'
-              : 'No photo vetting data'}
-          </div>
+          <div className={styles.cardSubtitle}>Approved of submitted photos</div>
         </div>
+        )}
+        {totalCtaClicks > 0 && (
         <div className={styles.highlightBoxGray}>
           <div className={styles.highlightLabelGray}>Total CTA Click Actions</div>
           <div className={styles.highlightValGray}>
-            {totalCtaClicks > 0 ? totalCtaClicks.toLocaleString() : 'n/a'}
+            {totalCtaClicks.toLocaleString()}
           </div>
           <div className={styles.cardSubtitle}>Call-to-action clicks recorded</div>
         </div>
+        )}
         {avgPhotosPerUser !== null && avgPhotosPerUser !== undefined && (
           <div className={styles.highlightBoxGray}>
             <div className={styles.highlightLabelGray}>Avg Photos / Fan</div>
@@ -174,6 +176,7 @@ export default function D3FunnelFlow({ funnel, summary }: D3FunnelFlowProps) {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 }

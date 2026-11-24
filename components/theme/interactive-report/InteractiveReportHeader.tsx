@@ -181,32 +181,35 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
               const peopleVal = vision?.aggregates?.totalPeople ?? (fanmass.measured.drive.people + fanmass.measured.photos.people.measured);
               const peoplePerPhoto = photosVal > 0 && peopleVal > 0 ? (peopleVal / photosVal).toFixed(2) : null;
               const tileClasses = [styles.kpiTile1, styles.kpiTile2, styles.kpiTile3, styles.kpiTile4, styles.kpiTile5, styles.kpiTile6];
-              const cards: Array<{ label: string; valueText: string; subtext: string | null }> = [
-                {
+              const cards: Array<{ label: string; valueText: string; subtext: string | null }> = [];
+              if (photosVal > 0) {
+                cards.push({
                   label: 'Fan Photos',
-                  valueText: photosVal > 0
-                    ? (totalAll > 0 ? `${photosVal.toLocaleString()} / ${totalAll.toLocaleString()}` : photosVal.toLocaleString())
-                    : 'n/a',
-                  subtext: photosVal > 0 && totalAll > 0 ? 'analyzed / all' : null,
-                },
-                {
+                  valueText: totalAll > 0 ? `${photosVal.toLocaleString()} / ${totalAll.toLocaleString()}` : photosVal.toLocaleString(),
+                  subtext: totalAll > 0 ? 'analyzed / all' : null,
+                });
+              }
+              if (peopleVal > 0) {
+                cards.push({
                   label: 'People in Photos',
-                  valueText: peopleVal > 0 ? peopleVal.toLocaleString() : 'n/a',
+                  valueText: peopleVal.toLocaleString(),
                   subtext: peoplePerPhoto ? `${peoplePerPhoto} people / photo` : null,
-                },
-                {
+                });
+              }
+              if (commercialBrands.length > 0) {
+                cards.push({
                   label: 'Sponsor Brands',
-                  valueText: commercialBrands.length > 0 ? commercialBrands.length.toLocaleString() : 'n/a',
+                  valueText: commercialBrands.length.toLocaleString(),
                   subtext: commercialBrands[0] ? `Top: ${commercialBrands[0].brand} (${commercialBrands[0].count.toLocaleString()})` : null,
-                },
-                ...(data.scope?.type !== 'event' && fanmass.coverage.events > 0
-                  ? [{
-                      label: 'Matches',
-                      valueText: fanmass.coverage.events.toLocaleString(),
-                      subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
-                    }]
-                  : []),
-              ];
+                });
+              }
+              if (data.scope?.type !== 'event' && fanmass.coverage.events > 0) {
+                cards.push({
+                  label: 'Matches',
+                  valueText: fanmass.coverage.events.toLocaleString(),
+                  subtext: `${data.matches?.length ?? fanmass.coverage.events} matches in scope`,
+                });
+              }
               if (summary.totalRegistered > 0) {
                 cards.push({
                   label: 'Fan Registrations',

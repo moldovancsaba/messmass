@@ -17,6 +17,7 @@ import {
   getBrandCluster,
   canonicalizeClub,
   isGenericVisionDescription,
+  isGenericBrandNoise,
 } from '@/lib/brandEntityClustering';
 import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 import { calculate as calculateHashtagReport } from '@/lib/hashtagReport/calculated';
@@ -980,7 +981,7 @@ export async function getScopedInteractiveReportData(
 
       const enrichedBrands = (visionDoc.aggregates?.topBrands || [])
         .filter((b: any) => {
-          return !isSportFranchise(b.brand) && !isVenue(b.brand);
+          return !isSportFranchise(b.brand) && !isVenue(b.brand) && !isGenericBrandNoise(b.brand);
         })
         .map((b: any) => {
           const norm = (b.brand || '').toLowerCase().trim();

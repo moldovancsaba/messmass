@@ -252,19 +252,22 @@ export default function ExecutiveBentoGrid({
                 </div>
                 <strong className={styles.bentoFunnelVal}>{totalGateAttendance.toLocaleString()}</strong>
               </div>
+              {stage2Val > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage3}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Photo audience</span>
                   <span className={styles.bentoFunnelSub}>
-                    {stage2Val > 0 && totalGateAttendance > 0
+                    {totalGateAttendance > 0
                       ? `${Math.round((stage2Val / totalGateAttendance) * 1000) / 10}% photo participation`
                       : 'Detected fans'}
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {stage2Val > 0 ? stage2Val.toLocaleString() : 'n/a'}
+                  {stage2Val.toLocaleString()}
                 </strong>
               </div>
+              )}
+              {resolvedRegistered > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage4}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Image usage rights</span>
@@ -273,9 +276,11 @@ export default function ExecutiveBentoGrid({
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {resolvedRegistered > 0 ? resolvedRegistered.toLocaleString() : 'n/a'}
+                  {resolvedRegistered.toLocaleString()}
                 </strong>
               </div>
+              )}
+              {stage3Val > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage5}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Marketing opt-ins</span>
@@ -284,12 +289,14 @@ export default function ExecutiveBentoGrid({
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {stage3Val > 0 ? stage3Val.toLocaleString() : 'n/a'}
+                  {stage3Val.toLocaleString()}
                 </strong>
               </div>
+              )}
             </div>
           ) : (
             <div className={styles.bentoFunnelSteps}>
+              {stage1Val > 0 && (
               <div className={styles.bentoFunnelStage}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Photos captured</span>
@@ -298,9 +305,11 @@ export default function ExecutiveBentoGrid({
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {stage1Val > 0 ? stage1Val.toLocaleString() : 'n/a'}
+                  {stage1Val.toLocaleString()}
                 </strong>
               </div>
+              )}
+              {stage2Val > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage2}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>People engaged</span>
@@ -309,18 +318,21 @@ export default function ExecutiveBentoGrid({
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {stage2Val > 0 ? stage2Val.toLocaleString() : 'n/a'}
+                  {stage2Val.toLocaleString()}
                 </strong>
               </div>
+              )}
+              {stage3Val > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage3}`}>
                 <div className={styles.bentoFunnelInfo}>
                   <span className={styles.bentoFunnelTitle}>Marketing opt-ins</span>
                   <span className={styles.bentoFunnelSub}>Consented leads</span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
-                  {stage3Val > 0 ? stage3Val.toLocaleString() : 'n/a'}
+                  {stage3Val.toLocaleString()}
                 </strong>
               </div>
+              )}
             </div>
           )}
 
@@ -388,12 +400,15 @@ export default function ExecutiveBentoGrid({
             </div>
           ) : (
             <div className={styles.bentoConsentList}>
+              {resolvedOptIns > 0 && (
               <div className={styles.bentoConsentRow}>
                 <div className={styles.bentoConsentHead}>
                   <span className={styles.gdsCardTitle}>Marketing Opt-In</span>
+                  {consentPct !== null && (
                   <strong className={`${styles.gdsCardTitle} ${styles.gdsNum}`}>
-                    {consentPct !== null ? `${consentPct}%` : 'n/a'}
+                    {consentPct}%
                   </strong>
+                  )}
                 </div>
                 <div className={styles.gdsCaption}>
                   {resolvedRegistered > 0
@@ -408,6 +423,7 @@ export default function ExecutiveBentoGrid({
                   </div>
                 )}
               </div>
+              )}
 
               {resolvedCtaClicks > 0 && (
                 <div className={styles.bentoConsentRow}>
@@ -689,12 +705,14 @@ export default function ExecutiveBentoGrid({
               </strong>
               <span className={styles.gdsCaption}>Distinct brands detected</span>
             </div>
+            {eventsCount > 0 && (
             <div className={styles.bentoSummaryStat}>
               <strong className={`${styles.gdsSectionTitle} ${styles.gdsNum}`}>
-                {eventsCount > 0 ? eventsCount.toLocaleString() : 'n/a'}
+                {eventsCount.toLocaleString()}
               </strong>
               <span className={styles.gdsCaption}>Events in portfolio</span>
             </div>
+            )}
           </div>
         </div>
         </div>

@@ -315,8 +315,9 @@ export function mergeBrandVariants<T extends { brand: string; count: number; log
 ): T[] {
   const map = new Map<string, T>();
   for (const b of brands) {
-    if (!b?.brand) continue;
+    if (!b?.brand || isGenericBrandNoise(b.brand)) continue;
     const name = canonicalizeBrandName(b.brand);
+    if (isGenericBrandNoise(name)) continue;
     const key = name.toLowerCase();
     const existing = map.get(key);
     if (existing) {
@@ -481,6 +482,123 @@ export const GENERIC_VISION_PATTERNS: RegExp[] = [
   /^kőszegi bence handball team/i,
 ];
 
+export const GENERIC_APPAREL_AND_OBJECT_TOKENS = new Set<string>([
+  'shirt',
+  't shirt',
+  't-shirt',
+  'tshirt',
+  'scarf',
+  'scarves',
+  'jersey',
+  'jerseys',
+  'kit',
+  'kits',
+  'cap',
+  'caps',
+  'hat',
+  'hats',
+  'baseball cap',
+  'beanie',
+  'glasses',
+  'sunglasses',
+  'eyewear',
+  'hoodie',
+  'hoodies',
+  'jacket',
+  'jackets',
+  'coat',
+  'shorts',
+  'pants',
+  'trousers',
+  'jeans',
+  'socks',
+  'shoes',
+  'sneakers',
+  'boots',
+  'gloves',
+  'apparel',
+  'clothing',
+  'merch',
+  'merchandise',
+  'tracksuit',
+  'sweatshirt',
+  'polo',
+  'vest',
+  'uniform',
+  'suit',
+  'dress',
+  'skirt',
+  'watch',
+  'bag',
+  'backpack',
+  'flag',
+  'flags',
+  'banner',
+  'sign',
+  'poster',
+  'bottle',
+  'cup',
+  'mug',
+  'microphone',
+  'camera',
+  'phone',
+  'dart',
+  'darts',
+  'dartboard',
+  'dart board',
+  'scoreboard',
+  'trophy',
+  'medal',
+  'badge',
+  'logo',
+  'patch',
+  'emblem',
+  'crest',
+  'mask',
+  'wristband',
+  'headband',
+  'lanyard',
+  'ticket',
+  'bracelet',
+  'belt',
+  'superman',
+  'batman',
+  'spiderman',
+  'spider-man',
+  'iron man',
+  'captain america',
+  'thor',
+  'hulk',
+  'parrothat',
+  'unidentified',
+  'unknown',
+  'other',
+  'generic',
+  'none',
+  'n/a',
+  'na',
+  'no brand',
+  'no club',
+  'no logo',
+  'unnamed',
+]);
+
+const GENERIC_COLOR_GARMENT_PATTERN =
+  /^(blue|red|white|black|green|yellow|orange|grey|gray|purple|pink|navy|gold|silver)\s+(shirt|t-shirt|t shirt|tshirt|jersey|scarf|hat|cap|hoodie|jacket|kit|top)$/i;
+
+/**
+ * Flags generic garment, object, prop, or non-brand vision artifacts that must never appear as commercial brands.
+ */
+export function isGenericBrandNoise(rawName: string): boolean {
+  if (!rawName) return true;
+  const norm = rawName.trim();
+  const low = norm.toLowerCase();
+  if (!low || low.length <= 1) return true;
+  if (GENERIC_APPAREL_AND_OBJECT_TOKENS.has(low)) return true;
+  if (GENERIC_COLOR_GARMENT_PATTERN.test(norm)) return true;
+  return false;
+}
+
 /**
  * Flags descriptive model artifacts, noise, or generic phrases that do not represent real clubs.
  */
@@ -488,6 +606,9 @@ export function isGenericVisionDescription(rawName: string): boolean {
   if (!rawName) return true;
   const norm = rawName.trim();
   const low = norm.toLowerCase();
+  if (GENERIC_APPAREL_AND_OBJECT_TOKENS.has(low) || GENERIC_COLOR_GARMENT_PATTERN.test(norm)) {
+    return true;
+  }
   if (
     low === 'n/a' ||
     low === 'none' ||
