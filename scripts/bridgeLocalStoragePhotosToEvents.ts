@@ -5,6 +5,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import dotenv from 'dotenv';
 import { getFranchiseInfo } from '../lib/brandEntityClustering';
 import { rebuildFanmassPhotoEventSummary } from '../lib/fanmassPhotoAnalyses';
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 dotenv.config({ path: '.env.local' });
 
@@ -47,12 +48,8 @@ interface TargetCluster {
 
 const CLUSTERS: TargetCluster[] = [
   {
-    name: 'camaraclastar (PROD)',
-    uri: 'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/?retryWrites=true&w=majority&appName=camaraclastar',
-  },
-  {
-    name: 'r96vlxs (SECONDARY)',
-    uri: 'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/?appName=messmass-cluster',
+    name: 'Messmass (MONGODB_URI)',
+    uri: requireMessmassUri(),
   },
 ];
 

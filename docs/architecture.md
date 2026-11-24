@@ -16,11 +16,11 @@ Version: 12.3.51
 
 ## 🌐 Modern Architectural Foundations (v12.3.51)
 
-### 1. Dual-Cluster Database Topology & Fleet Parity
-Messmass operates across two synchronized MongoDB Atlas clusters:
-- **Production Runtime Cluster (`camaraclastar.koyedpi.mongodb.net`)**: Primary cluster serving Vercel production (`https://messmass.com`). Houses live `chart_configurations`, `charts`, `data_blocks`, `report_templates`, `report_styles` (54 custom brand themes), `projects`, and `organizations`.
-- **Secondary Replication Cluster (`messmass-cluster.r96vlxs.mongodb.net`)**: Secondary cluster configured in local development environments.
-- **Parity Discipline**: All database mutations to chart configurations, templates, or styles must be applied in dual-cluster lockstep using parity scripts (`scripts/syncDualClusterParity.ts`).
+### 1. Single-Cluster Database Topology & Pre-Flight Data Safety
+Messmass operates against **one single authoritative MongoDB Atlas cluster** configured via `MONGODB_URI`:
+- **Authoritative Messmass Cluster (`messmass-cluster.r96vlxs.mongodb.net`)**: Single cluster serving both Vercel production (`https://www.messmass.com`) and local `.env.local` environments. Houses all live `projects`, `partners`, `organizations`, `brand_assets`, `report_templates`, `report_styles`, `data_blocks`, `charts`, `chart_configurations`, and `fanmass_*` analytics collections.
+- **No Dual-Cluster Writes or Hardcoded URIs**: Scripts in `scripts/` must connect exclusively via `scripts/lib/singleClusterConfig.ts` (`requireMessmassUri()`), reading `MONGODB_URI` from environment configuration. Hardcoding cluster URLs, credentials, or dual-cluster loops in scripts is strictly prohibited.
+- **Pre-Flight Data Safety Discipline**: Before any database migration, bulk write, or environment URI change, run the `preflight-data-safety` audit and snapshot target collections (`*_backup_<ISO>` + local JSON) and use field-level `$set` updates rather than destructive `replaceOne` or synthetic value backfills.
 
 ### 2. Single-Entity RESTful CRUD Architecture & Dedicated Workspaces
 To eliminate monolithic admin page state and enable deep linkable editing:

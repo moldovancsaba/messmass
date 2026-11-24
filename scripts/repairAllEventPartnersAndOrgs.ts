@@ -1,22 +1,14 @@
 // scripts/repairAllEventPartnersAndOrgs.ts
 // Comprehensive repair for all misplaced organizations, partners, and event pairings
-// Dual-cluster parity: messmass-cluster (r96vlxs) and camaraclastar (koyedpi)
+// Single-cluster configuration via MONGODB_URI
 
 import { MongoClient, ObjectId } from 'mongodb';
-import * as dotenv from 'dotenv';
-import * as path from 'path';
-
-dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 const CLUSTERS = [
   {
-    name: 'messmass-cluster',
-    uri: process.env.MONGODB_URI || 'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/?appName=messmass-cluster',
-    dbName: 'messmass',
-  },
-  {
-    name: 'camaraclastar',
-    uri: 'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/?retryWrites=true&w=majority&appName=camaraclastar',
+    name: 'messmass',
+    uri: requireMessmassUri(),
     dbName: 'messmass',
   },
 ];

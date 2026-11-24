@@ -6,11 +6,7 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { resolveVenueFromMatch } from '../lib/sports/venueCatalog';
 import { fetchHistoricalWeather } from '../lib/weather/openMeteoClient';
-
-const CLUSTERS = {
-  camaraclastar: 'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/messmass?retryWrites=true&w=majority&appName=camaraclastar',
-  secondary: 'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/messmass?appName=messmass-cluster',
-};
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 // Curated fixture lookup for scores, attendance, and sport
 const FIXTURE_OVERRIDES: Record<string, {
@@ -263,14 +259,7 @@ async function enrichCluster(clusterName: string, uri: string, apply = false) {
 async function main() {
   const args = process.argv.slice(2);
   const apply = args.includes('--apply');
-  const targetCluster = args.find((a) => a.startsWith('--cluster='))?.split('=')[1] || 'all';
-
-  if (targetCluster === 'all' || targetCluster === 'camaraclastar') {
-    await enrichCluster('camaraclastar', CLUSTERS.camaraclastar, apply);
-  }
-  if (targetCluster === 'all' || targetCluster === 'secondary') {
-    await enrichCluster('secondary', CLUSTERS.secondary, apply);
-  }
+  await enrichCluster('messmass', requireMessmassUri(), apply);
 
   if (!apply) {
     console.log('\n[DRY RUN COMPLETE] Run with --apply to commit these updates to MongoDB clusters.');

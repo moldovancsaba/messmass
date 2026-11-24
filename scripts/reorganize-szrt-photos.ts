@@ -7,13 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { MongoClient, ObjectId } from 'mongodb';
 import { detectSport } from '../lib/interactiveReportAggregator';
-
-const CLUSTERS = {
-  camaraclastar:
-    'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/messmass?retryWrites=true&w=majority&appName=camaraclastar',
-  secondary:
-    'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/messmass?appName=messmass-cluster',
-};
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 const CLUB_PATTERNS: Array<{ key: string; pattern: RegExp }> = [
   { key: 'mtk', pattern: /\bmtk\b/i },
@@ -111,7 +105,7 @@ const SPORT_FEDERATION_ORG: Record<string, string> = {
 const TIPPMIX_ORG_ID = '6af1c2000000000000000001';
 
 async function run(apply: boolean) {
-  const client = new MongoClient(CLUSTERS.camaraclastar);
+  const client = new MongoClient(requireMessmassUri());
   await client.connect();
   const db = client.db('messmass');
 
@@ -501,7 +495,7 @@ async function run(apply: boolean) {
     return;
   }
 
-  // Apply to camaraclastar
+  // Apply to configured Messmass cluster
   if (duplicateCamIds.length > 0) {
     await db.collection('fanmass_camera_photo_analyses').deleteMany({ _id: { $in: duplicateCamIds } });
   }
@@ -543,7 +537,7 @@ async function run(apply: boolean) {
     await db.collection('fanmass_camera_photo_analyses').bulkWrite(camOps, { ordered: false });
   }
 
-  console.log(`Applied updates to camaraclastar: ${drvOps.length} drive photos, ${camOps.length} camera local_storage photos.`);
+  console.log(`Applied updates to Messmass cluster: ${drvOps.length} drive photos, ${camOps.length} camera local_storage photos.`);
   await client.close();
 }
 

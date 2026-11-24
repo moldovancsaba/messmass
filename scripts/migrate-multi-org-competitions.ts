@@ -5,13 +5,7 @@
 
 import { MongoClient, ObjectId } from 'mongodb';
 import { resolveCompetitionFromProject } from '../lib/sportCompetitions';
-
-const CLUSTERS = {
-  camaraclastar:
-    'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/messmass?retryWrites=true&w=majority&appName=camaraclastar',
-  secondary:
-    'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/messmass?appName=messmass-cluster',
-};
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 const LEAGUE_ORG_REMAP: Record<string, { federationOrgId: string; sport: string; format: string; division: string; tierLabel: string; tierLevel: number | null; sponsorTitle?: string }> = {
   '6af1c1000000000000000001': { federationOrgId: '6af1c0000000000000000001', sport: 'football', format: 'league', division: 'men', tierLabel: 'NB I', tierLevel: 1, sponsorTitle: 'OTP Bank' },
@@ -201,8 +195,7 @@ async function migrateCluster(name: string, uri: string, apply: boolean) {
 
 async function main() {
   const apply = process.argv.includes('--apply');
-  await migrateCluster('camaraclastar', CLUSTERS.camaraclastar, apply);
-  await migrateCluster('secondary', CLUSTERS.secondary, apply);
+  await migrateCluster('messmass', requireMessmassUri(), apply);
   process.exit(0);
 }
 

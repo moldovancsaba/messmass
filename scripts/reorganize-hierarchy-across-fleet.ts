@@ -1,14 +1,9 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import crypto from 'crypto';
-
-const PROD_URI =
-  'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/?retryWrites=true&w=majority&appName=camaraclastar';
-const SECONDARY_URI =
-  'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/?appName=messmass-cluster';
+import { optionalCameraUri, requireMessmassUri } from './lib/singleClusterConfig';
 
 const CLUSTERS = [
-  { name: 'camaraclastar (PROD)', uri: PROD_URI, hasCameraDb: true },
-  { name: 'r96vlxs (SECONDARY)', uri: SECONDARY_URI, hasCameraDb: false },
+  { name: 'Messmass (MONGODB_URI)', uri: requireMessmassUri(), hasCameraDb: Boolean(optionalCameraUri()) },
 ];
 
 // ---------------------------------------------------------------------------

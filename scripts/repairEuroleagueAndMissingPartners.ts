@@ -1,14 +1,11 @@
 import { MongoClient, ObjectId, Db } from 'mongodb';
 import { randomUUID } from 'crypto';
+import { requireMessmassUri } from './lib/singleClusterConfig';
 
 const CLUSTERS = [
   {
-    name: 'Primary (camaraclastar)',
-    uri: 'mongodb+srv://moldovancsaba_db_user:wMP6z5B3ft5mmyI0@camaraclastar.koyedpi.mongodb.net/?retryWrites=true&w=majority&appName=camaraclastar',
-  },
-  {
-    name: 'Secondary (r96vlxs)',
-    uri: 'mongodb+srv://messmass:mirdob-5kykku-qozGym@messmass-cluster.r96vlxs.mongodb.net/?appName=messmass-cluster',
+    name: 'Messmass (MONGODB_URI)',
+    uri: requireMessmassUri(),
   },
 ];
 
@@ -161,36 +158,6 @@ async function ensurePartners(db: Db): Promise<Map<string, ObjectId>> {
 }
 
 export async function runRepair(applyChanges = false) {
-  // Sync missing projects from Primary to Secondary if applyChanges
-  if (applyChanges) {
-    try {
-      const primaryClient = await MongoClient.connect(CLUSTERS[0].uri);
-      const secondaryClient = await MongoClient.connect(CLUSTERS[1].uri);
-      const priProjects = primaryClient.db('messmass').collection('projects');
-      const secProjects = secondaryClient.db('messmass').collection('projects');
-
-      const slugsToSync = [
-        'e680aeef-5e0a-4627-bce6-1d0ebda3e3bb', // Beretta Famila Schio - Galatasaray Cagdas Faktoring
-        'b3850171-27bf-4fff-bfc5-39f5b6dac376', // Galatasaray Cagdas Faktoring - KKZ Crvena Zvezda
-        '60b08433-b561-49e2-ac13-468243b3b681', // Fenerbahce Tarfin - Valencia Basket Club
-        'acd1dd36-7adf-4557-b0cc-457152217077', // Fenerbahce Tarfin - Flammes Carolo Basket
-      ];
-
-      for (const slug of slugsToSync) {
-        const doc = await priProjects.findOne({ editSlug: slug });
-        if (doc) {
-          await secProjects.updateOne({ editSlug: slug }, { $set: doc }, { upsert: true });
-          console.log(`Synced project to secondary cluster: ${doc.eventName}`);
-        }
-      }
-
-      await primaryClient.close();
-      await secondaryClient.close();
-    } catch (e) {
-      console.warn('Project sync error:', e);
-    }
-  }
-
   for (const cluster of CLUSTERS) {
     console.log(`\n======================================================`);
     console.log(`Running repair on ${cluster.name} (apply: ${applyChanges})`);
