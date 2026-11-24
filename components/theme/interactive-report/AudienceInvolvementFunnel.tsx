@@ -103,6 +103,9 @@ export default function AudienceInvolvementFunnel({
     },
   ];
 
+  const visibleStages = stages.filter((s) => s.value > 0);
+  if (visibleStages.length === 0) return null;
+
   return (
     <article className={`${styles.bentoPanel} ${className}`}>
       <header className={styles.bentoPanelHeader}>
@@ -134,7 +137,7 @@ export default function AudienceInvolvementFunnel({
 
       {/* Tapered Trapezoid Funnel Steps */}
       <div className={styles.funnelTrapezoidList}>
-        {stages.map((stage, idx) => {
+        {visibleStages.map((stage, idx) => {
           const stageClass =
             idx === 1
               ? styles.funnelTrapezoidStage2
@@ -145,7 +148,10 @@ export default function AudienceInvolvementFunnel({
                   : idx === 4
                     ? styles.funnelTrapezoidStage5
                     : '';
-          return (
+          const visibleStages = stages.filter((s) => s.value > 0);
+  if (visibleStages.length === 0) return null;
+
+  return (
             <div key={stage.id} className={`${styles.funnelTrapezoidStage} ${stageClass}`}>
               <div className={styles.funnelTrapezoidMeta}>
                 <span className={styles.funnelTrapezoidIcon} aria-hidden="true">{stage.icon}</span>

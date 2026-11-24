@@ -476,7 +476,7 @@ export default function OverviewTab({
         })()}
 
         {/* ACT 3: Analyzed Events & Partner HOME vs ALL Comparison */}
-        {isFanmass && scopedMatches.length > 0 && (
+        {isFanmass && data.scope?.type !== 'event' && scopedMatches.length > 1 && (
           <article className={styles.bentoPanel}>
             <header className={styles.bentoPanelHeader}>
               <div className={styles.bentoPanelTitle}>
@@ -575,7 +575,7 @@ export default function OverviewTab({
           </div>
         )}
 
-        {isFanmass && data.matches && data.matches.length > 0 && (
+        {isFanmass && data.scope?.type !== 'event' && data.matches && data.matches.length > 1 && (
           <SportsExecutiveInsights
             matches={data.matches}
             partnerName={data.partner?.name || scopeName}
@@ -586,7 +586,7 @@ export default function OverviewTab({
           />
         )}
 
-        {(data.matchdayAnalytics || scopedMatches.length > 0) && (
+        {(scopedMatches.some((m) => (m.venueCapacity ?? 0) > 0) || (data.scope?.type !== 'event' && scopedMatches.length > 1)) && (
           <div className={styles.bentoTwoCol}>
             <StadiumCapacityChart matches={scopedMatches} analytics={partnerMatchScope === 'home' && hasPartnerHomeAllSplit ? undefined : data.matchdayAnalytics} />
             {data.scope?.type !== 'event' && scopedMatches.length > 1 && (
@@ -614,7 +614,7 @@ export default function OverviewTab({
           </>
         )}
 
-        {scopedMatches.some((m) => m.weather && m.attendance) && (
+        {scopedMatches.filter((m) => m.weather && m.attendance && m.venueCapacity).length >= 2 && (
           <WeatherTurnoutCorrelationMatrix matches={scopedMatches} />
         )}
       </div>

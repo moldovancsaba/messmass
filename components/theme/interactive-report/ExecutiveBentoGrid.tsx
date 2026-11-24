@@ -134,6 +134,7 @@ export default function ExecutiveBentoGrid({
   return (
     <section className={styles.bentoGrid} aria-label={`${scopeName} executive bento overview`}>
       {/* 1. AUDIENCE COMPOSITION */}
+      {(genderTotal > 0 || ageTotal > 0) && (
       <article className={`${styles.bentoPanel} ${styles.bentoAudience}`}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -216,6 +217,7 @@ export default function ExecutiveBentoGrid({
           </div>
         </div>
       </article>
+      )}
 
       {/* 2. ACTIVATION & FUNNEL */}
       <article className={`${styles.bentoPanel} ${styles.bentoActivation}`}>
@@ -334,6 +336,7 @@ export default function ExecutiveBentoGrid({
       </article>
 
       {/* 3. BRAND PROTECTION & CONSENT */}
+      {(hasVetting || consentPct !== null || resolvedOptIns > 0) && (
       <article className={`${styles.bentoPanel} ${styles.bentoProtection}`}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -428,6 +431,7 @@ export default function ExecutiveBentoGrid({
           </div>
         </div>
       </article>
+      )}
 
       {/* 4. TOP DETECTIONS / RANKINGS */}
       <article className={`${styles.bentoPanel} ${styles.bentoRankings}`}>
@@ -551,6 +555,7 @@ export default function ExecutiveBentoGrid({
       </article>
 
       {/* 5. FAN LOCATION & ATMOSPHERE */}
+      {(totalVenueCoded > 0 || topEmotion !== null) && (
       <article className={`${styles.bentoPanel} ${styles.bentoLocation}`}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -613,6 +618,7 @@ export default function ExecutiveBentoGrid({
           )}
         </div>
       </article>
+      )}
 
       {/* 6. COMMERCIAL INTELLIGENCE */}
       <article className={`${styles.bentoPanel} ${styles.bentoCommercial}`}>

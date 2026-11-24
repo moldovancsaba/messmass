@@ -330,9 +330,9 @@ export default function MarketingCommercialSuite({
 
             <div className={styles.suiteGrid3}>
               {/* Gender Distribution Donut */}
+              {totalGender > 0 && (
               <div className={`${styles.executiveCard} ${styles.suiteCardColumn}`}>
                 <h4 className={styles.gdsCardTitle}>Gender Distribution</h4>
-                {totalGender > 0 ? (
                   <>
                     <div className={styles.suiteDonutWrap}>
                       <svg width="144" height="144" viewBox="0 0 140 140" role="img" aria-label={`Gender split: ${malePct}% male, ${femalePct}% female`}>
@@ -382,10 +382,8 @@ export default function MarketingCommercialSuite({
                       </div>
                     </div>
                   </>
-                ) : (
-                  <div className={styles.suiteEmptyState}>No gender classifications recorded in this view</div>
-                )}
               </div>
+              )}
 
               {/* Real Age Groups (Children, Teens, Adults, Seniors) */}
               <div className={`${styles.executiveCard} ${styles.suiteCardColumn}`}>
