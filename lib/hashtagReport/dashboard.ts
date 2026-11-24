@@ -156,9 +156,12 @@ export function fanmassDashboardData(base: InteractiveReportData | null, report:
   // The vision document Fanmass published for the scope (the SZRT campaign), with the scope's Camera results added (it
   // covers the drive library only), else the enriched vision from base (or raw visionFromReport when base is null)
   const isSzrtCampaignBase = Boolean(base?.vision && (report.scope.type === 'all' || report.scope.id.toLowerCase() === 'tippmixreport2026' || base?.scope?.id?.toLowerCase() === 'tippmixreport2026' || base?.partner?.viewSlug === 'szrt'));
+  const fromReport = !base?.vision ? visionFromReport(report) : null;
   const vision = base?.vision
     ? (isSzrtCampaignBase ? withCameraVision(base.vision, report) : base.vision)
-    : visionFromReport(report);
+    : fromReport && (base?.summary?.totalPhotos ?? 0) > fromReport.totalImages
+      ? { ...fromReport, totalImages: Math.max(fromReport.totalImages, base!.summary.totalPhotos) }
+      : fromReport;
   const events = report.measured.events.filter((event) => event.drivePhotos > 0 || event.hasPhotoResults);
   const baseMatches = base?.matches || [];
   const baseMatchMap = new Map(baseMatches.map((m) => [m.id, m]));

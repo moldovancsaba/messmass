@@ -173,14 +173,17 @@ export default function SzrtHeader({ data, activeTab, onTabChange, fanmass }: Sz
           <div className={styles.kpiGrid}>
             {(() => {
               const photosVal = vision?.processedCount ?? (fanmass.measured.drive.analysed + fanmass.measured.photos.analysed);
+              const totalAll = Math.max(vision?.totalImages ?? 0, summary.totalPhotos ?? 0);
               const peopleVal = vision?.aggregates?.totalPeople ?? (fanmass.measured.drive.people + fanmass.measured.photos.people.measured);
               const peoplePerPhoto = photosVal > 0 && peopleVal > 0 ? (peopleVal / photosVal).toFixed(2) : null;
               const tileClasses = [styles.kpiTile1, styles.kpiTile2, styles.kpiTile3, styles.kpiTile4, styles.kpiTile5, styles.kpiTile6];
               const cards: Array<{ label: string; valueText: string; subtext: string | null }> = [
                 {
                   label: 'Fan Photos',
-                  valueText: photosVal > 0 ? photosVal.toLocaleString() : 'n/a',
-                  subtext: vision && vision.totalImages > 0 ? `of ${vision.totalImages.toLocaleString()} analyzed photos` : null,
+                  valueText: photosVal > 0
+                    ? (totalAll > 0 ? `${photosVal.toLocaleString()} / ${totalAll.toLocaleString()}` : photosVal.toLocaleString())
+                    : 'n/a',
+                  subtext: photosVal > 0 && totalAll > 0 ? 'analyzed / all' : null,
                 },
                 {
                   label: 'People in Photos',

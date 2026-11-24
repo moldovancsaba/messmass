@@ -19,10 +19,6 @@ import {
   isGenericVisionDescription,
 } from '@/lib/brandEntityClustering';
 import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
-import {
-  getCachedReportSnapshot,
-  saveReportSnapshot,
-} from '@/lib/reportSnapshotManager';
 import { calculate as calculateHashtagReport } from '@/lib/hashtagReport/calculated';
 import { loadMeasuredLayerForProjects, type ReportDb } from '@/lib/hashtagReport/measured';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
@@ -232,54 +228,7 @@ export async function getScopedInteractiveReportData(
   const scopeIdentifier = rawId.replace(/^#/, '');
   const sportFilter = query.sportFilter || 'all';
 
-  // 0. Check materialized snapshot cache for <50ms SSR latency (INV-001 tenant fenced)
-  try {
-    const cached = await getCachedReportSnapshot({
-      scopeType,
-      scopeIdentifier,
-      sportFilter,
-      organizationId: query.organizationId,
-    });
-    if (cached) {
-      // The live vision overlay is only valid for the SZRT campaign scope
-      if (cached.vision && isSzrtVisionScope(scopeType, scopeIdentifier, query.organizationId, cached.scope?.hashtags)) {
-        try {
-          const liveDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });
-          if (!isVisionPublishable(liveDoc)) {
-            cached.vision = null;
-            cached.demographics = null;
-          } else if (liveDoc) {
-            cached.vision.processedCount = liveDoc.processedCount || cached.vision.processedCount;
-            cached.vision.percent = liveDoc.percent || cached.vision.percent;
-            cached.vision.status = liveDoc.status || cached.vision.status;
-            cached.vision.currentSport = liveDoc.currentSport || cached.vision.currentSport;
-            cached.vision.currentFile = liveDoc.currentFile || cached.vision.currentFile;
-            cached.vision.lastUpdated = liveDoc.lastUpdated || cached.vision.lastUpdated;
-            if (liveDoc.aggregates?.sportsBreakdown) {
-              cached.vision.aggregates.sportsBreakdown = liveDoc.aggregates.sportsBreakdown;
-            }
-            if (liveDoc.aggregates?.totalPeople) {
-              cached.vision.aggregates.totalPeople = liveDoc.aggregates.totalPeople;
-            }
-            if (liveDoc.aggregates?.genders) {
-              cached.vision.aggregates.genders = liveDoc.aggregates.genders;
-            }
-            if (liveDoc.aggregates?.ageGroups) {
-              cached.vision.aggregates.ageGroups = liveDoc.aggregates.ageGroups;
-            }
-            // Demographics are derived from the vision aggregates, so they follow the live numbers
-            cached.demographics = buildDemographicsFromVision(cached.vision);
-          }
-        } catch {
-          // fallback to snapshot numbers
-        }
-      }
-      return cached;
-    }
-  } catch (err) {
-    console.warn('Snapshot cache lookup warning:', err);
-  }
-
+  // Always compute real-time aggregates directly from MongoDB (never serve stale snapshots).
   // 1. Resolve Scope & Target Projects via modular Scope Resolver (INV-001)
   const resolvedScope = await resolveScopeProjectIds(scopeType, rawId, query.organizationId, db);
   if (resolvedScope.resolvedEventIds.length === 0) {
@@ -1428,22 +1377,6 @@ export async function getScopedInteractiveReportData(
     vision,
     matchdayAnalytics,
   };
-
-  // Cache snapshot asynchronously for sub-50ms SSR latency
-  try {
-    await saveReportSnapshot(
-      {
-        scopeType,
-        scopeIdentifier,
-        sportFilter,
-        organizationId: query.organizationId,
-      },
-      finalResult,
-      3600 // 1 hour TTL
-    );
-  } catch (snapErr) {
-    console.warn('Failed to cache report snapshot:', snapErr);
-  }
 
   return finalResult;
 }
