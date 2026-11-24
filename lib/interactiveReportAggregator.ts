@@ -23,6 +23,7 @@ import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 import { calculate as calculateHashtagReport } from '@/lib/hashtagReport/calculated';
 import { loadMeasuredLayerForProjects, type ReportDb } from '@/lib/hashtagReport/measured';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
+import { enrichInteractiveReportLogos } from '@/lib/brandLogoResolver';
 
 
 export const SZRT_CAMPAIGN_NAMES = [
@@ -1379,7 +1380,7 @@ export async function getScopedInteractiveReportData(
     matchdayAnalytics,
   };
 
-  return finalResult;
+  return enrichInteractiveReportLogos(db, finalResult);
 }
 
 const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];

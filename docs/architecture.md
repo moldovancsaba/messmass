@@ -141,7 +141,7 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 139 | `components/` |
-| **Utility Modules** | 261 | `lib/` |
+| **Utility Modules** | 262 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
@@ -153,8 +153,8 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 134 | 201 |
-| `lib/mongodb.ts` | 117 | 112 |
+| `lib/config.ts` | 135 | 201 |
+| `lib/mongodb.ts` | 118 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 91 | 390 |
@@ -164,7 +164,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 42 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
-| `components/theme/interactive-report/types.ts` | 22 | 255 |
+| `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 146 |
 | `lib/report-calculator.ts` | 19 | 995 |
