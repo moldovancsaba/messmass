@@ -22,6 +22,17 @@ export async function DELETE(
 
     const query = ObjectId.isValid(id) ? { _id: new ObjectId(id) } : { canonicalSlug: id };
 
+    const existing = await db.collection('brand_assets').findOne(query);
+    if (existing && (existing.logoUrl || existing.darkLogoUrl)) {
+      const { _id: originalId, ...snapshotFields } = existing;
+      await db.collection('brand_assets_backup').insertOne({
+        ...snapshotFields,
+        originalId,
+        backedUpAt: new Date().toISOString(),
+        reason: 'pre-delete',
+      }).catch(() => {});
+    }
+
     await db.collection('brand_assets').deleteOne(query);
     try {
       await client.db('messmass').collection('brand_assets').deleteOne(query);

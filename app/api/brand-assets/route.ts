@@ -405,29 +405,46 @@ export async function POST(request: NextRequest) {
       aliases.push(name.toLowerCase());
     }
 
+    const existingAsset = await db.collection('brand_assets').findOne({ canonicalSlug });
+
+    // Never silently wipe an existing uploaded/collected logo when saving metadata without a new file/URL
+    const resolvedLogoUrl = logoUrl.trim() || existingAsset?.logoUrl || '';
+    const resolvedDarkLogoUrl = darkLogoUrl.trim() || existingAsset?.darkLogoUrl || '';
+
+    // Snapshot previous state before modifying an asset that already has a logo
+    if (existingAsset && (existingAsset.logoUrl || existingAsset.darkLogoUrl)) {
+      const { _id: originalId, ...snapshotFields } = existingAsset;
+      await db.collection('brand_assets_backup').insertOne({
+        ...snapshotFields,
+        originalId,
+        backedUpAt: new Date().toISOString(),
+        reason: 'pre-update',
+      }).catch(() => {});
+    }
+
     const doc = {
       name: name.trim(),
       canonicalSlug,
-      aliases,
-      logoUrl: logoUrl.trim(),
-      darkLogoUrl: darkLogoUrl.trim(),
-      category,
-      accentColor: accentColor.trim(),
+      aliases: Array.from(new Set([...(existingAsset?.aliases || []), ...aliases])),
+      logoUrl: resolvedLogoUrl,
+      darkLogoUrl: resolvedDarkLogoUrl,
+      category: category || existingAsset?.category || 'sponsor',
+      accentColor: accentColor.trim() || existingAsset?.accentColor || '',
       updatedAt: new Date().toISOString(),
     };
 
-    // Upsert into brand_assets
-    const result = await db.collection('brand_assets').replaceOne(
+    // Upsert via $set so existing fields (like logoSource) are never stripped
+    const result = await db.collection('brand_assets').updateOne(
       { canonicalSlug },
-      doc,
+      { $set: doc },
       { upsert: true }
     );
 
     // Also mirror to secondary messmass db in cluster if exists
     try {
-      await client.db('messmass').collection('brand_assets').replaceOne(
+      await client.db('messmass').collection('brand_assets').updateOne(
         { canonicalSlug },
-        doc,
+        { $set: doc },
         { upsert: true }
       );
     } catch {
