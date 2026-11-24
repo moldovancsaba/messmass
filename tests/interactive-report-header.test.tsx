@@ -35,8 +35,8 @@ describe('the opt-in figure of the report header', () => {
     expect(html).toContain('66% of registrations');
   });
 
-  it('is n/a only when nothing is stored', () => {
-    expect(header({ totalOptIns: 0 })).toMatch(/Marketing Opt-In<\/span><span[^>]*>n\/a/);
+  it('is hidden when nothing is stored', () => {
+    expect(header({ totalOptIns: 0 })).not.toContain('Marketing Opt-In');
   });
 });
 

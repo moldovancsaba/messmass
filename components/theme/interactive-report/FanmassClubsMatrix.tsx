@@ -103,16 +103,12 @@ export default function FanmassClubsMatrix({
   // Connected Selfies Modal state
   const [selectedClubForModal, setSelectedClubForModal] = useState<ClubStat | null>(null);
 
-  // 1. Strict filter: Exclude non-club junk and commercial sponsor hallucinations
+  // 1. Strict filter: Exclude non-club entries and standalone venues via shared taxonomy
   const validClubs = useMemo(() => {
     return clubs.filter((c) => {
       if (!c.club || c.club.trim().length <= 1) return false;
       const low = c.club.toLowerCase().trim();
       if (low === 'n/a' || low === 'none') return false;
-      if (low.includes('szerencsej') || low === 'tippmix' || low === 'mol' || low === 'nike' || low === 'adidas' || low === 'puma') {
-        return false;
-      }
-      // If someone passed in a standalone venue, omit from franchise list
       if (isVenue(c.club)) return false;
       return true;
     });

@@ -47,29 +47,21 @@ export default function MarketingCommercialSuite({
   ageGroups,
   topEmotions = [],
   venues = [],
-  reportSlug = null,
+  reportSlug: _reportSlug = null,
   onViewTerritoryMap,
   variant = 'all',
   className = '',
 }: MarketingCommercialSuiteProps) {
-  const isSzrtOrTippmix =
-    Boolean(partnerName && (partnerName.toLowerCase().includes('tippmix') || partnerName.toLowerCase().includes('szerencsej'))) ||
-    Boolean(reportSlug && (reportSlug.toLowerCase().includes('tippmix') || reportSlug.toLowerCase().includes('szrt')));
+  const sponsorLabel = partnerName ? partnerName.trim() : null;
 
-  const resolvedCampaignTitle = campaignTitle || (
-    isSzrtOrTippmix
-      ? 'TIPPMIX DIGITAL FAN ACTIVATION'
-      : `${partnerName ? partnerName.toUpperCase() : 'SPONSOR'} FAN ACTIVATION`
-  );
+  const resolvedCampaignTitle =
+    campaignTitle || `${sponsorLabel ? sponsorLabel.toUpperCase() : 'SPONSOR'} FAN ACTIVATION`;
 
-  const resolvedCtaText = ctaText || (
-    isSzrtOrTippmix
-      ? 'CLAIM EXCLUSIVE TIPPMIX OFFER'
-      : 'CLAIM EXCLUSIVE SPONSOR OFFER'
-  );
+  const resolvedCtaText =
+    ctaText || `CLAIM EXCLUSIVE ${sponsorLabel ? sponsorLabel.toUpperCase() : 'SPONSOR'} OFFER`;
 
-  const resolvedClicksSubtitle = isSzrtOrTippmix
-    ? 'Direct clicks to the Tippmix digital activation portal'
+  const resolvedClicksSubtitle = sponsorLabel
+    ? `Direct clicks to the ${sponsorLabel} digital activation portal`
     : 'Direct clicks to official sponsor activation portal';
 
   // 1. Direct Marketing & Opt-in Metrics (Empirical Verified Leads)

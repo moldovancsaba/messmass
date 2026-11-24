@@ -64,7 +64,7 @@
   backdrop-filter: blur(8px);
 }
 
-.tippmixPill {
+.scopeTagPill {
   background: var(--report-pill-bg, #1b79df);
   color: var(--report-pill-text, #102242);
   padding: 4px 12px;

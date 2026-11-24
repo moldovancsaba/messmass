@@ -148,11 +148,20 @@ export default function MessmassAlgorithmsSuite({
     };
   }, [valChartConfig, totalModelledEur]);
 
-  if (totalFansBase <= 0 && totalModelledEur <= 0 && !hasGroupC) return null;
+  const hasGroupA =
+    fanEngagementPct !== null ||
+    frontRunnersPct !== null ||
+    coreFanTeamProjection !== null ||
+    fanaticalsPct !== null ||
+    under40Pct !== null ||
+    sportEngagement.length > 1;
+
+  if (!hasGroupA && totalModelledEur <= 0 && !hasGroupC) return null;
 
   return (
     <section className={styles.suiteStack} aria-label="Messmass Classic Algorithms and Valuation">
       {/* Group A: Empirical Supporter & Engagement Algorithms */}
+      {hasGroupA && (
       <article className={styles.bentoPanel}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -166,61 +175,57 @@ export default function MessmassAlgorithmsSuite({
             Separates merch-wearing supporters from casual visitors so you know how big your loyal core fanbase is.
           </p>
           <div className={styles.bentoFourCol}>
+            {fanEngagementPct !== null && (
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>Photo Participation Rate</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {fanEngagementPct !== null ? `${fanEngagementPct}%` : 'n/a'}
+                {`${fanEngagementPct}%`}
               </strong>
               <span className={styles.gdsCaption}>
-                {fanEngagementPct !== null
-                  ? `${fanAppearances?.toLocaleString()} fans / ${totalGate.toLocaleString()} attendance`
-                  : 'Requires attendance'}
+                {`${fanAppearances?.toLocaleString()} fans / ${totalGate.toLocaleString()} attendance`}
               </span>
             </div>
+            )}
 
+            {frontRunnersPct !== null && (
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>Merchandise Wearers vs. Casual Fans</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {frontRunnersPct !== null ? `${frontRunnersPct}% / ${casualsPct}%` : 'n/a'}
+                {`${frontRunnersPct}% / ${casualsPct}%`}
               </strong>
               <span className={styles.gdsCaption}>
-                {frontRunnersPct !== null
-                  ? `${merchedFans.toLocaleString()} wearing merch vs. ${Math.max(0, totalFansBase - merchedFans).toLocaleString()} casual`
-                  : 'No merchandise detections'}
+                {`${merchedFans.toLocaleString()} wearing merch vs. ${Math.max(0, totalFansBase - merchedFans).toLocaleString()} casual`}
               </span>
             </div>
+            )}
 
+            {coreFanTeamProjection !== null && (
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>Estimated Core Fanbase</span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {coreFanTeamProjection !== null ? coreFanTeamProjection.toLocaleString() : 'n/a'}
+                {coreFanTeamProjection.toLocaleString()}
               </strong>
               <span className={styles.gdsCaption}>
-                {coreFanTeamProjection !== null
-                  ? 'Projected merchandise-wearing attendees'
-                  : 'Requires merch & attendance'}
+                Projected merchandise-wearing attendees
               </span>
             </div>
+            )}
 
+            {(fanaticalsPct !== null || under40Pct !== null) && (
             <div className={styles.bentoSummaryStat}>
               <span className={styles.gdsEyebrow}>
                 {fanaticalsPct !== null ? 'Die-Hard Supporters' : 'Under-60 Audience Share'}
               </span>
               <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                {fanaticalsPct !== null
-                  ? `${fanaticalsPct}%`
-                  : under40Pct !== null
-                    ? `${under40Pct}%`
-                    : 'n/a'}
+                {fanaticalsPct !== null ? `${fanaticalsPct}%` : `${under40Pct}%`}
               </strong>
               <span className={styles.gdsCaption}>
                 {fanaticalsPct !== null
                   ? `${fanaticCount.toLocaleString()} flags & scarves of ${merchItemsSum.toLocaleString()} items`
-                  : under40Pct !== null
-                    ? `${under40Count.toLocaleString()} of ${ageTotal.toLocaleString()} age samples`
-                    : 'No age samples'}
+                  : `${under40Count.toLocaleString()} of ${ageTotal.toLocaleString()} age samples`}
               </span>
             </div>
+            )}
           </div>
 
           {sportEngagement.length > 1 && (
@@ -251,6 +256,7 @@ export default function MessmassAlgorithmsSuite({
           )}
         </div>
       </article>
+      )}
 
       {/* Group B & Group C */}
       <div className={hasGroupC ? styles.bentoTwoCol : undefined}>
@@ -293,13 +299,15 @@ export default function MessmassAlgorithmsSuite({
                 Shows how many fans scanned QR codes or clicked sponsor links after taking a photo—proving post-match digital action.
               </p>
               <div className={styles.bentoTwoCol}>
+                {fanInteractionPct !== null && (
                 <div className={styles.bentoSummaryStat}>
                   <span className={styles.gdsEyebrow}>Engagement Rate</span>
                   <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>
-                    {fanInteractionPct !== null ? `${fanInteractionPct}%` : 'n/a'}
+                    {`${fanInteractionPct}%`}
                   </strong>
                   <span className={styles.gdsCaption}>Social + link clicks / photos</span>
                 </div>
+                )}
                 <div className={styles.bentoSummaryStat}>
                   <span className={styles.gdsEyebrow}>Estimated CPM &amp; Branding</span>
                   <strong className={`${styles.gdsSectionKpi} ${styles.gdsNum}`}>

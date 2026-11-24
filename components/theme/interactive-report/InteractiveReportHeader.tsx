@@ -136,7 +136,7 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
                 {badgeText}
               </span>
               {subBadgeText && (
-                <span className={styles.tippmixPill}>
+                <span className={styles.scopeTagPill}>
                   {subBadgeText}
                 </span>
               )}
@@ -253,22 +253,25 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
           </div>
         ) : (
         <div className={styles.kpiGrid}>
+          {summary.totalPhotos > 0 && (
           <div className={`${styles.kpiCard} ${styles.kpiTile1}`}>
             <span className={styles.kpiLabel}>Total Photos Taken</span>
             <span className={styles.kpiValue}>
-              {summary.totalPhotos > 0 ? summary.totalPhotos.toLocaleString() : 'n/a'}
+              {summary.totalPhotos.toLocaleString()}
             </span>
-            {summary.totalPhotos > 0 && summary.hostessPhotos > 0 && summary.selfies > 0 && (
+            {summary.hostessPhotos > 0 && summary.selfies > 0 && (
               <span className={styles.kpiSubtext}>
                 {summary.hostessShare}% Hostess • {summary.selfieShare}% Fan Selfies
               </span>
             )}
           </div>
+          )}
 
+          {summary.totalRegistered > 0 && (
           <div className={`${styles.kpiCard} ${styles.kpiTile2}`}>
             <span className={styles.kpiLabel}>Fan Registrations</span>
             <span className={styles.kpiValue}>
-              {summary.totalRegistered > 0 ? summary.totalRegistered.toLocaleString() : 'n/a'}
+              {summary.totalRegistered.toLocaleString()}
             </span>
             {summary.avgPhotosPerUser !== null && summary.avgPhotosPerUser !== undefined && (
               <span className={styles.kpiSubtext}>
@@ -276,12 +279,13 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
               </span>
             )}
           </div>
+          )}
 
+          {summary.totalOptIns > 0 && (
           <div className={`${styles.kpiCard} ${styles.kpiTile3}`}>
             <span className={styles.kpiLabel}>Marketing Opt-In</span>
-            {/* The stored count is the figure; the rate is shown under it only when it can be derived from the stored counts */}
             <span className={styles.kpiValue}>
-              {summary.totalOptIns > 0 ? summary.totalOptIns.toLocaleString() : 'n/a'}
+              {summary.totalOptIns.toLocaleString()}
             </span>
             {summary.optInRate !== null ? (
               <span className={styles.kpiSubtext}>{summary.optInRate}% of registrations</span>
@@ -291,37 +295,38 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
               </span>
             ) : null}
           </div>
+          )}
 
+          {summary.vettingApprovalRate !== null && (
           <div className={`${styles.kpiCard} ${styles.kpiTile4}`}>
             <span className={styles.kpiLabel}>Vetting Approval</span>
             <span className={styles.kpiValue}>
-              {summary.vettingApprovalRate !== null ? `${summary.vettingApprovalRate}%` : 'n/a'}
+              {`${summary.vettingApprovalRate}%`}
             </span>
-            {summary.vettingApprovalRate !== null && (
-              <span className={styles.kpiSubtext}>Approved of submitted photos</span>
-            )}
+            <span className={styles.kpiSubtext}>Approved of submitted photos</span>
           </div>
+          )}
 
+          {vision && vision.processedCount > 0 && (vision.aggregates?.totalPeople ?? 0) > 0 && (
           <div className={`${styles.kpiCard} ${styles.kpiTile5}`}>
             <span className={styles.kpiLabel}>People / Photo</span>
             <span className={styles.kpiValue}>
-              {vision && vision.processedCount > 0 && (vision.aggregates?.totalPeople ?? 0) > 0
-                ? ((vision.aggregates?.totalPeople ?? 0) / vision.processedCount).toFixed(2)
-                : 'n/a'}
+              {((vision.aggregates?.totalPeople ?? 0) / vision.processedCount).toFixed(2)}
             </span>
-            {vision && (vision.aggregates?.totalPeople ?? 0) > 0 && (
-              <span className={styles.kpiSubtext}>
-                {(vision.aggregates?.totalPeople ?? 0).toLocaleString()} detected appearances
-              </span>
-            )}
+            <span className={styles.kpiSubtext}>
+              {(vision.aggregates?.totalPeople ?? 0).toLocaleString()} detected appearances
+            </span>
           </div>
+          )}
 
+          {!isSingleEvent && summary.totalMatches > 0 && (
           <div className={`${styles.kpiCard} ${styles.kpiTile6}`}>
             <span className={styles.kpiLabel}>Events</span>
             <span className={styles.kpiValue}>
-              {summary.totalMatches > 0 ? summary.totalMatches.toLocaleString() : 'n/a'}
+              {summary.totalMatches.toLocaleString()}
             </span>
           </div>
+          )}
         </div>
         )}
       </div>

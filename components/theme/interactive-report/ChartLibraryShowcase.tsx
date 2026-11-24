@@ -886,13 +886,51 @@ export default function ChartLibraryShowcase({
 
   if (matches.length === 0 && brands.length === 0) return null;
 
-  const showEvents = domain === 'all' || domain === 'events';
-  const showAttendance = domain === 'all' || domain === 'attendance';
-  const showWeather = domain === 'all' || domain === 'weather';
-  const showBrands = domain === 'all' || domain === 'brands';
+  const hasBrandsSection =
+    brands.length > 0 ||
+    clubs.length > 0 ||
+    Boolean(ageGroups && ageGroups.children + ageGroups.teens + ageGroups.adults + ageGroups.seniors > 0) ||
+    emotions.length > 0;
+  const hasEventsSection = eventsWithPhotos.length >= 2;
+  const hasVenueSeatData = matches.some(
+    (m) => Boolean(m.venue?.trim()) && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0,
+  );
+  const hasMonthlyAttendance =
+    monthlySeries.length >= 2 && monthlySeries.some((m) => m.attendance > 0);
+  const hasAttendanceSection =
+    monthlySeries.length > 1 ||
+    (monthlySeries.length >= 2 && hasFillData) ||
+    (hasFillData && matches.length >= 2) ||
+    hasMonthlyAttendance ||
+    hasVenueSeatData;
+  const weatherMatchCount = matches.filter(
+    (m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0,
+  ).length;
+  const hasWeatherSection =
+    weatherMatchCount >= 2 ||
+    (weatherMatchCount >= 2 && (hasBoxplotData || hasOutdoorWindFillData || hasWeatherBubbleData)) ||
+    radarSportCount >= 2;
+
+  if (!hasBrandsSection && !hasEventsSection && !hasAttendanceSection && !hasWeatherSection) {
+    return null;
+  }
+
+  const domainTabs = [
+    { id: 'all' as const, label: 'All Insights', visible: true },
+    { id: 'brands' as const, label: 'Brands & Audience', visible: hasBrandsSection },
+    { id: 'events' as const, label: 'Events & Photos', visible: hasEventsSection },
+    { id: 'attendance' as const, label: 'Attendance & Venues', visible: hasAttendanceSection },
+    { id: 'weather' as const, label: 'Weather', visible: hasWeatherSection },
+  ].filter((tab) => tab.visible);
+
+  const showEvents = (domain === 'all' || domain === 'events') && hasEventsSection;
+  const showAttendance = (domain === 'all' || domain === 'attendance') && hasAttendanceSection;
+  const showWeather = (domain === 'all' || domain === 'weather') && hasWeatherSection;
+  const showBrands = (domain === 'all' || domain === 'brands') && hasBrandsSection;
 
   return (
     <section className={styles.suiteStack} aria-label="Deep-Dive Visual Intelligence">
+      {domainTabs.length > 2 && (
       <div className={styles.bentoPanel}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -900,15 +938,7 @@ export default function ChartLibraryShowcase({
             <h2 className={styles.gdsCardTitle}>Deep-dive visual intelligence</h2>
           </div>
           <div className={styles.bentoToggle} role="tablist" aria-label="Filter analytics domain">
-            {(
-              [
-                { id: 'all', label: 'All Insights' },
-                { id: 'brands', label: 'Brands & Audience' },
-                { id: 'events', label: 'Events & Photos' },
-                { id: 'attendance', label: 'Attendance & Venues' },
-                { id: 'weather', label: 'Weather' },
-              ] as const
-            ).map((tab) => (
+            {domainTabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
@@ -923,6 +953,7 @@ export default function ChartLibraryShowcase({
           </div>
         </header>
       </div>
+      )}
 
       {/* Tier 1 & 2: Brands, Merch & Audience */}
       {showBrands && (
@@ -1029,7 +1060,7 @@ export default function ChartLibraryShowcase({
                 option={heatmapOption}
               />
             )}
-            {hasFillData && (
+            {hasFillData && matches.length >= 2 && (
               <EChartsPanel
                 title="Average stadium fill across all games"
                 icon="⏱️"
@@ -1039,7 +1070,7 @@ export default function ChartLibraryShowcase({
             )}
           </div>
           <div className={styles.bentoTwoCol}>
-            {monthlySeries.some((m) => m.attendance > 0 || m.photos > 0) && (
+            {hasMonthlyAttendance && (
               <ChartJsPanel
                 title="Monthly crowd size vs. fan photos"
                 icon="📊"
@@ -1047,7 +1078,7 @@ export default function ChartLibraryShowcase({
                 config={monthlyChartJsConfig}
               />
             )}
-            {matches.some((m) => Boolean(m.venue?.trim()) && (m.venueCapacity ?? 0) > 0) && (
+            {hasVenueSeatData && (
               <ChartJsPanel
                 title="Filled vs. empty seats by venue"
                 icon="🏟️"
@@ -1062,7 +1093,7 @@ export default function ChartLibraryShowcase({
       {/* Tier 4: Background Weather Context (Lowest Priority) */}
       {showWeather && (
         <>
-          {matches.some((m) => m.weather && (m.venueCapacity ?? 0) > 0 && (m.attendance ?? 0) > 0) && (
+          {weatherMatchCount >= 2 && (
             <EChartsPanel
               title="Match profile: weather, seats &amp; photos"
               icon="🧬"
@@ -1071,7 +1102,7 @@ export default function ChartLibraryShowcase({
               option={parallelOption}
             />
           )}
-          {(hasBoxplotData || hasOutdoorWindFillData) && (
+          {weatherMatchCount >= 2 && (hasBoxplotData || hasOutdoorWindFillData) && (
             <div className={styles.bentoTwoCol}>
               {hasBoxplotData && (
                 <EChartsPanel
@@ -1091,7 +1122,7 @@ export default function ChartLibraryShowcase({
               )}
             </div>
           )}
-          {(radarSportCount >= 2 || hasWeatherBubbleData) && (
+          {(radarSportCount >= 2 || (weatherMatchCount >= 2 && hasWeatherBubbleData)) && (
             <div className={styles.bentoTwoCol}>
               {radarSportCount >= 2 && (
                 <ChartJsPanel
@@ -1101,7 +1132,7 @@ export default function ChartLibraryShowcase({
                   config={radarConfig}
                 />
               )}
-              {hasWeatherBubbleData && (
+              {weatherMatchCount >= 2 && hasWeatherBubbleData && (
                 <ChartJsPanel
                   title="Temperature, seat occupancy &amp; photo volume"
                   icon="🫧"

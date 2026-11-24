@@ -434,6 +434,7 @@ export default function ExecutiveBentoGrid({
       )}
 
       {/* 4. TOP DETECTIONS / RANKINGS */}
+      {(sortedBrands.length > 0 || sortedClubs.length > 0) && (
       <article className={`${styles.bentoPanel} ${styles.bentoRankings}`}>
         <header className={styles.bentoPanelHeader}>
           <div className={styles.bentoPanelTitle}>
@@ -553,6 +554,7 @@ export default function ExecutiveBentoGrid({
           </div>
         </div>
       </article>
+      )}
 
       {/* 5. FAN LOCATION & ATMOSPHERE */}
       {(totalVenueCoded > 0 || topEmotion !== null) && (
