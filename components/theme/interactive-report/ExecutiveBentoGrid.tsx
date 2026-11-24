@@ -270,9 +270,9 @@ export default function ExecutiveBentoGrid({
               {resolvedRegistered > 0 && (
               <div className={`${styles.bentoFunnelStage} ${styles.bentoFunnelStage4}`}>
                 <div className={styles.bentoFunnelInfo}>
-                  <span className={styles.bentoFunnelTitle}>Image usage rights</span>
+                  <span className={styles.bentoFunnelTitle}>Registered fans</span>
                   <span className={styles.bentoFunnelSub}>
-                    {avgPhotosPerUser !== null ? `${avgPhotosPerUser} photos / fan avg` : 'Consented photos'}
+                    {avgPhotosPerUser !== null ? `${avgPhotosPerUser} photos / fan avg` : 'Account registrations'}
                   </span>
                 </div>
                 <strong className={styles.bentoFunnelVal}>
