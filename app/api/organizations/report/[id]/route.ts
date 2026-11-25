@@ -7,11 +7,13 @@ import V3Entity from '@/lib/models/v3/Entity';
 import { V3ReportResolver } from '@/lib/v3/reporting/reportResolver';
 import { resolveReportVariant, resolveOrganizationReportScope } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 type OrganizationRecord = {
   _id: ObjectId;
   name: string;
   slug: string;
+  logoUrl?: string;
   status?: 'active' | 'inactive';
   metadata?: {
     emoji?: string;
@@ -61,6 +63,7 @@ export async function GET(
     const variantSlug = searchParams.get('variant');
 
     const db = await getDb();
+    const clubRegistry = await loadCentralizedClubRegistry(db);
     const organizations = db.collection<OrganizationRecord>('organizations');
     const organization = ObjectId.isValid(id)
       ? (await organizations.findOne({ _id: new ObjectId(id) })) ||
@@ -85,11 +88,21 @@ export async function GET(
 
       const baseMetadata = organization.metadata || {};
       const variant = resolvedVariant.variant;
+      const resolvedOrgLogo =
+        variant.logoUrl ??
+        clubRegistry.resolveLogo({
+          organizationId: organization._id,
+          slug: organization.slug,
+          name: organization.name,
+          fallbackUrl: organization.logoUrl || baseMetadata.logoUrl || null,
+        }) ??
+        organization.logoUrl ??
+        baseMetadata.logoUrl;
       const mergedMetadata = {
         ...baseMetadata,
         stats: variant.statsOverrides || {},
         emoji: variant.emoji ?? baseMetadata.emoji,
-        logoUrl: variant.logoUrl ?? baseMetadata.logoUrl,
+        logoUrl: resolvedOrgLogo,
         styleId: variant.styleId ?? baseMetadata.styleId,
         reportTemplateId: variant.reportTemplateId ?? baseMetadata.reportTemplateId ?? baseMetadata.reportId,
         reportId: variant.reportTemplateId ?? baseMetadata.reportTemplateId ?? baseMetadata.reportId,
@@ -129,7 +142,12 @@ export async function GET(
           status: 'active',
           metadata: {
             emoji: partner.emoji || '🤝',
-            logoUrl: partner.logoUrl,
+            logoUrl:
+              clubRegistry.resolveLogo({
+                partnerId: partner._id,
+                name: partner.name,
+                fallbackUrl: partner.logoUrl || null,
+              }) || partner.logoUrl,
             viewSlug: partner.viewSlug,
           },
         })),

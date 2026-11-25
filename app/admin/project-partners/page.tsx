@@ -6,6 +6,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import styles from './page.module.css';
 import { apiGet, apiPost, apiPut } from '@/lib/apiClient';
 import PartnerSelector from '@/components/PartnerSelector';
@@ -14,6 +15,7 @@ interface Partner {
   _id: string;
   name: string;
   emoji?: string;
+  logoUrl?: string | null;
   reportTemplateId?: string;
 }
 
@@ -130,12 +132,17 @@ export default function ProjectPartnersPage() {
         <div>
           <h1 className={styles.title}>Project-Partner Relationships</h1>
           <p className={styles.subtitle}>
-            Manage partner connections for template inheritance hierarchy
+            Manage partner connections and centralized club logos for template inheritance hierarchy
           </p>
         </div>
-        <Link href="/admin" className={styles.backButton}>
-          ← Back to Admin
-        </Link>
+        <div className={styles.headerActions}>
+          <Link href="/admin/club-logos" className={styles.backButton}>
+            🛡️ Club Logos
+          </Link>
+          <Link href="/admin" className={styles.backButton}>
+            ← Back to Admin
+          </Link>
+        </div>
       </div>
 
       <div className={styles.toolbar}>
@@ -188,12 +195,36 @@ export default function ProjectPartnersPage() {
           filteredProjects.map(project => {
             const partner1Id = getPartnerId(project.partner1);
             const partner2Id = getPartnerId(project.partner2);
+            const partner1Obj = partner1Id ? partners.find((p) => p._id === partner1Id) : null;
+            const partner2Obj = partner2Id ? partners.find((p) => p._id === partner2Id) : null;
             const isSaving = saving === project._id;
 
             return (
               <div key={project._id} className={styles.projectCard}>
                 <div className={styles.projectHeader}>
-                  <h3 className={styles.projectName}>{project.eventName}</h3>
+                  <div className={styles.projectTitleRow}>
+                    {partner1Obj?.logoUrl && (
+                      <Image
+                        src={partner1Obj.logoUrl}
+                        alt={partner1Obj.name}
+                        width={28}
+                        height={28}
+                        className={styles.matchupLogo}
+                        unoptimized
+                      />
+                    )}
+                    <h3 className={styles.projectName}>{project.eventName}</h3>
+                    {partner2Obj?.logoUrl && (
+                      <Image
+                        src={partner2Obj.logoUrl}
+                        alt={partner2Obj.name}
+                        width={28}
+                        height={28}
+                        className={styles.matchupLogo}
+                        unoptimized
+                      />
+                    )}
+                  </div>
                   <span className={styles.editSlug}>{project.editSlug}</span>
                 </div>
 

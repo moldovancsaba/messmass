@@ -27,6 +27,7 @@ import {
 } from '@/lib/eventSaveRules';
 import { parseEditorSequence, editorSequenceGuard } from '@/lib/statsFieldChanges';
 import { EventCreateError, insertEvent } from '@/lib/createEvent';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 // WHAT: Upper bound on one invocation of these handlers, in seconds.
 // WHY: The event editor gives a save 25 seconds before it treats the request
@@ -378,15 +379,18 @@ export async function GET(request: NextRequest) {
       }
       
       // WHAT: Populate partner and organization details for single project
-      const partner1 = project.partner1Id && ObjectId.isValid(project.partner1Id)
-        ? await db.collection('partners').findOne({ _id: new ObjectId(project.partner1Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
-        : null;
-      const partner2 = project.partner2Id && ObjectId.isValid(project.partner2Id)
-        ? await db.collection('partners').findOne({ _id: new ObjectId(project.partner2Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
-        : null;
-      const organization = project.organizationId && ObjectId.isValid(project.organizationId)
-        ? await db.collection('organizations').findOne({ _id: new ObjectId(project.organizationId) }, { projection: { name: 1, slug: 1, logoUrl: 1 } })
-        : null;
+      const [partner1, partner2, organization, singleClubRegistry] = await Promise.all([
+        project.partner1Id && ObjectId.isValid(project.partner1Id)
+          ? db.collection('partners').findOne({ _id: new ObjectId(project.partner1Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
+          : Promise.resolve(null),
+        project.partner2Id && ObjectId.isValid(project.partner2Id)
+          ? db.collection('partners').findOne({ _id: new ObjectId(project.partner2Id) }, { projection: { name: 1, emoji: 1, logoUrl: 1 } })
+          : Promise.resolve(null),
+        project.organizationId && ObjectId.isValid(project.organizationId)
+          ? db.collection('organizations').findOne({ _id: new ObjectId(project.organizationId) }, { projection: { name: 1, slug: 1, logoUrl: 1, metadata: 1 } })
+          : Promise.resolve(null),
+        loadCentralizedClubRegistry(db),
+      ]);
 
       // WHAT: Format response to match expected structure
       return NextResponse.json({
@@ -403,12 +407,49 @@ export async function GET(request: NextRequest) {
           styleIdEnhanced: project.styleIdEnhanced ? project.styleIdEnhanced.toString() : null,
           reportTemplateId: project.reportTemplateId ? project.reportTemplateId.toString() : null,
           organizationId: project.organizationId ? project.organizationId.toString() : null,
-          organization: organization ? { _id: organization._id.toString(), name: organization.name, slug: organization.slug, logoUrl: organization.logoUrl || null } : null,
+          organization: organization
+            ? {
+                _id: organization._id.toString(),
+                name: organization.name,
+                slug: organization.slug,
+                logoUrl:
+                  singleClubRegistry.resolveLogo({
+                    organizationId: organization._id,
+                    slug: organization.slug,
+                    name: organization.name,
+                    fallbackUrl: organization.logoUrl || (organization.metadata as any)?.logoUrl || null,
+                  }) || null,
+              }
+            : null,
           competitionType: project.competitionType || null,
           partner1Id: project.partner1Id ? project.partner1Id.toString() : null,
           partner2Id: project.partner2Id ? project.partner2Id.toString() : null,
-          partner1: partner1 ? { _id: partner1._id.toString(), name: partner1.name, emoji: partner1.emoji, logoUrl: partner1.logoUrl || null } : null,
-          partner2: partner2 ? { _id: partner2._id.toString(), name: partner2.name, emoji: partner2.emoji, logoUrl: partner2.logoUrl || null } : null,
+          partner1: partner1
+            ? {
+                _id: partner1._id.toString(),
+                name: partner1.name,
+                emoji: partner1.emoji,
+                logoUrl:
+                  singleClubRegistry.resolveLogo({
+                    partnerId: partner1._id,
+                    name: partner1.name,
+                    fallbackUrl: partner1.logoUrl || null,
+                  }) || null,
+              }
+            : null,
+          partner2: partner2
+            ? {
+                _id: partner2._id.toString(),
+                name: partner2.name,
+                emoji: partner2.emoji,
+                logoUrl:
+                  singleClubRegistry.resolveLogo({
+                    partnerId: partner2._id,
+                    name: partner2.name,
+                    fallbackUrl: partner2.logoUrl || null,
+                  }) || null,
+              }
+            : null,
           createdAt: project.createdAt,
           updatedAt: project.updatedAt,
         },
@@ -595,13 +636,15 @@ export async function GET(request: NextRequest) {
         .filter((id: any) => id && ObjectId.isValid(id))
         .map((id: any) => new ObjectId(id));
 
-      const partnersData = partnerIds.length > 0
-        ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
-        : [];
-
-      const orgsData = orgIds.length > 0
-        ? await organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
-        : [];
+      const [partnersData, orgsData, searchClubRegistry] = await Promise.all([
+        partnerIds.length > 0
+          ? partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+          : Promise.resolve([]),
+        orgIds.length > 0
+          ? organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
+          : Promise.resolve([]),
+        loadCentralizedClubRegistry(db),
+      ]);
       
       const partnersMap = new Map(
         partnersData.map(p => [p._id.toString(), p])
@@ -643,7 +686,13 @@ export async function GET(request: NextRequest) {
               _id: org._id.toString(),
               name: org.name,
               slug: org.slug,
-              logoUrl: org.logoUrl || null
+              logoUrl:
+                searchClubRegistry.resolveLogo({
+                  organizationId: org._id,
+                  slug: org.slug,
+                  name: org.name,
+                  fallbackUrl: org.logoUrl || (org.metadata as any)?.logoUrl || null,
+                }) || null
             };
           }
         }
@@ -656,7 +705,12 @@ export async function GET(request: NextRequest) {
               _id: partner1._id.toString(),
               name: partner1.name,
               emoji: partner1.emoji,
-              logoUrl: partner1.logoUrl
+              logoUrl:
+                searchClubRegistry.resolveLogo({
+                  partnerId: partner1._id,
+                  name: partner1.name,
+                  fallbackUrl: partner1.logoUrl || null,
+                }) || partner1.logoUrl
             };
           }
         }
@@ -668,7 +722,12 @@ export async function GET(request: NextRequest) {
               _id: partner2._id.toString(),
               name: partner2.name,
               emoji: partner2.emoji,
-              logoUrl: partner2.logoUrl
+              logoUrl:
+                searchClubRegistry.resolveLogo({
+                  partnerId: partner2._id,
+                  name: partner2.name,
+                  fallbackUrl: partner2.logoUrl || null,
+                }) || partner2.logoUrl
             };
           }
         }
@@ -734,13 +793,15 @@ export async function GET(request: NextRequest) {
       .filter(id => id && ObjectId.isValid(id))
       .map(id => new ObjectId(id));
     
-    const partnersData = partnerIds.length > 0
-      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
-      : [];
-
-    const orgsData = orgIds.length > 0
-      ? await organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
-      : [];
+    const [partnersData, orgsData, cursorClubRegistry] = await Promise.all([
+      partnerIds.length > 0
+        ? partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+        : Promise.resolve([]),
+      orgIds.length > 0
+        ? organizationsCollection.find({ _id: { $in: orgIds } }).toArray()
+        : Promise.resolve([]),
+      loadCentralizedClubRegistry(db),
+    ]);
     
     const partnersMap = new Map(
       partnersData.map(p => [p._id.toString(), p])
@@ -794,7 +855,13 @@ export async function GET(request: NextRequest) {
             _id: org._id.toString(),
             name: org.name,
             slug: org.slug,
-            logoUrl: org.logoUrl || null
+            logoUrl:
+              cursorClubRegistry.resolveLogo({
+                organizationId: org._id,
+                slug: org.slug,
+                name: org.name,
+                fallbackUrl: org.logoUrl || (org.metadata as any)?.logoUrl || null,
+              }) || null
           };
         }
       }
@@ -807,7 +874,12 @@ export async function GET(request: NextRequest) {
             _id: partner1._id.toString(),
             name: partner1.name,
             emoji: partner1.emoji,
-            logoUrl: partner1.logoUrl
+            logoUrl:
+              cursorClubRegistry.resolveLogo({
+                partnerId: partner1._id,
+                name: partner1.name,
+                fallbackUrl: partner1.logoUrl || null,
+              }) || partner1.logoUrl
           };
         }
       }
@@ -819,7 +891,12 @@ export async function GET(request: NextRequest) {
             _id: partner2._id.toString(),
             name: partner2.name,
             emoji: partner2.emoji,
-            logoUrl: partner2.logoUrl
+            logoUrl:
+              cursorClubRegistry.resolveLogo({
+                partnerId: partner2._id,
+                name: partner2.name,
+                fallbackUrl: partner2.logoUrl || null,
+              }) || partner2.logoUrl
           };
         }
       }

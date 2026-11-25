@@ -185,6 +185,14 @@ export default function FanmassClubsMatrix({
             <span className={styles.cardCountPill} style={{ background: '#f0fdf4', color: '#166534' }}>
               👕 {merchAdoptionRate} Merchandise Presence
             </span>
+            <a
+              href="/admin/club-logos"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.brandSettingsLink}
+            >
+              🛡️ Manage Official Club &amp; Nation Logos ➔
+            </a>
           </div>
           <h3 className={styles.cardTitle}>
             🏆 Sport Franchises &amp; Partner Matrix

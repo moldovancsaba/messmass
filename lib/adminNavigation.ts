@@ -104,6 +104,13 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primaryStrong,
       },
       {
+        label: 'Club Logos',
+        path: '/admin/club-logos',
+        icon: 'shield',
+        description: 'Centralized official club, national team, and federation crests synced across all entities and reports.',
+        accentColor: navAccent.primary,
+      },
+      {
         label: 'Brand Logos',
         path: '/admin/brand-assets',
         icon: 'verified',

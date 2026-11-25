@@ -20,6 +20,8 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import GoogleSheetsConnectModal from '@/components/GoogleSheetsConnectModal';
@@ -31,6 +33,7 @@ interface PartnerData {
   name: string;
   emoji: string;
   showEmoji?: boolean;
+  logoUrl?: string | null;
   googleSheetConfig?: {
     enabled: boolean;
     sheetId: string;
@@ -184,18 +187,35 @@ export default function PartnerDetailPage({
       {/* Header */}
       <div className="card card-md p-lg">
         <div className="flex items-start justify-between">
-          <div>
-            <h1 className="section-title">
-              {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
-            </h1>
-            <p className="text-sm text-gray-600 mt-1">Partner ID: {partner._id}</p>
+          <div className="flex items-center gap-4">
+            {partner.logoUrl && (
+              <Image
+                src={partner.logoUrl}
+                alt={`${partner.name} logo`}
+                width={56}
+                height={56}
+                className="adapter-logo"
+                unoptimized
+              />
+            )}
+            <div>
+              <h1 className="section-title">
+                {partner.showEmoji !== false ? partner.emoji : ''} {partner.name}
+              </h1>
+              <p className="text-sm text-gray-600 mt-1">Partner ID: {partner._id}</p>
+            </div>
           </div>
-          <button
-            onClick={() => router.back()}
-            className="btn btn-secondary"
-          >
-            ← Back
-          </button>
+          <div className="flex items-center gap-2">
+            <Link href="/admin/club-logos" className="btn btn-secondary">
+              🛡️ Club Logos
+            </Link>
+            <button
+              onClick={() => router.back()}
+              className="btn btn-secondary"
+            >
+              ← Back
+            </button>
+          </div>
         </div>
       </div>
 
@@ -269,6 +289,12 @@ export default function PartnerDetailPage({
             >
               📋 KYC Data →
             </a>
+            <Link
+              href="/admin/club-logos"
+              className="block text-info text-sm"
+            >
+              🛡️ Manage Official Club Logo →
+            </Link>
             <a
               href={`/admin/partners`}
               className="block text-info text-sm"

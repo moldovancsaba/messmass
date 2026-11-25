@@ -16,6 +16,7 @@ import {
   isVenue,
   normalizeClubClusterKey,
 } from '@/lib/brandEntityClustering';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 function slugify(s: string): string {
   return s
@@ -189,7 +190,7 @@ export async function enrichInteractiveReportLogos(
     return data;
   }
 
-  const [brandAssets, canonicalMappings, partners] = await Promise.all([
+  const [brandAssets, canonicalMappings, partners, clubRegistry] = await Promise.all([
     db.collection('brand_assets').find({}).toArray().catch(() => []),
     db.collection('brand_canonical_mappings').find({}).toArray().catch(() => []),
     db
@@ -210,6 +211,7 @@ export async function enrichInteractiveReportLogos(
       )
       .toArray()
       .catch(() => []),
+    loadCentralizedClubRegistry(db),
   ]);
 
   const brandMap = new Map<string, any>();
@@ -283,29 +285,55 @@ export async function enrichInteractiveReportLogos(
   }
   const enrichedBrands = Array.from(mergedBrandsMap.values()).sort((a, b) => b.count - a.count);
 
-  // Enrich & deduplicate topClubs
+  // Enrich & deduplicate topClubs using centralized Club Logos registry (`club_assets` + `partners`)
   const clubEntityMap = new Map<string, any>();
   const partnerIdToKey = new Map<string, string>();
   for (const c of data.vision.aggregates.topClubs || []) {
     if (!c?.club || c.count <= 0) continue;
     if (isGenericVisionDescription(c.club)) continue;
-    const canonical = canonicalizeClub(c.club);
+    const clubAssetHit = clubRegistry.resolveAssetByName(c.club);
+    const canonical = canonicalizeClub(clubAssetHit?.name || c.club);
     if (!canonical) continue;
 
-    const matched = matchClubToPartnerRecord(canonical.canonicalName, partners) || matchClubToPartnerRecord(c.club, partners);
-    const partnerId = matched?._id ? String(matched._id) : c.partnerId;
+    const matched =
+      matchClubToPartnerRecord(canonical.canonicalName, partners) ||
+      matchClubToPartnerRecord(c.club, partners);
+
+    // Verified club gate: require match in SPORT_FRANCHISES_DIRECTORY, centralized club_assets, or partners
+    const isKnownVerifiedClub = Boolean(
+      canonical.franchise ||
+      clubAssetHit ||
+      matched ||
+      clubRegistry.knownClubKeys.has(canonical.canonicalName.toLowerCase().trim())
+    );
+    if (!isKnownVerifiedClub) continue;
+
+    const resolvedClubAsset = clubAssetHit || clubRegistry.resolveAssetByName(canonical.canonicalName);
+    const partnerId = matched?._id
+      ? String(matched._id)
+      : resolvedClubAsset?.partnerId
+        ? String(resolvedClubAsset.partnerId)
+        : c.partnerId;
     const partnerName = matched?.name || c.partnerName || undefined;
-    const logoUrl = partnerLogo(matched) || c.logoUrl || undefined;
+    const logoUrl =
+      resolvedClubAsset?.logoUrl ||
+      partnerLogo(matched) ||
+      c.logoUrl ||
+      undefined;
     const sport =
       c.sport ||
       canonical.franchise?.sport ||
+      resolvedClubAsset?.sport ||
       matched?.sportsDb?.strSport ||
       (matched?.categorizedHashtags?.sport?.[0]
         ? matched.categorizedHashtags.sport[0].charAt(0).toUpperCase() +
           matched.categorizedHashtags.sport[0].slice(1)
         : undefined);
 
-    const canonicalKey = (partnerName || canonical.canonicalName).toLowerCase().trim();
+    const displayClubName = canonical.franchise
+      ? canonical.canonicalName
+      : resolvedClubAsset?.name || canonical.canonicalName;
+    const canonicalKey = (partnerName || displayClubName).toLowerCase().trim();
     const targetKey = partnerId && partnerIdToKey.has(partnerId) ? partnerIdToKey.get(partnerId)! : canonicalKey;
     const existing = clubEntityMap.get(targetKey);
     if (existing) {
@@ -322,7 +350,7 @@ export async function enrichInteractiveReportLogos(
     } else {
       clubEntityMap.set(targetKey, {
         ...c,
-        club: canonical.canonicalName,
+        club: displayClubName,
         count: c.count,
         logoUrl,
         partnerId,
@@ -358,8 +386,21 @@ export async function enrichInteractiveReportLogos(
     };
   }
 
+  const resolvedHeaderLogo =
+    data.partner?.logoUrl ||
+    clubRegistry.resolveLogo({
+      partnerId: data.partner?.id || null,
+      organizationId: data.scope?.type === 'organization' ? data.scope.id : null,
+      name: data.partner?.name || data.scope?.name || null,
+      slug: data.partner?.viewSlug || data.scope?.id || null,
+    }) ||
+    (data.partner?.name ? resolveBrandAsset(data.partner.name)?.logoUrl : undefined);
+
   return {
     ...data,
+    ...(data.partner && resolvedHeaderLogo && !data.partner.logoUrl
+      ? { partner: { ...data.partner, logoUrl: resolvedHeaderLogo } }
+      : {}),
     vision: {
       ...data.vision,
       aggregates: {

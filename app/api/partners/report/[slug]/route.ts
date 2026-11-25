@@ -10,6 +10,7 @@ import { addDerivedMetrics } from '@/lib/projectStatsUtils';
 import { resolveReportVariant, filterEventsByReportVariant } from '@/lib/reportVariants';
 import { isEventDateInPeriod } from '@/lib/reportPeriods';
 import { findPartnerByIdentifier } from '@/lib/partnerIdentifier';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,10 @@ const db = client.db(config.dbName);
       );
     }
 
-    const resolvedVariant = await resolveReportVariant(db as any, 'partner', partner._id.toString(), variantSlug);
+    const [resolvedVariant, clubRegistry] = await Promise.all([
+      resolveReportVariant(db as any, 'partner', partner._id.toString(), variantSlug),
+      loadCentralizedClubRegistry(db as any),
+    ]);
 
     const partnerObjectId = new ObjectId(partner._id);
     const showOnlyTeam1Events = resolvedVariant.variant.showOnlyTeam1Events ?? (partner.showOnlyTeam1Events === true);
@@ -171,7 +175,14 @@ const db = client.db(config.dbName);
         _id: partner._id.toString(),
         name: partner.name,
         emoji: resolvedVariant.variant.emoji ?? partner.emoji,
-        logoUrl: resolvedVariant.variant.logoUrl ?? partner.logoUrl,
+        logoUrl:
+          resolvedVariant.variant.logoUrl ??
+          clubRegistry.resolveLogo({
+            partnerId: partner._id,
+            name: partner.name,
+            fallbackUrl: partner.logoUrl || null,
+          }) ??
+          partner.logoUrl,
         hashtags: partner.hashtags || [],
         categorizedHashtags: partner.categorizedHashtags || {},
         styleId: resolvedVariant.variant.styleId || (partner.styleId ? partner.styleId.toString() : undefined),

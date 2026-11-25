@@ -14,6 +14,12 @@
   margin-bottom: var(--mm-space-6);
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+}
+
 .title {
   font-size: var(--mm-font-size-2xl);
   font-weight: 700;
@@ -158,11 +164,25 @@
   border-bottom: 1px solid var(--mm-gray-100);
 }
 
+.projectTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--mm-space-2);
+  margin-bottom: var(--mm-space-1);
+}
+
+.matchupLogo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 .projectName {
   font-size: var(--mm-font-size-lg);
   font-weight: 600;
   color: var(--mm-gray-900);
-  margin: 0 0 var(--mm-space-1) 0;
+  margin: 0;
 }
 
 .editSlug {

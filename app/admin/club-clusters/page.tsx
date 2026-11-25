@@ -112,8 +112,8 @@ export default function ClubClustersAdminPage() {
     <div className={styles.page}>
       <UnifiedAdminHeroWithSearch
         title="🏟️ Clubs & Teams Clustering"
-        subtitle="Consolidate duplicate club/team detections into canonical Messmass Partner names"
-        backLink="/admin/brand-assets"
+        subtitle="Consolidate duplicate club/team detections into canonical Messmass Partner & Club Logos"
+        backLink="/admin/club-logos"
       />
 
       <div className={styles.container}>
@@ -125,8 +125,11 @@ export default function ClubClustersAdminPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className={styles.searchInput}
           />
+          <Link href="/admin/club-logos" className={styles.secondaryBtn}>
+            🛡️ Club Logos
+          </Link>
           <Link href="/admin/brand-assets" className={styles.secondaryBtn}>
-            🏷️ Back to Brand Assets
+            🏷️ Brand Logos
           </Link>
         </div>
 

@@ -10,6 +10,11 @@ import { generateUniquePartnerViewSlug } from '@/lib/partnerIdentifier';
 import { syncPartnerToV3Entity } from '@/lib/v3/syncEngine';
 import { notifyCameraPartnerChanged } from '@/lib/cameraThemeNotify';
 import { rehostLogo } from '@/lib/logoStorage';
+import {
+  loadCentralizedClubRegistry,
+  slugifyClub,
+  syncClubAssetAcrossEntities,
+} from '@/lib/clubLogoResolver';
 import { requirePartnerWriteAccess, requireAdmin, pickWritableFields, PARTNER_EDITOR_WRITABLE_FIELDS } from '@/lib/apiGuards';
 import {
   parseStatsFieldChanges,
@@ -63,13 +68,16 @@ const db = client.db(config.dbName);
     // Get total count
     const total = await db.collection('partners').countDocuments(query);
 
-    // Get partners with pagination
-    const partners = await db.collection('partners')
-      .find(query)
-      .sort(sort)
-      .skip(offset)
-      .limit(limit)
-      .toArray();
+    // Get partners with pagination + centralized club logo registry
+    const [partners, clubRegistry] = await Promise.all([
+      db.collection('partners')
+        .find(query)
+        .sort(sort)
+        .skip(offset)
+        .limit(limit)
+        .toArray(),
+      loadCentralizedClubRegistry(db as any),
+    ]);
 
     // WHAT: Resolve each partner's bitlyLinkIds to displayable link objects.
     // WHY: bitlyLinkIds (maintained by /api/bitly/partners/associate and now
@@ -93,7 +101,12 @@ const db = client.db(config.dbName);
       name: partner.name,
       emoji: partner.emoji,
       showEmoji: partner.showEmoji ?? true,
-      logoUrl: partner.logoUrl,
+      logoUrl:
+        clubRegistry.resolveLogo({
+          partnerId: partner._id,
+          name: partner.name,
+          fallbackUrl: partner.logoUrl || null,
+        }) || partner.logoUrl,
       hashtags: partner.hashtags || [],
       categorizedHashtags: partner.categorizedHashtags || {},
       bitlyLinks: (Array.isArray(partner.bitlyLinkIds) ? partner.bitlyLinkIds : [])
@@ -302,15 +315,44 @@ const db = client.db(config.dbName);
     // camera follows the logo and look of its events: tell it which events this partner is part of (best-effort, bounded)
     await notifyCameraPartnerChanged(db as any, partnerId, writable);
 
-    // WHAT: Sync to V3
-    // WHY: Ensure V3 Entity is updated when legacy Partner is edited
+    // WHAT: Sync to V3 & Centralized Club Assets
+    // WHY: Ensure V3 Entity and centralized `club_assets` stay updated when Partner is edited
     try {
       const updatedPartner = await db.collection('partners').findOne({ _id: new ObjectId(partnerId) });
       if (updatedPartner) {
         await syncPartnerToV3Entity(updatedPartner);
+        if (updatedPartner.logoUrl && updatedPartner.name && (updatedPartner.sportsDb || updatedPartner.partnerKind === 'club' || updatedPartner.partnerKind === 'federation' || logoUrl !== undefined)) {
+          const canonicalSlug = slugifyClub(updatedPartner.name);
+          const nowIso = new Date().toISOString();
+          await db.collection('club_assets').updateOne(
+            { canonicalSlug },
+            {
+              $set: {
+                name: updatedPartner.name,
+                canonicalSlug,
+                logoUrl: updatedPartner.logoUrl,
+                partnerId: updatedPartner._id,
+                sport: updatedPartner.sportsDb?.strSport || null,
+                country: updatedPartner.sportsDb?.strCountry || null,
+                emoji: updatedPartner.emoji || '🏟️',
+                updatedAt: nowIso,
+              },
+              $addToSet: { aliases: updatedPartner.name.toLowerCase().trim() },
+              $setOnInsert: { entityKind: 'club', createdAt: nowIso },
+            },
+            { upsert: true }
+          );
+          await syncClubAssetAcrossEntities(db as any, {
+            name: updatedPartner.name,
+            canonicalSlug,
+            logoUrl: updatedPartner.logoUrl,
+            aliases: [updatedPartner.name],
+            partnerId: updatedPartner._id,
+          });
+        }
       }
     } catch (err) {
-      logError('V3 Sync failed after partner update', { context: 'partners', partnerId }, err as Error);
+      logError('V3/ClubAsset Sync failed after partner update', { context: 'partners', partnerId }, err as Error);
     }
 
     return NextResponse.json({
@@ -349,6 +391,12 @@ const db = client.db(config.dbName);
 
     const viewSlug = await generateUniquePartnerViewSlug(db as any);
 
+    const clubRegistry = await loadCentralizedClubRegistry(db as any);
+    const initialLogoUrl =
+      (await rehostLogo(logoUrl)) ||
+      clubRegistry.resolveLogo({ name }) ||
+      undefined;
+
     const partnerData: any = {
       name,
       emoji,
@@ -358,7 +406,7 @@ const db = client.db(config.dbName);
         .filter((id: unknown): id is string => typeof id === 'string' && ObjectId.isValid(id))
         .map((id: string) => new ObjectId(id)),
       sportsDb: sportsDb || undefined,
-      logoUrl: (await rehostLogo(logoUrl)) || undefined,
+      logoUrl: initialLogoUrl,
       googleSheetsUrl: googleSheetsUrl || undefined,
       viewSlug,
       createdAt: new Date().toISOString(),
@@ -370,6 +418,28 @@ const db = client.db(config.dbName);
     if (clickerSetId) partnerData.clickerSetId = new ObjectId(clickerSetId);
 
     const result = await db.collection('partners').insertOne(partnerData);
+    if (initialLogoUrl) {
+      const canonicalSlug = slugifyClub(name);
+      const nowIso = new Date().toISOString();
+      await db.collection('club_assets').updateOne(
+        { canonicalSlug },
+        {
+          $set: {
+            name,
+            canonicalSlug,
+            logoUrl: initialLogoUrl,
+            partnerId: result.insertedId,
+            sport: sportsDb?.strSport || null,
+            country: sportsDb?.strCountry || null,
+            emoji: emoji || '🏟️',
+            updatedAt: nowIso,
+          },
+          $addToSet: { aliases: name.toLowerCase().trim() },
+          $setOnInsert: { entityKind: 'club', createdAt: nowIso },
+        },
+        { upsert: true }
+      ).catch(() => null);
+    }
 
     logInfo('Partner created successfully', { context: 'partners', partnerId: result.insertedId.toString(), partnerName: name });
 

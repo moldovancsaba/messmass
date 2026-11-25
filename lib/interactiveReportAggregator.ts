@@ -24,6 +24,7 @@ import { calculate as calculateHashtagReport } from '@/lib/hashtagReport/calcula
 import { loadMeasuredLayerForProjects, type ReportDb } from '@/lib/hashtagReport/measured';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
 import { enrichInteractiveReportLogos } from '@/lib/brandLogoResolver';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 
 export const SZRT_CAMPAIGN_NAMES = [
@@ -967,8 +968,11 @@ export async function getScopedInteractiveReportData(
 
     if (rawVisionDoc) {
       const visionDoc = rawVisionDoc;
-      // Fetch official brand assets for unified logo resolution
-      const brandAssets = await db.collection('brand_assets').find({}).toArray().catch(() => []);
+      // Fetch official brand & club assets for unified logo resolution
+      const [brandAssets, clubRegistry] = await Promise.all([
+        db.collection('brand_assets').find({}).toArray().catch(() => []),
+        loadCentralizedClubRegistry(db),
+      ]);
       const brandMap = new Map<string, any>();
       for (const asset of brandAssets) {
         if (asset.canonicalSlug) brandMap.set(asset.canonicalSlug, asset);
@@ -1200,8 +1204,10 @@ export async function getScopedInteractiveReportData(
       const rawEnrichedClubs = Array.from(canonicalClubMap.values())
         .map((c) => {
           const matched = matchClubToPartner(c.club, allPartners);
+          const clubAsset = clubRegistry.resolveAssetByName(c.club);
           const sport =
             c.sport ||
+            clubAsset?.sport ||
             matched?.sportsDb?.strSport ||
             (matched?.categorizedHashtags?.sport?.[0]
               ? matched.categorizedHashtags.sport[0].charAt(0).toUpperCase() +
@@ -1212,14 +1218,19 @@ export async function getScopedInteractiveReportData(
             club: c.club,
             count: c.count,
             logoUrl:
-              matched?.logoUrl ||
-              matched?.logo ||
-              matched?.sportsDb?.strTeamBadge ||
-              matched?.sportsDb?.badge ||
-              undefined,
-            partnerId: matched?._id ? String(matched._id) : undefined,
+              clubRegistry.resolveLogo({
+                partnerId: matched?._id,
+                name: matched?.name || c.club,
+                fallbackUrl:
+                  matched?.logoUrl ||
+                  matched?.logo ||
+                  matched?.sportsDb?.strTeamBadge ||
+                  matched?.sportsDb?.badge ||
+                  null,
+              }) || undefined,
+            partnerId: (matched?._id ? String(matched._id) : clubAsset?.partnerId ? String(clubAsset.partnerId) : undefined),
             partnerSlug: matched?.viewSlug || undefined,
-            partnerName: matched?.name || undefined,
+            partnerName: matched?.name || clubAsset?.name || undefined,
             sport,
             homeVenue: matched?.sportsDb?.strStadium || undefined,
             venueCapacity:

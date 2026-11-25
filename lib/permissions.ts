@@ -34,6 +34,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Organizations': ['superadmin'],
   'Events': ['user', 'admin', 'superadmin'],
   'Project Partners': ['admin', 'superadmin'],
+  'Club Logos': ['admin', 'superadmin'],
   'Brand Logos': ['admin', 'superadmin'],
   'Club Clusters': ['admin', 'superadmin'],
   'Global Report': ['superadmin'],

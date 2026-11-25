@@ -225,8 +225,20 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
 
               <div className="flex flex-wrap items-center gap-1.5 mt-2">
                 {project.organization ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
-                    🏆 {project.organization.name}
+                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                    {project.organization.logoUrl ? (
+                      <Image
+                        src={project.organization.logoUrl}
+                        alt={`${project.organization.name} logo`}
+                        width={16}
+                        height={16}
+                        className="w-4 h-4 object-contain shrink-0"
+                        unoptimized
+                      />
+                    ) : (
+                      <span>🏆</span>
+                    )}
+                    {project.organization.name}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">

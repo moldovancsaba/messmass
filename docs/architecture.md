@@ -141,11 +141,11 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 139 | `components/` |
-| **Utility Modules** | 262 | `lib/` |
+| **Utility Modules** | 263 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 88 | `app/**/page.tsx` |
+| **App routes (pages)** | 89 | `app/**/page.tsx` |
 | **API routes** | 252 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -153,20 +153,20 @@ largest, and the ones to read first:
 
 | Module | Importers | Lines |
 |--------|-----------|-------|
-| `lib/config.ts` | 135 | 201 |
-| `lib/mongodb.ts` | 118 | 112 |
+| `lib/config.ts` | 137 | 201 |
+| `lib/mongodb.ts` | 120 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
-| `lib/apiGuards.ts` | 91 | 390 |
+| `lib/apiGuards.ts` | 93 | 390 |
 | `lib/fanmassIntegration.ts` | 46 | 331 |
 | `components/ColoredCard.tsx` | 43 | 52 |
-| `lib/apiClient.ts` | 42 | 258 |
+| `lib/apiClient.ts` | 43 | 258 |
 | `lib/db.ts` | 42 | 17 |
 | `components/MaterialIcon.tsx` | 33 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 146 |
+| `lib/permissions.ts` | 19 | 147 |
 | `lib/report-calculator.ts` | 19 | 995 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
@@ -1025,7 +1025,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (88)
+### Pages (89)
 
 | Route | File |
 |-------|------|
@@ -1051,6 +1051,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/clear-session` | `app/admin/clear-session/page.tsx` |
 | `/admin/clicker-manager` | `app/admin/clicker-manager/page.tsx` |
 | `/admin/club-clusters` | `app/admin/club-clusters/page.tsx` |
+| `/admin/club-logos` | `app/admin/club-logos/page.tsx` |
 | `/admin/content-library` | `app/admin/content-library/page.tsx` |
 | `/admin/cookie-test` | `app/admin/cookie-test/page.tsx` |
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` |

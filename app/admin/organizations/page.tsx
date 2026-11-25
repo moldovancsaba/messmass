@@ -21,9 +21,11 @@ type Organization = {
   _id: string;
   name: string;
   slug: string;
+  logoUrl?: string | null;
   status?: 'active' | 'inactive';
   metadata?: {
     emoji?: string;
+    logoUrl?: string;
     [key: string]: unknown;
   };
   createdAt?: string;
@@ -49,11 +51,11 @@ export default function OrganizationsAdminPage() {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [createForm, setCreateForm] = useState({ name: '' });
+  const [createForm, setCreateForm] = useState({ name: '', logoUrl: '' });
   const [editOpen, setEditOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [editOrgId, setEditOrgId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState({ name: '', status: 'active' });
+  const [editForm, setEditForm] = useState({ name: '', logoUrl: '', status: 'active' });
 
   const [membersModalOpen, setMembersModalOpen] = useState(false);
   const [activeOrg, setActiveOrg] = useState<Organization | null>(null);
@@ -144,23 +146,30 @@ export default function OrganizationsAdminPage() {
     setCreating(true);
     setError(null);
     try {
-      const data = await apiPost('/api/admin/organizations', { name });
+      const data = await apiPost('/api/admin/organizations', {
+        name,
+        ...(createForm.logoUrl.trim() ? { logoUrl: createForm.logoUrl.trim() } : {}),
+      });
       if (!data.success) {
         throw new Error(data.error || 'Failed to create organization');
       }
       setCreateOpen(false);
-      setCreateForm({ name: '' });
+      setCreateForm({ name: '', logoUrl: '' });
       await loadOrganizations();
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to create organization');
     } finally {
       setCreating(false);
     }
-  }, [createForm.name, loadOrganizations]);
+  }, [createForm.logoUrl, createForm.name, loadOrganizations]);
 
   const openEditOrganization = useCallback((org: Organization) => {
     setEditOrgId(org._id);
-    setEditForm({ name: org.name, status: org.status || 'active' });
+    setEditForm({
+      name: org.name,
+      logoUrl: org.logoUrl || (typeof org.metadata?.logoUrl === 'string' ? org.metadata.logoUrl : ''),
+      status: org.status || 'active',
+    });
     setEditOpen(true);
   }, []);
 
@@ -171,6 +180,7 @@ export default function OrganizationsAdminPage() {
     try {
       const data = await apiPut(`/api/admin/organizations/${editOrgId}`, {
         name: editForm.name.trim(),
+        logoUrl: editForm.logoUrl.trim(),
         status: editForm.status,
       });
       if (!data.success) {
@@ -184,7 +194,7 @@ export default function OrganizationsAdminPage() {
     } finally {
       setEditing(false);
     }
-  }, [editForm.name, editForm.status, editOrgId, loadOrganizations]);
+  }, [editForm.logoUrl, editForm.name, editForm.status, editOrgId, loadOrganizations]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -243,15 +253,26 @@ export default function OrganizationsAdminPage() {
         title="🏢 Organization Management"
         subtitle="Create organizations, assign partner members, and open report/editor tools"
         backLink="/admin"
-        actionButtons={canCreateOrganization ? [
+        actionButtons={[
           {
-            label: 'Add Organization',
-            onClick: () => setCreateOpen(true),
-            variant: 'primary',
-            icon: '+',
-            title: 'Create a new organization',
+            label: 'Club Logos',
+            onClick: () => router.push('/admin/club-logos'),
+            variant: 'secondary',
+            icon: '🛡️',
+            title: 'Manage official logos in Centralized Club Logos',
           },
-        ] : []}
+          ...(canCreateOrganization
+            ? [
+                {
+                  label: 'Add Organization',
+                  onClick: () => setCreateOpen(true),
+                  variant: 'primary' as const,
+                  icon: '+',
+                  title: 'Create a new organization',
+                },
+              ]
+            : []),
+        ]}
         enableSearch
         enableSort
       />

@@ -1,6 +1,7 @@
 import { MongoClient, ObjectId } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
 import { CategorizedHashtagMap } from './hashtagCategoryTypes';
+import { loadCentralizedClubRegistry } from './clubLogoResolver';
 
 const MONGODB_URI = process.env.MONGODB_URI || '';
 import config from './config';
@@ -222,9 +223,12 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
       .filter(id => id && ObjectId.isValid(id))
       .map(id => new ObjectId(id));
     
-    const partnersData = partnerIds.length > 0
-      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
-      : [];
+    const [partnersData, clubRegistry] = await Promise.all([
+      partnerIds.length > 0
+        ? partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+        : Promise.resolve([]),
+      loadCentralizedClubRegistry(db),
+    ]);
     
     const partnersMap = new Map(
       partnersData.map(p => [p._id.toString(), p])
@@ -243,14 +247,20 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
     if ((project as any).organizationId && ObjectId.isValid(String((project as any).organizationId))) {
       const org = await db.collection('organizations').findOne(
         { _id: new ObjectId(String((project as any).organizationId)) },
-        { projection: { name: 1, slug: 1, logoUrl: 1 } }
+        { projection: { name: 1, slug: 1, logoUrl: 1, metadata: 1 } }
       );
       if (org) {
         result.organization = {
           _id: org._id.toString(),
           name: org.name,
           slug: org.slug,
-          logoUrl: org.logoUrl || null,
+          logoUrl:
+            clubRegistry.resolveLogo({
+              organizationId: org._id,
+              slug: org.slug,
+              name: org.name,
+              fallbackUrl: org.logoUrl || (org.metadata as any)?.logoUrl || null,
+            }) || null,
         };
       }
     }
@@ -263,7 +273,12 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
           _id: partner1._id.toString(),
           name: partner1.name,
           emoji: partner1.emoji,
-          logoUrl: partner1.logoUrl,
+          logoUrl:
+            clubRegistry.resolveLogo({
+              partnerId: partner1._id,
+              name: partner1.name,
+              fallbackUrl: partner1.logoUrl || null,
+            }) || partner1.logoUrl,
           clickerSetId: partner1.clickerSetId ? partner1.clickerSetId.toString() : undefined,
         };
       }
@@ -277,7 +292,12 @@ export async function findProjectByViewSlug(viewSlug: string): Promise<Project |
           _id: partner2._id.toString(),
           name: partner2.name,
           emoji: partner2.emoji,
-          logoUrl: partner2.logoUrl,
+          logoUrl:
+            clubRegistry.resolveLogo({
+              partnerId: partner2._id,
+              name: partner2.name,
+              fallbackUrl: partner2.logoUrl || null,
+            }) || partner2.logoUrl,
           clickerSetId: partner2.clickerSetId ? partner2.clickerSetId.toString() : undefined,
         };
       }
@@ -350,12 +370,15 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
       .filter(id => id && ObjectId.isValid(id))
       .map(id => new ObjectId(id));
     
-    const partnersData = partnerIds.length > 0
-      ? await partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
-      : [];
+    const [editPartnersData, editClubRegistry] = await Promise.all([
+      partnerIds.length > 0
+        ? partnersCollection.find({ _id: { $in: partnerIds } }).toArray()
+        : Promise.resolve([]),
+      loadCentralizedClubRegistry(db),
+    ]);
     
     const partnersMap = new Map(
-      partnersData.map(p => [p._id.toString(), p])
+      editPartnersData.map(p => [p._id.toString(), p])
     );
 
     const result: any = {
@@ -371,14 +394,20 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
     if ((project as any).organizationId && ObjectId.isValid(String((project as any).organizationId))) {
       const org = await db.collection('organizations').findOne(
         { _id: new ObjectId(String((project as any).organizationId)) },
-        { projection: { name: 1, slug: 1, logoUrl: 1 } }
+        { projection: { name: 1, slug: 1, logoUrl: 1, metadata: 1 } }
       );
       if (org) {
         result.organization = {
           _id: org._id.toString(),
           name: org.name,
           slug: org.slug,
-          logoUrl: org.logoUrl || null,
+          logoUrl:
+            editClubRegistry.resolveLogo({
+              organizationId: org._id,
+              slug: org.slug,
+              name: org.name,
+              fallbackUrl: org.logoUrl || (org.metadata as any)?.logoUrl || null,
+            }) || null,
         };
       }
     }
@@ -391,7 +420,12 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
           _id: partner1._id.toString(),
           name: partner1.name,
           emoji: partner1.emoji,
-          logoUrl: partner1.logoUrl,
+          logoUrl:
+            editClubRegistry.resolveLogo({
+              partnerId: partner1._id,
+              name: partner1.name,
+              fallbackUrl: partner1.logoUrl || null,
+            }) || partner1.logoUrl,
           clickerSetId: partner1.clickerSetId
             ? partner1.clickerSetId.toString()
             : undefined,
@@ -407,7 +441,12 @@ export async function findProjectByEditSlug(editSlug: string): Promise<Project |
           _id: partner2._id.toString(),
           name: partner2.name,
           emoji: partner2.emoji,
-          logoUrl: partner2.logoUrl,
+          logoUrl:
+            editClubRegistry.resolveLogo({
+              partnerId: partner2._id,
+              name: partner2.name,
+              fallbackUrl: partner2.logoUrl || null,
+            }) || partner2.logoUrl,
           clickerSetId: partner2.clickerSetId
             ? partner2.clickerSetId.toString()
             : undefined,

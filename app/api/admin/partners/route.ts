@@ -5,12 +5,13 @@
 import { NextResponse } from 'next/server';
 import { getDb } from '@/lib/db';
 import { requireSession } from '@/lib/apiGuards';
+import { loadCentralizedClubRegistry } from '@/lib/clubLogoResolver';
 
 /**
  * GET /api/admin/partners
  * 
- * WHAT: List all partners with template info
- * WHY: Admin UI needs partners for dropdown selections
+ * WHAT: List all partners with template and centralized club logo info
+ * WHY: Admin UI needs partners for dropdown selections (Project Partners, Events, etc.)
  */
 export async function GET() {
   // SECURITY (messmass#386): require an authenticated admin session.
@@ -19,18 +20,23 @@ export async function GET() {
 
   try {
     const db = await getDb();
-    const partnersCollection = db.collection('partners');
-
-    const partners = await partnersCollection
-      .find({})
-      .sort({ name: 1 })
-      .toArray();
+    const [partners, clubRegistry] = await Promise.all([
+      db.collection('partners').find({}).sort({ name: 1 }).toArray(),
+      loadCentralizedClubRegistry(db),
+    ]);
 
     return NextResponse.json({
       success: true,
       partners: partners.map(p => ({
         _id: p._id.toString(),
         name: p.name,
+        emoji: p.emoji || '🏟️',
+        showEmoji: p.showEmoji ?? true,
+        logoUrl: clubRegistry.resolveLogo({
+          partnerId: p._id,
+          name: p.name,
+          fallbackUrl: p.logoUrl || null,
+        }) || null,
         reportTemplateId: p.reportTemplateId?.toString()
       }))
     });

@@ -78,6 +78,14 @@
   flex-shrink: 0;
 }
 
+.partnerLogo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: var(--mm-radius-sm);
+}
+
 /* WHAT: Partner name in dropdown item
  * WHY: Primary text, medium weight for readability */
 .partnerName {
@@ -131,6 +139,14 @@
 .chipEmoji {
   font-size: var(--mm-font-size-base);
   flex-shrink: 0;
+}
+
+.chipLogo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: var(--mm-radius-sm);
 }
 
 /* WHAT: Chip label text

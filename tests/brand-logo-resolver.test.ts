@@ -89,6 +89,6 @@ describe('enrichInteractiveReportLogos', () => {
 
     const clubs = enriched.vision!.aggregates.topClubs;
     expect(clubs.find((c) => c.club === 'Ferencvárosi TC')?.logoUrl).toBe('https://cdn.example/logos/ftc.svg');
-    expect(clubs.find((c) => c.club === 'Arsenal')?.logoUrl).toBe('https://cdn.example/logos/arsenal.svg');
+    expect(clubs.find((c) => c.club === 'Arsenal FC')?.logoUrl).toBe('https://cdn.example/logos/arsenal.svg');
   });
 });

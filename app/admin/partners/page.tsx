@@ -845,6 +845,13 @@ export default function PartnersAdminPageUnified() {
         backLink="/admin"
         actionButtons={[
           {
+            label: 'Club Logos',
+            onClick: () => router.push('/admin/club-logos'),
+            variant: 'secondary',
+            icon: '🛡️',
+            title: 'Manage centralized official club, nation, and federation logos'
+          },
+          {
             label: 'Add Partner',
             onClick: () => {
               loadBitlyLinks();

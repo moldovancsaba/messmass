@@ -7,6 +7,7 @@
 /* eslint-disable react/forbid-dom-props */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Link from 'next/link';
 import { ensureCsrfToken } from '@/lib/apiClient';
 import { INTERACTIVE_REPORT_THEME } from '@/lib/theme/interactiveReportPalette';
 import { SPORT_FRANCHISES_DIRECTORY } from '@/lib/brandEntityClustering';
@@ -458,6 +459,9 @@ export default function BrandAssetsAdminPage() {
             )}
           </div>
 
+          <Link href="/admin/club-logos" className={styles.refreshBtn}>
+            🛡️ Club Logos
+          </Link>
           <button onClick={loadData} className={styles.refreshBtn}>
             🔄 Refresh
           </button>

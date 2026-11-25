@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import type { AdminPageAdapter } from '../adminDataAdapters';
 import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 
@@ -6,9 +7,11 @@ export interface OrganizationDTO {
   _id: string;
   name: string;
   slug: string;
+  logoUrl?: string | null;
   status?: 'active' | 'inactive';
   metadata?: {
     emoji?: string;
+    logoUrl?: string;
     [key: string]: unknown;
   };
 }
@@ -37,6 +40,13 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
           required: true,
           placeholder: 'e.g., Champions Hockey League',
         },
+        {
+          key: 'logoUrl',
+          label: 'Official Logo URL (.svg / .png)',
+          type: 'text',
+          required: false,
+          placeholder: 'https://... (syncs to Centralized Club Logos)',
+        },
       ],
     },
     {
@@ -50,6 +60,13 @@ export const organizationsEntityConfig: AdminEntityConfig<OrganizationDTO> = {
           type: 'text',
           required: true,
           placeholder: 'Organization name',
+        },
+        {
+          key: 'logoUrl',
+          label: 'Official Logo URL (.svg / .png)',
+          type: 'text',
+          required: false,
+          placeholder: 'https://... (syncs to Centralized Club Logos)',
         },
         {
           key: 'status',
@@ -150,12 +167,26 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
         sortable: true,
         minWidth: '220px',
         mobile: { behavior: 'primary' },
-        render: (org) => (
-          <div className="flex items-center gap-2">
-            <span>{org.metadata?.emoji || '🏢'}</span>
-            <span className="adapter-primary-field">{org.name}</span>
-          </div>
-        ),
+        render: (org) => {
+          const logo = org.logoUrl || (typeof org.metadata?.logoUrl === 'string' ? org.metadata.logoUrl : '');
+          return (
+            <div className="flex items-center gap-2">
+              {logo ? (
+                <Image
+                  src={logo}
+                  alt={`${org.name} logo`}
+                  width={32}
+                  height={32}
+                  className="adapter-logo"
+                  unoptimized
+                />
+              ) : (
+                <span>{org.metadata?.emoji || '🏢'}</span>
+              )}
+              <span className="adapter-primary-field">{org.name}</span>
+            </div>
+          );
+        },
       },
       {
         key: 'slug',
@@ -177,12 +208,26 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
     actionEmptyStateLabel: 'No organization actions are available for your role.',
   },
   cardConfig: {
-    primaryField: (org) => (
-      <div className="flex items-center gap-2">
-        <span>{org.metadata?.emoji || '🏢'}</span>
-        <span>{org.name}</span>
-      </div>
-    ),
+    primaryField: (org) => {
+      const logo = org.logoUrl || (typeof org.metadata?.logoUrl === 'string' ? org.metadata.logoUrl : '');
+      return (
+        <div className="flex items-center gap-2">
+          {logo ? (
+            <Image
+              src={logo}
+              alt={`${org.name} logo`}
+              width={28}
+              height={28}
+              className="adapter-logo"
+              unoptimized
+            />
+          ) : (
+            <span>{org.metadata?.emoji || '🏢'}</span>
+          )}
+          <span>{org.name}</span>
+        </div>
+      );
+    },
     secondaryField: (org) => `/${org.slug}`,
     metaFields: [
       {

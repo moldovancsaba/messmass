@@ -831,6 +831,13 @@ export default function ProjectsPageUnified() {
         onSortChange={handleSort}
         actionButtons={[
           {
+            label: 'Club Logos',
+            onClick: () => router.push('/admin/club-logos'),
+            variant: 'secondary',
+            icon: '🛡️',
+            title: 'Manage centralized official club, nation, and federation logos'
+          },
+          {
             label: 'Quick Add 🤝 Sports Match',
             onClick: () => router.push('/admin/quick-add'),
             variant: 'primary',

@@ -7,6 +7,13 @@ import { ObjectId } from 'mongodb';
 import { getAdminUser } from '@/lib/auth';
 import { getDb } from '@/lib/db';
 import { hasMinimumRole } from '@/lib/permissions';
+import { rehostLogo } from '@/lib/logoStorage';
+import {
+  loadCentralizedClubRegistry,
+  slugifyClub,
+  syncClubAssetAcrossEntities,
+  type CentralizedClubRegistry,
+} from '@/lib/clubLogoResolver';
 
 export const runtime = 'nodejs';
 
@@ -14,6 +21,7 @@ type OrganizationRecord = {
   _id: ObjectId;
   name: string;
   slug: string;
+  logoUrl?: string;
   status?: 'active' | 'inactive';
   metadata?: Record<string, unknown>;
   createdAt?: string;
@@ -29,13 +37,33 @@ function slugifyOrgName(name: string): string {
     .slice(0, 64);
 }
 
-function normalizeOrganization(organization: OrganizationRecord) {
+function normalizeOrganization(
+  organization: OrganizationRecord,
+  clubRegistry?: CentralizedClubRegistry
+) {
+  const resolvedLogo =
+    clubRegistry?.resolveLogo({
+      organizationId: organization._id,
+      slug: organization.slug,
+      name: organization.name,
+      fallbackUrl:
+        organization.logoUrl ||
+        (typeof organization.metadata?.logoUrl === 'string' ? organization.metadata.logoUrl : null),
+    }) ||
+    organization.logoUrl ||
+    (typeof organization.metadata?.logoUrl === 'string' ? organization.metadata.logoUrl : null) ||
+    null;
+
   return {
     _id: organization._id.toString(),
     name: organization.name,
     slug: organization.slug,
+    logoUrl: resolvedLogo,
     status: organization.status || 'active',
-    metadata: organization.metadata || {},
+    metadata: {
+      ...(organization.metadata || {}),
+      ...(resolvedLogo ? { logoUrl: resolvedLogo } : {}),
+    },
     createdAt: organization.createdAt || new Date().toISOString(),
     updatedAt: organization.updatedAt || new Date().toISOString(),
   };
@@ -52,15 +80,18 @@ export async function GET() {
     }
 
     const db = await getDb();
-    const organizations = await db
-      .collection<OrganizationRecord>('organizations')
-      .find({ status: { $ne: 'migrated' } as any })
-      .sort({ name: 1 })
-      .toArray();
+    const [organizations, clubRegistry] = await Promise.all([
+      db
+        .collection<OrganizationRecord>('organizations')
+        .find({ status: { $ne: 'migrated' } as any })
+        .sort({ name: 1 })
+        .toArray(),
+      loadCentralizedClubRegistry(db),
+    ]);
 
     return NextResponse.json({
       success: true,
-      organizations: organizations.map(normalizeOrganization),
+      organizations: organizations.map((org) => normalizeOrganization(org, clubRegistry)),
     });
   } catch (error) {
     console.error('Failed to list organizations:', error);
@@ -81,6 +112,7 @@ export async function POST(request: NextRequest) {
     const body = (await request.json().catch(() => null)) as {
       name?: unknown;
       slug?: unknown;
+      logoUrl?: unknown;
       status?: unknown;
       metadata?: unknown;
     } | null;
@@ -92,12 +124,23 @@ export async function POST(request: NextRequest) {
     const slugInput = typeof body?.slug === 'string' ? body.slug.trim() : '';
     const slugBase = slugifyOrgName(slugInput || name) || 'org';
     const status = body?.status === 'inactive' ? 'inactive' : 'active';
-    const metadata =
+    const rawLogoUrl = typeof body?.logoUrl === 'string' ? body.logoUrl.trim() : '';
+    const hostedLogoUrl = rawLogoUrl ? (await rehostLogo(rawLogoUrl)) || rawLogoUrl : '';
+    const metadataObj =
       body?.metadata && typeof body.metadata === 'object' && !Array.isArray(body.metadata)
-        ? body.metadata
+        ? (body.metadata as Record<string, unknown>)
         : {};
 
     const db = await getDb();
+    const clubRegistry = await loadCentralizedClubRegistry(db);
+    const resolvedLogoUrl =
+      hostedLogoUrl ||
+      clubRegistry.resolveLogo({ slug: slugBase, name }) ||
+      '';
+    const metadata: Record<string, unknown> = {
+      ...metadataObj,
+      ...(resolvedLogoUrl ? { logoUrl: resolvedLogoUrl } : {}),
+    };
     const collection = db.collection<OrganizationRecord>('organizations');
 
     let slug = slugBase;
@@ -115,13 +158,40 @@ export async function POST(request: NextRequest) {
     const organization: Omit<OrganizationRecord, '_id'> = {
       name,
       slug,
+      ...(resolvedLogoUrl ? { logoUrl: resolvedLogoUrl } : {}),
       status,
-      metadata: metadata as Record<string, unknown>,
+      metadata,
       createdAt: now,
       updatedAt: now,
     };
 
     const insertResult = await collection.insertOne(organization as OrganizationRecord);
+    if (resolvedLogoUrl) {
+      const canonicalSlug = slugifyClub(slug || name);
+      await db.collection('club_assets').updateOne(
+        { canonicalSlug },
+        {
+          $set: {
+            name,
+            canonicalSlug,
+            logoUrl: resolvedLogoUrl,
+            organizationId: insertResult.insertedId,
+            entityKind: 'federation',
+            updatedAt: now,
+          },
+          $addToSet: { aliases: { $each: [name.toLowerCase(), slug.toLowerCase()] } },
+          $setOnInsert: { createdAt: now },
+        },
+        { upsert: true }
+      );
+      await syncClubAssetAcrossEntities(db, {
+        name,
+        canonicalSlug,
+        logoUrl: resolvedLogoUrl,
+        aliases: [name, slug],
+        organizationId: insertResult.insertedId,
+      });
+    }
     const createdOrganization = await collection.findOne({ _id: insertResult.insertedId });
     if (!createdOrganization) {
       throw new Error('Failed to load created organization');

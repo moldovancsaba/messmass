@@ -7,15 +7,17 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import styles from './PartnerSelector.module.css';
 
 // WHAT: Type definitions for partner data
-// WHY: Type safety for partner selection and display
+// WHY: Type safety for partner selection and display (with centralized club logos)
 interface Partner {
   _id: string;
   name: string;
   emoji?: string;
   showEmoji?: boolean;
+  logoUrl?: string | null;
 }
 
 interface PartnerSelectorProps {
@@ -149,7 +151,20 @@ export default function PartnerSelector({
     return (
       <div className={styles.chipContainer}>
         <div className={`${styles.partnerChip} ${disabled ? styles.disabled : ''}`}>
-          <span className={styles.chipEmoji}>{selectedPartner.showEmoji !== false ? selectedPartner.emoji : ''}</span>
+          {selectedPartner.logoUrl ? (
+            <Image
+              src={selectedPartner.logoUrl}
+              alt=""
+              width={20}
+              height={20}
+              className={styles.chipLogo}
+              unoptimized
+            />
+          ) : (
+            <span className={styles.chipEmoji}>
+              {selectedPartner.showEmoji !== false ? selectedPartner.emoji : ''}
+            </span>
+          )}
           <span className={styles.chipLabel} title={selectedPartner.name}>
             {selectedPartner.name}
           </span>
@@ -201,7 +216,20 @@ export default function PartnerSelector({
               onClick={(e) => handleSelectPartner(e, partner._id)}
               onMouseEnter={() => setFocusedIndex(index)}
             >
-              <span className={styles.partnerEmoji}>{partner.showEmoji !== false ? partner.emoji : ''}</span>
+              {partner.logoUrl ? (
+                <Image
+                  src={partner.logoUrl}
+                  alt=""
+                  width={24}
+                  height={24}
+                  className={styles.partnerLogo}
+                  unoptimized
+                />
+              ) : (
+                <span className={styles.partnerEmoji}>
+                  {partner.showEmoji !== false ? partner.emoji : ''}
+                </span>
+              )}
               <span className={styles.partnerName}>{partner.name}</span>
             </div>
           ))}
