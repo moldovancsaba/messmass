@@ -146,7 +146,7 @@ it drifts. Do not edit between the markers.
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 89 | `app/**/page.tsx` |
-| **API routes** | 252 | `app/api/**/route.ts` |
+| **API routes** | 254 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -1119,7 +1119,7 @@ shows up here on the next regeneration, which is the point.
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 | `/whats-new` | `app/whats-new/page.tsx` |
 
-### API routes (252)
+### API routes (254)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1318,6 +1318,13 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/club-clusters` | GET, POST | `requireSession` |
+
+#### `/api/club-logos`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/club-logos` | GET, POST | `requireSession` |
+| `/api/club-logos/[slug]` | DELETE | `requireSession` |
 
 #### `/api/contact`
 

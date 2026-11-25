@@ -4,6 +4,8 @@
   "regenerate": "python3 scripts/fleet-audit-inventory.py --write"
  },
  "items": [
+  {"file": ".agents/skills/preflight-data-safety/SKILL.md", "title": "Pre-Flight Data Safety & Single-Cluster Guard"},
+  {"file": ".agents/skills/publish-delivery/SKILL.md", "title": "Rock-Solid Publish & Delivery Protocol (`publish-delivery`)"},
   {"file": ".github/ISSUE_TEMPLATE/fleet-reaudit.md", "title": "Method (do not skip)"},
   {"file": ".github/pull_request_template.md", "title": "Pull Request"},
   {"file": "AGENTS.md", "title": "AGENTS"},

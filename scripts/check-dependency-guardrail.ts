@@ -44,6 +44,7 @@ const APPROVED_RUNTIME_DEPS = new Set([
   'mongoose', // OPS-V3: Required for V3 time-series engine and multi-tenant reporting.
   '@vercel/blob', // Primary image storage since 323cf3aa/v12.3.11 (lib/imgbbApi.ts, app/api/blob-upload-token); the dep landed without this entry, which left main's CI red until v12.3.17.
   'd3', // D3.js visualization library for Fanmass interactive reports (bubbles, scrubber, demographics, funnel).
+  'echarts', // Apache ECharts 6 for multi-dimensional interactive report charts in components/theme/interactive-report/ChartLibraryShowcase.tsx.
   'maplibre-gl', // MapLibre GL for territory analytics map aligned with management project standard.
   // Add other approved deps as needed
 ]);

@@ -8,7 +8,18 @@ not bind it to a version it is not about.
 Enforcement live: CI runs `inventory:check` (`scripts/fleet-audit-inventory.py
 --check`) since 2026-09-08 (messmass#355; rule in `contract-first-rule.md`).
 
-**Re-verification 2026-11-14 (re-verified @ 71a2b79f, v12.3.48).**
+**Re-verification 2026-11-25 (re-verified @ 0d8c1063, v12.3.51).**
+Checked on `origin/main` at `0d8c1063` (141 commits after `71a2b79f`, v12.3.48).
+Re-read all modified integration, reporting, dependency, and entity modules:
+`app/api/club-logos` + `lib/clubLogoResolver.ts` (centralized `club_assets` + `club_assets_backup` synced across `partners`, `organizations`, `v3_entities`, and `v3_organizations`),
+`app/api/brand-assets` + `lib/brandLogoResolver.ts` (`brand_assets_backup` snapshots + canonical club/brand resolution),
+`app/api/integrations/fanmass/{event-list,fanmass-hashtags}` (added under `requireFanmassIntegrationAuth`),
+`scripts/lib/singleClusterConfig.ts` (single authoritative `MONGODB_URI` enforcement across scripts),
+and `scripts/check-dependency-guardrail.ts` (`echarts` approved for `components/theme/interactive-report/ChartLibraryShowcase.tsx`).
+Regenerated `docs/_audit/*.json` and `docs/architecture.md` in lockstep; all prior
+FIXED/TRUE entries below continue to hold at `0d8c1063`.
+
+**Historical re-verification 2026-11-14 (checked at 71a2b79f, v12.3.48).**
 Every entry below was checked again on origin/main at 71a2b79f (read at c9644a37;
 the two commits after it, d02408be and its merge, change version lines, the
 release notes and the hashtags guide, and the entries they touch, 12, 22, 28, 32
@@ -308,7 +319,7 @@ and 13 NEW entries.
 
 ## 0. Behavior findings escalated out of the docs audit (see messmass#347)
 **FULLY RESOLVED via messmass#347 + messmass#348 (2026-09-03) + messmass#386
-(2026-09-04)** (re-verified @ 71a2b79f, 2026-11-14; ledger 1-4; earlier 96dd913c, 2026-10-11):
+(2026-09-04)** (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 1-4; earlier 96dd913c, 2026-10-11):
 - ~~**Cron auth bypass**~~ FIXED: the `'development_secret'` fallback is gone
   (analytics-aggregation fails closed, route.ts:51-58). messmass#348 also
   closed the two remaining fail-open variants: `/api/bitly/sync` compared
@@ -354,7 +365,7 @@ and 13 NEW entries.
   have no in-app callers (grep over app, components, hooks, lib, contexts,
   tests and scripts, 2026-10-11 and again 2026-11-14). Queued for deletion in §7.
 
-## 1. docs/architecture.md architectural claims (re-verified @ 71a2b79f, 2026-11-14; ledger 5-17; earlier 96dd913c, 2026-10-11)
+## 1. docs/architecture.md architectural claims (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 5-17; earlier 96dd913c, 2026-10-11)
 The file is 4,053 lines at 71a2b79f (3,968 after messmass#470, 3,877 at 96dd913c;
 fiction deleted and the changelog archived in #408/#409); line numbers below are
 for 71a2b79f. Most moved by about 130 lines; the Fanmass chapter was rewritten.
@@ -438,7 +449,7 @@ for 71a2b79f. Most moved by about 130 lines; the Fanmass chapter was rewritten.
   only. The middleware section list (5) matches the real order of
   `middleware.ts` (entry 84).
 
-## 1b. ~~WRONG~~ FIXED (messmass#349, re-verified @ 71a2b79f, 2026-11-14; earlier 96dd913c, 2026-10-11) — guides and feature docs (ledger 18-22)
+## 1b. ~~WRONG~~ FIXED (messmass#349, re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; earlier 96dd913c, 2026-10-11) — guides and feature docs (ledger 18-22)
 - ~~**docs/guides/guides-tutorial-authentication-sso.md**~~ FIXED: Section 4
   rewritten to the real OAuth2 authorization-code flow (login → `/api/oauth/authorize`,
   callback → `/api/oauth/token`, central per-app permission store; guide :78,
@@ -493,7 +504,7 @@ for 71a2b79f. Most moved by about 130 lines; the Fanmass chapter was rewritten.
   section (:147) and a Fanmass Integration section (:151, rewritten for the
   per-photo contract; it says the legacy routes answer 410, which holds).
 
-## 2. ~~The vestigial WebSocket system~~ REMOVED (code) + docs FIXED (messmass#349; re-verified @ 71a2b79f, 2026-11-14; ledger 23-24; earlier 96dd913c, 2026-10-11)
+## 2. ~~The vestigial WebSocket system~~ REMOVED (code) + docs FIXED (messmass#349; re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 23-24; earlier 96dd913c, 2026-10-11)
 **Code:** the WebSocket stack was not merely vestigial — it was fully DELETED in
 commit c56e70af (v12.2.0, 2026-08-20): `server/` (incl. `server/websocket-server.js`),
 `hooks/useWebSocket.ts`, and the `ws` + `@types/ws` deps are gone; nothing opens a
@@ -515,7 +526,7 @@ docs/operations/operations-roadmap.md (relabelled the item as abandoned, not fut
 Re-checked 2026-10-11 and 2026-11-14 at the lines in ledger 24. The cleanup missed two places that
 carry the same kind of stale stack claim, listed in §10 (both fixed since).
 
-## 3. ~~The docs:audit gate has a hole~~ FIXED (re-verified @ 71a2b79f, 2026-11-14; ledger 25; earlier 96dd913c, 2026-10-11)
+## 3. ~~The docs:audit gate has a hole~~ FIXED (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 25; earlier 96dd913c, 2026-10-11)
 ~~scripts/docs-consistency-audit.js:93,98 version-header regex matches
 `**Version**: X` and `Version: X` but NOT `**Version:** X` — the exact format in
 docs/features/features-authentication.md:7, docs/api/api-reference.md:7,
@@ -528,7 +539,7 @@ content, header and footer (both files unchanged since 96dd913c). Still true: it
 checks path patterns, npm-script existence, version stamps and fleet-map
 freshness, never factual accuracy.
 
-## 4. STALE / MISSING (selected) (re-verified @ 71a2b79f, 2026-11-14; ledger 26-31; earlier 96dd913c, 2026-10-11)
+## 4. STALE / MISSING (selected) (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 26-31; earlier 96dd913c, 2026-10-11)
 - docs/low-level-design.md is accurate but covers only 4 subsystems (Report Variant
   Period Selector `:11`, whose scope now also lists the global report, Mobile
   Admin Actions `:138`, Unified Admin Entity Forms `:160`, Public Report Shell
@@ -563,7 +574,7 @@ freshness, never factual accuracy.
   that turned every protected event report's 401 into a JSON-parse crash. Spec
   and playbook now say so (spec :22 "Not implemented"); fallback deleted.
 
-## 5. CURRENT (verified — the good news) (re-verified @ 71a2b79f, 2026-11-14; ledger 32-34; earlier 96dd913c, 2026-10-11)
+## 5. CURRENT (verified — the good news) (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 32-34; earlier 96dd913c, 2026-10-11)
 - **docs/design/design-system.md is the most accurate major doc** (v12.3.48 now;
   GDS/Mantine/theme all verified: Mantine 8 `:21`, TailAdmin guidance rejected
   `:31`; the 12 adapter paths in the table under `:38` equal the 12
@@ -605,7 +616,7 @@ freshness, never factual accuracy.
   distinct()/Stable-API note is true as a rule (`lib/mongodb.ts:13-17`;
   architecture.md now `:4024-4025`) but one route breaks it (§10, ledger 68).
 
-## 6. ~~Comment health~~ RESOLVED (messmass#353, re-verified @ 71a2b79f, 2026-11-14; ledger 35-45; earlier 96dd913c, 2026-10-11)
+## 6. ~~Comment health~~ RESOLVED (messmass#353, re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 35-45; earlier 96dd913c, 2026-10-11)
 - WHAT/WHY adherence good but uneven: integration/auth surface (lib/fanmass*,
   aiRescan, apiGuards, pageAccess, app/api/integrations/**) is best-in-repo
   (comments explain tradeoffs). ~~lib/sponsorshipHub.ts is 1432 lines with ZERO
@@ -649,7 +660,7 @@ freshness, never factual accuracy.
   comment turned up in the 2026-10-11 round: `lib/rateLimit.ts:4` (§10, ledger
   70), FIXED in messmass#470 and unchanged since.
 
-## 7. Obsoletion queue (re-verified @ 71a2b79f, 2026-11-14; ledger 46-55; earlier 96dd913c, 2026-10-11)
+## 7. Obsoletion queue (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 46-55; earlier 96dd913c, 2026-10-11)
 - Dead routes: ~~app/api/me, app/api/images (phantom cookies)~~ FIXED 2026-08-20
   (c56e70af, v12.2.0); the 4 legacy SSO-validate admin routes: 2 deleted
   2026-09-04 (`/api/admin/{projects,users}`, 62a47a0d, messmass#386, see §0),
@@ -716,7 +727,7 @@ freshness, never factual accuracy.
   app guide :188-201, which does not know the other two, §11, ledger 87).
   `endpoints.json` lists 248 routes.
 
-## 8. Highest-value fixes, ranked (re-verified @ 71a2b79f, 2026-11-14; ledger 56-60; earlier 96dd913c, 2026-10-11)
+## 8. Highest-value fixes, ranked (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 56-60; earlier 96dd913c, 2026-10-11)
 1. ~~Remove the `'development_secret'` cron fallback (auth bypass).~~ FIXED
    (messmass#347/#348, §0).
 2. ~~Guard/delete the 8 google-sheet + hashtag-style unauthenticated
@@ -733,7 +744,7 @@ freshness, never factual accuracy.
    app/api/auth/sso/callback/route.ts (both instruct readers to use a 410
    endpoint).~~ FIXED (messmass#349, completed 2026-09-28; §1b).
 
-## 9. Wave 2026-09-16 — documentation audit (Phase 5) and the sweeps it triggered (re-verified @ 71a2b79f, 2026-11-14; ledger 61-66; earlier 96dd913c, 2026-10-11)
+## 9. Wave 2026-09-16 — documentation audit (Phase 5) and the sweeps it triggered (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 61-66; earlier 96dd913c, 2026-10-11)
 
 Twelve findings (F-025 … F-036) closed, plus four earlier security findings.
 Recorded here because several corrected claims this register had certified.
@@ -795,7 +806,7 @@ e098deaa (#390, the 202 orphaned rows removed). The three commits exist; the
 data effect of e098deaa was not re-read, because this audit reads no
 production database.
 
-## 10. New drift found 2026-10-11 (re-verified @ 71a2b79f, 2026-11-14; ledger 68-85; found at 96dd913c)
+## 10. New drift found 2026-10-11 (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f, 2026-11-14; ledger 68-85; found at 96dd913c)
 Found while re-reading the entries above. Each has its proof. The ones marked
 FIXED were fixed by messmass#470 (the documentation and comment items, one rate
 limit change, two removals); NEW is still open. Line numbers in the entries are
@@ -1002,7 +1013,7 @@ as found on 2026-10-11; each entry ends with what the 2026-11-14 re-read found.
    Re-read 2026-11-14: still fixed; the core table rows that mention them are
    `docs/architecture.md:3669,3673`, and the cited code is unchanged.
 
-## 11. New drift found 2026-11-14 (re-verified @ 71a2b79f; ledger 86-93)
+## 11. New drift found 2026-11-14 (re-verified @ 0d8c1063, 2026-11-25; earlier 71a2b79f; ledger 86-93)
 Found while re-reading the entries above. Each has its proof. None was fixed by
 that round, which changed only this page; 86 was fixed the same day (e4e50bf2), and
 87 to 91 and 93 on 2026-11-15 (each entry says how); 92 is narrowed to its code.

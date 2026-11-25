@@ -104,6 +104,8 @@
   {"path": "/api/clicker-sets", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/clicker-sets/route.ts", "auth_markers": ["requireAdmin"], "no_auth_marker": false},
   {"path": "/api/client-error", "methods": ["POST"], "file": "app/api/client-error/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/club-clusters", "methods": ["GET", "POST"], "file": "app/api/club-clusters/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
+  {"path": "/api/club-logos/[slug]", "methods": ["DELETE"], "file": "app/api/club-logos/[slug]/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
+  {"path": "/api/club-logos", "methods": ["GET", "POST"], "file": "app/api/club-logos/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
   {"path": "/api/contact", "methods": ["POST"], "file": "app/api/contact/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/content-assets", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/content-assets/route.ts", "auth_markers": ["getAdminUser", "requireSession"], "no_auth_marker": false},
   {"path": "/api/content-assets/usage", "methods": ["GET"], "file": "app/api/content-assets/usage/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
