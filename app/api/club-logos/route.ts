@@ -38,7 +38,7 @@ export async function GET() {
     const db = client.db(config.dbName);
 
     const [assetsRaw, partners, orgs, mappings, summaries, visionDoc] = await Promise.all([
-      db.collection('club_assets').find({}).sort({ name: 1 }).toArray(),
+      db.collection('club_assets').find({ isActive: { $ne: false } }).sort({ name: 1 }).toArray(),
       db
         .collection('partners')
         .find({}, { projection: { _id: 1, name: 1, logoUrl: 1, emoji: 1, viewSlug: 1, partnerKind: 1, sportsDb: 1 } })

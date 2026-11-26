@@ -56,7 +56,7 @@ export async function loadCentralizedClubRegistry(
   db: Pick<Db, 'collection'>
 ): Promise<CentralizedClubRegistry> {
   const [rawAssets, partners, orgs, mappings] = await Promise.all([
-    db.collection('club_assets').find({}).toArray().catch(() => []),
+    db.collection('club_assets').find({ isActive: { $ne: false } }).toArray().catch(() => []),
     db
       .collection('partners')
       .find({}, { projection: { _id: 1, name: 1, logoUrl: 1, logo: 1, emoji: 1, viewSlug: 1, partnerKind: 1, sportsDb: 1 } })

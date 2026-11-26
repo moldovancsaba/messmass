@@ -113,7 +113,7 @@ function normalizeMaterialIcon(raw?: string | null): string | null {
 export async function loadPublicBrandsCatalog(): Promise<PublicBrandResource[]> {
   const db = await getDb();
   const [brandAssets, orgs, partners] = await Promise.all([
-    db.collection('brand_assets').find({}).sort({ name: 1 }).toArray(),
+    db.collection('brand_assets').find({ isActive: { $ne: false } }).sort({ name: 1 }).toArray(),
     db
       .collection('organizations')
       .find({ slug: { $in: ['mol-group-sports-sponsorships', 'szerencsejatek-zrt'] } })
@@ -177,8 +177,8 @@ export async function loadPublicBrandsCatalog(): Promise<PublicBrandResource[]> 
 
 export async function loadPublicPartnersCatalog(): Promise<PublicPartnerResource[]> {
   const db = await getDb();
-  const [clubAssets, partners, orgs] = await Promise.all([
-    db.collection('club_assets').find({}).sort({ name: 1 }).toArray(),
+  const [clubAssets, partners, orgs, mappings] = await Promise.all([
+    db.collection('club_assets').find({ isActive: { $ne: false } }).sort({ name: 1 }).toArray(),
     db
       .collection('partners')
       .find({}, { projection: { name: 1, logoUrl: 1, emoji: 1, partnerKind: 1, sportsDb: 1 } })
@@ -189,7 +189,15 @@ export async function loadPublicPartnersCatalog(): Promise<PublicPartnerResource
       .find({}, { projection: { name: 1, slug: 1, logoUrl: 1, emoji: 1, metadata: 1 } })
       .sort({ name: 1 })
       .toArray(),
+    db.collection('club_canonical_mappings').find({}).toArray(),
   ]);
+
+  const mappedAliasLowers = new Set<string>();
+  for (const m of mappings) {
+    if (m.alias && m.targetClub && String(m.alias).toLowerCase().trim() !== String(m.targetClub).toLowerCase().trim()) {
+      mappedAliasLowers.add(String(m.alias).toLowerCase().trim());
+    }
+  }
 
   const bySlug = new Map<string, PublicPartnerResource>();
 
@@ -213,6 +221,8 @@ export async function loadPublicPartnersCatalog(): Promise<PublicPartnerResource
   }
 
   for (const p of partners) {
+    const pNameLower = String(p.name || '').toLowerCase().trim();
+    if (mappedAliasLowers.has(pNameLower)) continue;
     const slug = slugifyClub(p.name || '');
     if (!slug || NON_CLUB_PARTNER_SLUGS.has(slug)) continue;
     if (String(p.partnerKind || '').toLowerCase() === 'sponsor') continue;
