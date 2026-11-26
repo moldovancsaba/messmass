@@ -9,17 +9,19 @@
   display: grid;
   gap: var(--mm-space-4);
   width: 100%;
+  --block-height: var(--mm-block-height-default, 360px);
+  --row-height: var(--mm-block-height-default, 360px);
   /* grid-template-columns set dynamically per block via <style jsx> */
 }
 
-/* Unified chart item */
+/* Unified chart item — do NOT add padding or height: 100% here: ReportChart already owns
+   its internal zone padding and deterministic --block-height (adding padding + height: 100%
+   caused BarChart/TextChart/TableChart ResizeObservers to self-inflate by +50px every frame). */
 .unifiedChartItem {
   background: rgba(248, 250, 252, 0.8);
   border-radius: var(--mm-radius-lg);
-  padding: var(--mm-space-6);
   border: 1px solid rgba(226, 232, 240, 0.8);
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
-  height: 100%;
   box-sizing: border-box;
 }
 
@@ -35,16 +37,12 @@
   flex-direction: column;
   width: 100%;
   max-width: none;
-  height: 100%;
-  min-height: 350px;
   justify-self: stretch;
   min-width: 0;
 }
 
 .chartItem > * {
   width: 100%;
-  height: 100%;
-  flex: 1;
 }
 
 /* Chart container overrides */

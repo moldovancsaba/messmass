@@ -434,12 +434,16 @@ export function suggestClubClusters(
     const raw = String(item.name || '').trim();
     if (!raw) continue;
     const low = raw.toLowerCase();
-    const canon = aliasMap?.[low] || canonicalizeClub(raw)?.canonicalName;
-    const key = canon ? canon.toLowerCase() : normalizeClubClusterKey(raw);
+    // If this raw variant was already merged in `club_canonical_mappings`, fold it into its
+    // saved target name so already-merged variants never keep re-triggering duplicate suggestions.
+    const mappedTarget = aliasMap?.[low]?.trim();
+    const effectiveRaw = mappedTarget || raw;
+    const canon = mappedTarget || canonicalizeClub(effectiveRaw)?.canonicalName;
+    const key = canon ? canon.toLowerCase() : normalizeClubClusterKey(effectiveRaw);
     if (!key) continue;
-    const bucket = groups.get(key) ?? { suggestedTarget: canon || raw, variants: new Map() };
+    const bucket = groups.get(key) ?? { suggestedTarget: canon || effectiveRaw, variants: new Map() };
     if (canon) bucket.suggestedTarget = canon;
-    bucket.variants.set(raw, (bucket.variants.get(raw) ?? 0) + (item.count || 0));
+    bucket.variants.set(effectiveRaw, (bucket.variants.get(effectiveRaw) ?? 0) + (item.count || 0));
     groups.set(key, bucket);
   }
   const out: ClubClusterSuggestion[] = [];

@@ -46,14 +46,17 @@ export async function GET() {
     const clubCountMap = new Map<string, number>();
     const topClubs = Array.isArray(visionDoc?.aggregates?.topClubs) ? visionDoc.aggregates.topClubs : [];
     for (const c of topClubs) {
-      const name = String(c.name || c.brand || '').trim();
-      if (!name) continue;
-      clubCountMap.set(name, (clubCountMap.get(name) ?? 0) + (Number(c.count) || 0));
+      const rawName = String(c.club || c.name || c.brand || '').trim();
+      if (!rawName) continue;
+      const effectiveName = aliasMap[rawName.toLowerCase()] || rawName;
+      clubCountMap.set(effectiveName, (clubCountMap.get(effectiveName) ?? 0) + (Number(c.count) || 0));
     }
     for (const r of reclassified) {
-      const name = String(r.name || '').trim();
-      if (name && !clubCountMap.has(name)) {
-        clubCountMap.set(name, 1);
+      const rawName = String(r.name || '').trim();
+      if (!rawName) continue;
+      const effectiveName = aliasMap[rawName.toLowerCase()] || rawName;
+      if (!clubCountMap.has(effectiveName)) {
+        clubCountMap.set(effectiveName, 1);
       }
     }
 
@@ -144,14 +147,26 @@ export async function POST(request: NextRequest) {
       }
       const normalized = visionDoc.aggregates.topClubs.map((c: any) => ({
         ...c,
-        name: String(c.name || c.brand || ''),
+        name: String(c.club || c.name || c.brand || ''),
       }));
-      const folded = mergeClubVariants(normalized, aliasMap);
+      const folded = mergeClubVariants(normalized, aliasMap).map((item: any) => ({
+        ...item,
+        club: item.name,
+      }));
       await db.collection('szrt_vision_progress').updateOne(
         { _id: 'szrt_progress' as any },
         { $set: { 'aggregates.topClubs': folded, updatedAt: now } },
       );
     }
+
+    // Also add merged source aliases onto the target `club_assets` record when present
+    await db.collection('club_assets').updateMany(
+      { name: { $regex: `^${targetClub.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, $options: 'i' } },
+      {
+        $addToSet: { aliases: { $each: sourceClubs.map((s) => s.toLowerCase().trim()) } },
+        $set: { updatedAt: now },
+      },
+    );
 
     return NextResponse.json({
       success: true,
