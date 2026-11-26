@@ -30,7 +30,10 @@ export const categoriesAdapter: AdminPageAdapter<CategoryDTO> = {
         sortable: true,
         minWidth: '200px',
         render: (category) => (
-          <span className="adapter-primary-field">{category.name}</span>
+          <div className="flex items-center gap-2">
+            {category.emoji && <span>{category.emoji}</span>}
+            <span className="adapter-primary-field">{category.name}</span>
+          </div>
         ),
       },
       {

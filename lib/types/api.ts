@@ -195,6 +195,8 @@ export interface CategoryDTO {
   name: string;
   color: string;
   order: number;
+  icon?: string;
+  emoji?: string;
   createdAt: string;
   updatedAt: string;
 }

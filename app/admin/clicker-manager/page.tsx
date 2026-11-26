@@ -20,6 +20,8 @@ interface VariableGroup {
   groupOrder: number;
   chartId?: string;
   titleOverride?: string;
+  icon?: string;
+  emoji?: string;
   variables?: string[];
   specialType?: 'report-content';
   visibleInClicker?: boolean;
@@ -34,12 +36,16 @@ interface Variable {
   label: string;
   type: string;
   category: string;
+  icon?: string;
+  emoji?: string;
   flags: { visibleInClicker: boolean; editableInManual: boolean };
 }
 
 interface ClickerSet {
   _id: string;
   name: string;
+  icon?: string;
+  emoji?: string;
   isDefault?: boolean;
   usage?: { partnerCount: number };
 }
@@ -299,7 +305,7 @@ export default function ClickerManagerPage() {
           >
               {clickerSets.map((set) => (
                 <option key={set._id} value={set._id}>
-                  {set.isDefault ? '⭐ ' : ''}{set.name} {set.usage?.partnerCount ? `(${set.usage.partnerCount} partners)` : ''}
+                  {set.isDefault ? '⭐ ' : ''}{set.emoji ? `${set.emoji} ` : ''}{set.name} {set.usage?.partnerCount ? `(${set.usage.partnerCount} partners)` : ''}
                 </option>
               ))}
             </select>
@@ -343,7 +349,7 @@ export default function ClickerManagerPage() {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="mt-0 mb-0">
-                        Group {group.groupOrder}
+                        {group.emoji ? `${group.emoji} ` : ''}Group {group.groupOrder}
                         {group.titleOverride && ` - ${group.titleOverride}`}
                       </h3>
                       {group.specialType === 'report-content' ? (

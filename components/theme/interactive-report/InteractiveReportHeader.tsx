@@ -8,6 +8,7 @@ import type { DashboardTab } from './InteractiveReportDashboard';
 import type { HashtagReport } from '@/lib/hashtagReport/types';
 import { proofNameKey } from '@/lib/hashtagReport/cameraProof';
 import { isSportFranchise, isVenue, mergeBrandVariants } from '@/lib/brandEntityClustering';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './interactive-report.module.css';
 
 interface InteractiveReportHeaderProps {
@@ -97,22 +98,30 @@ export default function InteractiveReportHeader({ data, activeTab, onTabChange, 
       ? `Fan Photo & Brand Proof (${vision.processedCount.toLocaleString()}/${vision.totalImages.toLocaleString()})`
       : 'Fan Photo & Brand Proof';
 
+  const activeSports = (data.sports || []).filter((s) => s.matchesCount > 0 || s.photos > 0);
+  const matchesTabIcon =
+    activeSports.length === 1
+      ? resolveSportIcon(activeSports[0].sport, '🏟️')
+      : emoji && emoji !== '🏆' && emoji !== '📊'
+        ? emoji
+        : '🏟️';
+
   const tabs: Array<{ id: typeof activeTab; label: string; icon: string }> = fanmass ? [
     ...(vision ? [{ id: 'overview' as const, label: 'Executive Overview', icon: '🏆' }] : []),
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...((data.funnel?.length ?? 0) > 0 ? [{ id: 'funnel' as const, label: 'Marketing Funnel', icon: '📈' }] : []),
-    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: '⚽' }] : []),
+    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: `Matches & Event Reports (${data.matches.length})`, icon: matchesTabIcon }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     { id: 'figures', label: 'Data Audit & Figures', icon: '📋' },
   ] : [
-    { id: 'overview', label: 'Executive Overview', icon: '📊' },
+    { id: 'overview', label: 'Executive Overview', icon: '📈' },
     // The vision tab only exists for scopes that have vision data.
     ...(vision ? [{ id: 'vision' as const, label: visionLabel, icon: '📸' }] : []),
     ...(hasTerritoryData ? [{ id: 'territory' as const, label: 'Territory Map', icon: '🗺️' }] : []),
     ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'bubble' as const, label: 'Match Explorer', icon: '🫧' }] : []),
-    { id: 'funnel', label: 'Marketing Funnel', icon: '📈' },
+    { id: 'funnel', label: 'Marketing Funnel', icon: '🎯' },
     { id: 'demographics', label: 'Audience Demographics', icon: '👥' },
-    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: 'All Match Data', icon: '📋' }] : []),
+    ...(!isSingleEvent && (data.matches?.length ?? 0) > 1 ? [{ id: 'table' as const, label: 'All Match Data', icon: matchesTabIcon }] : []),
   ];
 
   return (

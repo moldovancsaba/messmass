@@ -21,6 +21,8 @@ export interface HashtagCategory {
   name: string;                    // Category name (e.g., "city", "vetting", "success", "year")
   color: string;                   // Hex color code for category styling (e.g., "#667eea")
   order: number;                   // Display order in interface (0-based, lower = earlier)
+  icon?: string;                   // Semantic Material Symbol name
+  emoji?: string;                  // Semantic domain emoji
   createdAt: string;              // ISO 8601 timestamp with milliseconds
   updatedAt: string;              // ISO 8601 timestamp with milliseconds
 }

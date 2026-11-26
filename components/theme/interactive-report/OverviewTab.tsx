@@ -26,6 +26,7 @@ import ChartLibraryShowcase from './ChartLibraryShowcase';
 import MessmassAlgorithmsSuite from './MessmassAlgorithmsSuite';
 import SportsExecutiveInsights from './SportsExecutiveInsights';
 import { REPORT_CHART_PALETTE } from '@/lib/theme/interactiveReportPalette';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './interactive-report.module.css';
 
 const SPORT_COLORS: Record<string, string> = {
@@ -47,13 +48,6 @@ interface OverviewTabProps {
   primaryColor?: string;
   accentColor?: string;
 }
-
-const SPORT_ICONS: Record<string, string> = {
-  Football: '⚽',
-  'Ice Hockey': '🏒',
-  Basketball: '🏀',
-  Handball: '🤾',
-};
 
 function resolveClubSport(name: string, explicitSport?: string): string {
   if (explicitSport && explicitSport !== 'Multi-Sport') return explicitSport;
@@ -364,7 +358,7 @@ export default function OverviewTab({
                     onClick={() => setSelectedSport(sport)}
                     className={`${styles.sportFilterBtn} ${isActive ? styles.sportFilterBtnActive : ''}`}
                   >
-                    {sport === 'all' ? '🏆 All Sports' : `${SPORT_ICONS[sport] || '🏅'} ${sport}`}
+                    {sport === 'all' ? '🏆 All Sports' : `${resolveSportIcon(sport)} ${sport}`}
                   </button>
                 );
               })}
@@ -728,7 +722,7 @@ export default function OverviewTab({
                   style={{ background: SPORT_COLORS[s.sport] || REPORT_CHART_PALETTE.slate }}
                 />
                 <div className={styles.sportHeader}>
-                  <span className={styles.sportIcon}>{SPORT_ICONS[s.sport] || '🏅'}</span>
+                  <span className={styles.sportIcon}>{resolveSportIcon(s.sport)}</span>
                   <span className={styles.matchesBadge}>
                     {s.matchesCount} {s.matchesCount === 1 ? 'Match' : 'Matches'}
                   </span>

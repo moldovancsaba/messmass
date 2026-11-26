@@ -118,6 +118,8 @@ export async function GET(request: NextRequest): Promise<NextResponse<HashtagCat
       name: doc.name,
       color: doc.color,
       order: doc.order,
+      ...(doc.icon ? { icon: doc.icon } : {}),
+      ...(doc.emoji ? { emoji: doc.emoji } : {}),
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt
     }));

@@ -9,6 +9,7 @@ import FanmassClubsMatrix from './FanmassClubsMatrix';
 import FanmassSentimentAtmosphere from './FanmassSentimentAtmosphere';
 import TerritoryMapCanvas from './TerritoryMapCanvas';
 import { MatchItem } from './types';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './interactive-report.module.css';
 
 /** A vision run counts as live only while its document was updated within this window. */
@@ -23,15 +24,6 @@ interface FanmassVisionSectionProps {
   matches?: MatchItem[];
   onExploreDashboard?: () => void;
   onViewTerritoryMap?: () => void;
-}
-
-function sportIcon(sport: string): string {
-  const low = sport.toLowerCase();
-  if (low.includes('foot')) return '⚽';
-  if (low.includes('basket')) return '🏀';
-  if (low.includes('hockey')) return '🏒';
-  if (low.includes('hand')) return '🤾';
-  return '🏅';
 }
 
 /** Gender split from measured counts; null when nothing was measured. */
@@ -155,7 +147,7 @@ export default function FanmassVisionSection({
             </span>
             {sportKeys.length > 0 && (
               <span className={styles.visionSportChip}>
-                {sportKeys.map((sp) => `${sportIcon(sp)} ${sp}`).join(' • ')}
+                {sportKeys.map((sp) => `${resolveSportIcon(sp)} ${sp}`).join(' • ')}
               </span>
             )}
           </div>
@@ -222,7 +214,7 @@ export default function FanmassVisionSection({
                 selectedSport === sp ? styles.sportFilterBtnActive : ''
               }`}
             >
-              {sportIcon(sp)} {sp}{' '}
+              {resolveSportIcon(sp)} {sp}{' '}
               {spData && (
                 <span className={styles.sportFilterBadge}>{spData.images}</span>
               )}
@@ -349,7 +341,7 @@ export default function FanmassVisionSection({
                   key={sp}
                   className={`${styles.clubChip} ${selectedSport === sp ? styles.brandTagSponsor : ''}`}
                 >
-                  {sportIcon(sp)} {sp}
+                  {resolveSportIcon(sp)} {sp}
                 </span>
               ))}
             </div>

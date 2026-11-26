@@ -9,6 +9,7 @@ import {
 } from '@/lib/brandEntityClustering';
 import ConnectedSelfiesModal from './ConnectedSelfiesModal';
 import type { CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './interactive-report.module.css';
 
 interface ClubStat {
@@ -311,11 +312,7 @@ export default function FanmassClubsMatrix({
             const venueName = item.homeVenue || franchiseInfo?.homeVenue || undefined;
             const venueWebsite = franchiseInfo?.venueWebsite || undefined;
 
-            const sportIcon =
-              sport === 'Basketball' ? '🏀' :
-              sport === 'Football' ? '⚽' :
-              sport === 'Handball' ? '🤾' :
-              sport === 'Ice Hockey' ? '🏒' : '🏆';
+            const sportIcon = resolveSportIcon(sport, '🛡️');
 
             const hasPartnerLink = Boolean(item.partnerSlug || item.partnerId);
 

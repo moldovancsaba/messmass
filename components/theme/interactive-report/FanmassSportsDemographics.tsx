@@ -2,6 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 
 import React, { useMemo, useState } from 'react';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './interactive-report.module.css';
 
 interface SportBreakdownItem {
@@ -24,15 +25,6 @@ interface SportBreakdownItem {
 interface FanmassSportsDemographicsProps {
   sportsBreakdown: Record<string, SportBreakdownItem>;
   totalPeople: number;
-}
-
-function sportIcon(sport: string): string {
-  const low = sport.toLowerCase();
-  if (low.includes('foot')) return '⚽';
-  if (low.includes('basket')) return '🏀';
-  if (low.includes('hockey')) return '🏒';
-  if (low.includes('hand')) return '🤾';
-  return '🏅';
 }
 
 /** Gender split from the measured counts. Null when no gender was measured; a true 0% stays 0%. */
@@ -180,7 +172,7 @@ export default function FanmassSportsDemographics({
                 return (
                   <div key={sport} className={styles.compRowItem}>
                     <div className={styles.compSportLabelWrap}>
-                      <span className={styles.compSportIcon}>{sportIcon(sport)}</span>
+                      <span className={styles.compSportIcon}>{resolveSportIcon(sport)}</span>
                       <div>
                         <div className={styles.compSportName}>{sport}</div>
                         <div className={styles.compSportPhotos}>{data.people.toLocaleString()} fans</div>
@@ -293,7 +285,7 @@ export default function FanmassSportsDemographics({
                 return (
                   <div key={sport} className={styles.compRowItem}>
                     <div className={styles.compSportLabelWrap}>
-                      <span className={styles.compSportIcon}>{sportIcon(sport)}</span>
+                      <span className={styles.compSportIcon}>{resolveSportIcon(sport)}</span>
                       <div>
                         <div className={styles.compSportName}>{sport}</div>
                         <div className={styles.compSportPhotos}>
@@ -411,7 +403,7 @@ export default function FanmassSportsDemographics({
               {/* Card Header */}
               <div className={styles.sportCardHeader}>
                 <div className={styles.sportCardTitleWrap}>
-                  <span className={styles.sportCardIcon}>{sportIcon(sport)}</span>
+                  <span className={styles.sportCardIcon}>{resolveSportIcon(sport)}</span>
                   <div>
                     <h4 className={styles.sportCardName}>{sport}</h4>
                   </div>

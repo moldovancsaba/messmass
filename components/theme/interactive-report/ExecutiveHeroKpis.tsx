@@ -2,6 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 
 import React, { useEffect, useState } from 'react';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './executive-view.module.css';
 
 interface ExecutiveHeroKpisProps {
@@ -40,13 +41,6 @@ interface ExecutiveHeroKpisProps {
     indoorMatchesCount: number;
   };
 }
-
-const SPORT_ICONS: Record<string, string> = {
-  Basketball: '🏀',
-  Football: '⚽',
-  Handball: '🤾',
-  'Ice Hockey': '🏒',
-};
 
 /** A running pipeline only counts as live while its last update is this recent. */
 const LIVE_WINDOW_MS = 15 * 60 * 1000;
@@ -97,7 +91,7 @@ export default function ExecutiveHeroKpis({
     ...sportOptions.map((sport) => ({
       id: sport,
       label: sport,
-      icon: SPORT_ICONS[sport] || '🏅',
+      icon: resolveSportIcon(sport),
     })),
   ];
   const showSwitcher = sportOptions.length >= 2;
@@ -154,7 +148,7 @@ export default function ExecutiveHeroKpis({
         eventCount !== null && eventCount > 0
           ? `${eventCount.toLocaleString()} ${eventCount === 1 ? 'event' : 'events'}`
           : undefined,
-      icon: '📁',
+      icon: selectedSport !== 'all' ? resolveSportIcon(selectedSport, '🎯') : sportOptions.length === 1 ? resolveSportIcon(sportOptions[0], '🎯') : '🎯',
       iconBackground: '#f3e8ff',
       iconColor: '#7c3aed',
     });

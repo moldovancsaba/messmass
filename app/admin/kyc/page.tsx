@@ -25,6 +25,8 @@ interface Variable {
   label: string;
   type: "numeric" | "percentage" | "currency" | "count" | "text" | "textarea" | "texthyper" | "textmedia" | "boolean" | "date";
   category: string;
+  icon?: string;
+  emoji?: string;
   description?: string;
   derived?: boolean;
   formula?: string;
@@ -71,6 +73,8 @@ export default function KycVariablesPage() {
             label: v.label || v.alias || v.name, // Fallback: alias, then name
             type: v.type || "count",
             category: v.category || "Uncategorized",
+            icon: v.icon || undefined,
+            emoji: v.emoji || undefined,
             description: v.derived && v.formula ? v.formula : v.description || undefined,
             derived: !!v.derived,
             formula: v.formula,
@@ -222,6 +226,7 @@ export default function KycVariablesPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-3">
+                      {v.emoji && <span>{v.emoji}</span>}
                       <h3 className="mt-0 mb-0">{v.label}</h3>
                       <code className="variable-ref">{v.name}</code>
                       <span className="badge badge-info">{typeBadge}</span>

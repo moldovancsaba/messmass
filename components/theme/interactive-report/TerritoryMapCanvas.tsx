@@ -6,6 +6,7 @@ import type { GeoJSONSource, Map as MapLibreMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { MatchItem, ScopeHeader, VisionProgressData } from './types';
 import ConnectedSelfiesModal, { ClubStat } from './ConnectedSelfiesModal';
+import { resolveSportIcon } from '@/lib/sportIcons';
 import styles from './territory-map.module.css';
 
 interface TerritoryMapCanvasProps {
@@ -82,15 +83,6 @@ const VENUE_REGISTRY: VenueGeo[] = [
   { id: 'mezokovesd-varosi', name: 'Városi Stadion Mezőkövesd', city: 'Mezőkövesd', region: 'Észak-Magyarország', coordinates: [20.5625, 47.8139], clubKeys: ['Mezőkövesd Zsóry FC'] },
   { id: 'pecs-lauber', name: 'Lauber Dezső Sportcsarnok', city: 'Pécs', region: 'Dél-Dunántúl', coordinates: [18.2108, 46.0689], clubKeys: ['NKA Universitas Pécs'] },
 ];
-
-function sportIcon(sport: string): string {
-  const low = sport.toLowerCase();
-  if (low.includes('foot')) return '⚽';
-  if (low.includes('basket')) return '🏀';
-  if (low.includes('hockey')) return '🏒';
-  if (low.includes('hand')) return '🤾';
-  return '🏅';
-}
 
 export default function TerritoryMapCanvas({
   matches,
@@ -556,7 +548,7 @@ export default function TerritoryMapCanvas({
               onClick={() => setActiveSport(sport)}
               className={`${styles.chipBtn} ${activeSport === sport ? styles.chipBtnActive : ''}`}
             >
-              {sportIcon(sport)} {sport}
+              {resolveSportIcon(sport)} {sport}
             </button>
           ))}
 
