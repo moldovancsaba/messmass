@@ -125,6 +125,7 @@ const KNOWN_UNGUARDED_READS = new Set<string>([
   'app/api/report-config/[identifier]/route.ts',
   'app/api/report-styles/[id]/route.ts',
   'app/api/reports/resolve/route.ts',
+  'app/api/resources/download/route.ts',
   // [editor] page-password editor surfaces consume these without a session.
   //     NOTE: variables-groups and clicker-sets GETs perform idempotent
   //     lazy-init writes (ensureDefault* insertOne + a legacy backfill) that

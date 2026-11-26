@@ -141,12 +141,12 @@ it drifts. Do not edit between the markers.
 | Category | Count | Location |
 |----------|-------|----------|
 | **UI Components** | 139 | `components/` |
-| **Utility Modules** | 264 | `lib/` |
+| **Utility Modules** | 265 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 89 | `app/**/page.tsx` |
-| **API routes** | 254 | `app/api/**/route.ts` |
+| **App routes (pages)** | 93 | `app/**/page.tsx` |
+| **API routes** | 255 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -161,8 +161,8 @@ largest, and the ones to read first:
 | `lib/fanmassIntegration.ts` | 46 | 331 |
 | `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/apiClient.ts` | 43 | 258 |
-| `lib/db.ts` | 42 | 17 |
-| `components/MaterialIcon.tsx` | 33 | 119 |
+| `lib/db.ts` | 43 | 17 |
+| `components/MaterialIcon.tsx` | 34 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -1025,7 +1025,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (89)
+### Pages (93)
 
 | Route | File |
 |-------|------|
@@ -1115,11 +1115,15 @@ shows up here on the next regeneration, which is the point.
 | `/partner-report/[slug]` | `app/partner-report/[slug]/page.tsx` |
 | `/privacy` | `app/privacy/page.tsx` |
 | `/report/[slug]` | `app/report/[slug]/page.tsx` |
+| `/resources` | `app/resources/page.tsx` |
+| `/resources/brands` | `app/resources/brands/page.tsx` |
+| `/resources/icons` | `app/resources/icons/page.tsx` |
+| `/resources/partners` | `app/resources/partners/page.tsx` |
 | `/terms` | `app/terms/page.tsx` |
 | `/test-csrf` | `app/test-csrf/page.tsx` |
 | `/whats-new` | `app/whats-new/page.tsx` |
 
-### API routes (254)
+### API routes (255)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1633,6 +1637,12 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/reports/resolve` | GET | — |
+
+#### `/api/resources`
+
+| Route | Methods | Auth |
+|-------|---------|------|
+| `/api/resources/download` | GET | — |
 
 #### `/api/sports-db`
 

@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (254 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, centralized club logos, brand assets management, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (255 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, centralized club logos, brand assets management, public downloadable resources, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 254 of 254 routes documented, enforced by
+Coverage: 255 of 255 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -356,6 +356,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/club-logos/[slug] | DELETE | requireSession | path slug | `{success,deletedSlug}` | backs up to `club_assets_backup` and deletes from `club_assets` |
 | /api/brand-assets | GET, POST | requireSession | POST FormData `{name,file,…}` or JSON `{name,logoUrl,…}` | `{success,brandAssets[]\|brandAsset}` | reads/writes `brand_assets`, synchronizes with Fanmass Vision progress |
 | /api/brand-assets/[id] | DELETE | requireSession | path id or slug | `{success,deletedId}` | deletes from `brand_assets` |
+| /api/resources/download | GET | none (public-by-design: read-only attachment download stream for `/resources/{brands,partners,icons}`; resolves canonical slug against DB/gstatic only) | `?kind=brand\|partner\|competition\|icon&slug&variant?&icon?` | binary image/SVG attachment | reads `brand_assets`, `club_assets`, `partners`, `organizations`, `competitions`, `chart_configurations`, `variables_metadata`, `variables_groups`, `clickerSets`, `hashtag_categories`; zero writes |
 | /api/interactive-report/[partnerSlug] | GET | none (public-by-design: interactive client report) | path partnerSlug | `{partner,matches,vision}` | reads partner metadata, matches, and vision progress aggregates |
 | /api/interactive-report/partner-selfies | GET | none (public-by-design: interactive client report) | `?club\|partnerId\|partnerSlug` | `{partner,totalSelfies:0,selfies:[]}` | reads the `partners` record only; serves no analysed selfie (the retired `szrt_vision_analysis` is not read) |
 | /api/interactive-report/brand-evidence | GET | none (public-by-design: interactive client report; SZRT tenant only; nothing before `publishApproved`) | `?kind=brand\|club&name&organizationId` | `{success,published,provenPhotos,modelIdentifiedPhotos,samples[]}` | reads `szrt_brand_evidence`; at most 12 samples, one per photo, text-read proof only |
@@ -397,8 +398,8 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 |---|---:|
 | Fully guarded (every method) | **219** |
 | Open write method, public by design | **5** |
-| Open GET only, writes guarded or absent | **30** |
-| **Total** | **254** |
+| Open GET only, writes guarded or absent | **31** |
+| **Total** | **255** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first
@@ -420,7 +421,7 @@ whenever an `admin-session` cookie was merely *present*.
 | `/api/client-error` | POST | Records a crash report. A logged-out visitor can crash too. |
 | `/api/contact` | POST | Public contact form, rate-limited by middleware. |
 
-### Open GET only (28)
+### Open GET only (29)
 
 Each serves an anonymously-reachable surface, or is pre-auth. Where a route
 also exposes writes, those writes are guarded — the asymmetry is deliberate:
@@ -454,6 +455,7 @@ the page-password editors read these without a session.
 | `/api/report-config/[identifier]` | — (read-only route) |
 | `/api/report-styles/[id]` | — (read-only route) |
 | `/api/reports/resolve` | — (read-only route) |
+| `/api/resources/download` | — (read-only route) |
 | `/api/variables-config` | POST, PUT, DELETE |
 | `/api/variables-groups` | POST, DELETE |
 

@@ -234,6 +234,7 @@
   {"path": "/api/report-variants/[id]", "methods": ["GET", "PUT"], "file": "app/api/report-variants/[id]/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/report-variants", "methods": ["GET", "POST"], "file": "app/api/report-variants/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/reports/resolve", "methods": ["GET"], "file": "app/api/reports/resolve/route.ts", "auth_markers": [], "no_auth_marker": true},
+  {"path": "/api/resources/download", "methods": ["GET"], "file": "app/api/resources/download/route.ts", "auth_markers": [], "no_auth_marker": true},
   {"path": "/api/sports-db/fixtures/draft", "methods": ["POST"], "file": "app/api/sports-db/fixtures/draft/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/sports-db/fixtures", "methods": ["GET"], "file": "app/api/sports-db/fixtures/route.ts", "auth_markers": ["getAdminUser"], "no_auth_marker": false},
   {"path": "/api/sports-db/lookup", "methods": ["GET", "POST", "PUT", "DELETE"], "file": "app/api/sports-db/lookup/route.ts", "auth_markers": ["requireSession"], "no_auth_marker": false},
