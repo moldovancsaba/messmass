@@ -23,6 +23,7 @@
   border: 1px solid rgba(226, 232, 240, 0.8);
   transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base);
   box-sizing: border-box;
+  flex: 0 0 auto !important;
 }
 
 .unifiedChartItem:hover {
@@ -39,6 +40,8 @@
   max-width: none;
   justify-self: stretch;
   min-width: 0;
+  min-height: 0;
+  flex: 0 0 auto;
 }
 
 .chartItem > * {

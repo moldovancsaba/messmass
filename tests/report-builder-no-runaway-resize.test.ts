@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { computeInnerBodyHeight } from '@/lib/chartInnerBodyHeight';
-import { suggestClubClusters } from '@/lib/brandEntityClustering';
+import { canonicalizeClub, suggestClubClusters } from '@/lib/brandEntityClustering';
 
 const styleMap = new WeakMap<object, Partial<CSSStyleDeclaration>>();
 
@@ -82,5 +82,40 @@ describe('Report Builder runaway vertical resize guard & Club Clusters merge fil
       ftctc: 'Ferencvárosi TC',
     });
     expect(after).toHaveLength(0);
+  });
+
+  it('never falsely merges distinct clubs via substring collisions (Diósgyőri VTK, Szeged-Csanád, Atomerőmű SE, ETO University, DVTK HUNTHERM)', () => {
+    expect(canonicalizeClub('Diósgyőri VTK')?.canonicalName).toBe('DVTK Diósgyőr');
+    expect(canonicalizeClub('DVTK HUNTHERM')?.canonicalName).toBe('DVTK HUNTHERM');
+    expect(canonicalizeClub('Szeged-Csanád Grosics Akadémia')?.canonicalName).toBe('Szeged-Csanád Grosics Akadémia');
+    expect(canonicalizeClub('Atomerőmű SE')?.canonicalName).toBe('Atomerőmű SE');
+    expect(canonicalizeClub('ETO University Handball Team')?.canonicalName).toBe('ETO University Handball Team');
+    expect(canonicalizeClub('dvsc handball')?.canonicalName).toBe('DVSC Schaffler');
+
+    // Already-merged Győri Audi ETO KC and OTP Bank - PICK Szeged must NOT re-appear next to Diósgyőri VTK / Szeged-Csanád
+    const clusters = suggestClubClusters(
+      [
+        { name: 'Győri Audi ETO KC', count: 8 },
+        { name: 'Diósgyőri VTK', count: 3 },
+        { name: 'OTP Bank - PICK Szeged', count: 5 },
+        { name: 'Szeged-Csanád Grosics Akadémia', count: 2 },
+        { name: 'Paksi FC', count: 10 },
+        { name: 'Atomerőmű SE', count: 8 },
+        { name: 'ETO University Handball Team', count: 1 },
+        { name: 'UNI Győr', count: 1 },
+      ],
+      {},
+      {
+        'győri audi eto kc': 'Győri Audi ETO KC',
+        'diósgyőri vtk': 'Diósgyőri VTK',
+        'otp bank - pick szeged': 'OTP Bank - PICK Szeged',
+        'szeged-csanád grosics akadémia': 'Szeged-Csanád Grosics Akadémia',
+        'paksi fc': 'Paksi FC',
+        'atomerőmű se': 'Atomerőmű SE',
+        'eto university handball team': 'ETO University Handball Team',
+        'uni győr': 'UNI Győr',
+      }
+    );
+    expect(clusters).toHaveLength(0);
   });
 });

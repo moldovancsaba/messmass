@@ -428,6 +428,7 @@ export interface ClubClusterSuggestion {
 export function suggestClubClusters(
   items: Array<{ name: string; count: number }>,
   aliasMap?: Record<string, string>,
+  knownCanonicalMap?: Record<string, string>,
 ): ClubClusterSuggestion[] {
   const groups = new Map<string, { suggestedTarget: string; variants: Map<string, number> }>();
   for (const item of items) {
@@ -438,7 +439,9 @@ export function suggestClubClusters(
     // saved target name so already-merged variants never keep re-triggering duplicate suggestions.
     const mappedTarget = aliasMap?.[low]?.trim();
     const effectiveRaw = mappedTarget || raw;
-    const canon = mappedTarget || canonicalizeClub(effectiveRaw)?.canonicalName;
+    const effectiveLow = effectiveRaw.toLowerCase();
+    const exactKnownClub = knownCanonicalMap?.[effectiveLow]?.trim();
+    const canon = mappedTarget || exactKnownClub || canonicalizeClub(effectiveRaw)?.canonicalName;
     const key = canon ? canon.toLowerCase() : normalizeClubClusterKey(effectiveRaw);
     if (!key) continue;
     const bucket = groups.get(key) ?? { suggestedTarget: canon || effectiveRaw, variants: new Map() };
@@ -730,13 +733,29 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: directHit.name, franchise: directHit };
   }
 
-  // 2. Győri Audi ETO KC (Handball) & ETO FC variations
+  // 1.5. DVTK / Diósgyőr (MUST run before Győr so "Diósgyőri VTK" never matches "győr")
+  if (low.includes('huntherm') || low.includes('hun-therm')) {
+    return { canonicalName: 'DVTK HUNTHERM' };
+  }
+  if (low.includes('diósgyőr') || low.includes('diosgyor') || low.includes('dvtk') || low === 'vtk') {
+    if (low.includes('jeges') || low.includes('hoki') || low.includes('hockey')) {
+      const fr = SPORT_FRANCHISES_DIRECTORY['dvtk jegesmedvék'];
+      return { canonicalName: 'DVTK Jegesmedvék', franchise: fr };
+    }
+    const fr = SPORT_FRANCHISES_DIRECTORY['dvtk'];
+    return { canonicalName: 'DVTK Diósgyőr', franchise: fr };
+  }
+
+  // 2. Győri Audi ETO KC (Handball), ETO FC Győr, UNI Győr & ETO University Handball Team
   if (low.includes('győr') || low.includes('gyor') || low.includes('eto')) {
+    if (low.includes('eto university')) {
+      return { canonicalName: 'ETO University Handball Team' };
+    }
     if (low.includes('fc') || low.includes('labdarúg') || low.includes('foci')) {
       const fr = SPORT_FRANCHISES_DIRECTORY['győri eto'];
       return { canonicalName: 'ETO FC Győr', franchise: fr };
     }
-    if (low.includes('uni') || low.includes('kosár')) {
+    if (/\buni\b/.test(low) || low.includes('kosár')) {
       return { canonicalName: 'UNI Győr' };
     }
     const fr = SPORT_FRANCHISES_DIRECTORY['győri audi eto kc'];
@@ -759,8 +778,11 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: 'One Veszprém HC', franchise: fr };
   }
 
-  // 5. OTP Bank - PICK Szeged (Handball) variations
+  // 5. Szeged-Csanád Grosics Akadémia (Football) vs OTP Bank - PICK Szeged (Handball)
   if (low.includes('szeged') || low.includes('pick')) {
+    if (low.includes('csanád') || low.includes('csanad') || low.includes('grosics')) {
+      return { canonicalName: 'Szeged-Csanád Grosics Akadémia' };
+    }
     const fr = SPORT_FRANCHISES_DIRECTORY['otp bank - pick szeged'];
     return { canonicalName: 'OTP Bank - PICK Szeged', franchise: fr };
   }
@@ -823,27 +845,27 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: 'Újpest FC', franchise: fr };
   }
 
-  // 11. Debreceni VSC (Loki)
-  if (low.includes('debrecen') || low.includes('dvsc') || low.includes('loki')) {
+  // 11. Debreceni VSC (Loki) vs DVSC Schaffler (Handball) vs DEAC
+  if (low.includes('debrecen') || low.includes('dvsc') || low.includes('loki') || low.includes('dusv')) {
     if (low.includes('deac')) {
       const fr = SPORT_FRANCHISES_DIRECTORY['deac'];
       return { canonicalName: 'DEAC', franchise: fr };
+    }
+    if (
+      low.includes('schaffler') ||
+      low.includes('schaeffler') ||
+      low.includes('handball') ||
+      low.includes('handbal') ||
+      low.includes('kézi') ||
+      low.includes('kezi')
+    ) {
+      return { canonicalName: 'DVSC Schaffler' };
     }
     const fr = SPORT_FRANCHISES_DIRECTORY['debreceni vsc'];
     return { canonicalName: 'Debreceni VSC', franchise: fr };
   }
 
-  // 12. DVTK Diósgyőr
-  if (low.includes('diósgyőr') || low.includes('diosgyor') || low.includes('dvtk') || low === 'vtk') {
-    if (low.includes('jeges') || low.includes('hoki') || low.includes('hockey')) {
-      const fr = SPORT_FRANCHISES_DIRECTORY['dvtk jegesmedvék'];
-      return { canonicalName: 'DVTK Jegesmedvék', franchise: fr };
-    }
-    const fr = SPORT_FRANCHISES_DIRECTORY['dvtk'];
-    return { canonicalName: 'DVTK Diósgyőr', franchise: fr };
-  }
-
-  // 13. Szombathelyi Haladás
+  // 13. Szombathelyi Haladás / Falco KC Szombathely
   if (low.includes('haladás') || low.includes('haladas') || low.includes('szombathely')) {
     if (low.includes('falco')) {
       const fr = SPORT_FRANCHISES_DIRECTORY['falco'];
@@ -853,11 +875,11 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: 'Szombathelyi Haladás', franchise: fr };
   }
 
-  // 14. Paksi FC / Atomerőmű
+  // 14. Atomerőmű SE (Basketball) vs Paksi FC (Football)
   if (low.includes('paks') || low.includes('atomerőmű') || low.includes('atomeromu')) {
-    if (low.includes('kosár') || low.includes('ase')) {
+    if (low.includes('atomerőmű') || low.includes('atomeromu') || low.includes('kosár') || low.includes('ase')) {
       const fr = SPORT_FRANCHISES_DIRECTORY['atomerőmű'];
-      return { canonicalName: 'Atomerőmű SE Paks', franchise: fr };
+      return { canonicalName: 'Atomerőmű SE', franchise: fr };
     }
     const fr = SPORT_FRANCHISES_DIRECTORY['paksi fc'];
     return { canonicalName: 'Paksi FC', franchise: fr };
@@ -869,7 +891,12 @@ export function canonicalizeClub(rawName: string): { canonicalName: string; fran
     return { canonicalName: 'Nyíregyháza FC', franchise: fr };
   }
 
-  // 8. Supporter group parent club mapping
+  // 16. Barça (Handball)
+  if (low === 'barça' || low === 'barca') {
+    return { canonicalName: 'Barça' };
+  }
+
+  // 17. Supporter group parent club mapping
   const group = SUPPORTER_GROUPS_DIRECTORY[low];
   if (group) {
     const parentDirect = SPORT_FRANCHISES_DIRECTORY[group.parentClub.toLowerCase()];

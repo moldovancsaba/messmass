@@ -25,7 +25,7 @@ export async function GET() {
     const client = await clientPromise;
     const db = client.db(config.dbName);
 
-    const [partners, mappings, reclassified, visionDoc] = await Promise.all([
+    const [partners, mappings, reclassified, visionDoc, clubAssets] = await Promise.all([
       db
         .collection('partners')
         .find({}, { projection: { _id: 1, name: 1, emoji: 1, viewSlug: 1, organizationId: 1, 'sportsDb.strSport': 1 } })
@@ -34,12 +34,24 @@ export async function GET() {
       db.collection('club_canonical_mappings').find({}).sort({ targetClub: 1, alias: 1 }).toArray(),
       db.collection('reclassified_clubs').find({}).toArray(),
       db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any }),
+      db
+        .collection('club_assets')
+        .find({ isActive: { $ne: false } }, { projection: { name: 1 } })
+        .toArray(),
     ]);
 
     const aliasMap: Record<string, string> = {};
     for (const m of mappings) {
       if (m.alias && m.targetClub) {
         aliasMap[String(m.alias).toLowerCase().trim()] = String(m.targetClub).trim();
+      }
+    }
+
+    const knownCanonicalMap: Record<string, string> = {};
+    for (const asset of clubAssets) {
+      const cname = String(asset.name || '').trim();
+      if (cname) {
+        knownCanonicalMap[cname.toLowerCase()] = cname;
       }
     }
 
@@ -61,14 +73,18 @@ export async function GET() {
     }
 
     const rawClubs = [...clubCountMap.entries()]
-      .map(([name, count]) => ({
-        name,
-        count,
-        canonicalSuggestion: aliasMap[name.toLowerCase()] || canonicalizeClub(name)?.canonicalName || null,
-      }))
+      .map(([name, count]) => {
+        const low = name.toLowerCase();
+        return {
+          name,
+          count,
+          canonicalSuggestion:
+            aliasMap[low] || knownCanonicalMap[low] || canonicalizeClub(name)?.canonicalName || null,
+        };
+      })
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
-    const suggestions = suggestClubClusters(rawClubs, aliasMap);
+    const suggestions = suggestClubClusters(rawClubs, aliasMap, knownCanonicalMap);
     const mergedClubs = mergeClubVariants(rawClubs, aliasMap);
 
     return NextResponse.json({
@@ -103,10 +119,12 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const sourceClubs: string[] = Array.isArray(body?.sourceClubs)
+    const rawSourceClubs: string[] = Array.isArray(body?.sourceClubs)
       ? body.sourceClubs.map((s: unknown) => String(s || '').trim()).filter(Boolean)
       : [];
     const targetClub = String(body?.targetClub || '').trim();
+    const nonSelfSources = rawSourceClubs.filter((s) => s !== targetClub);
+    const sourceClubs = nonSelfSources.length > 0 ? nonSelfSources : rawSourceClubs;
     const partnerId = body?.partnerId && ObjectId.isValid(String(body.partnerId)) ? new ObjectId(String(body.partnerId)) : null;
 
     if (!targetClub || sourceClubs.length === 0) {
@@ -137,6 +155,12 @@ export async function POST(request: NextRequest) {
       },
     }));
     await db.collection('club_canonical_mappings').bulkWrite(ops, { ordered: false });
+
+    // Update reclassified_clubs clubName non-destructively for merged variants
+    await db.collection('reclassified_clubs').updateMany(
+      { name: { $in: sourceClubs } },
+      { $set: { clubName: targetClub, updatedAt: now } },
+    );
 
     // Fold any matching entries inside szrt_vision_progress.aggregates.topClubs
     const visionDoc = await db.collection('szrt_vision_progress').findOne({ _id: 'szrt_progress' as any });

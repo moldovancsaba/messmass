@@ -1153,13 +1153,14 @@ export default function VisualizationPage() {
     }
   }, [chartConfigs]);
 
-  // Auto-calculate previews when both chart configurations and blocks are available
-  // Why: The admin needs to see an immediate WYSIWYG preview without any interactions
+  // Auto-calculate previews once when chart configurations arrive (baselineStats are static across blocks;
+  // running forEach(block) + onMouseEnter recreated every ChartResult/elements array and retriggered ResizeObservers)
   useEffect(() => {
     if (chartConfigs.length > 0 && dataBlocks.length > 0) {
-      dataBlocks.forEach(b => calculatePreviewForBlock(b));
+      calculatePreviewForBlock(dataBlocks[0]);
     }
-  }, [chartConfigs, dataBlocks, calculatePreviewForBlock]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartConfigs, dataBlocks.length, calculatePreviewForBlock]);
 
   const addChartToBlock = (block: DataVisualizationBlock, chartId: string) => {
     const chart = availableCharts.find(c => c.chartId === chartId);
@@ -2193,7 +2194,6 @@ export default function VisualizationPage() {
                     await handleUpdateBlock(b);
                   }
                 }}
-                onMouseEnter={() => calculatePreviewForBlock(block)}
               >
                 {/* Block Header */}
                 <div className="block-header">

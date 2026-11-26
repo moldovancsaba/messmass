@@ -83,17 +83,20 @@ export default function ClubClustersAdminPage() {
   }, [rawClubs, searchQuery]);
 
   const handleMerge = async (sources: string[], target: string, partnerId?: string) => {
-    if (!target.trim() || sources.length === 0) return;
+    const cleanTarget = target.trim();
+    const nonSelfSources = sources.map((s) => s.trim()).filter((s) => Boolean(s) && s !== cleanTarget);
+    const effectiveSources = nonSelfSources.length > 0 ? nonSelfSources : sources.map((s) => s.trim()).filter(Boolean);
+    if (!cleanTarget || effectiveSources.length === 0) return;
     setMerging(true);
     setFeedback(null);
     try {
       const res = await apiPost('/api/club-clusters', {
-        sourceClubs: sources,
-        targetClub: target.trim(),
+        sourceClubs: effectiveSources,
+        targetClub: cleanTarget,
         ...(partnerId ? { partnerId } : {}),
       });
       if (res.success) {
-        setFeedback({ type: 'success', text: `Merged ${sources.length} variant(s) into "${target.trim()}".` });
+        setFeedback({ type: 'success', text: `Merged ${effectiveSources.length} variant(s) into "${cleanTarget}".` });
         setSelectedClubs(new Set());
         setTargetClub('');
         setSelectedPartnerId('');
