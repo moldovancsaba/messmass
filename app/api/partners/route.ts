@@ -50,8 +50,9 @@ export async function GET(request: NextRequest) {
     const client = await clientPromise;
 const db = client.db(config.dbName);
 
-    // Build query
-    const query: any = {};
+    // Build query (exclude non-destructively merged/archived duplicate records unless requested)
+    const includeMerged = searchParams.get('includeMerged') === 'true';
+    const query: any = includeMerged ? {} : { status: { $nin: ['merged', 'archived'] } };
     if (search) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },

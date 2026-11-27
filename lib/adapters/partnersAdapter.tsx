@@ -5,6 +5,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { PartnerResponse } from '../partner.types';
 import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
@@ -47,6 +48,20 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
       execution: {
         kind: 'route',
         getHref: (partner) => `/admin/partners/${partner._id}`,
+      },
+    },
+    {
+      id: 'partner-full-edit',
+      label: 'Full Setup',
+      mobileLabel: 'Setup',
+      icon: 'settings',
+      variant: 'secondary',
+      priority: 'overflow',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/admin/partners/${partner._id}/edit`,
       },
     },
     /* The 'partner-open-editor' action was removed here (messmass#244 Phase E,
@@ -197,7 +212,9 @@ export const partnersAdapter: AdminPageAdapter<PartnerResponse> = {
         minWidth: '200px',
         mobile: { behavior: 'primary' },
         render: (partner) => (
-          <span className="adapter-primary-field">{partner.name}</span>
+          <Link href={`/admin/partners/${partner._id}`} className="adapter-primary-field">
+            {partner.name}
+          </Link>
         ),
       },
       {

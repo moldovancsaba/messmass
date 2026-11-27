@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ActionIcon, NavLink as MantineNavLink, ScrollArea, Text } from '@mantine/core';
+import { ActionIcon, Menu, NavLink as MantineNavLink, ScrollArea, Text } from '@mantine/core';
 import { IconMenu2, IconX } from '@tabler/icons-react';
 import styles from './Sidebar.module.css';
 import packageJson from '../package.json';
@@ -19,11 +19,12 @@ const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), [tabindex]:not([tab
 export default function Sidebar() {
   const pathname = usePathname();
   const { isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen } = useSidebar();
-  
+
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [loadingRole, setLoadingRole] = useState(true);
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({});
   const currentYear = new Date().getFullYear();
-  
+
   useEffect(() => {
     const fetchUserRole = async () => {
       try {
@@ -40,10 +41,10 @@ export default function Sidebar() {
         setLoadingRole(false);
       }
     };
-    
-    fetchUserRole();
+
+    void fetchUserRole();
   }, []);
-  
+
   const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
 
   const isActive = (path: string) => {
@@ -61,11 +62,18 @@ export default function Sidebar() {
   const isGroupActive = (path: string, childrenPaths: string[]) => {
     return isActive(path) || childrenPaths.some((childPath) => isActive(childPath));
   };
-  
+
+  const toggleGroupOpen = (parentPath: string, defaultOpen: boolean) => {
+    setOpenGroups((prev) => ({
+      ...prev,
+      [parentPath]: prev[parentPath] === undefined ? !defaultOpen : !prev[parentPath],
+    }));
+  };
+
   useEffect(() => {
     setIsMobileOpen(false);
   }, [pathname, setIsMobileOpen]);
-  
+
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isMobileOpen) {
@@ -76,18 +84,20 @@ export default function Sidebar() {
         });
       }
     };
-    
+
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isMobileOpen, setIsMobileOpen]);
-  
+
   useEffect(() => {
     if (isMobileOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isMobileOpen]);
 
   /* OPS-ADMIN-01: Focus trap when mobile drawer is open – keep focus inside sidebar */
@@ -109,11 +119,9 @@ export default function Sidebar() {
           e.preventDefault();
           last?.focus();
         }
-      } else {
-        if (target === last) {
-          e.preventDefault();
-          first?.focus();
-        }
+      } else if (target === last) {
+        e.preventDefault();
+        first?.focus();
       }
     };
     document.addEventListener('keydown', handleKeyDown);
@@ -136,15 +144,15 @@ export default function Sidebar() {
       >
         {isMobileOpen ? <IconX size={20} stroke={1.8} /> : <IconMenu2 size={20} stroke={1.8} />}
       </ActionIcon>
-      
+
       {isMobileOpen && (
-        <div 
+        <div
           className={styles.mobileScrim}
           onClick={() => setIsMobileOpen(false)}
           aria-hidden="true"
         />
       )}
-      
+
       <div
         className={`${styles.collapseToggle} ${isCollapsed ? styles.collapseToggleCollapsed : ''}`}
       >
@@ -161,7 +169,7 @@ export default function Sidebar() {
           <span aria-hidden="true">{isCollapsed ? '»' : '«'}</span>
         </ActionIcon>
       </div>
-      
+
       <aside
         id="sidebar"
         className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isMobileOpen ? styles.mobileOpen : ''}`}
@@ -169,126 +177,247 @@ export default function Sidebar() {
       >
         <div className={styles.sidebarHeader}>
           <Link href="/admin" className={styles.logo}>
-            <Image src="/messmass-logo.png" alt="{messmass}" className={styles.logoImage} width={32} height={32} priority />
-            
-            {!isCollapsed && (
-              <span className={styles.logoText}>messmass</span>
-            )}
+            <Image
+              src="/messmass-logo.png"
+              alt="{messmass}"
+              className={styles.logoImage}
+              width={32}
+              height={32}
+              priority
+            />
+
+            {!isCollapsed && <span className={styles.logoText}>messmass</span>}
           </Link>
         </div>
-        
+
         <ScrollArea className={styles.sidebarNav}>
-        <nav aria-label="Main navigation">
-          {!loadingRole && userRole && (
-            <div className={styles.navSection}>
-              <ul className={styles.navList}>
-                <li className={styles.navItem} data-tour-id="nav-/admin">
-                  <MantineNavLink
-                    component={Link}
-                    href="/admin"
-                    className={`${styles.navLink} ${pathname === '/admin' ? styles.active : ''}`}
-                    label={!isCollapsed ? 'Overview' : undefined}
-                    leftSection={
-                      <span className={styles.navIcon}>
-                        <MaterialIcon name="home" variant="outlined" className={styles.materialIcon} />
-                      </span>
-                    }
-                    rightSection={pathname === '/admin' && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
-                    active={pathname === '/admin'}
-                    title={isCollapsed ? 'Overview' : undefined}
-                    aria-label={isCollapsed ? 'Overview' : undefined}
-                    aria-current={pathname === '/admin' ? 'page' : undefined}
-                  />
-                </li>
-              </ul>
-            </div>
-          )}
-          {adminNavSections.map((section) => {
-            const visibleItems = section.items.filter(item => 
-              !loadingRole && canAccessMenuItem(userRole, item.label)
-            );
-            
-            if (visibleItems.length === 0) {
-              return null;
-            }
-            
-            const visibleSection = {
-              ...section,
-              items: visibleItems,
-            };
-            const navGroups = getSidebarNavGroups(visibleSection);
-
-            return (
-              <div key={section.title} className={styles.navSection} data-tour-id={`nav-section-${visibleSection.key}`}>
-                {!isCollapsed && (
-                  <div className={styles.sectionTitle}>{section.title}</div>
-                )}
-
+          <nav aria-label="Main navigation">
+            {!loadingRole && userRole && (
+              <div className={styles.navSection}>
                 <ul className={styles.navList}>
-                  {navGroups.map((group) => {
-                    const groupActive = isGroupActive(group.parent.path, group.children.map((child) => child.path));
-                    return (
-                    <li key={group.parent.path} className={styles.navItem} data-tour-id={`nav-${group.parent.path}`}>
-                      <MantineNavLink
-                        component={Link}
-                        href={group.parent.path}
-                        className={`${styles.navLink} ${groupActive ? styles.active : ''}`}
-                        label={!isCollapsed ? group.parent.label : undefined}
-                        leftSection={
-                          <span className={styles.navIcon}>
-                            <MaterialIcon
-                              name={group.parent.icon}
-                              variant={group.parent.iconVariant || 'outlined'}
-                              className={styles.materialIcon}
-                            />
-                          </span>
-                        }
-                        rightSection={groupActive && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
-                        active={groupActive}
-                        title={isCollapsed ? group.parent.label : undefined}
-                        aria-label={isCollapsed ? group.parent.label : undefined}
-                        aria-current={isActive(group.parent.path) ? 'page' : undefined}
-                      />
-                      {group.children.length > 0 && (
-                        <ul className={`${styles.childList} ${isCollapsed ? styles.childListCollapsed : ''}`} aria-label={`${group.parent.label} submenu`}>
-                          {group.children.map((child) => (
-                            <li key={child.path} data-tour-id={`nav-${child.path}`}>
-                              <MantineNavLink
-                                component={Link}
-                                href={child.path}
-                                className={`${styles.childLink} ${isActive(child.path) ? styles.childLinkActive : ''}`}
-                                label={!isCollapsed ? child.label : undefined}
-                                leftSection={
-                                  <>
-                                    {!isCollapsed && <span className={styles.childLinkLine} aria-hidden="true" />}
+                  <li className={styles.navItem} data-tour-id="nav-/admin">
+                    <MantineNavLink
+                      component={Link}
+                      href="/admin"
+                      className={`${styles.navLink} ${pathname === '/admin' ? styles.active : ''}`}
+                      label={!isCollapsed ? 'Overview' : undefined}
+                      leftSection={
+                        <span className={styles.navIcon}>
+                          <MaterialIcon name="home" variant="outlined" className={styles.materialIcon} />
+                        </span>
+                      }
+                      rightSection={
+                        pathname === '/admin' && !isCollapsed ? (
+                          <span className={styles.activeIndicator} aria-hidden="true" />
+                        ) : undefined
+                      }
+                      active={pathname === '/admin'}
+                      title={isCollapsed ? 'Overview' : undefined}
+                      aria-label={isCollapsed ? 'Overview' : undefined}
+                      aria-current={pathname === '/admin' ? 'page' : undefined}
+                    />
+                  </li>
+                </ul>
+              </div>
+            )}
+
+            {adminNavSections.map((section) => {
+              const visibleItems = section.items.filter(
+                (item) => !loadingRole && canAccessMenuItem(userRole, item.label)
+              );
+
+              if (visibleItems.length === 0) {
+                return null;
+              }
+
+              const visibleSection = {
+                ...section,
+                items: visibleItems,
+              };
+              const navGroups = getSidebarNavGroups(visibleSection);
+
+              return (
+                <div
+                  key={section.key}
+                  className={styles.navSection}
+                  data-tour-id={`nav-section-${visibleSection.key}`}
+                >
+                  {!isCollapsed && <div className={styles.sectionTitle}>{section.title}</div>}
+
+                  <ul className={styles.navList}>
+                    {navGroups.map((group) => {
+                      const childPaths = group.children.map((child) => child.path);
+                      const groupActive = isGroupActive(group.parent.path, childPaths);
+                      const hasChildren = group.children.length > 0;
+                      const isExpandedGroup =
+                        openGroups[group.parent.path] !== undefined
+                          ? openGroups[group.parent.path]
+                          : groupActive;
+
+                      if (isCollapsed && hasChildren) {
+                        return (
+                          <li
+                            key={group.parent.path}
+                            className={styles.navItem}
+                            data-tour-id={`nav-${group.parent.path}`}
+                          >
+                            <Menu
+                              trigger="hover"
+                              openDelay={60}
+                              closeDelay={120}
+                              position="right-start"
+                              offset={8}
+                              withinPortal
+                            >
+                              <Menu.Target>
+                                <MantineNavLink
+                                  component={Link}
+                                  href={group.parent.path}
+                                  className={`${styles.navLink} ${groupActive ? styles.active : ''}`}
+                                  leftSection={
                                     <span className={styles.navIcon}>
                                       <MaterialIcon
-                                        name={child.icon}
-                                        variant={child.iconVariant || 'outlined'}
+                                        name={group.parent.icon}
+                                        variant={group.parent.iconVariant || 'outlined'}
                                         className={styles.materialIcon}
                                       />
                                     </span>
-                                  </>
-                                }
-                                rightSection={isActive(child.path) && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
-                                active={isActive(child.path)}
-                                title={isCollapsed ? child.label : undefined}
-                                aria-label={isCollapsed ? child.label : undefined}
-                                aria-current={isActive(child.path) ? 'page' : undefined}
-                              />
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  )})}
-                </ul>
-              </div>
-            );
-          })}
-        </nav>
+                                  }
+                                  active={groupActive}
+                                  title={group.parent.label}
+                                  aria-label={group.parent.label}
+                                  aria-current={isActive(group.parent.path) ? 'page' : undefined}
+                                />
+                              </Menu.Target>
+                              <Menu.Dropdown>
+                                <Menu.Label>{group.parent.label}</Menu.Label>
+                                <Menu.Item
+                                  component={Link}
+                                  href={group.parent.path}
+                                  leftSection={
+                                    <MaterialIcon
+                                      name={group.parent.icon}
+                                      variant={group.parent.iconVariant || 'outlined'}
+                                    />
+                                  }
+                                >
+                                  {group.parent.label}
+                                </Menu.Item>
+                                {group.children.map((child) => (
+                                  <Menu.Item
+                                    key={child.path}
+                                    component={Link}
+                                    href={child.path}
+                                    leftSection={
+                                      <MaterialIcon
+                                        name={child.icon}
+                                        variant={child.iconVariant || 'outlined'}
+                                      />
+                                    }
+                                  >
+                                    {child.label}
+                                  </Menu.Item>
+                                ))}
+                              </Menu.Dropdown>
+                            </Menu>
+                          </li>
+                        );
+                      }
+
+                      return (
+                        <li
+                          key={group.parent.path}
+                          className={styles.navItem}
+                          data-tour-id={`nav-${group.parent.path}`}
+                        >
+                          <div className={styles.parentRow}>
+                            <MantineNavLink
+                              component={Link}
+                              href={group.parent.path}
+                              className={`${styles.navLink} ${groupActive ? styles.active : ''}`}
+                              label={!isCollapsed ? group.parent.label : undefined}
+                              leftSection={
+                                <span className={styles.navIcon}>
+                                  <MaterialIcon
+                                    name={group.parent.icon}
+                                    variant={group.parent.iconVariant || 'outlined'}
+                                    className={styles.materialIcon}
+                                  />
+                                </span>
+                              }
+                              rightSection={
+                                groupActive && !isCollapsed && !hasChildren ? (
+                                  <span className={styles.activeIndicator} aria-hidden="true" />
+                                ) : undefined
+                              }
+                              active={groupActive}
+                              title={isCollapsed ? group.parent.label : undefined}
+                              aria-label={isCollapsed ? group.parent.label : undefined}
+                              aria-current={isActive(group.parent.path) ? 'page' : undefined}
+                            />
+
+                            {!isCollapsed && hasChildren && (
+                              <button
+                                type="button"
+                                className={styles.expandChevron}
+                                onClick={() => toggleGroupOpen(group.parent.path, groupActive)}
+                                aria-label={`${isExpandedGroup ? 'Collapse' : 'Expand'} ${group.parent.label} submenu`}
+                                aria-expanded={isExpandedGroup}
+                              >
+                                <MaterialIcon
+                                  name={isExpandedGroup ? 'expand_less' : 'expand_more'}
+                                  variant="outlined"
+                                />
+                              </button>
+                            )}
+                          </div>
+
+                          {hasChildren && !isCollapsed && isExpandedGroup && (
+                            <ul
+                              className={styles.childList}
+                              aria-label={`${group.parent.label} submenu`}
+                            >
+                              {group.children.map((child) => (
+                                <li key={child.path} data-tour-id={`nav-${child.path}`}>
+                                  <MantineNavLink
+                                    component={Link}
+                                    href={child.path}
+                                    className={`${styles.childLink} ${isActive(child.path) ? styles.childLinkActive : ''}`}
+                                    label={child.label}
+                                    leftSection={
+                                      <>
+                                        <span className={styles.childLinkLine} aria-hidden="true" />
+                                        <span className={styles.navIcon}>
+                                          <MaterialIcon
+                                            name={child.icon}
+                                            variant={child.iconVariant || 'outlined'}
+                                            className={styles.materialIcon}
+                                          />
+                                        </span>
+                                      </>
+                                    }
+                                    rightSection={
+                                      isActive(child.path) ? (
+                                        <span className={styles.activeIndicator} aria-hidden="true" />
+                                      ) : undefined
+                                    }
+                                    active={isActive(child.path)}
+                                    aria-current={isActive(child.path) ? 'page' : undefined}
+                                  />
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              );
+            })}
+          </nav>
         </ScrollArea>
-        
+
         <div className={styles.sidebarFooter}>
           {!isCollapsed && (
             <>

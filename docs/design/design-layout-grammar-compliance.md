@@ -5,7 +5,7 @@ Canonical: No
 Owner: Architecture
 
 **Date:** 2026-01-02
-**Version:** 12.5.0
+**Version:** 12.6.0
 **Status:** ✅ COMPLIANT
 
 ---

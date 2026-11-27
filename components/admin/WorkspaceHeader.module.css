@@ -1,0 +1,120 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--mm-space-4);
+  padding: var(--mm-space-5) var(--mm-space-6);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-border-color-default);
+  border-radius: var(--mm-radius-lg);
+}
+
+.identityGroup {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mm-space-4);
+  min-width: 0;
+  flex: 1 1 300px;
+}
+
+.mediaSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--mm-radius-md);
+  background: var(--mm-gray-50);
+  border: 1px solid var(--mm-border-color-default);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.logoImg {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.emojiGlyph {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.titleStack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+  min-width: 0;
+}
+
+.eyebrowRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+}
+
+.eyebrow {
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--mm-letter-spacing-wide);
+  color: var(--mm-gray-600);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--mm-space-2);
+  border-radius: var(--mm-radius-full);
+  font-size: var(--mm-font-size-xs);
+  font-weight: var(--mm-font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.statusActive {
+  background: var(--mm-color-secondary-50, var(--mm-gray-100));
+  color: var(--mm-success-dark, var(--mm-gray-800));
+  border: 1px solid var(--mm-border-color-default);
+}
+
+.statusInactive {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  border: 1px solid var(--mm-border-color-default);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--mm-font-size-2xl);
+  font-weight: var(--mm-font-weight-bold);
+  color: var(--mm-gray-900);
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: var(--mm-font-size-sm);
+  color: var(--mm-gray-600);
+  line-height: 1.45;
+}
+
+.actionsGroup {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--mm-space-2);
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: var(--mm-space-4);
+  }
+
+  .actionsGroup {
+    width: 100%;
+  }
+}

@@ -209,7 +209,8 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
           backHref="/admin/partners"
           backLabel="Partners"
           tabs={[
-            { label: 'Overview & Sheets', href: `/admin/partners/${id}`, icon: 'handshake' },
+            { label: 'Overview', href: `/admin/partners/${id}`, icon: 'handshake' },
+            { label: 'Setup & Edit', href: `/admin/partners/${id}/edit`, icon: 'settings' },
             { label: 'Reports & Variants', href: `/admin/partners/${id}/reports`, icon: 'view_list' },
             { label: 'Analytics', href: `/admin/partners/${id}/analytics`, icon: 'insert_chart' },
             { label: 'Metrics Table', href: `/admin/partners/${id}/kyc-data`, icon: 'table_chart' },
@@ -223,6 +224,8 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
           backHref="/admin/organizations"
           backLabel="Organizations"
           tabs={[
+            { label: 'Overview', href: `/admin/organizations/${id}`, icon: 'business' },
+            { label: 'Setup & Members', href: `/admin/organizations/${id}/edit`, icon: 'settings' },
             { label: 'Reports & Variants', href: `/admin/organizations/${id}/reports`, icon: 'view_list' },
             { label: 'Classic Report', href: config.reportHref(publicSlug), icon: 'bar_chart', external: true },
             ...(config.interactiveReportHref

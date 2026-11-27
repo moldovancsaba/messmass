@@ -21,7 +21,7 @@ export async function GET() {
   try {
     const db = await getDb();
     const [partners, clubRegistry] = await Promise.all([
-      db.collection('partners').find({}).sort({ name: 1 }).toArray(),
+      db.collection('partners').find({ status: { $nin: ['merged', 'archived'] } }).sort({ name: 1 }).toArray(),
       loadCentralizedClubRegistry(db),
     ]);
 

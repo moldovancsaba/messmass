@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture / Calculations
-Version: 12.5.0
+Version: 12.6.0
 
 ## 1. Ground Truth & Invariants
 

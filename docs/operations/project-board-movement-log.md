@@ -3,7 +3,7 @@ Status: Reference
 Last Updated: 2026-11-20T16:02:00.000Z
 Canonical: Yes
 Owner: Product
-Version: 12.5.0
+Version: 12.6.0
 
 Reviewed: 2026-11-20 UTC. Repository: moldovancsaba/messmass.
 

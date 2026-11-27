@@ -4,7 +4,7 @@ Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-Version: 12.5.0
+Version: 12.6.0
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -140,13 +140,13 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 140 | `components/` |
+| **UI Components** | 144 | `components/` |
 | **Utility Modules** | 266 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 422 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 89 | `app/**/page.tsx` |
-| **API routes** | 255 | `app/api/**/route.ts` |
+| **App routes (pages)** | 93 | `app/**/page.tsx` |
+| **API routes** | 257 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
 largest, and the ones to read first:
@@ -157,17 +157,17 @@ largest, and the ones to read first:
 | `lib/mongodb.ts` | 120 | 112 |
 | `lib/auth.ts` | 98 | 118 |
 | `lib/logger.ts` | 96 | 392 |
-| `lib/apiGuards.ts` | 93 | 390 |
+| `lib/apiGuards.ts` | 95 | 390 |
+| `lib/apiClient.ts` | 46 | 258 |
 | `lib/fanmassIntegration.ts` | 46 | 331 |
-| `lib/apiClient.ts` | 43 | 258 |
-| `lib/db.ts` | 43 | 17 |
+| `lib/db.ts` | 45 | 17 |
 | `components/ColoredCard.tsx` | 39 | 52 |
-| `components/MaterialIcon.tsx` | 36 | 119 |
+| `components/MaterialIcon.tsx` | 39 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 202 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
+| `hooks/useAdminAuth.ts` | 22 | 65 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 151 |
-| `hooks/useAdminAuth.ts` | 18 | 65 |
+| `lib/permissions.ts` | 19 | 152 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -1025,7 +1025,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (89)
+### Pages (93)
 
 | Route | File |
 |-------|------|
@@ -1057,6 +1057,7 @@ shows up here on the next regeneration, which is the point.
 | `/admin/design` | `app/admin/design/page.tsx` |
 | `/admin/events` | `app/admin/events/page.tsx` |
 | `/admin/events/[id]` | `app/admin/events/[id]/page.tsx` |
+| `/admin/events/[id]/edit` | `app/admin/events/[id]/edit/page.tsx` |
 | `/admin/events/[id]/kyc-data` | `app/admin/events/[id]/kyc-data/page.tsx` |
 | `/admin/fanmass` | `app/admin/fanmass/page.tsx` |
 | `/admin/fanmass-evidence` | `app/admin/fanmass-evidence/page.tsx` |
@@ -1074,10 +1075,13 @@ shows up here on the next regeneration, which is the point.
 | `/admin/mainpage` | `app/admin/mainpage/page.tsx` |
 | `/admin/messages` | `app/admin/messages/page.tsx` |
 | `/admin/organizations` | `app/admin/organizations/page.tsx` |
+| `/admin/organizations/[id]` | `app/admin/organizations/[id]/page.tsx` |
+| `/admin/organizations/[id]/edit` | `app/admin/organizations/[id]/edit/page.tsx` |
 | `/admin/organizations/[id]/reports` | `app/admin/organizations/[id]/reports/page.tsx` |
 | `/admin/partners` | `app/admin/partners/page.tsx` |
 | `/admin/partners/[id]` | `app/admin/partners/[id]/page.tsx` |
 | `/admin/partners/[id]/analytics` | `app/admin/partners/[id]/analytics/page.tsx` |
+| `/admin/partners/[id]/edit` | `app/admin/partners/[id]/edit/page.tsx` |
 | `/admin/partners/[id]/kyc-data` | `app/admin/partners/[id]/kyc-data/page.tsx` |
 | `/admin/partners/[id]/lifecycle` | `app/admin/partners/[id]/lifecycle/page.tsx` |
 | `/admin/partners/[id]/reports` | `app/admin/partners/[id]/reports/page.tsx` |
@@ -1119,7 +1123,7 @@ shows up here on the next regeneration, which is the point.
 | `/terms` | `app/terms/page.tsx` |
 | `/whats-new` | `app/whats-new/page.tsx` |
 
-### API routes (255)
+### API routes (257)
 
 `auth` is the guard symbol the route actually calls. A blank cell
 means the route calls none — public by construction, or a gap.
@@ -1538,6 +1542,7 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/organizations` | GET | `requireSession` |
+| `/api/organizations/[id]` | GET, PUT | `requireAdmin, requireSession` |
 | `/api/organizations/edit/[id]` | GET, PUT | `getAdminUser` |
 | `/api/organizations/report/[id]` | GET | — |
 | `/api/organizations/report/[id]/activities` | GET | — |
@@ -1561,6 +1566,7 @@ means the route calls none — public by construction, or a gap.
 | Route | Methods | Auth |
 |-------|---------|------|
 | `/api/partners` | GET, POST, PUT, DELETE | `requireAdmin, requirePartnerWrite` |
+| `/api/partners/[id]` | GET, PUT | `requireAdmin, requireSession` |
 | `/api/partners/[id]/bitly-kyc` | GET | `getAdminUser` |
 | `/api/partners/[id]/events` | GET | `requireSession` |
 | `/api/partners/[id]/google-sheet/connect` | POST | `requireSession` |
@@ -4123,5 +4129,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.5.0*
+*Version: 12.6.0*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

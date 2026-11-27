@@ -5,6 +5,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { AdminPageAdapter } from '../adminDataAdapters';
 import { ProjectDTO } from '../types/api';
 import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
@@ -51,6 +52,21 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
       execution: {
         kind: 'route',
         getHref: (project) => `/admin/events/${project._id}`,
+      },
+    },
+    {
+      id: 'project-full-edit',
+      label: 'Full Setup',
+      mobileLabel: 'Setup',
+      title: 'Open Full-Page Event Setup & Hierarchy Editor',
+      icon: 'settings',
+      variant: 'secondary',
+      priority: 'overflow',
+      requiredCapabilities: ['edit'],
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (project) => `/admin/events/${project._id}/edit`,
       },
     },
     {
@@ -234,7 +250,9 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                   />
                 ) : null}
                 
-                <span className="adapter-primary-field">{project.eventName}</span>
+                <Link href={`/admin/events/${project._id}`} className="adapter-primary-field">
+                  {project.eventName}
+                </Link>
                 
                 {project.partner2?.logoUrl ? (
                   <Image

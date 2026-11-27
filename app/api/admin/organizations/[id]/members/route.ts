@@ -57,7 +57,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
       const partners = await db
         .collection<PartnerRecord>('partners')
-        .find({}, { projection: { name: 1, organizationId: 1 } })
+        .find({ status: { $nin: ['merged', 'archived'] } as any }, { projection: { name: 1, organizationId: 1 } })
         .sort({ name: 1 })
         .toArray();
 

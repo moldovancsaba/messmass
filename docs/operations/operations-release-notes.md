@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-27T23:03:00.000Z
+Last Updated: 2026-11-27T23:32:00.000Z
 Canonical: Yes
 Owner: Operations
+
+## [v12.6.0] — 2026-11-27 — Milestone 16 Dedicated Entity Hubs & Full-Page Setup Editors, 15-Item Sidebar Consolidation & Partner Directory Deduplication
+
+- **Added (Milestone 16 dedicated Event, Partner & Organization hubs and full-page `/edit` routes, `#565`–`#574`, `components/admin/{WorkspaceHeader,StatsStrip,FormSection,AdminEditorScaffold}.tsx`):** built shared GDS#81 workspace primitives and single-entity REST endpoints (`/api/partners/[id]`, `/api/organizations/[id]`), upgraded `/admin/events/[id]` with KPI strips and `Open in Camera` vetting deep-links, transformed `/admin/partners/[id]` into a full club hub with an Associated Events table and Governing Federation card, created `/admin/organizations/[id]` with Member Clubs and Sanctioned Matches tables (resolving the prior 404), and launched unconstrained full-page setup editors at `/admin/events/[id]/edit`, `/admin/partners/[id]/edit`, and `/admin/organizations/[id]/edit`.
+- **Changed (15-item sidebar consolidation, collapsed flyout menus & Matchup Assignments upgrade, `lib/adminNavigation.ts`, `components/Sidebar.tsx`, `app/admin/project-partners/page.tsx`):** consolidated the 35-link sidebar into 15 scannable top-level items with expandable submenus in expanded mode and portal hover/focus flyout menus in collapsed mode so child routes are never stranded; added `navKey` metadata; and modernized `/admin/project-partners` (**Matchup & Team Assignments**) with instant search, direct Event/Partner workspace links, ARIA status banners, and `BaseModal` confirmation.
+- **Fixed (non-destructive Partner directory deduplication & federation membership alignment):** merged all 37 duplicate Partner groups non-destructively (`status: 'merged'`) with zero deleted records or stat regressions, excluded merged/archived records from partner directory and dropdown APIs, re-pointed 109 clubs from migrated league records to their active governing federations (`MLSZ`, `MKOSZ`, `MKSZ`, `MJSZ`, `UEFA`), and completed 100% canonical `competition` metadata across all 467 events.
 
 ## [v12.5.0] — 2026-11-27 — Dedicated Entity Workspaces, Partner Activation Sponsor Sharing, Modal Accessibility & TopHeader Help Hub
 

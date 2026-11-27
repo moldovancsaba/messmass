@@ -62,8 +62,8 @@ export async function GET(request: NextRequest) {
     const sortField = searchParams.get('sortField') || 'name';
     const sortOrder = searchParams.get('sortOrder') || 'asc';
     
-    // WHAT: Build MongoDB query filter
-    const filter: any = {};
+    // WHAT: Build MongoDB query filter (exclude merged/archived duplicate records)
+    const filter: any = { status: { $nin: ['merged', 'archived'] } };
     
     if (searchQuery && searchQuery.trim()) {
       const searchRegex = { $regex: searchQuery.trim(), $options: 'i' };

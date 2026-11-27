@@ -1,4 +1,5 @@
 export interface AdminNavItem {
+  navKey?: string;
   label: string;
   path: string;
   icon: string;
@@ -46,6 +47,7 @@ export const adminNavSections: AdminNavSection[] = [
     description: 'Run live delivery work and sponsor activation workflows.',
     items: [
       {
+        navKey: 'events',
         label: 'Events',
         path: '/admin/events',
         icon: 'event',
@@ -54,6 +56,15 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.success,
       },
       {
+        navKey: 'quick-add',
+        label: 'Quick Add',
+        path: '/admin/quick-add',
+        icon: 'bolt',
+        description: 'Create operational records faster when full setup is unnecessary.',
+        accentColor: navAccent.warning,
+      },
+      {
+        navKey: 'partner-activation',
         label: 'Partner Activation',
         path: '/admin/analytics/sponsorship/activation',
         icon: 'task_alt',
@@ -62,13 +73,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.warning,
       },
       {
-        label: 'Quick Add',
-        path: '/admin/quick-add',
-        icon: 'bolt',
-        description: 'Create operational records faster when full setup is unnecessary.',
-        accentColor: navAccent.warning,
-      },
-      {
+        navKey: 'messages',
         label: 'Messages',
         path: '/admin/messages',
         icon: 'mail',
@@ -79,10 +84,11 @@ export const adminNavSections: AdminNavSection[] = [
   },
   {
     key: 'entities',
-    title: 'Entities',
-    description: 'Manage the teams, partners, and organizational relationships behind the work.',
+    title: 'Directory & Assets',
+    description: 'Manage clubs, governing federations, matchup assignments, and official vector crests.',
     items: [
       {
+        navKey: 'partners',
         label: 'Partners',
         path: '/admin/partners',
         icon: 'handshake',
@@ -90,20 +96,31 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.secondary,
       },
       {
-        label: 'Organizations',
-        path: '/admin/organizations',
-        icon: 'business',
-        description: 'Create organizations and manage partner membership assignments.',
-        accentColor: navAccent.primary,
-      },
-      {
-        label: 'Project Partners',
+        navKey: 'matchup-assignments',
+        label: 'Matchup Assignments',
         path: '/admin/project-partners',
         icon: 'group_work',
-        description: 'Review and manage partner-to-project associations across the portfolio.',
+        description: 'Assign Home and Away partner clubs to events for template and logo inheritance.',
         accentColor: navAccent.primaryStrong,
       },
       {
+        navKey: 'club-clusters',
+        label: 'Club Clusters',
+        path: '/admin/club-clusters',
+        icon: 'groups',
+        description: 'Consolidate duplicate club and team detections into canonical partner records.',
+        accentColor: navAccent.secondary,
+      },
+      {
+        navKey: 'organizations',
+        label: 'Organizations',
+        path: '/admin/organizations',
+        icon: 'business',
+        description: 'Manage governing federations, commercial sponsors, and member club assignments.',
+        accentColor: navAccent.primary,
+      },
+      {
+        navKey: 'club-logos',
         label: 'Club Logos',
         path: '/admin/club-logos',
         icon: 'shield',
@@ -111,27 +128,22 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
+        navKey: 'brand-logos',
         label: 'Brand Logos',
         path: '/admin/brand-assets',
         icon: 'verified',
         description: 'Upload and maintain unified official brand logos and sponsor visual assets.',
         accentColor: navAccent.success,
       },
-      {
-        label: 'Club Clusters',
-        path: '/admin/club-clusters',
-        icon: 'groups',
-        description: 'Consolidate duplicate club and team detections into canonical partner records.',
-        accentColor: navAccent.secondary,
-      },
     ],
   },
   {
     key: 'reports',
-    title: 'Reports',
-    description: 'Configure templates, blocks, themes, and reusable report content.',
+    title: 'Reporting',
+    description: 'Configure templates, blocks, themes, formulas, and global explorer reports.',
     items: [
       {
+        navKey: 'reporting-workspace',
         label: 'Reporting Workspace',
         path: '/admin/reports',
         icon: 'dashboard_customize',
@@ -140,6 +152,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
+        navKey: 'report-builder',
         label: 'Report Builder',
         path: '/admin/visualization',
         icon: 'view_quilt',
@@ -149,6 +162,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'report-themes',
         label: 'Report Themes',
         path: '/admin/styles',
         icon: 'palette',
@@ -157,6 +171,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'content-library',
         label: 'Content Library',
         path: '/admin/content-library',
         icon: 'folder',
@@ -165,6 +180,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'charts-kpi-formulas',
         label: 'Charts & KPI Formulas',
         path: '/admin/charts',
         icon: 'trending_up',
@@ -173,6 +189,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'global-report',
         label: 'Global Report',
         path: '/admin/global/reports',
         icon: 'public',
@@ -183,10 +200,11 @@ export const adminNavSections: AdminNavSection[] = [
   },
   {
     key: 'data',
-    title: 'Data',
-    description: 'Control tracked metrics, live counter layouts, links, and supporting data plumbing.',
+    title: 'Data & Tagging',
+    description: 'Control tracked metrics, live counter layouts, tags, and short links.',
     items: [
       {
+        navKey: 'metrics-fields',
         label: 'Metrics & Fields',
         path: '/admin/kyc',
         icon: 'tune',
@@ -195,6 +213,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
+        navKey: 'live-counter-layouts',
         label: 'Live Counter Layouts',
         path: '/admin/clicker-manager',
         icon: 'swap_horiz',
@@ -203,13 +222,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.secondary,
       },
       {
-        label: 'Bitly Links',
-        path: '/admin/bitly',
-        icon: 'link',
-        description: 'Manage Bitly links, associations, and performance evidence.',
-        accentColor: navAccent.info,
-      },
-      {
+        navKey: 'filters',
         label: 'Filters',
         path: '/admin/filter',
         icon: 'search',
@@ -217,6 +230,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primaryStrong,
       },
       {
+        navKey: 'hashtags',
         label: 'Hashtags',
         path: '/admin/hashtags',
         icon: 'label',
@@ -224,20 +238,30 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primaryStrong,
       },
       {
+        navKey: 'categories',
         label: 'Categories',
         path: '/admin/categories',
         icon: 'public',
         description: 'Organize hashtag categories and their reusable structure.',
         accentColor: navAccent.warning,
       },
+      {
+        navKey: 'bitly-links',
+        label: 'Bitly Links',
+        path: '/admin/bitly',
+        icon: 'link',
+        description: 'Manage Bitly links, associations, and performance evidence.',
+        accentColor: navAccent.info,
+      },
     ],
   },
   {
     key: 'analytics',
-    title: 'Analytics',
-    description: 'Review sponsorship performance, operational insights, and analytics surfaces.',
+    title: 'Intelligence',
+    description: 'Review sponsorship performance, Fanmass AI vision proof, and executive insights.',
     items: [
       {
+        navKey: 'analytics-home',
         label: 'Analytics Home',
         path: '/admin/analytics',
         icon: 'dashboard',
@@ -246,14 +270,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
-        label: 'AI Analytics',
-        path: '/admin/analytics/ai',
-        icon: 'smart_toy',
-        description: 'Review completed Fanmass photo results, detections, saved boxes, and content flags by event.',
-        tourDescription: 'Shows only photo results Messmass has received. Counts describe those photos and do not imply that every event photo has been analyzed.',
-        accentColor: navAccent.info,
-      },
-      {
+        navKey: 'sponsorship-hub',
         label: 'Sponsorship Hub',
         path: '/admin/analytics/sponsorship',
         icon: 'analytics',
@@ -262,6 +279,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'executive-dashboard',
         label: 'Executive Dashboard',
         path: '/admin/analytics/executive',
         icon: 'monitoring',
@@ -270,6 +288,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'marketing-dashboard',
         label: 'Marketing Dashboard',
         path: '/admin/analytics/marketing',
         icon: 'campaign',
@@ -278,6 +297,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
+        navKey: 'operations-dashboard',
         label: 'Operations Dashboard',
         path: '/admin/analytics/operations',
         icon: 'manufacturing',
@@ -286,13 +306,7 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
-        label: 'Fanmass Proof Review',
-        path: '/admin/fanmass-evidence',
-        icon: 'fact_check',
-        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
-        accentColor: navAccent.primary,
-      },
-      {
+        navKey: 'automated-insights',
         label: 'Automated Insights',
         path: '/admin/analytics/combined-insights',
         icon: 'merge',
@@ -300,14 +314,32 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.warning,
         showInAdminWorkspace: false,
       },
+      {
+        navKey: 'ai-analytics',
+        label: 'AI Analytics',
+        path: '/admin/analytics/ai',
+        icon: 'smart_toy',
+        description: 'Review completed Fanmass photo results, detections, saved boxes, and content flags by event.',
+        tourDescription: 'Shows only photo results Messmass has received. Counts describe those photos and do not imply that every event photo has been analyzed.',
+        accentColor: navAccent.info,
+      },
+      {
+        navKey: 'fanmass-proof-review',
+        label: 'Fanmass Proof Review',
+        path: '/admin/fanmass-evidence',
+        icon: 'fact_check',
+        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
+        accentColor: navAccent.primary,
+      },
     ],
   },
   {
     key: 'system',
     title: 'System',
-    description: 'Manage access, system behavior, publishing, and guidance.',
+    description: 'Manage access, public front-door publishing, and runtime cache.',
     items: [
       {
+        navKey: 'users',
         label: 'Users',
         path: '/admin/users',
         icon: 'group',
@@ -315,6 +347,7 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primaryStrong,
       },
       {
+        navKey: 'main-page',
         label: 'Main Page',
         path: '/admin/mainpage',
         icon: 'home',
@@ -322,25 +355,12 @@ export const adminNavSections: AdminNavSection[] = [
         accentColor: navAccent.primary,
       },
       {
+        navKey: 'cache',
         label: 'Cache',
         path: '/admin/cache',
         icon: 'delete',
         description: 'Clear caches when operators need fresh runtime or content state.',
         accentColor: navAccent.error,
-      },
-      {
-        label: 'Help',
-        path: '/admin/help',
-        icon: 'menu_book',
-        description: 'Read in-product guidance for operators, guests, and admins.',
-        accentColor: navAccent.neutral,
-      },
-      {
-        label: "What's New",
-        path: '/whats-new',
-        icon: 'new_releases',
-        description: 'Browse chronological release notes, newly shipped capabilities, and platform fixes.',
-        accentColor: navAccent.primary,
       },
     ],
   },
@@ -395,18 +415,94 @@ export function getAnalyticsWorkspaceItems(): AdminNavItem[] {
   ];
 }
 
-export function getSidebarNavGroups(section: AdminNavSection): SidebarNavGroup[] {
-  if (section.key === 'analytics' || section.key === 'reports') {
-    const [parent, ...children] = section.items;
-    if (!parent) {
-      return [];
-    }
+function buildGroupedItems(
+  items: AdminNavItem[],
+  groupSpec: Array<{ parentPath: string; childPaths: string[] }>
+): SidebarNavGroup[] {
+  const byPath = new Map(items.map((item) => [item.path, item]));
+  const consumed = new Set<string>();
+  const groups: SidebarNavGroup[] = [];
 
-    return [{ parent, children }];
+  for (const spec of groupSpec) {
+    const parent = byPath.get(spec.parentPath);
+    const availableChildren = spec.childPaths
+      .map((cp) => byPath.get(cp))
+      .filter((c): c is AdminNavItem => Boolean(c));
+
+    if (parent) {
+      consumed.add(parent.path);
+      availableChildren.forEach((c) => consumed.add(c.path));
+      groups.push({ parent, children: availableChildren });
+    } else if (availableChildren.length > 0) {
+      const [promoted, ...rest] = availableChildren;
+      consumed.add(promoted.path);
+      rest.forEach((c) => consumed.add(c.path));
+      groups.push({ parent: promoted, children: rest });
+    }
   }
 
-  return section.items.map((item) => ({
-    parent: item,
-    children: [],
-  }));
+  for (const item of items) {
+    if (!consumed.has(item.path)) {
+      groups.push({ parent: item, children: [] });
+    }
+  }
+
+  return groups;
+}
+
+/**
+ * Consolidates the 33 underlying admin routes into 15 scannable top-level
+ * sidebar items (Overview + 14 section groups), keeping secondary surfaces
+ * accessible via expandable submenus (expanded mode) or hover/focus flyout
+ * menus (collapsed mode).
+ */
+export function getSidebarNavGroups(section: AdminNavSection): SidebarNavGroup[] {
+  switch (section.key) {
+    case 'operations':
+      return buildGroupedItems(section.items, [
+        { parentPath: '/admin/events', childPaths: ['/admin/quick-add'] },
+        { parentPath: '/admin/analytics/sponsorship/activation', childPaths: [] },
+        { parentPath: '/admin/messages', childPaths: [] },
+      ]);
+    case 'entities':
+      return buildGroupedItems(section.items, [
+        { parentPath: '/admin/partners', childPaths: ['/admin/project-partners', '/admin/club-clusters'] },
+        { parentPath: '/admin/organizations', childPaths: [] },
+        { parentPath: '/admin/club-logos', childPaths: ['/admin/brand-assets'] },
+      ]);
+    case 'reports':
+      return buildGroupedItems(section.items, [
+        {
+          parentPath: '/admin/reports',
+          childPaths: ['/admin/visualization', '/admin/styles', '/admin/charts', '/admin/content-library'],
+        },
+        { parentPath: '/admin/global/reports', childPaths: [] },
+      ]);
+    case 'data':
+      return buildGroupedItems(section.items, [
+        { parentPath: '/admin/kyc', childPaths: ['/admin/clicker-manager'] },
+        { parentPath: '/admin/filter', childPaths: ['/admin/hashtags', '/admin/categories', '/admin/bitly'] },
+      ]);
+    case 'analytics':
+      return buildGroupedItems(section.items, [
+        {
+          parentPath: '/admin/analytics',
+          childPaths: [
+            '/admin/analytics/sponsorship',
+            '/admin/analytics/executive',
+            '/admin/analytics/marketing',
+            '/admin/analytics/operations',
+            '/admin/analytics/combined-insights',
+          ],
+        },
+        { parentPath: '/admin/analytics/ai', childPaths: ['/admin/fanmass-evidence'] },
+      ]);
+    case 'system':
+      return buildGroupedItems(section.items, [
+        { parentPath: '/admin/users', childPaths: [] },
+        { parentPath: '/admin/mainpage', childPaths: ['/admin/cache'] },
+      ]);
+    default:
+      return section.items.map((item) => ({ parent: item, children: [] }));
+  }
 }

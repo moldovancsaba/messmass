@@ -345,6 +345,42 @@
   flex-shrink: 0;
 }
 
+.parentRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.parentRow > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.expandChevron {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin-right: var(--mm-space-2);
+  border: none;
+  border-radius: var(--mm-radius-sm);
+  background: transparent;
+  color: var(--mm-gray-500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.expandChevron:hover {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-900);
+}
+
+.expandChevron:focus-visible {
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 1px;
+}
+
 /* ===== Sidebar Footer ===== */
 .sidebarFooter {
   border-top: 1px solid var(--mm-border-color-default);

@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import type { AdminPageAdapter } from '../adminDataAdapters';
 import type { AdminEntityConfig } from '@/lib/adminEntitySystem';
 
@@ -183,7 +184,9 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
               ) : (
                 <span>{org.metadata?.emoji || '🏢'}</span>
               )}
-              <span className="adapter-primary-field">{org.name}</span>
+              <Link href={`/admin/organizations/${org._id}`} className="adapter-primary-field">
+                {org.name}
+              </Link>
             </div>
           );
         },
@@ -224,7 +227,9 @@ export const organizationsAdapter: AdminPageAdapter<OrganizationDTO> = {
           ) : (
             <span>{org.metadata?.emoji || '🏢'}</span>
           )}
-          <span>{org.name}</span>
+          <Link href={`/admin/organizations/${org._id}`} className="adapter-primary-field">
+            {org.name}
+          </Link>
         </div>
       );
     },

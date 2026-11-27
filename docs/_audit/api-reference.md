@@ -1,8 +1,8 @@
 # messmass API Reference
 
-Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (255 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, centralized club logos, brand assets management, public downloadable resources, club clusters, evidence candidates, release notes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
+Generated for the fleet audit (messmass#350); measured against `docs/_audit/endpoints.json` (257 endpoints, including the Fanmass drive photos placed in events or in the library, the unified hashtag report, centralized club logos, brand assets management, public downloadable resources, club clusters, evidence candidates, release notes, single-entity partner/organization workspace routes, and interactive report routes). Existing Auth adjudication was re-verified against the handlers @ dd34e229 (2026-09-28); the new Camera style-context read uses `assertCameraSecret`.
 
-Coverage: 255 of 255 routes documented, enforced by
+Coverage: 257 of 257 routes documented, enforced by
 `tests/api-reference-covers-every-route.test.ts` — five routes were missing when
 that claim was last made by hand.
 
@@ -233,10 +233,11 @@ All routes use `requireFanmassIntegrationAuth` (Bearer/`x-api-key` shared token)
 | /api/hashtags | GET, POST, DELETE | GET none (read-only counts, editor autocomplete); POST requireEditorAccess; DELETE requireAdmin (cascade-capable) (7d3ef3bb) | GET `?search&limit&offset`; POST `{hashtag}`; DELETE `?hashtag&mode=cascade` | `{success,hashtags[]}`; POST `{success,hashtag}`, 401 `EDIT_ACCESS_REQUIRED` without a session or edit grant | DELETE cascade: updateMany `projects`/`partners`, deletes `hashtag_colors`, `hashtags`, `hashtag_slugs` |
 | /api/hashtags/slugs | GET | requireSession (lazily inserts missing slugs) | — | hashtag→slug map | reads `projects`; inserts missing `hashtag_slugs` |
 
-## /api/partners (16 routes)
+## /api/partners (17 routes)
 
 | Path | Methods | Auth | Request | Response | Side effects |
 |---|---|---|---|---|---|
+| /api/partners/[id] | GET, PUT | GET requireSession; PUT requireAdmin | path id; PUT partner setup fields | `{success,partner,events[],stats}` | reads `partners`, `projects`, `organizations`; PUT field-scoped `$set` on `partners` + `club_assets` sync |
 | /api/partners/[id]/bitly-kyc | GET | getAdminUser | path id | KYC metrics | reads `projects` |
 | /api/partners/[id]/events | GET | requireSession | path id | partner's events | reads `partners`, `projects` |
 | /api/partners/[id]/google-sheet/connect | POST | requireSession | `ConnectRequest` | `{success}` | outbound Google Sheets; updates `partners` |
@@ -373,6 +374,7 @@ All wrapped in `withOrgContext` (getAdminUser + `x-v3-org-id` injection) except 
 | /api/loyalty-missions/[id]/completions | GET, POST | requireAdmin | POST `{fanIdentityId,occurredAt?}` | `{success,completion\|completions}` | writes `loyalty_completions` + a `fan_identity_link` (messmass#227) |
 | /api/notifications/mark-read | PUT | getAdminUser | `{ids?\|all}` | `{success,modified}` | updateMany `notifications` |
 | /api/notifications | GET | getAdminUser | `?limit&offset&unreadOnly&archivedOnly&excludeArchived` | notifications | reads `notifications` |
+| /api/organizations/[id] | GET, PUT | GET requireSession; PUT requireAdmin | path id; PUT `{name,slug,orgType,status,logoUrl,memberPartnerIds[]}` | `{success,organization,memberClubs[],sanctionedMatches[],stats}` | reads `organizations`, `partners`, `projects`; PUT field-scoped `$set` on `organizations`, `partners.organizationId`, and `club_assets` |
 | /api/organizations/edit/[id] | GET, PUT | requireOrgEditPageAccess (route-local: when protected, admin session or an 'organization-edit' grant for the base or variant key; messmass#386) | `?variant`; PUT `{name,metadata,…}` | org edit payload | PUT updates `organizations` |
 | /api/organizations/report/[id]/activities | GET | none (public-by-design: shareable org report) | `?variant` | org activities | reads `organizations`, `partners`, `projects` |
 | /api/organizations/report/[id] | GET | none (public-by-design: shareable org report) | `?variant` | org report | reads `organizations`, `partners`, `projects` |
@@ -396,10 +398,10 @@ CSRF is never counted as a guard: any anonymous caller can fetch the token from
 
 | | routes |
 |---|---:|
-| Fully guarded (every method) | **219** |
+| Fully guarded (every method) | **221** |
 | Open write method, public by design | **5** |
 | Open GET only, writes guarded or absent | **31** |
-| **Total** | **255** |
+| **Total** | **257** |
 
 The previous run of this section (2026-08) listed 40 GAP routes, 21 of them
 unauthenticated writes. Those are closed: messmass#347 and #386 took the first

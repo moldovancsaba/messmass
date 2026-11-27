@@ -1,20 +1,18 @@
-// WHAT: Admin UI for managing project-partner relationships
-// WHY: Allow manual assignment of partner1/partner2 for template inheritance
-// HOW: List projects with partner selection dropdowns + auto-suggest button
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './page.module.css';
 import { apiGet, apiPost, apiPut } from '@/lib/apiClient';
 import PartnerSelector from '@/components/PartnerSelector';
+import BaseModal from '@/components/modals/BaseModal';
 
 interface Partner {
   _id: string;
   name: string;
   emoji?: string;
+  showEmoji?: boolean;
   logoUrl?: string | null;
   reportTemplateId?: string;
 }
@@ -29,99 +27,127 @@ interface Project {
 }
 
 export default function ProjectPartnersPage() {
+  const searchId = useId();
   const [projects, setProjects] = useState<Project[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [autoSuggesting, setAutoSuggesting] = useState(false);
+  const [confirmAutoSuggestOpen, setConfirmAutoSuggestOpen] = useState(false);
   const [filter, setFilter] = useState<'all' | 'missing' | 'assigned'>('missing');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    loadData();
+    void loadData();
   }, []);
 
   async function loadData() {
     setLoading(true);
+    setErrorMessage(null);
     try {
-      // Load projects
-      const projectsData = await apiGet('/api/admin/project-partners');
-      
-      // Load partners
-      const partnersData = await apiGet('/api/admin/partners');
+      const [projectsData, partnersData] = await Promise.all([
+        apiGet('/api/admin/project-partners'),
+        apiGet('/api/admin/partners'),
+      ]);
 
       if (projectsData.success) {
-        setProjects(projectsData.projects);
+        setProjects(projectsData.projects || []);
       }
       if (partnersData.success) {
-        setPartners(partnersData.partners);
+        setPartners(partnersData.partners || []);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
+      setErrorMessage('Failed to load events and partner directory.');
     } finally {
       setLoading(false);
     }
   }
 
-  async function updateProjectPartners(projectId: string, partner1Id: string | null, partner2Id: string | null) {
+  async function updateProjectPartners(
+    projectId: string,
+    partner1Id: string | null,
+    partner2Id: string | null
+  ) {
     setSaving(projectId);
+    setErrorMessage(null);
+    setStatusMessage(null);
     try {
       const data = await apiPut('/api/admin/project-partners', { projectId, partner1Id, partner2Id });
       if (data.success) {
-        // Update local state
-        setProjects(prev => prev.map(p => 
-          p._id === projectId 
-            ? { ...p, partner1: partner1Id || undefined, partner2: partner2Id || undefined }
-            : p
-        ));
+        setProjects((prev) =>
+          prev.map((p) =>
+            p._id === projectId
+              ? { ...p, partner1: partner1Id || undefined, partner2: partner2Id || undefined }
+              : p
+          )
+        );
+        setStatusMessage('Matchup club assignment saved.');
       } else {
-        alert('Failed to update partners: ' + data.error);
+        setErrorMessage('Failed to update matchup clubs: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Failed to update partners:', error);
-      alert('Failed to update partners');
+      setErrorMessage('Failed to update matchup clubs.');
     } finally {
       setSaving(null);
     }
   }
 
-  async function autoSuggestAll() {
-    if (!confirm('Auto-suggest partners for all projects without partner1?\n\nThis will analyze event names and suggest matches based on partner database.')) {
-      return;
-    }
-
+  async function runAutoSuggestAll() {
+    setConfirmAutoSuggestOpen(false);
     setAutoSuggesting(true);
+    setErrorMessage(null);
+    setStatusMessage(null);
     try {
       const data = await apiPost('/api/admin/project-partners/auto-suggest', {});
       if (data.success) {
-        alert(`Auto-suggested partners for ${data.updated} projects`);
+        setStatusMessage(`Auto-suggested partner clubs for ${data.updated} event(s).`);
         await loadData();
       } else {
-        alert('Failed to auto-suggest: ' + data.error);
+        setErrorMessage('Failed to auto-suggest: ' + (data.error || 'Unknown error'));
       }
     } catch (error) {
       console.error('Failed to auto-suggest:', error);
-      alert('Failed to auto-suggest');
+      setErrorMessage('Failed to run auto-suggest.');
     } finally {
       setAutoSuggesting(false);
     }
   }
 
-  const getPartnerId = (partner: any): string | null => {
+  const getPartnerId = (partner: Project['partner1']): string | null => {
     if (!partner) return null;
     if (typeof partner === 'string') return partner;
     return partner._id || null;
   };
 
-  const filteredProjects = projects.filter(p => {
-    if (filter === 'missing') return !p.partner1;
-    if (filter === 'assigned') return !!p.partner1;
-    return true;
-  });
+  const partnerMap = useMemo(() => new Map(partners.map((p) => [p._id, p])), [partners]);
+
+  const filteredProjects = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return projects.filter((p) => {
+      if (filter === 'missing' && p.partner1) return false;
+      if (filter === 'assigned' && !p.partner1) return false;
+      if (!q) return true;
+      const p1Id = getPartnerId(p.partner1);
+      const p2Id = getPartnerId(p.partner2);
+      const p1Name = (p1Id && partnerMap.get(p1Id)?.name) || '';
+      const p2Name = (p2Id && partnerMap.get(p2Id)?.name) || '';
+      return (
+        p.eventName.toLowerCase().includes(q) ||
+        (p.editSlug || '').toLowerCase().includes(q) ||
+        p1Name.toLowerCase().includes(q) ||
+        p2Name.toLowerCase().includes(q)
+      );
+    });
+  }, [filter, partnerMap, projects, searchQuery]);
 
   if (loading) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading...</div>
+        <div className={styles.loading}>Loading matchup assignments…</div>
       </div>
     );
   }
@@ -130,143 +156,213 @@ export default function ProjectPartnersPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Project-Partner Relationships</h1>
+          <h1 className={styles.title}>Matchup &amp; Team Assignments</h1>
           <p className={styles.subtitle}>
-            Manage partner connections and centralized club logos for template inheritance hierarchy
+            Link Home and Away partner clubs to events for automatic crest, theme, and report template inheritance.
           </p>
         </div>
         <div className={styles.headerActions}>
+          <Link href="/admin/events" className={styles.backButton}>
+            Events
+          </Link>
+          <Link href="/admin/partners" className={styles.backButton}>
+            Partners
+          </Link>
           <Link href="/admin/club-logos" className={styles.backButton}>
             🛡️ Club Logos
-          </Link>
-          <Link href="/admin" className={styles.backButton}>
-            ← Back to Admin
           </Link>
         </div>
       </div>
 
+      {statusMessage && (
+        <div role="status" className={styles.bannerStatus}>
+          {statusMessage}
+        </div>
+      )}
+
+      {errorMessage && (
+        <div role="alert" className={styles.bannerError}>
+          {errorMessage}
+        </div>
+      )}
+
       <div className={styles.toolbar}>
-        <div className={styles.filters}>
+        <div className={styles.filters} role="group" aria-label="Filter events by assignment status">
           <button
+            type="button"
             className={filter === 'all' ? styles.filterActive : styles.filterButton}
             onClick={() => setFilter('all')}
           >
             All ({projects.length})
           </button>
           <button
+            type="button"
             className={filter === 'missing' ? styles.filterActive : styles.filterButton}
             onClick={() => setFilter('missing')}
           >
-            Missing Partner ({projects.filter(p => !p.partner1).length})
+            Missing Home Club ({projects.filter((p) => !p.partner1).length})
           </button>
           <button
+            type="button"
             className={filter === 'assigned' ? styles.filterActive : styles.filterButton}
             onClick={() => setFilter('assigned')}
           >
-            Assigned ({projects.filter(p => p.partner1).length})
+            Assigned ({projects.filter((p) => !!p.partner1).length})
           </button>
         </div>
 
+        <input
+          id={searchId}
+          type="search"
+          aria-label="Search events or clubs"
+          placeholder="Search event, slug, or club…"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className={styles.searchInput}
+        />
+
         <button
+          type="button"
           className={styles.autoSuggestButton}
-          onClick={autoSuggestAll}
+          onClick={() => setConfirmAutoSuggestOpen(true)}
           disabled={autoSuggesting}
         >
-          {autoSuggesting ? '🔄 Auto-Suggesting...' : '🤖 Auto-Suggest All'}
+          {autoSuggesting ? 'Auto-Suggesting…' : '🤖 Auto-Suggest Missing'}
         </button>
-      </div>
-
-      <div className={styles.infoBox}>
-        <strong>Template Resolution Hierarchy:</strong>
-        <ol>
-          <li>Project-specific template (if assigned)</li>
-          <li>Partner template (from partner1, if assigned)</li>
-          <li>Default template (system-wide)</li>
-          <li>Hardcoded fallback</li>
-        </ol>
       </div>
 
       <div className={styles.projectsList}>
         {filteredProjects.length === 0 ? (
-          <div className={styles.empty}>
-            No projects found with current filter
-          </div>
+          <div className={styles.empty}>No events match the current filter and search query.</div>
         ) : (
-          filteredProjects.map(project => {
+          filteredProjects.map((project) => {
             const partner1Id = getPartnerId(project.partner1);
             const partner2Id = getPartnerId(project.partner2);
-            const partner1Obj = partner1Id ? partners.find((p) => p._id === partner1Id) : null;
-            const partner2Obj = partner2Id ? partners.find((p) => p._id === partner2Id) : null;
+            const partner1Obj = partner1Id ? partnerMap.get(partner1Id) || null : null;
+            const partner2Obj = partner2Id ? partnerMap.get(partner2Id) || null : null;
             const isSaving = saving === project._id;
 
             return (
               <div key={project._id} className={styles.projectCard}>
                 <div className={styles.projectHeader}>
-                  <div className={styles.projectTitleRow}>
-                    {partner1Obj?.logoUrl && (
-                      <Image
-                        src={partner1Obj.logoUrl}
-                        alt={partner1Obj.name}
-                        width={28}
-                        height={28}
-                        className={styles.matchupLogo}
-                        unoptimized
-                      />
-                    )}
-                    <h3 className={styles.projectName}>{project.eventName}</h3>
-                    {partner2Obj?.logoUrl && (
-                      <Image
-                        src={partner2Obj.logoUrl}
-                        alt={partner2Obj.name}
-                        width={28}
-                        height={28}
-                        className={styles.matchupLogo}
-                        unoptimized
-                      />
-                    )}
+                  <div className={styles.projectHeaderRow}>
+                    <div className={styles.projectTitleRow}>
+                      {partner1Obj?.logoUrl && (
+                        <Image
+                          src={partner1Obj.logoUrl}
+                          alt={partner1Obj.name}
+                          width={28}
+                          height={28}
+                          className={styles.matchupLogo}
+                          unoptimized
+                        />
+                      )}
+                      <h3 className={styles.projectName}>
+                        <Link href={`/admin/events/${project._id}`} className={styles.cardLink}>
+                          {project.eventName}
+                        </Link>
+                      </h3>
+                      {partner2Obj?.logoUrl && (
+                        <Image
+                          src={partner2Obj.logoUrl}
+                          alt={partner2Obj.name}
+                          width={28}
+                          height={28}
+                          className={styles.matchupLogo}
+                          unoptimized
+                        />
+                      )}
+                    </div>
+
+                    <div className={styles.cardLinks}>
+                      <Link href={`/admin/events/${project._id}`} className={styles.cardLink}>
+                        Event Hub
+                      </Link>
+                      <Link href={`/admin/events/${project._id}/edit`} className={styles.cardLink}>
+                        Full Setup
+                      </Link>
+                      {partner1Id && (
+                        <Link href={`/admin/partners/${partner1Id}`} className={styles.cardLink}>
+                          Home Club
+                        </Link>
+                      )}
+                      {partner2Id && (
+                        <Link href={`/admin/partners/${partner2Id}`} className={styles.cardLink}>
+                          Away Club
+                        </Link>
+                      )}
+                    </div>
                   </div>
                   <span className={styles.editSlug}>{project.editSlug}</span>
                 </div>
 
                 <div className={styles.partnerSelectors}>
                   <div className={styles.selectorGroup}>
-                    <label className={styles.label}>
-                      Partner 1 (Home Team)
-                      {partner1Id && (
-                        <span className={styles.badge}>
-                          {partners.find(p => p._id === partner1Id)?.reportTemplateId ? '📋 Has Template' : ''}
-                        </span>
+                    <span className={styles.label}>
+                      Home Club (Partner 1)
+                      {partner1Obj?.reportTemplateId && (
+                        <span className={styles.badge}>📋 Has Template</span>
                       )}
-                    </label>
+                    </span>
                     <PartnerSelector
                       selectedPartnerId={partner1Id}
-                      partners={partners as any}
-                      onChange={(newId) => updateProjectPartners(project._id, newId, partner2Id)}
-                      placeholder="Search Home Team (e.g. Beretta, MTK, Újpest)..."
+                      partners={partners}
+                      onChange={(newId) => void updateProjectPartners(project._id, newId, partner2Id)}
+                      placeholder="Search Home Club (e.g. Ferencvárosi TC, Beretta)..."
                       disabled={isSaving}
                     />
                   </div>
 
                   <div className={styles.selectorGroup}>
-                    <label className={styles.label}>Partner 2 (Away Team)</label>
+                    <span className={styles.label}>Away Club (Partner 2)</span>
                     <PartnerSelector
                       selectedPartnerId={partner2Id}
-                      partners={partners as any}
-                      onChange={(newId) => updateProjectPartners(project._id, partner1Id, newId)}
-                      placeholder="Search Away Team (e.g. Galatasaray, Paksi FC)..."
+                      partners={partners}
+                      onChange={(newId) => void updateProjectPartners(project._id, partner1Id, newId)}
+                      placeholder="Search Away Club (e.g. Galatasaray, Paksi FC)..."
                       disabled={isSaving}
                     />
                   </div>
                 </div>
 
                 {isSaving && (
-                  <div className={styles.savingIndicator}>Saving...</div>
+                  <div role="status" className={styles.savingIndicator}>
+                    Saving…
+                  </div>
                 )}
               </div>
             );
           })
         )}
       </div>
+
+      <BaseModal
+        isOpen={confirmAutoSuggestOpen}
+        onClose={() => setConfirmAutoSuggestOpen(false)}
+        ariaLabel="Auto-Suggest Missing Home Clubs"
+        size="sm"
+      >
+        <h2 className={styles.projectName}>Auto-Suggest Missing Home Clubs</h2>
+        <p>
+          Analyze event titles for all events currently missing a Home Club (Partner 1) and automatically assign exact matches from the Partner directory?
+        </p>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={() => setConfirmAutoSuggestOpen(false)}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            className={styles.autoSuggestButton}
+            onClick={() => void runAutoSuggestAll()}
+          >
+            Run Auto-Suggest
+          </button>
+        </div>
+      </BaseModal>
     </div>
   );
 }
