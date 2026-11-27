@@ -55,7 +55,16 @@ describe('the classes and their numbers', () => {
 
 describe('which class a request takes', () => {
   test('the public report pages take the public class', () => {
-    for (const path of ['/report/0b1f9c1e-0000-4000-8000-000000000001', '/partner-report/fc-example', '/filter/some-filter', '/hashtag/derby']) {
+    for (const path of [
+      '/report/0b1f9c1e-0000-4000-8000-000000000001',
+      '/partner-report/fc-example',
+      '/organization-report/mlsz',
+      '/interactive-report/partner/fc-example',
+      '/resources',
+      '/resources/brands',
+      '/filter/some-filter',
+      '/hashtag/derby',
+    ]) {
       expect({ path, config: getRateLimitConfig(req(path)) }).toEqual({ path, config: RATE_LIMITS.PUBLIC });
     }
     expect(getRateLimitConfig(req('/report/abc', 'HEAD'))).toBe(RATE_LIMITS.PUBLIC);

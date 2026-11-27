@@ -288,9 +288,17 @@ function isEditorSavePath(pathname: string): boolean {
 //     so event reports fell through to the read budget. /filter/ is where the old /hashtag/ pages live now:
 //     next.config.js redirects /hashtag/* to /filter/* before middleware runs, so the /hashtag/ entry is
 //     inert today and stays only so the old name is not left unguarded if that redirect goes.
-const PUBLIC_PAGE_PREFIXES = ['/report/', '/partner-report/', '/filter/', '/hashtag/'] as const;
+const PUBLIC_PAGE_PREFIXES = [
+  '/report/',
+  '/partner-report/',
+  '/organization-report/',
+  '/interactive-report/',
+  '/resources/',
+  '/filter/',
+  '/hashtag/',
+] as const;
 export function isPublicPagePath(pathname: string): boolean {
-  return PUBLIC_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  return pathname === '/resources' || PUBLIC_PAGE_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 }
 
 // WHAT: Helper to determine rate limit config based on request

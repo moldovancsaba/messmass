@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture / Layout
-Version: 12.6.0
+Version: 12.7.0
 
 ## 1. 6-Unit Proportional Grid Grammar
 

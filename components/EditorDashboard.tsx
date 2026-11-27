@@ -2995,6 +2995,9 @@ export default function EditorDashboard({
           aria-modal="true"
           aria-labelledby="rel-modal-title"
           className={relStyles.overlay}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape' && !relSaving) setShowRelationshipModal(false);
+          }}
           onClick={(e) => {
             if (e.target === e.currentTarget && !relSaving) setShowRelationshipModal(false);
           }}
@@ -3028,15 +3031,16 @@ export default function EditorDashboard({
             )}
 
             <div className={relStyles.fieldGroup}>
-              <label className={relStyles.label}>
-                Governing Organization / League
+              <label htmlFor="rel-org-select" className={relStyles.label}>
+                Governing Organization / Federation
               </label>
               <select
+                id="rel-org-select"
                 value={relOrgId}
                 onChange={(e) => setRelOrgId(e.target.value)}
                 className={relStyles.selectInput}
               >
-                <option value="">— None (Standalone Partner Event — Not part of CHL or any organization) —</option>
+                <option value="">— None (Standalone Partner Event) —</option>
                 {availableOrgs.map((o) => (
                   <option key={o._id} value={o._id}>
                     🏆 {o.name}
@@ -3044,15 +3048,16 @@ export default function EditorDashboard({
                 ))}
               </select>
               <p className={relStyles.helpText}>
-                💡 Select <strong>Champions Hockey League (CHL)</strong> to include this game in CHL reports, or select <strong>None</strong> if this is not part of the CHL event, but strictly a game for partner Fribourg-Gottéron.
+                Select the governing federation or sponsor organization to include this event in organization reports, or select <strong>None</strong> for a standalone club event.
               </p>
             </div>
 
             <div className={relStyles.fieldGroup}>
-              <label className={relStyles.label}>
+              <label htmlFor="rel-comp-select" className={relStyles.label}>
                 Competition Classification
               </label>
               <select
+                id="rel-comp-select"
                 value={relCompType}
                 onChange={(e) => setRelCompType(e.target.value)}
                 className={relStyles.selectInput}
@@ -3067,10 +3072,11 @@ export default function EditorDashboard({
             </div>
 
             <div className={relStyles.fieldGroup}>
-              <label className={relStyles.label}>
+              <label htmlFor="rel-p1-select" className={relStyles.label}>
                 Partner 1 (Home Club / Organizer)
               </label>
               <select
+                id="rel-p1-select"
                 value={relPartner1Id}
                 onChange={(e) => setRelPartner1Id(e.target.value)}
                 className={relStyles.selectInput}
@@ -3085,10 +3091,11 @@ export default function EditorDashboard({
             </div>
 
             <div className={relStyles.fieldGroup}>
-              <label className={relStyles.label}>
+              <label htmlFor="rel-p2-select" className={relStyles.label}>
                 Partner 2 (Away Club / Opponent)
               </label>
               <select
+                id="rel-p2-select"
                 value={relPartner2Id}
                 onChange={(e) => setRelPartner2Id(e.target.value)}
                 className={relStyles.selectInput}

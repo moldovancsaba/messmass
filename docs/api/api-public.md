@@ -4,7 +4,7 @@ Last Updated: 2026-05-20
 Canonical: Yes
 Owner: Architecture
 
-**Version:** 12.6.0
+**Version:** 12.7.0
 **Base URL:** `https://messmass.com`
 **Local development base URL:** `http://localhost:3001`
 

@@ -70,7 +70,27 @@ const CONTENT_GUARDRAILS = [
     files: [
       'components/AdminDashboard.tsx',
       'components/AnalyticsWorkspaceNav.tsx',
-      'components/ReportingWorkspaceNav.tsx'
+      'components/ReportingWorkspaceNav.tsx',
+      'components/admin/EntityWorkspaceTabs.tsx',
+      'components/admin/WorkspaceHeader.tsx',
+      'components/admin/StatsStrip.tsx',
+      'components/admin/FormSection.tsx',
+      'components/admin/AdminEditorScaffold.tsx',
+      'app/admin/fanmass-evidence/page.tsx'
+    ]
+  },
+  {
+    message: 'styled-jsx (<style jsx>) detected in canonical admin primitives',
+    pattern: /<style\s+jsx\b/,
+    files: [
+      'components/AdminDashboard.tsx',
+      'components/AnalyticsWorkspaceNav.tsx',
+      'components/ReportingWorkspaceNav.tsx',
+      'components/admin/EntityWorkspaceTabs.tsx',
+      'components/admin/WorkspaceHeader.tsx',
+      'components/admin/StatsStrip.tsx',
+      'components/admin/FormSection.tsx',
+      'components/admin/AdminEditorScaffold.tsx'
     ]
   },
   {
@@ -81,7 +101,15 @@ const CONTENT_GUARDRAILS = [
       'components/AdminDashboard.tsx',
       'components/AnalyticsWorkspaceNav.tsx',
       'components/ReportingWorkspaceNav.tsx',
-      'components/theme/interactive-report/interactive-report.module.css'
+      'components/theme/interactive-report/interactive-report.module.css',
+      'app/admin/fanmass-evidence/page.module.css',
+      'app/resources/resources.module.css',
+      'components/admin/EntityWorkspaceTabs.module.css',
+      'components/admin/WorkspaceHeader.module.css',
+      'components/admin/StatsStrip.module.css',
+      'components/admin/FormSection.module.css',
+      'components/admin/AdminEditorScaffold.module.css',
+      'components/admin/WorkspaceFormFields.module.css'
     ]
   },
   {

@@ -4,7 +4,7 @@ Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-Version: 12.6.0
+Version: 12.7.0
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -4129,5 +4129,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.6.0*
+*Version: 12.7.0*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

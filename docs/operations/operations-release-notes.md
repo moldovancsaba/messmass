@@ -1,8 +1,14 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-27T23:32:00.000Z
+Last Updated: 2026-11-27T23:50:00.000Z
 Canonical: Yes
 Owner: Operations
+
+## [v12.7.0] — 2026-11-27 — Fanmass Proof Review GDS#81 Upgrade, Editor Relationship Modal Accessibility, Public Rate-Limit Alignment & Design Guardrails
+
+- **Changed (Fanmass Proof Review GDS#81 tokenization, workspace header & WCAG 2.2 AA combobox, `app/admin/fanmass-evidence/page.tsx`, `app/admin/fanmass-evidence/page.module.css`):** integrated `EntityWorkspaceTabs` (`AI Event Coverage`, `Fanmass Proof Review`, `Club Logos`, `Brand Logos`) and `WorkspaceHeader`, replaced jet-black buttons and raw hex/rgba fallbacks with semantic `--mm-*` tokens, color-coded review status pills, fixed ARIA 4.1.2 combobox label nesting (`role="combobox"` + `aria-controls` + `Escape` close), replaced `window.confirm` with `BaseModal`, and fixed `align-items: flex-end` Autoprefixer warnings.
+- **Fixed (Editor Relationship modal accessibility, Landing footer cross-links & public page rate-limit routing, `components/EditorDashboard.tsx`, `components/LandingPage.tsx`, `lib/rateLimit.ts`):** bound programmatic `htmlFor` labels, `Escape` dismissal, and club-neutral guidance on the Event Hierarchy modal; added `/whats-new` alongside `/resources` in the public landing footer; and routed `/organization-report/*`, `/interactive-report/*`, and `/resources` onto the `PUBLIC` rate-limit class.
+- **Added (expanded CSS & styled-jsx design violation guardrails, `scripts/check-design-violations.js`):** enforced zero raw hex/rgb literals, zero inline `style={{}}` props, and zero `<style jsx>` across all Milestone 16 workspace primitives, `fanmass-evidence`, and `resources` stylesheets.
 
 ## [v12.6.0] — 2026-11-27 — Milestone 16 Dedicated Entity Hubs & Full-Page Setup Editors, 15-Item Sidebar Consolidation & Partner Directory Deduplication
 
