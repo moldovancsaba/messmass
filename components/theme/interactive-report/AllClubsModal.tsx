@@ -2,7 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import styles from './interactive-report.module.css';
 import { ClubPodiumStat } from './ExecutivePodiumGrid';
 
@@ -82,12 +82,22 @@ export default function AllClubsModal({
     });
   }, [clubs, selectedSport, searchQuery]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
+      aria-label="All Detected Sports Teams and Clubs"
       className={styles.modalBackdrop}
       onClick={onClose}
     >
@@ -126,6 +136,7 @@ export default function AllClubsModal({
         <div className={styles.modalFilterBar}>
           <div className={styles.modalSearchWrap}>
             <input
+              aria-label="Search detected sports teams and clubs"
               type="text"
               placeholder="Search by club name, partner, or venue..."
               value={searchQuery}

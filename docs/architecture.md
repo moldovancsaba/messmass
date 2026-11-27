@@ -4,7 +4,7 @@ Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-Version: 12.4.0
+Version: 12.5.0
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -140,7 +140,7 @@ it drifts. Do not edit between the markers.
 
 | Category | Count | Location |
 |----------|-------|----------|
-| **UI Components** | 139 | `components/` |
+| **UI Components** | 140 | `components/` |
 | **Utility Modules** | 266 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 422 | `app/styles/theme.css` |
@@ -162,7 +162,7 @@ largest, and the ones to read first:
 | `lib/apiClient.ts` | 43 | 258 |
 | `lib/db.ts` | 43 | 17 |
 | `components/ColoredCard.tsx` | 39 | 52 |
-| `components/MaterialIcon.tsx` | 35 | 119 |
+| `components/MaterialIcon.tsx` | 36 | 119 |
 | `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 202 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
@@ -4123,5 +4123,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.4.0*
+*Version: 12.5.0*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

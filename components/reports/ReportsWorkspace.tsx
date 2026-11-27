@@ -21,6 +21,7 @@ import ColoredCard from '@/components/ColoredCard';
 import SharePopup from '@/components/SharePopup';
 import UnifiedInputField from '@/components/UnifiedInputField';
 import UnifiedSelectField from '@/components/UnifiedSelectField';
+import EntityWorkspaceTabs from '@/components/admin/EntityWorkspaceTabs';
 import { FormModal } from '@/components/modals';
 import type { PageType } from '@/lib/pagePassword';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
@@ -202,6 +203,37 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
 
   return (
     <div className={styles.page}>
+      {config.ownerType === 'partner' && (
+        <EntityWorkspaceTabs
+          ariaLabel="Partner workspace navigation"
+          backHref="/admin/partners"
+          backLabel="Partners"
+          tabs={[
+            { label: 'Overview & Sheets', href: `/admin/partners/${id}`, icon: 'handshake' },
+            { label: 'Reports & Variants', href: `/admin/partners/${id}/reports`, icon: 'view_list' },
+            { label: 'Analytics', href: `/admin/partners/${id}/analytics`, icon: 'insert_chart' },
+            { label: 'Metrics Table', href: `/admin/partners/${id}/kyc-data`, icon: 'table_chart' },
+            { label: 'Lifecycle', href: `/admin/partners/${id}/lifecycle`, icon: 'history' },
+          ]}
+        />
+      )}
+      {config.ownerType === 'organization' && (
+        <EntityWorkspaceTabs
+          ariaLabel="Organization workspace navigation"
+          backHref="/admin/organizations"
+          backLabel="Organizations"
+          tabs={[
+            { label: 'Reports & Variants', href: `/admin/organizations/${id}/reports`, icon: 'view_list' },
+            { label: 'Classic Report', href: config.reportHref(publicSlug), icon: 'bar_chart', external: true },
+            ...(config.interactiveReportHref
+              ? [{ label: 'AI Dashboard', href: config.interactiveReportHref(publicSlug), icon: 'insights', external: true }]
+              : []),
+            ...(config.editorHref
+              ? [{ label: 'Organization Editor', href: config.editorHref(publicSlug), icon: 'edit', external: true }]
+              : []),
+          ]}
+        />
+      )}
       <div className={styles.header}>
         <div>
           <p className={styles.eyebrow}>{config.eyebrow}</p>

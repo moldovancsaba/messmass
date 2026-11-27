@@ -242,17 +242,13 @@ export default function BuilderMode({ projectId, stats, onSave }: BuilderModePro
                 </div>
               )}
               
-              {/* Charts Grid - Adapts to chart widths */}
+              {/* Charts Grid - Adapts to chart widths (stacks to 1fr on <=768px mobile) */}
               <div 
-                // WHAT: Dynamic grid layout based on chart count in block
-                // WHY: Equal-width columns (1 chart=full, 2 charts=50% each, etc.)
+                className="builder-charts-grid"
                 // eslint-disable-next-line react/forbid-dom-props
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: `repeat(${blockGridColumns}, 1fr)`,
-                  gap: 'var(--mm-space-6)',
-                  padding: 'var(--mm-space-6)'
-                }}
+                  '--builder-cols': blockGridColumns,
+                } as React.CSSProperties}
               >
                 {block.charts
                   .sort((a, b) => a.order - b.order)

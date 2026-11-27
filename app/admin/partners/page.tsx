@@ -1437,7 +1437,7 @@ export default function PartnersAdminPageUnified() {
                   const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/pull`, { dryRun: false });
                   if (!data.success) alert(data.error || 'Pull failed'); else alert(`Sheet → Mess: created ${data.summary.eventsCreated}, updated ${data.summary.eventsUpdated}`);
                 }}
-              >📥 Sheet → Mess</button>
+              >📥 Import from Sheet</button>
               <button
                 type="button"
                 className="btn btn-primary"
@@ -1445,9 +1445,9 @@ export default function PartnersAdminPageUnified() {
                   // WHAT: Use apiPost() for automatic CSRF token handling
                   // WHY: Production middleware requires X-CSRF-Token header for POST requests
                   const data = await apiPost(`/api/partners/${(editingPartner as any)?._id}/google-sheet/push`, { dryRun: false });
-                  if (!data.success) alert(data.error || 'Push failed'); else alert(`Mess → Sheet: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
+                  if (!data.success) alert(data.error || 'Push failed'); else alert(`Exported to Sheet: created ${data.summary.rowsCreated}, updated ${data.summary.rowsUpdated}`);
                 }}
-              >📤 Mess → Sheet</button>
+              >📤 Export to Sheet</button>
             </span>
           )}
         </div>

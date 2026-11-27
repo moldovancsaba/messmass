@@ -40,6 +40,20 @@ export const projectsEntityConfig: AdminEntityConfig<ProjectDTO> = {
       },
     },
     {
+      id: 'project-detail',
+      label: 'Workspace',
+      mobileLabel: 'Workspace',
+      title: 'Open Event Workspace Overview',
+      icon: 'open_in_new',
+      variant: 'secondary',
+      priority: 'overflow',
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (project) => `/admin/events/${project._id}`,
+      },
+    },
+    {
       id: 'project-open-ai-report',
       label: 'AI Report',
       mobileLabel: 'AI Report',

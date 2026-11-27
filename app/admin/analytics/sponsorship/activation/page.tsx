@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import AnalyticsWorkspaceNav from '@/components/AnalyticsWorkspaceNav';
 import ColoredCard from '@/components/ColoredCard';
+import SharePopup from '@/components/SharePopup';
 import { AnalyticsStatePanel, AnalyticsToolbar } from '@/components/analytics';
 import MetricCard from '@/components/analytics/MetricCard';
 import UnifiedAdminHeroWithSearch from '@/components/UnifiedAdminHeroWithSearch';
@@ -128,13 +129,10 @@ function buildRecapBriefHref(
   return `/admin/analytics/sponsorship/activation/recap/${partnerId}?${params.toString()}`;
 }
 
-function buildAbsoluteRecapBriefUrl(
-  partnerId: string,
-  scopeType: SponsorshipHubScopeType,
-  scopeId: string | null,
-  rangePreset: SponsorshipHubRangePreset
-) {
-  return buildAbsoluteUrl(buildRecapBriefHref(partnerId, scopeType, scopeId, rangePreset));
+function extractPartnerReportSlug(reportUrl: string | null | undefined, fallbackId: string): string {
+  if (!reportUrl) return fallbackId;
+  const cleaned = reportUrl.split('?')[0].replace(/^\/partner-report\//, '').trim();
+  return cleaned || fallbackId;
 }
 
 export default function SponsorshipActivationWorkspacePage() {
@@ -147,6 +145,7 @@ export default function SponsorshipActivationWorkspacePage() {
   const [copiedRecapPartnerId, setCopiedRecapPartnerId] = useState<string | null>(null);
   const [copiedRecapLinkPartnerId, setCopiedRecapLinkPartnerId] = useState<string | null>(null);
   const [selectedRecapPartnerId, setSelectedRecapPartnerId] = useState<string | null>(null);
+  const [shareTarget, setShareTarget] = useState<{ slug: string; name: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<'all' | 'ready' | 'missing_bitly' | 'missing_report' | 'missing_metrics'>(() => parseStatusFilter(searchParams.get('statusFilter')));
   const [partnerFilter, setPartnerFilter] = useState(() => searchParams.get('partnerFilter') || 'all');
 
@@ -288,11 +287,12 @@ export default function SponsorshipActivationWorkspacePage() {
 
   const handleCopyRecapLink = async (partner: SponsorshipHubResponse['activationWorkspace']['recapPackages'][number]) => {
     try {
-      await navigator.clipboard.writeText(buildAbsoluteRecapBriefUrl(partner.partnerId, scopeType, scopeId, rangePreset));
+      const targetPath = partner.actions.reportUrl || `/partner-report/${partner.partnerId}`;
+      await navigator.clipboard.writeText(buildAbsoluteUrl(targetPath));
       setCopiedRecapLinkPartnerId(partner.partnerId);
       window.setTimeout(() => setCopiedRecapLinkPartnerId((current) => (current === partner.partnerId ? null : current)), 2000);
     } catch (copyError) {
-      console.error('Failed to copy recap brief link:', copyError);
+      console.error('Failed to copy partner report link:', copyError);
     }
   };
 
@@ -502,26 +502,32 @@ export default function SponsorshipActivationWorkspacePage() {
                             <p className={styles.detailNote}>Recap summary copied to clipboard.</p>
                           )}
                             {copiedRecapLinkPartnerId === partner.partnerId && (
-                              <p className={styles.detailNote}>Recap brief link copied to clipboard.</p>
+                              <p className={styles.detailNote} role="status">Client partner report link copied to clipboard.</p>
                             )}
                           </div>
                           <div className={styles.actionRow}>
                             <button
                               type="button"
                               className={styles.filterButton}
-                              onClick={() => setSelectedRecapPartnerId(partner.partnerId)}
+                              onClick={() =>
+                                setShareTarget({
+                                  slug: extractPartnerReportSlug(partner.actions.reportUrl, partner.partnerId),
+                                  name: partner.name,
+                                })
+                              }
                             >
-                              {selectedRecapPackage?.partnerId === partner.partnerId ? 'Previewing Brief' : 'Preview Brief'}
+                              Share with Sponsor
                             </button>
-                            <Link
-                              href={buildRecapBriefHref(partner.partnerId, scopeType, scopeId, rangePreset)}
-                              className={styles.actionLink}
-                            >
-                              Open Recap Brief
-                            </Link>
                             {partner.actions.reportUrl && (
-                              <Link href={partner.actions.reportUrl} className={styles.actionLink}>Open Partner Report</Link>
+                              <Link href={partner.actions.reportUrl} target="_blank" className={styles.actionLink}>Open Partner Report</Link>
                             )}
+                            <button
+                              type="button"
+                              className={styles.filterButton}
+                              onClick={() => void handleCopyRecapLink(partner)}
+                            >
+                              Copy Report Link
+                            </button>
                             <button
                               type="button"
                               className={styles.filterButton}
@@ -529,22 +535,22 @@ export default function SponsorshipActivationWorkspacePage() {
                             >
                               Copy Recap Summary
                             </button>
-                            <button
-                              type="button"
-                              className={styles.filterButton}
-                              onClick={() => void handleCopyRecapLink(partner)}
-                            >
-                              Copy Brief Link
-                            </button>
                             <Link href={buildRecapEmailDraft(partner)} className={styles.actionLink}>
                               Draft Recap Email
                             </Link>
-                            {partner.actions.adminUrl && (
-                              <Link href={partner.actions.adminUrl} className={styles.actionLink}>Open Partner Analytics</Link>
-                            )}
-                            {partner.actions.activationUrl && (
-                              <Link href={partner.actions.activationUrl} className={styles.actionLink}>Open Activation Queue</Link>
-                            )}
+                            <button
+                              type="button"
+                              className={styles.filterButton}
+                              onClick={() => setSelectedRecapPartnerId(partner.partnerId)}
+                            >
+                              {selectedRecapPackage?.partnerId === partner.partnerId ? 'Previewing Brief' : 'Preview Internal Brief'}
+                            </button>
+                            <Link
+                              href={buildRecapBriefHref(partner.partnerId, scopeType, scopeId, rangePreset)}
+                              className={styles.actionLink}
+                            >
+                              Internal Brief
+                            </Link>
                           </div>
                         </div>
                       </ColoredCard>
@@ -810,6 +816,16 @@ export default function SponsorshipActivationWorkspacePage() {
           </>
         )}
       </div>
+
+      {shareTarget && (
+        <SharePopup
+          isOpen={true}
+          onClose={() => setShareTarget(null)}
+          pageId={shareTarget.slug}
+          pageType="partner-report"
+          customTitle={`Share ${shareTarget.name} Report`}
+        />
+      )}
     </div>
   );
 }

@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import styles from './TextareaField.module.css';
 
 interface TextareaFieldProps {
@@ -25,6 +25,7 @@ export default function TextareaField({
   placeholder = 'Enter text...',
   rows = 4 
 }: TextareaFieldProps) {
+  const textareaId = useId();
   const [tempValue, setTempValue] = useState(value || '');
   const [isSaving, setIsSaving] = useState(false);
 
@@ -47,11 +48,12 @@ export default function TextareaField({
   return (
     <div className={styles.container}>
       <div className={styles.labelRow}>
-        <label className={styles.label}>{label}</label>
-        {isSaving && <span className={styles.saving}>💾 Saving...</span>}
+        <label htmlFor={textareaId} className={styles.label}>{label}</label>
+        {isSaving && <span className={styles.saving} role="status" aria-live="polite">Saving...</span>}
       </div>
       
       <textarea
+        id={textareaId}
         value={tempValue}
         onChange={(e) => setTempValue(e.target.value)}
         onBlur={handleBlur}

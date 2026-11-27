@@ -53,6 +53,7 @@ export default function EmojiSelector({
       {/* WHAT: Text input for direct emoji entry */}
       <div className={styles.inputWrapper}>
         <input
+          aria-label="Selected emoji"
           type="text"
           className={styles.input}
           value={value}
@@ -83,6 +84,7 @@ export default function EmojiSelector({
               {isCustom && showCustomEditor && (
                 <button
                   type="button"
+                  aria-label={`Remove ${emoji} from custom emojis`}
                   className={styles.removeButton}
                   onClick={() => handleRemoveCustomEmoji(emoji)}
                   title="Remove from list"
@@ -109,6 +111,7 @@ export default function EmojiSelector({
           ) : (
             <div className={styles.addForm}>
               <input
+                aria-label="Custom emoji"
                 type="text"
                 className={styles.addInput}
                 value={newEmoji}
@@ -119,6 +122,7 @@ export default function EmojiSelector({
               />
               <button
                 type="button"
+                aria-label="Save custom emoji"
                 className={styles.confirmButton}
                 onClick={handleAddCustomEmoji}
               >
@@ -126,6 +130,7 @@ export default function EmojiSelector({
               </button>
               <button
                 type="button"
+                aria-label="Cancel custom emoji"
                 className={styles.cancelButton}
                 onClick={() => {
                   setShowInput(false);

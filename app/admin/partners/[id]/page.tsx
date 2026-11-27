@@ -27,6 +27,7 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import GoogleSheetsConnectModal from '@/components/GoogleSheetsConnectModal';
 import GoogleSheetsSyncButtons from '@/components/GoogleSheetsSyncButtons';
 import GoogleSheetsSyncStatus from '@/components/GoogleSheetsSyncStatus';
+import EntityWorkspaceTabs from '@/components/admin/EntityWorkspaceTabs';
 
 interface PartnerData {
   _id: string;
@@ -184,6 +185,18 @@ export default function PartnerDetailPage({
 
   return (
     <div className="admin-container flex flex-col gap-6">
+      <EntityWorkspaceTabs
+        ariaLabel="Partner workspace navigation"
+        backHref="/admin/partners"
+        backLabel="Partners"
+        tabs={[
+          { label: 'Overview & Sheets', href: `/admin/partners/${partner._id}`, icon: 'handshake' },
+          { label: 'Reports & Variants', href: `/admin/partners/${partner._id}/reports`, icon: 'view_list' },
+          { label: 'Analytics', href: `/admin/partners/${partner._id}/analytics`, icon: 'insert_chart' },
+          { label: 'Metrics Table', href: `/admin/partners/${partner._id}/kyc-data`, icon: 'table_chart' },
+          { label: 'Lifecycle', href: `/admin/partners/${partner._id}/lifecycle`, icon: 'history' },
+        ]}
+      />
       {/* Header */}
       <div className="card card-md p-lg">
         <div className="flex items-start justify-between">
@@ -307,11 +320,11 @@ export default function PartnerDetailPage({
         {/* Info Box */}
         <div className="card card-md p-lg">
           <h3 className="font-semibold text-gray-900 mb-3">ℹ️ Integration Info</h3>
-          <p className="text-xs text-gray-600 flex flex-col gap-1">
-            <p>• Pull: Sync events from your Google Sheet into {'{messmass}'}</p>
-            <p>• Push: Export {'{messmass}'} events to your Google Sheet</p>
-            <p>• Manual: Control syncs with buttons (no automatic background jobs)</p>
-          </p>
+          <div className="text-xs text-gray-600 flex flex-col gap-1">
+            <p>• Import: Sync events from your Google Sheet into {'{messmass}'}</p>
+            <p>• Export: Push {'{messmass}'} events to your Google Sheet</p>
+            <p>• Manual: Control syncs on demand with zero background overwrites</p>
+          </div>
         </div>
       </div>
     </div>

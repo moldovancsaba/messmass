@@ -2,7 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { getBrandCluster, BrandClusterId } from '@/lib/brandEntityClustering';
 import { CommercialBrandStat } from './ExecutivePodiumGrid';
 import styles from './interactive-report.module.css';
@@ -56,12 +56,22 @@ export default function AllBrandsModal({
     });
   }, [brands, selectedCluster, searchQuery]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
+      aria-label="All Detected Commercial Brands"
       className={styles.modalBackdrop}
       onClick={onClose}
     >
@@ -100,6 +110,7 @@ export default function AllBrandsModal({
         <div className={styles.modalFilterBar}>
           <div className={styles.modalSearchWrap}>
             <input
+              aria-label="Search detected commercial brands"
               type="text"
               placeholder="Search by brand name or category (e.g. Nike, Puma, Retail)..."
               value={searchQuery}

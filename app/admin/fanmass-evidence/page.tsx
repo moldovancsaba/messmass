@@ -242,7 +242,7 @@ export default function SzrtEvidenceReviewPage() {
   };
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       <h1 className={styles.title}>Fanmass proof review</h1>
       <p className={styles.lead}>
         Every brand and club figure Fanmass produces, for any project or event, rests on a sample: the crop of the picture where
@@ -389,6 +389,6 @@ export default function SzrtEvidenceReviewPage() {
         <span className={styles.hint}>{total === 0 ? '0' : `${offset + 1}–${Math.min(offset + PAGE, total)}`} of {total}</span>
         <button type="button" className={styles.button} disabled={offset + PAGE >= total} onClick={() => setOffset(offset + PAGE)}>Next</button>
       </div>
-    </main>
+    </div>
   );
 }

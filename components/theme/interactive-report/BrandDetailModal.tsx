@@ -2,7 +2,7 @@
 /* eslint-disable react/forbid-dom-props */
 /* eslint-disable @next/next/no-img-element */
 
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { getBrandCluster } from '@/lib/brandEntityClustering';
 import BrandEvidenceGallery from './BrandEvidenceGallery';
 import { findCameraProof, type CameraProofEntry } from '@/lib/hashtagReport/cameraProof';
@@ -84,12 +84,22 @@ export default function BrandDetailModal({
     });
   }, [matchingImages]);
 
+  useEffect(() => {
+    if (!brand) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [brand, onClose]);
+
   if (!brand || !cluster) return null;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
+      aria-label={brand.brand}
       className={styles.modalBackdrop}
       onClick={onClose}
     >

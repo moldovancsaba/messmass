@@ -52,6 +52,13 @@ export function computeRelativeAge(isoDate: string, now: Date = new Date()): str
   return `${years} year${years === 1 ? '' : 's'} ago`;
 }
 
+function sanitizeSummaryText(text: string): string {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\b[a-z0-9.-]+\.mongodb\.net\b/gi, 'MongoDB Atlas');
+}
+
 function classifyLead(lead: string, body: string): { type: ReleaseItemType; scope?: string } {
   const m = /^([A-Za-z\s,]+?)(?:\s*\(([^)]+)\))?$/.exec(lead.trim());
   const verb = (m ? m[1] : lead).trim().toLowerCase();
@@ -112,13 +119,13 @@ export function parseReleaseNotesMarkdown(markdown: string, now: Date = new Date
       current.items.push({
         type,
         ...(scope ? { scope } : {}),
-        summary: boldMatch[2].replace(/`([^`]+)`/g, '$1'),
+        summary: sanitizeSummaryText(boldMatch[2]),
       });
       current.counts[type] += 1;
     } else if (bulletBody.length > 0) {
       current.items.push({
         type: 'changed',
-        summary: bulletBody.replace(/`([^`]+)`/g, '$1'),
+        summary: sanitizeSummaryText(bulletBody),
       });
       current.counts.changed += 1;
     }

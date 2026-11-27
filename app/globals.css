@@ -310,6 +310,19 @@ img {
 /* Visualization helpers */
 .drag-hint { cursor: grab; user-select: none; margin-left: 0.5rem; }
 .charts-grid { display: grid; gap: 1.5rem; width: 100%; }
+.builder-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--builder-cols, 1), minmax(0, 1fr));
+  gap: var(--mm-space-6);
+  padding: var(--mm-space-6);
+}
+@media (max-width: 768px) {
+  .builder-charts-grid {
+    grid-template-columns: 1fr;
+    gap: var(--mm-space-4);
+    padding: var(--mm-space-4);
+  }
+}
 /* Enforce a single configurable height for all chart tiles */
 :root { --chart-tile-height: 360px; }
 .chart-config-item { padding: var(--mm-space-3); border: 1px dashed rgba(var(--mm-chart-indigo-rgb),0.25); border-radius: var(--mm-radius-md); }

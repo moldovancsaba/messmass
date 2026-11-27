@@ -4,7 +4,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import styles from './ColorPickerField.module.css';
 import { HEX_BLACK } from '@/lib/theme/color';
 
@@ -23,6 +23,7 @@ interface ColorPickerFieldProps {
  * HOW: HTML5 <input type="color"> synced with text input
  */
 export default function ColorPickerField({ label, description, value, onChange }: ColorPickerFieldProps) {
+  const baseId = useId();
   // Separate color (6 chars) and alpha (2 chars)
   const [hexInput, setHexInput] = useState(value);
   
@@ -91,7 +92,7 @@ export default function ColorPickerField({ label, description, value, onChange }
   return (
     <div className={styles.field}>
       <div className={styles.labelRow}>
-        <label className={styles.label}>{label}</label>
+        <label htmlFor={`${baseId}-hex`} className={styles.label}>{label}</label>
         {description && <span className={styles.description}>{description}</span>}
       </div>
       
@@ -99,6 +100,8 @@ export default function ColorPickerField({ label, description, value, onChange }
         {/* Color preview + picker */}
         <div className={styles.pickerWrapper}>
           <input
+            id={`${baseId}-picker`}
+            aria-label={`${label} color swatch`}
             type="color"
             value={rgbValue}
             onChange={handleColorChange}
@@ -106,7 +109,7 @@ export default function ColorPickerField({ label, description, value, onChange }
             title="Pick color"
           />
           {/* Color preview with transparency checkerboard */}
-          <div className={styles.preview}>
+          <div className={styles.preview} aria-hidden="true">
             <div className={styles.checkerboard} />
             {/* eslint-disable-next-line react/forbid-dom-props */}
             <div className={styles.previewColor} style={{ backgroundColor: hexInput }} />
@@ -115,6 +118,7 @@ export default function ColorPickerField({ label, description, value, onChange }
         
         {/* Hex input */}
         <input
+          id={`${baseId}-hex`}
           type="text"
           value={hexInput}
           onChange={handleHexInputChange}
@@ -127,10 +131,11 @@ export default function ColorPickerField({ label, description, value, onChange }
         
         {/* Transparency slider */}
         <div className={styles.alphaControl}>
-          <label className={styles.alphaLabel}>
+          <label htmlFor={`${baseId}-alpha`} className={styles.alphaLabel}>
             Opacity: {alphaPercent}%
           </label>
           <input
+            id={`${baseId}-alpha`}
             type="range"
             min="0"
             max="100"

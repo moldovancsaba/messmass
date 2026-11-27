@@ -1,8 +1,15 @@
 # {messmass} Release Notes
 Status: Active
-Last Updated: 2026-11-27T21:55:00.000Z
+Last Updated: 2026-11-27T23:03:00.000Z
 Canonical: Yes
 Owner: Operations
+
+## [v12.5.0] — 2026-11-27 — Dedicated Entity Workspaces, Partner Activation Sponsor Sharing, Modal Accessibility & TopHeader Help Hub
+
+- **Added (dedicated Event, Partner & Organization workspace tabs, `components/admin/EntityWorkspaceTabs.tsx`, `app/admin/events/[id]`, `app/admin/partners/[id]`, `components/reports/ReportsWorkspace.tsx`):** added unified `<nav>` workspace tab bars across Event, Partner, and Organization workspaces connecting `Overview`, `Reports & Variants`, `Analytics`, `Metrics Table`, `AI Photo Proof`, `Live Editor`, and `Lifecycle`, plus a direct `Workspace` action on Event rows/cards.
+- **Fixed (Partner Activation sponsor sharing & PDF export feedback, `app/admin/analytics/sponsorship/activation/page.tsx`, `app/report/[slug]/ReportHero.tsx`):** wired `SharePopup` directly into Partner Activation recap packages so account managers can mint/share password-protected client report links instead of copying internal `/admin/*` URLs, and added `Generating PDF…` busy state feedback on `Export PDF`.
+- **Changed (TopHeader Help & Tours hub, Sport filter normalization & mobile Builder grid, `components/tour/TourMenu.tsx`, `app/admin/club-logos/page.tsx`, `components/BuilderMode.tsx`):** added `Documentation & Guides` and `What's New` directly inside the `TopHeader` Help & Tours menu, auto-opened the mobile sidebar drawer when starting guided tours on phones, normalized sport casing in `/admin/club-logos` (`Football`, `Ice Hockey`, `Water Polo`), renamed `Sheet → Mess` / `Mess → Sheet` to `Import from Sheet` / `Export to Sheet`, sanitized `/whats-new` markdown/cluster text, and added `1fr` mobile stacking to `BuilderMode`.
+- **Fixed (WCAG 2.2 AA modal focus/Escape, form labels & landmark nesting):** migrated `PasswordModal` onto `BaseModal`, added `Escape` dismissal, `aria-label`, and labeled search inputs across `ConnectedSelfiesModal`, `BrandDetailModal`, `AllBrandsModal`, and `AllClubsModal`, bound `useId()` `htmlFor` / `aria-label` across `SharePopup`, `TextareaField`, `ColorPickerField` (with `:focus-visible` slider ring), and `EmojiSelector`, and eliminated nested `<main>` landmarks on `/admin/fanmass-evidence`.
 
 ## [v12.4.0] — 2026-11-27 — EGM UI, Layout, User Journey, Navigation, Accessibility (WCAG 2.2 AA) & GDS#81 Tokenization
 

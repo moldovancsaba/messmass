@@ -17,6 +17,7 @@ import Link from 'next/link';
 import { useAdminAuth } from '@/hooks/useAdminAuth';
 import MaterialIcon from '@/components/MaterialIcon';
 import ColoredHashtagBubble from '@/components/ColoredHashtagBubble';
+import EntityWorkspaceTabs from '@/components/admin/EntityWorkspaceTabs';
 import styles from './EventDetail.module.css';
 
 interface PartnerBrief {
@@ -149,6 +150,19 @@ export default function EventDetailPage() {
 
   return (
     <div className={styles.container}>
+      <EntityWorkspaceTabs
+        ariaLabel="Event workspace navigation"
+        backHref="/admin/events"
+        backLabel="Events"
+        tabs={[
+          { label: 'Overview', href: `/admin/events/${project._id}`, icon: 'event' },
+          { label: 'Metrics Table', href: `/admin/events/${project._id}/kyc-data`, icon: 'table_chart' },
+          { label: 'AI Photo Proof', href: `/admin/analytics/ai/${project._id}`, icon: 'smart_toy' },
+          { label: 'Live Editor', href: `/edit/${project.editSlug || project._id}`, icon: 'edit', external: true },
+          { label: 'Classic Report', href: `/report/${project.viewSlug || project._id}`, icon: 'bar_chart', external: true },
+          { label: 'AI Dashboard', href: `/interactive-report/event/${project.viewSlug || project._id}`, icon: 'insights', external: true },
+        ]}
+      />
       {/* Header Hub Card */}
       <div className={styles.headerCard}>
         <div className={styles.headerTop}>

@@ -82,17 +82,31 @@ export default function ClubLogosAdminPage() {
 
   const allItems = useMemo(() => [...assets, ...unconfigured], [assets, unconfigured]);
 
+  const normalizeSportLabel = (raw?: string | null): string => {
+    const v = (raw || '').trim().toLowerCase();
+    if (!v) return '';
+    if (v === 'soccer' || v === 'football') return 'Football';
+    if (v === 'icehockey' || v === 'ice hockey' || v === 'hockey') return 'Ice Hockey';
+    if (v === 'handball') return 'Handball';
+    if (v === 'basketball') return 'Basketball';
+    if (v === 'waterpolo' || v === 'water polo') return 'Water Polo';
+    if (v === 'volleyball') return 'Volleyball';
+    if (v === 'motorsport' || v === 'motogp') return 'Motorsport';
+    return raw!.trim().replace(/\b\w/g, (c) => c.toUpperCase());
+  };
+
   const availableSports = useMemo(() => {
     const s = new Set<string>();
     for (const item of allItems) {
-      if (item.sport) s.add(item.sport);
+      const norm = normalizeSportLabel(item.sport);
+      if (norm) s.add(norm);
     }
     return Array.from(s).sort((a, b) => a.localeCompare(b));
   }, [allItems]);
 
   const matchesFilters = (item: ClubAssetItem) => {
     if (kindFilter !== 'all' && item.entityKind !== kindFilter) return false;
-    if (sportFilter !== 'all' && (item.sport || '').toLowerCase() !== sportFilter.toLowerCase()) return false;
+    if (sportFilter !== 'all' && normalizeSportLabel(item.sport) !== sportFilter) return false;
     if (formatFilter === 'svg' && !item.isVectorSvg) return false;
     if (formatFilter === 'raster' && (!item.logoUrl || item.isVectorSvg)) return false;
     if (formatFilter === 'missing' && item.logoUrl) return false;

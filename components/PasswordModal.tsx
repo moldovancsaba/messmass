@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useRef, useState } from 'react';
+import BaseModal from './modals/BaseModal';
 import { copyTextToClipboard } from '@/lib/clipboard';
 import styles from './SharePopup.module.css';
 
@@ -84,19 +85,12 @@ export default function PasswordModal({
     }
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        {/* Close button */}
-        <button onClick={onClose} className={styles.closeBtn}>
-          ×
-        </button>
-
+    <BaseModal isOpen={isOpen} onClose={onClose} size="md" ariaLabel={title}>
+      <div className={styles.modal}>
         {/* Header */}
         <div className={styles.header}>
-          <div className={styles.headerEmoji}>🔐</div>
+          <div className={styles.headerEmoji} aria-hidden="true">🔐</div>
           <h2 className={styles.title}>{title}</h2>
           {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
         </div>
@@ -106,10 +100,11 @@ export default function PasswordModal({
             {/* User Email (if provided) */}
             {userEmail && (
               <div className={styles.section}>
-                <label className={styles.label}>
+                <label htmlFor="password-modal-email" className={styles.label}>
                   👤 User Email
                 </label>
                 <input
+                  id="password-modal-email"
                   type="text"
                   value={userEmail}
                   readOnly
@@ -120,11 +115,12 @@ export default function PasswordModal({
 
             {/* Password Section */}
             <div className={styles.section}>
-              <label className={styles.label}>
+              <label htmlFor="password-modal-secret" className={styles.label}>
                 🔐 Access Password
               </label>
               <div className={styles.inputGroup}>
                 <input
+                  id="password-modal-secret"
                   ref={passwordInputRef}
                   type="text"
                   value={password}
@@ -132,6 +128,7 @@ export default function PasswordModal({
                   className={`${styles.input} ${styles.inputMonospace}`}
                 />
                 <button
+                  type="button"
                   onClick={copyToClipboard}
                   className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copied ? styles.copyBtnCopied : ''}`}
                 >
@@ -143,6 +140,7 @@ export default function PasswordModal({
             {/* Email Section */}
             <div className={styles.section}>
               <button
+                type="button"
                 onClick={sendViaEmail}
                 disabled={sendingEmail || userId === 'new'}
                 className={`${styles.visitBtn} ${styles.wFull}`}
@@ -151,7 +149,7 @@ export default function PasswordModal({
                 {sendingEmail ? '⌛ Sending...' : emailSent ? '✅ Email Sent Successfully!' : '📧 Send via email'}
               </button>
               {emailError && (
-                <p className="text-error text-xs mt-2 text-center">
+                <p className="text-error text-xs mt-2 text-center" role="alert">
                   ⚠️ {emailError}
                 </p>
               )}
@@ -180,6 +178,6 @@ export default function PasswordModal({
           </div>
         </div>
       </div>
-    </div>
+    </BaseModal>
   );
 }

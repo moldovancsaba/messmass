@@ -78,12 +78,22 @@ export default function ConnectedSelfiesModal({ club, onClose, cameraProof }: Co
     );
   }, [selfiesData, selectedFanGroup]);
 
+  useEffect(() => {
+    if (!club) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [club, onClose]);
+
   if (!club) return null;
 
   return (
     <div
       role="dialog"
       aria-modal="true"
+      aria-label={club.partnerName || club.club}
       className={styles.modalBackdrop}
       onClick={onClose}
     >

@@ -44,8 +44,8 @@ interface ReportHeroProps {
   /** CSV export handler */
   onExportCSV?: () => void;
   
-  /** PDF export handler */
-  onExportPDF?: () => void;
+  /** PDF export handler (supports async Promise for loading spinner) */
+  onExportPDF?: () => void | Promise<void>;
   
   /** Optional CSS class */
   className?: string;
@@ -82,6 +82,8 @@ export default function ReportHero({
   console.log('🖼️ [ReportHero] Will render Partner 1 logo?', !!partnerLogo);
   console.log('🖼️ [ReportHero] Will render Partner 2 logo?', !!partner2Logo);
   
+  const [isExportingPDF, setIsExportingPDF] = React.useState(false);
+
   // Format date for display
   const formattedDate = showDate ? formatDate(project.eventDate) : null;
   
@@ -96,12 +98,17 @@ export default function ReportHero({
   };
   
   // WHAT: Handle PDF export
-  // WHY: Trigger PDF generation with hero on every page
-  const handlePDFExport = () => {
-    if (onExportPDF) {
-      onExportPDF();
-    } else {
-      console.warn('PDF export handler not provided');
+  // WHY: Trigger PDF generation with visible loading feedback
+  const handlePDFExport = async () => {
+    if (!onExportPDF || isExportingPDF) {
+      if (!onExportPDF) console.warn('PDF export handler not provided');
+      return;
+    }
+    setIsExportingPDF(true);
+    try {
+      await onExportPDF();
+    } finally {
+      setTimeout(() => setIsExportingPDF(false), 1200);
     }
   };
   
@@ -153,12 +160,14 @@ export default function ReportHero({
             </button>
             <button 
               className={styles.exportButton}
-              onClick={handlePDFExport}
+              onClick={() => void handlePDFExport()}
+              disabled={isExportingPDF}
+              aria-busy={isExportingPDF}
               type="button"
               title="Download report as PDF document"
             >
-              <span className={styles.exportIcon}>📄</span>
-              <span className={styles.exportText}>Export PDF</span>
+              <span className={styles.exportIcon} aria-hidden="true">{isExportingPDF ? '⏳' : '📄'}</span>
+              <span className={styles.exportText}>{isExportingPDF ? 'Generating PDF…' : 'Export PDF'}</span>
             </button>
           </div>
         )}

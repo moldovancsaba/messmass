@@ -45,9 +45,6 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
   //     to distinguish "here is your password, copy it now" from "a password
   //     exists but cannot be displayed", because those need opposite actions.
   const [justGenerated, setJustGenerated] = useState(false);
-  // WHAT: Optional recipient name/email field for user convenience
-  // WHY: Users want to track who they're sharing links with when copying the URL and password
-  const [recipientInfo, setRecipientInfo] = useState<string>('');
 
   useEffect(() => {
     // Always refetch when popup opens or the target page changes.
@@ -56,7 +53,6 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
       setCopiedField(null);
       setJustGenerated(false);
       setInfoMessage(null);
-      setRecipientInfo(''); // Reset recipient field when popup opens
       fetchStatus();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -228,41 +224,23 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
             <p>Loading share link…</p>
           </div>
         ) : error ? (
-          <div className={styles.errorContainer}>
-            <div className={styles.errorEmoji}>❌</div>
+          <div className={styles.errorContainer} role="alert">
+            <div className={styles.errorEmoji} aria-hidden="true">❌</div>
             <p className={styles.errorText}>{error}</p>
-            <button onClick={() => fetchStatus()} className={styles.retryBtn}>
+            <button type="button" onClick={() => fetchStatus()} className={styles.retryBtn}>
               Try Again
             </button>
           </div>
         ) : shareableData ? (
           <div className={styles.content}>
-            {/* WHAT: Optional recipient name/email input field
-                WHY: Allows user to note who they're sharing with before copying URL/password */}
-            {/* Recipient Info Section */}
-            <div className={styles.section}>
-              <label className={styles.label}>
-                👤 Recipient Name or Email <span className={styles.labelOptional}>(optional)</span>
-              </label>
-              <input
-                type="text"
-                value={recipientInfo}
-                onChange={(e) => setRecipientInfo(e.target.value)}
-                placeholder="e.g., John Doe or john@example.com"
-                className={`${styles.input} ${styles.inputEditable}`}
-              />
-              <p className={styles.helpText}>
-                For your reference only - helps you remember who you shared this link with
-              </p>
-            </div>
-
             {/* URL Section */}
             <div className={styles.section}>
-              <label className={styles.label}>
+              <label htmlFor="share-popup-url-input" className={styles.label}>
                 🔗 Shareable URL
               </label>
               <div className={styles.inputGroup}>
                 <input
+                  id="share-popup-url-input"
                   ref={urlInputRef}
                   type="text"
                   value={shareableData.url}
@@ -270,6 +248,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                   className={styles.input}
                 />
                 <button
+                  type="button"
                   onClick={() => copyToClipboard(shareableData.url, 'url')}
                   className={`${styles.copyBtn} ${copiedField === 'url' ? styles.copyBtnCopied : ''}`}
                 >
@@ -278,6 +257,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                 {/* WHAT: Quick access to the shared page.
                     WHY: Users asked for a direct Visit button alongside Copy to open in a new tab. */}
                 <button
+                  type="button"
                   onClick={() => {
                     try {
                       window.open(shareableData.url, '_blank', 'noopener,noreferrer');
@@ -292,6 +272,9 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                   🔎 Visit
                 </button>
               </div>
+              {copiedField === 'url' && (
+                <span className="sr-only" role="status" aria-live="polite">Shareable URL copied to clipboard</span>
+              )}
             </div>
 
             {/* Password Section
@@ -302,11 +285,11 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                     either show one it just minted or offer to mint a new one. It
                     must never imply a password is retrievable. */}
             <div className={styles.section}>
-              <label className={styles.label}>
+              <label htmlFor="share-popup-password-input" className={styles.label}>
                 🔐 Access Password
               </label>
               {infoMessage && (
-                <p className={styles.infoText} aria-live="polite">{infoMessage}</p>
+                <p className={styles.infoText} role="status" aria-live="polite">{infoMessage}</p>
               )}
 
               {!shareableData.isProtected ? (
@@ -328,6 +311,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                 <>
                   <div className={styles.inputGroup}>
                     <input
+                      id="share-popup-password-input"
                       ref={passwordInputRef}
                       type="text"
                       value={shareableData.password}
@@ -335,6 +319,7 @@ export default function SharePopup({ isOpen, onClose, pageId, pageType, customTi
                       className={`${styles.input} ${styles.inputMonospace}`}
                     />
                     <button
+                      type="button"
                       onClick={() => copyToClipboard(shareableData.password, 'password')}
                       className={`${styles.copyBtn} ${styles.copyBtnPassword} ${copiedField === 'password' ? styles.copyBtnCopied : ''}`}
                     >

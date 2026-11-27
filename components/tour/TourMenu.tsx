@@ -10,6 +10,7 @@
  *      dropdown pattern. */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import Link from 'next/link';
 import { ActionIcon } from '@mantine/core';
 import { IconCheck, IconHelpCircle } from '@tabler/icons-react';
 import styles from './TourMenu.module.css';
@@ -33,7 +34,7 @@ export default function TourMenu() {
   const [userRole, setUserRole] = useState<UserRole | undefined>(undefined);
   const [loadingRole, setLoadingRole] = useState(true);
   const panelRef = useRef<HTMLDivElement>(null);
-  const { isCollapsed, setIsCollapsed } = useSidebar();
+  const { isCollapsed, setIsCollapsed, setIsMobileOpen } = useSidebar();
 
   useEffect(() => {
     const fetchUserRole = async () => {
@@ -125,12 +126,11 @@ export default function TourMenu() {
 
   const startTour = (controller: TourController) => {
     setIsOpen(false);
-    // WHAT: expand the sidebar before starting -- WHY: Sidebar.tsx doesn't
-    // render child nav <li>s (and their data-tour-id) at all while
-    // collapsed, so a segment tour with child steps (Reports, Analytics)
-    // would silently retry-then-skip nearly every step for a returning
-    // user with the sidebar collapsed.
+    // WHAT: expand the sidebar (and open mobile drawer on <768px) before starting
     if (isCollapsed) setIsCollapsed(false);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsMobileOpen(true);
+    }
     controller.start();
   };
 
@@ -143,19 +143,31 @@ export default function TourMenu() {
           radius="md"
           color="gray"
           onClick={() => setIsOpen((prev) => !prev)}
-          title="Guided tours"
-          aria-label="Guided tours"
+          title="Help, guides & release notes"
+          aria-label="Help, guides & release notes"
           aria-expanded={isOpen}
         >
           <IconHelpCircle size={18} stroke={1.8} />
         </ActionIcon>
 
         {isOpen && (
-          <div ref={panelRef} className={styles.tourPanel} role="dialog" aria-label="Guided tours" tabIndex={-1}>
+          <div ref={panelRef} className={styles.tourPanel} role="dialog" aria-label="Help, guides & tours" tabIndex={-1}>
             <div className={styles.panelHeader}>
-              <h3 className={styles.panelTitle}>Guided tours</h3>
+              <h3 className={styles.panelTitle}>Help &amp; Guided Tours</h3>
             </div>
             <div className={styles.tourList}>
+              <Link href="/admin/help" className={styles.tourItem} onClick={() => setIsOpen(false)}>
+                <div>
+                  <strong>Documentation &amp; Guides</strong>
+                  <div>Step-by-step operator, reporting, and Camera manuals</div>
+                </div>
+              </Link>
+              <Link href="/whats-new" className={styles.tourItem} onClick={() => setIsOpen(false)}>
+                <div>
+                  <strong>What&apos;s New</strong>
+                  <div>Chronological release notes and newly shipped features</div>
+                </div>
+              </Link>
               {loadingRole ? (
                 <div className={styles.emptyState}>
                   <p>Loading…</p>
