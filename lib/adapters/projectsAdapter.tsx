@@ -186,8 +186,8 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
           return (
             <div>
               <div className="flex items-center gap-2">
-                {project.partner1 && project.partner1.showEmoji !== false && (
-                  <span className="text-3xl shrink-0">
+                {project.partner1 && project.partner1.showEmoji !== false && project.partner1.emoji && (
+                  <span aria-hidden="true">
                     {project.partner1.emoji}
                   </span>
                 )}
@@ -196,14 +196,11 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                   <Image
                     src={project.partner1.logoUrl}
                     alt={`${project.partner1.name} logo`}
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 object-contain rounded shrink-0"
+                    width={32}
+                    height={32}
                     title={project.partner1.name}
                     unoptimized
                   />
-                ) : project.partner1 ? (
-                  <div className="w-10 h-10 shrink-0" />
                 ) : null}
                 
                 <span className="adapter-primary-field">{project.eventName}</span>
@@ -212,41 +209,37 @@ export const projectsAdapter: AdminPageAdapter<ProjectDTO> = {
                   <Image
                     src={project.partner2.logoUrl}
                     alt={`${project.partner2.name} logo`}
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 object-contain rounded shrink-0"
+                    width={32}
+                    height={32}
                     title={project.partner2.name}
                     unoptimized
                   />
-                ) : project.partner2 ? (
-                  <div className="w-10 h-10 shrink-0" />
                 ) : null}
               </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 {project.organization ? (
-                  <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                  <span className="badge badge-primary flex items-center gap-1">
                     {project.organization.logoUrl ? (
                       <Image
                         src={project.organization.logoUrl}
                         alt={`${project.organization.name} logo`}
-                        width={16}
-                        height={16}
-                        className="w-4 h-4 object-contain shrink-0"
+                        width={14}
+                        height={14}
                         unoptimized
                       />
                     ) : (
-                      <span>🏆</span>
+                      <span aria-hidden="true">🏆</span>
                     )}
                     {project.organization.name}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                    🏟️ Partner Only
+                  <span className="badge badge-secondary">
+                    Partner Only
                   </span>
                 )}
                 {project.competitionType && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-normal bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  <span className="badge badge-info">
                     {project.competitionType}
                   </span>
                 )}

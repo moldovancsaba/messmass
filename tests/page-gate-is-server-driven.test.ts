@@ -22,7 +22,6 @@ const ROOT = process.cwd();
 /** Every page that can render PagePasswordLogin. */
 const GATED_PAGES = [
   'app/filter/[slug]/page.tsx',
-  'app/hashtag/[hashtag]/page.tsx',
   'app/edit/[slug]/page.tsx',
   'app/partner-edit/[slug]/PartnerEditClient.tsx',
   'app/organization-edit/[id]/page.tsx',

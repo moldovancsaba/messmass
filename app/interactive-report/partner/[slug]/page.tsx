@@ -2,6 +2,9 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import config from '@/lib/config';
 import clientPromise from '@/lib/mongodb';
+import { resolvePartnerIdentifier } from '@/lib/partnerIdentifier';
+import { requirePageAccessDecision } from '@/lib/pageAccess';
+import ServerPageGate from '@/components/ServerPageGate';
 import { getScopedInteractiveReportData, resolveScopeProjectIds } from '@/lib/interactiveReportAggregator';
 import { buildProjectsReport } from '@/lib/hashtagReport';
 import type { ReportDb } from '@/lib/hashtagReport/measured';
@@ -32,6 +35,15 @@ export default async function PartnerInteractiveReportPage({ params, searchParam
   if (!slug) notFound();
 
   const resolvedSearchParams = searchParams ? await searchParams : {};
+  const client = await clientPromise;
+  const db = client.db(config.dbName);
+  const resolvedPartner = await resolvePartnerIdentifier(db as any, slug);
+  const canonicalSlug = resolvedPartner?.canonicalSlug || slug;
+  const accessDecision = await requirePageAccessDecision('partner-report', [canonicalSlug, slug]);
+  if (!accessDecision.allowed) {
+    return <ServerPageGate pageId={canonicalSlug} pageType="partner-report" />;
+  }
+
   const data = await getScopedInteractiveReportData({
     type: 'partner',
     identifier: slug,
@@ -47,8 +59,6 @@ export default async function PartnerInteractiveReportPage({ params, searchParam
     );
   }
 
-  const client = await clientPromise;
-  const db = client.db(config.dbName);
   const scope = await resolveScopeProjectIds('partner', slug, undefined, db);
   const report = await buildProjectsReport(db as unknown as ReportDb, scope.campaignProjects, data.partner?.name || slug);
 

@@ -923,7 +923,7 @@ describe('EditorDashboard mounted', () => {
     expect(reportContentCard(container)?.textContent).toContain('No texts.');
 
     // Manual mode: the number inputs and the Save button are disabled too.
-    await editor.click(buttonLabelled(container, 'Clicker'));
+    await editor.click(buttonLabelled(container, 'Manual'));
     expect(byTag(container, 'input').filter((i) => i.hasAttribute('data-number-input'))[0].hasAttribute('disabled')).toBe(true);
     expect(saveButton(container)?.hasAttribute('disabled')).toBe(true);
 
@@ -935,8 +935,7 @@ describe('EditorDashboard mounted', () => {
     expect(byTag(container, 'input').filter((i) => i.hasAttribute('data-number-input'))[0].hasAttribute('disabled')).toBe(false);
 
     // And it takes input again.
-    await editor.click(buttonLabelled(container, 'Manual'));
-    await editor.click(buttonLabelled(container, 'Builder'));
+    await editor.click(buttonLabelled(container, 'Clicker'));
     expect(card(container).getAttribute('class')).toContain('stat-card-clickable');
     await editor.click(card(container));
     expect(shownFemale(container)).toBe('1');
@@ -960,7 +959,7 @@ describe('EditorDashboard mounted', () => {
     // The save is refused (the grant is gone). The editor asks the page to
     // re-check access; the page re-loads and the server says canSave: false.
     api.saveReply = { status: 401, body: { success: false, code: 'EDIT_ACCESS_REQUIRED', error: 'Edit access expired or missing.' } };
-    await editor.click(buttonLabelled(container, 'Clicker'));
+    await editor.click(buttonLabelled(container, 'Manual'));
     await editor.click(saveButton(container));
     expect(api.saves).toHaveLength(1);
     expect(onRequestAccess).toHaveBeenCalledTimes(1);
@@ -1273,7 +1272,7 @@ describe('EditorDashboard mounted', () => {
       // A typed value (Manual mode) is the operator's latest word on it.
       const editor = await mountEditor(serverProject({ female: 0, male: 0 }), { canSave: true });
       const { container } = editor;
-      await editor.click(buttonLabelled(container, 'Clicker')); // to Manual mode
+      await editor.click(buttonLabelled(container, 'Manual')); // to Manual mode
       const enter = async (text: string) => {
         const field = typeInto(numberField(container), text);
         await act(async () => field.blur());
@@ -1567,7 +1566,7 @@ describe('EditorDashboard mounted', () => {
     it('records the number being typed when the tab is closed or reloaded, so the leave warning fires for it', async () => {
       const editor = await mountEditor(serverProject({ female: 0, male: 0 }), { canSave: true });
       const { container } = editor;
-      await editor.click(buttonLabelled(container, 'Clicker')); // to Manual mode
+      await editor.click(buttonLabelled(container, 'Manual')); // to Manual mode
       typeInto(numberField(container), '7');
 
       // Nothing was recorded yet (numbers record on blur); closing records it
@@ -1691,7 +1690,7 @@ describe('EditorDashboard mounted', () => {
       api.loadReply = loadAnswer(true);
       const page = await mountPage();
       const { container } = page;
-      await page.click(buttonLabelled(container, 'Clicker')); // to Manual mode
+      await page.click(buttonLabelled(container, 'Manual')); // to Manual mode
       typeInto(numberField(container), '12');
 
       api.loadReply = { status: 401, body: { success: false, code: 'PAGE_PASSWORD_REQUIRED' } };

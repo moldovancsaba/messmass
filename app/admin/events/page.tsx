@@ -831,18 +831,25 @@ export default function ProjectsPageUnified() {
         onSortChange={handleSort}
         actionButtons={[
           {
+            label: 'Create Event',
+            onClick: () => setShowNewProjectForm(true),
+            variant: 'primary',
+            icon: 'add',
+            title: 'Create a new event'
+          },
+          {
+            label: 'Quick Add Sports Match',
+            onClick: () => router.push('/admin/quick-add'),
+            variant: 'secondary',
+            icon: 'bolt',
+            title: 'Create events via match builder or bulk import'
+          },
+          {
             label: 'Club Logos',
             onClick: () => router.push('/admin/club-logos'),
             variant: 'secondary',
-            icon: '🛡️',
+            icon: 'shield',
             title: 'Manage centralized official club, nation, and federation logos'
-          },
-          {
-            label: 'Quick Add 🤝 Sports Match',
-            onClick: () => router.push('/admin/quick-add'),
-            variant: 'primary',
-            icon: '⚡',
-            title: 'Create events via match builder or bulk import'
           }
         ]}
       />

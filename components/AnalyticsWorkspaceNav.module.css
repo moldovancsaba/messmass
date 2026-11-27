@@ -1,64 +1,51 @@
 .wrap {
-  margin-bottom: var(--mm-space-6);
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-4);
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-1);
-}
-
-.title {
-  margin: 0;
-  font-size: var(--mm-font-size-lg);
-  font-weight: var(--mm-font-weight-semibold);
-  color: var(--mm-gray-900);
-}
-
-.subtitle {
-  margin: 0;
-  font-size: var(--mm-font-size-sm);
-  color: var(--mm-gray-600);
+  margin-bottom: var(--mm-space-4);
+  background: var(--mm-white);
+  border: 1px solid var(--mm-gray-200);
+  border-radius: var(--mm-radius-lg);
+  padding: var(--mm-space-2) var(--mm-space-3);
 }
 
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--mm-space-3);
+  align-items: center;
+  gap: var(--mm-space-2);
 }
 
 .link {
   display: inline-flex;
   align-items: center;
   gap: var(--mm-space-2);
-  min-height: 44px;
-  padding: 0 var(--mm-space-4);
-  border-radius: 999px;
-  border: 1px solid var(--mm-gray-200);
-  background: var(--mm-white);
+  min-height: 36px;
+  padding: 0 var(--mm-space-3);
+  border-radius: var(--mm-radius-full);
+  border: 1px solid transparent;
+  background: var(--mm-gray-50);
   color: var(--mm-gray-700);
   text-decoration: none;
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
-  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), transform 160ms ease;
+  white-space: nowrap;
+  transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base);
 }
 
 .link:hover {
-  border-color: var(--mm-color-primary-500);
+  border-color: var(--mm-color-primary-300);
+  background: var(--mm-color-primary-50);
   color: var(--mm-color-primary-700);
-  transform: translateY(-1px);
 }
 
 .linkActive {
   border-color: var(--mm-color-primary-500);
-  background: var(--mm-color-primary-50);
-  color: var(--mm-color-primary-700);
+  background: var(--mm-color-primary-600);
+  color: var(--mm-white);
+}
+
+.linkActive:hover {
+  border-color: var(--mm-color-primary-700);
+  background: var(--mm-color-primary-700);
+  color: var(--mm-white);
 }
 
 .icon {
@@ -71,12 +58,17 @@
 }
 
 @media (max-width: 768px) {
+  .wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .links {
-    flex-direction: column;
+    flex-wrap: nowrap;
   }
 
   .link {
-    width: 100%;
-    justify-content: flex-start;
+    min-height: 44px;
+    flex-shrink: 0;
   }
 }

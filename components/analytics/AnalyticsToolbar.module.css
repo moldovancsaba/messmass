@@ -34,7 +34,7 @@
 }
 
 .presetActive {
-  border-color: var(--mm-color-primary-500);
+  border-color: var(--mm-color-primary-600);
   background: var(--mm-color-primary-50);
   box-shadow: var(--mm-shadow-sm);
 }
@@ -42,6 +42,11 @@
 .presetLabel {
   font-size: var(--mm-font-size-sm);
   font-weight: var(--mm-font-weight-semibold);
+  color: var(--mm-gray-900);
+}
+
+.presetActive .presetLabel {
+  color: var(--mm-color-primary-800);
 }
 
 .presetDescription {

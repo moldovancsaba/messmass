@@ -11,6 +11,7 @@ interface UseReportStyleOptions {
   styleId?: string | null;
   enabled?: boolean;
   fallbackToGlobal?: boolean; // Default: false (no fallback for new system)
+  previewOnly?: boolean; // Skip overwriting :root --page-bg when previewing inside Admin shell
 }
 
 interface UseReportStyleReturn {
@@ -37,7 +38,8 @@ interface UseReportStyleReturn {
 export function useReportStyle({ 
   styleId, 
   enabled = true,
-  fallbackToGlobal = true
+  fallbackToGlobal = true,
+  previewOnly = false
 }: UseReportStyleOptions = {}): UseReportStyleReturn {
   const [style, setStyle] = useState<ReportStyle | null>(null);
   const [loading, setLoading] = useState(false);
@@ -62,7 +64,7 @@ export function useReportStyle({
           return;
         }
         setStyle(data.style);
-        injectStyleAsCSS(data.style);
+        injectStyleAsCSS(data.style, { previewOnly });
         console.log('✅ Applied report style:', data.style.name);
       } catch (err) {
         console.error('❌ Failed to fetch report style by id, falling back to first available:', err);
@@ -90,7 +92,7 @@ export function useReportStyle({
       //     designed to look like.
       const fallback = { ...DEFAULT_STYLE, name: 'System default' } as ReportStyle;
       setStyle(fallback);
-      injectStyleAsCSS(fallback);
+      injectStyleAsCSS(fallback, { previewOnly });
       setError(null);
       setLoading(false);
       console.log('✅ Applied system default report style');
@@ -110,7 +112,7 @@ export function useReportStyle({
     return () => {
       removeStyleCSS();
     };
-  }, [styleId, enabled, fallbackToGlobal]);
+  }, [styleId, enabled, fallbackToGlobal, previewOnly]);
 
   return { style, loading, error };
 }

@@ -363,6 +363,7 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
     type: 'count' as Variable['type'],
     category: '',
     description: '',
+    unit: '',
     visibleInClicker: true,
     editableInManual: true,
     saving: false,
@@ -404,56 +405,33 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
           <textarea className="form-input" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="What does this track?" />
         </div>
         
-        {/* Type-specific fields */}
-        {(form.type === 'text' || form.type === 'textarea') && (
+        {/* Optional display unit (persisted to variables_metadata.unit) */}
+        {form.type === 'currency' ? (
           <div className="grid-col-span-2">
-            <label className="form-label-block">Max Length (optional)</label>
-            <input className="form-input" type="number" placeholder="e.g. 500" />
-          </div>
-        )}
-        
-        {form.type === 'texthyper' && (
-          <div className="grid-col-span-2">
-            <label className="form-label-block">Subtype</label>
-            <select className="form-select">
-              <option value="url">URL</option>
-              <option value="email">Email</option>
-              <option value="phone">Phone</option>
-              <option value="social">Social Handle</option>
-            </select>
-          </div>
-        )}
-        
-        {form.type === 'textmedia' && (
-          <div className="grid-col-span-2">
-            <label className="form-label-block">Max File Size (MB)</label>
-            <input className="form-input" type="number" placeholder="Default: 10MB" defaultValue="10" />
-          </div>
-        )}
-        
-        {form.type === 'currency' && (
-          <div className="grid-col-span-2">
-            <label className="form-label-block">Currency Symbol</label>
-            <select className="form-select">
+            <label htmlFor="kyc-var-currency" className="form-label-block">Currency Symbol</label>
+            <select
+              id="kyc-var-currency"
+              className="form-select"
+              value={form.unit || '€'}
+              onChange={(e) => setForm({ ...form, unit: e.target.value })}
+            >
               <option value="€">€ Euro</option>
               <option value="$">$ Dollar</option>
               <option value="£">£ Pound</option>
             </select>
           </div>
-        )}
-        
-        {(form.type === 'count' || form.type === 'numeric') && (
-          <>
-            <div>
-              <label className="form-label-block">Min Value (optional)</label>
-              <input className="form-input" type="number" placeholder="e.g. 0" />
-            </div>
-            <div>
-              <label className="form-label-block">Max Value (optional)</label>
-              <input className="form-input" type="number" placeholder="e.g. 1000" />
-            </div>
-          </>
-        )}
+        ) : (form.type === 'count' || form.type === 'numeric' || form.type === 'percentage') ? (
+          <div className="grid-col-span-2">
+            <label htmlFor="kyc-var-unit" className="form-label-block">Unit Label (optional)</label>
+            <input
+              id="kyc-var-unit"
+              className="form-input"
+              value={form.unit}
+              onChange={(e) => setForm({ ...form, unit: e.target.value })}
+              placeholder={form.type === 'percentage' ? '%' : 'e.g. fans, clicks, scans'}
+            />
+          </div>
+        ) : null}
         <div className="flex gap-4 items-center grid-col-span-2">
           <label className="flex gap-2 items-center">
             <input type="checkbox" checked={form.visibleInClicker} onChange={(e) => setForm({ ...form, visibleInClicker: e.target.checked })} />
@@ -465,7 +443,7 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
           </label>
         </div>
       </div>
-      {form.error && <div className="text-error mt-2">{form.error}</div>}
+      {form.error && <div className="text-error mt-2" role="alert">{form.error}</div>}
       <div className="flex justify-end gap-2 mt-4">
         <button className="btn btn-small btn-secondary" onClick={onClose} disabled={form.saving}>Cancel</button>
         <button className="btn btn-small btn-primary" disabled={form.saving} onClick={async () => {
@@ -478,6 +456,10 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
           if (!form.label || !form.category) { setForm({ ...form, error: 'Label and Category are required' }); return; }
           try {
             setForm(prev => ({ ...prev, saving: true, error: '' }));
+            const effectiveUnit =
+              form.type === 'currency'
+                ? (form.unit || '€')
+                : (form.unit.trim() || undefined);
             // WHAT: Use apiPost() for automatic CSRF token handling
             const data = await apiPost('/api/variables-config', {
               name: form.name,
@@ -485,6 +467,7 @@ function CreateVariableForm({ onClose, onCreated }: { onClose: () => void; onCre
               type: form.type,
               category: form.category,
               description: form.description || undefined,
+              unit: effectiveUnit,
               flags: { visibleInClicker: form.visibleInClicker, editableInManual: form.editableInManual },
             });
             if (!data?.success) throw new Error(data?.error || 'Failed to create variable');

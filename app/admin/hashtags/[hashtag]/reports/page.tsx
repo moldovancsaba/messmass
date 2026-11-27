@@ -20,8 +20,8 @@ const CONFIG: OwnerConfig = {
   pageType: 'hashtag',
   reportHref: (tag, slug) =>
     slug
-      ? `/hashtag/${encodeURIComponent(tag)}?variant=${encodeURIComponent(slug)}`
-      : `/hashtag/${encodeURIComponent(tag)}`,
+      ? `/filter/${encodeURIComponent(tag)}?variant=${encodeURIComponent(slug)}`
+      : `/filter/${encodeURIComponent(tag)}`,
   interactiveReportHref: (tag, slug) =>
     slug
       ? `/interactive-report/hashtag/${encodeURIComponent(tag)}?variant=${encodeURIComponent(slug)}`

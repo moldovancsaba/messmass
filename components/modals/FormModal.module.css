@@ -39,7 +39,8 @@
 /* Body section (scrollable) */
 .body {
   padding: 2rem;
-  overflow: visible;
+  overflow-y: auto;
+  max-height: calc(85vh - 140px);
   min-height: 0;
 }
 

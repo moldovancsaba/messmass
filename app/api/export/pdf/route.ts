@@ -172,27 +172,28 @@ export async function GET(request: NextRequest) {
   const targetUrl = new URL(path, `${protocol}://${host}`);
   targetUrl.searchParams.set('pdfExport', '1');
 
-  // WHAT: Forward the caller's admin session, if any.
-  // WHY: Some report variants (e.g. hashtag aggregate reports) are gated by a
-  // page-password UI check stored in the browser's own sessionStorage, which a
-  // server-side navigation has no access to at all — that gate is out of scope for
-  // this pass (see docs). Admin sessions are the one auth path here that IS a real
-  // cookie, so forwarding it lets an admin export a PDF of anything they can already
-  // view, matching what they'd see if they screenshotted the page themselves.
+  // WHAT: Forward both the caller's admin session and page-access grant cookie, if any.
+  // WHY: Password-protected client reports unlock via the signed HttpOnly `page-access`
+  // cookie (lib/pageAccess.ts), while admins bypass via `admin-session`. Forwarding both
+  // lets headless Chromium render protected reports cleanly instead of stalling on the gate.
   const adminSessionCookie = request.cookies.get('admin-session');
+  const pageAccessCookie = request.cookies.get('page-access');
 
   let browser: Awaited<ReturnType<typeof launchBrowser>> | null = null;
   try {
     browser = await launchBrowser();
     const page = await browser.newPage();
 
-    if (adminSessionCookie) {
-      await page.setCookie({
-        name: 'admin-session',
-        value: adminSessionCookie.value,
-        domain: host.split(':')[0],
-        path: '/',
-      });
+    const cookiesToForward = [
+      ...(adminSessionCookie
+        ? [{ name: 'admin-session', value: adminSessionCookie.value, domain: host.split(':')[0], path: '/' }]
+        : []),
+      ...(pageAccessCookie
+        ? [{ name: 'page-access', value: pageAccessCookie.value, domain: host.split(':')[0], path: '/' }]
+        : []),
+    ];
+    if (cookiesToForward.length > 0) {
+      await page.setCookie(...cookiesToForward);
     }
 
     await page.setViewport({

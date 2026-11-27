@@ -6,10 +6,12 @@
   /* What: Hamburger button for mobile
      Why: Only visible on mobile, positioned in top-left corner */
   position: fixed;
-  top: var(--mm-space-4);
-  left: var(--mm-space-4);
-  z-index: var(--z-fixed);
+  top: var(--mm-space-2);
+  left: var(--mm-space-3);
+  z-index: calc(var(--z-sticky) + 10);
   display: none; /* Hidden on desktop */
+  min-width: 44px;
+  min-height: 44px;
   background: var(--mm-white);
   border: 1px solid var(--mm-border-color-default);
   border-radius: var(--mm-radius-md);
@@ -69,14 +71,13 @@
 
 /* ===== Sidebar Header ===== */
 .sidebarHeader {
-  /* WHAT: Logo container with EXACT height to prevent jumping
-     WHY: Logo must stay pixel-perfect in same position */
+  /* WHAT: Logo container matching TopHeader 56px height */
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* Left align */
-  padding: var(--mm-space-6) var(--mm-space-4);
+  justify-content: flex-start;
+  padding: var(--mm-space-3) var(--mm-space-4);
   border-bottom: 1px solid var(--mm-border-color-default);
-  height: 72px; /* FIXED height, not min-height */
+  height: 56px;
 }
 
 .logo {
@@ -221,13 +222,13 @@
   display: flex;
   align-items: center;
   gap: var(--mm-space-3);
-  min-height: 48px;
-  padding: var(--mm-space-3) var(--mm-space-4);
+  min-height: 40px;
+  padding: var(--mm-space-2) var(--mm-space-3);
   margin: 0 var(--mm-space-2);
   border-radius: var(--mm-radius-md);
   text-decoration: none;
   color: var(--mm-gray-700);
-  font-size: 1.0625rem;
+  font-size: 0.9375rem;
   font-weight: var(--mm-font-weight-medium);
   transition: background-color var(--transition-base), color var(--transition-base), border-color var(--transition-base), transform 160ms ease;
   position: relative;
@@ -297,15 +298,24 @@
   margin: 0;
   padding: 0 0 0 var(--mm-space-6);
   display: grid;
-  gap: 4px;
+  gap: 2px;
+}
+
+.childListCollapsed {
+  padding-left: 0;
+}
+
+.childListCollapsed .childLink {
+  justify-content: center;
+  padding: var(--mm-space-2);
 }
 
 .childLink {
   display: flex;
   align-items: center;
   gap: var(--mm-space-3);
-  min-height: 42px;
-  padding: 10px var(--mm-space-4);
+  min-height: 36px;
+  padding: 6px var(--mm-space-3);
   margin: 0 var(--mm-space-2);
   border-radius: var(--mm-radius-md);
   text-decoration: none;
@@ -384,18 +394,24 @@
 /* What: Mobile behavior (<768px) - drawer overlay (OPS-ADMIN-01: match --mm-breakpoint-tablet) */
 @media (max-width: 767px) {
   .mobileToggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   .sidebar {
     transform: translateX(-100%);
     width: var(--mm-sidebar-width);
     box-shadow: none;
+    visibility: hidden;
+    pointer-events: none;
   }
   
   .sidebar.mobileOpen {
     transform: translateX(0);
     box-shadow: var(--mm-shadow-2xl);
+    visibility: visible;
+    pointer-events: auto;
   }
   
   .mobileScrim {

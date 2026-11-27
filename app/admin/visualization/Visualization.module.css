@@ -9,6 +9,9 @@
   display: grid;
   gap: var(--mm-space-4);
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   --block-height: var(--mm-block-height-default, 360px);
   --row-height: var(--mm-block-height-default, 360px);
   /* grid-template-columns set dynamically per block via <style jsx> */
@@ -146,8 +149,9 @@
 }
 
 .templateDropdownShell {
-  flex: 1;
-  min-width: 300px;
+  flex: 1 1 240px;
+  min-width: 0;
+  max-width: 100%;
   position: relative;
 }
 

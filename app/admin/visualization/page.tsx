@@ -144,12 +144,14 @@ export default function VisualizationPage() {
   }, [templates, selectedTemplateId]);
 
   // WHAT: Dynamically apply custom branding/style of the selected report template
-  // WHY: Matches the live themed styling of reports (/report, /partner-report, /organization-report)
+  // WHY: Matches the live themed styling of reports without painting the Admin shell --page-bg
   useReportStyle({
     styleId: selectedTemplate?.styleId ? String(selectedTemplate.styleId) : null,
     enabled: !!selectedTemplateId,
     fallbackToGlobal: true,
+    previewOnly: true,
   });
+  const [showHeroSettings, setShowHeroSettings] = useState(false);
   
   // WHAT: Template creation modal state
   // WHY: Allow creating new templates from this page
@@ -1922,16 +1924,30 @@ export default function VisualizationPage() {
         </ColoredCard>
       )}
 
-      {/* WHAT: HERO Block Settings Section
-          WHY: Allow configuring report header elements at template level */}
+      {/* WHAT: HERO Block Settings Section (collapsible, collapsed by default)
+          WHY: Keep Data Visualization Blocks immediately above the fold */}
       {selectedTemplateId && (
         <ColoredCard accentColor="var(--mm-warning)" hoverable={false}>
-          <h2 className="section-title mb-6">🏒 HERO Block Settings</h2>
-          <p className="section-subtitle mb-6">
-            Control which elements appear in the report header for all reports using this template
-          </p>
+          <div className="section-header">
+            <div>
+              <h2 className="section-title">Report Header &amp; Alignment Settings</h2>
+              <p className="section-subtitle">
+                Configure header visibility and block alignment for all reports using this template
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowHeroSettings((prev) => !prev)}
+              aria-expanded={showHeroSettings}
+              aria-controls="hero-block-settings-panel"
+              className="btn btn-small btn-secondary"
+            >
+              {showHeroSettings ? 'Hide Header Settings' : 'Edit Header Settings'}
+            </button>
+          </div>
           
-          <div className="form-section">
+          {showHeroSettings && (
+          <div id="hero-block-settings-panel" className="form-section mt-4">
             <div className="form-group mb-6">
               <h4 className={vizStyles.heroSectionHeader}>Header Element Visibility</h4>
               <div className={vizStyles.heroCheckboxGrid}>
@@ -1945,7 +1961,7 @@ export default function VisualizationPage() {
                       saveHeroSettings(newHeroSettings, alignmentSettings);
                     }}
                   />
-                  <span>Show Emoji (🏒)</span>
+                  <span>Show Emoji</span>
                 </label>
                 
                 <label className={`checkbox-label ${vizStyles.flexCheckboxLabel}`}>
@@ -2020,8 +2036,9 @@ export default function VisualizationPage() {
               </div>
               
               <div className="form-row mt-4">
-                <label className="form-label">Minimum Element Height (px)</label>
+                <label htmlFor="hero-min-element-height" className="form-label">Minimum Element Height (px)</label>
                 <input
+                  id="hero-min-element-height"
                   type="number"
                   value={alignmentSettings.minElementHeight || ''}
                   onChange={(e) => {
@@ -2035,12 +2052,8 @@ export default function VisualizationPage() {
                 />
               </div>
             </div>
-            
-            <div className="info-note mt-4">
-              💡 <strong>Tip:</strong> These settings control what appears in report headers and how elements are aligned within blocks. 
-              Changes are saved automatically and apply to all reports using this template.
-            </div>
           </div>
+          )}
         </ColoredCard>
       )}
 
@@ -2048,54 +2061,20 @@ export default function VisualizationPage() {
           WHY: Only show when template is selected */}
       {selectedTemplateId && (
         <ColoredCard accentColor="var(--mm-chart-indigo)" hoverable={false}>
-          <h2 className="section-title mb-6">Data Visualization Blocks</h2>
-        
-        {/* Responsive Grid Info */}
-        <div className="info-box">
-          <h4 className="info-box-title">
-            📐 Responsive Grid System
-          </h4>
-          <div className="info-grid">
-            <div className="info-grid-item">
-              <span className="info-grid-emoji">📱</span>
-              <div>
-                <strong>Mobile:</strong><br />
-                2 units per row
-              </div>
-            </div>
-            <div className="info-grid-item">
-              <span className="info-grid-emoji">📱</span>
-              <div>
-                <strong>Tablet:</strong><br />
-                3 units per row
-              </div>
-            </div>
-            <div className="info-grid-item">
-              <span className="info-grid-emoji">💻</span>
-              <div>
-                <strong>Desktop (Stats Page):</strong><br />
-                Up to 6 units per row (block-configurable)
-              </div>
-            </div>
+          <div className="section-header">
+            <h2 className="section-title">Data Visualization Blocks ({dataBlocks.length})</h2>
+            <button
+              type="button"
+              onClick={() => {
+                setShowCreateBlock(true);
+                resetBlockForm();
+              }}
+              className="btn btn-small btn-primary"
+            >
+              <MaterialIcon name="add" variant="outlined" className={vizStyles.iconSpacing} />
+              New Block
+            </button>
           </div>
-          <p className="info-note">
-            Preview below uses the same responsive grid as stats pages. A unit size=2 chart spans two columns within the block; LayoutV2 blocks are capped at 4 units total.
-          </p>
-        </div>
-        
-        {/* Create New Block Button */}
-        <div className="section-header">
-          <h3 className="section-header-title">Current Blocks ({dataBlocks.length})</h3>
-          <button
-            onClick={() => {
-              setShowCreateBlock(true);
-              resetBlockForm();
-            }}
-            className="btn btn-small btn-primary"
-          >
-            ➕ New Block
-          </button>
-        </div>
         
         {/* Create Block Form */}
         {showCreateBlock && (
@@ -2214,6 +2193,7 @@ export default function VisualizationPage() {
                     
                     <div className="action-buttons-container">
                       <button
+                        type="button"
                         onClick={() => setEditingBlock(block)}
                         className="btn btn-small btn-primary action-button"
                       >
@@ -2221,13 +2201,55 @@ export default function VisualizationPage() {
                         Edit
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDeleteBlock(block._id!, block.name)}
                         className="btn btn-small btn-danger action-button"
                       >
                         <MaterialIcon name="delete" variant="outlined" className={vizStyles.iconSpacing} />
                         Delete
                       </button>
-                      <span className="drag-handle" title="Drag to reorder">⮕️</span>
+                      <div className="flex gap-1">
+                        <button
+                          type="button"
+                          disabled={idx === 0}
+                          aria-label={`Move block ${block.name} up`}
+                          title="Move block up"
+                          className="btn btn-small btn-secondary"
+                          onClick={async () => {
+                            if (idx === 0) return;
+                            const ordered = [...dataBlocks].sort((a, b) => a.order - b.order);
+                            const [moved] = ordered.splice(idx, 1);
+                            ordered.splice(idx - 1, 0, moved);
+                            const reindexed = ordered.map((b, i) => ({ ...b, order: i }));
+                            setDataBlocks(reindexed);
+                            for (const b of reindexed) {
+                              await handleUpdateBlock(b);
+                            }
+                          }}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          type="button"
+                          disabled={idx === dataBlocks.length - 1}
+                          aria-label={`Move block ${block.name} down`}
+                          title="Move block down"
+                          className="btn btn-small btn-secondary"
+                          onClick={async () => {
+                            if (idx >= dataBlocks.length - 1) return;
+                            const ordered = [...dataBlocks].sort((a, b) => a.order - b.order);
+                            const [moved] = ordered.splice(idx, 1);
+                            ordered.splice(idx + 1, 0, moved);
+                            const reindexed = ordered.map((b, i) => ({ ...b, order: i }));
+                            setDataBlocks(reindexed);
+                            for (const b of reindexed) {
+                              await handleUpdateBlock(b);
+                            }
+                          }}
+                        >
+                          ↓
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2367,6 +2389,7 @@ export default function VisualizationPage() {
                                 HOW: Image aspect ratios drive row height, not unit counts
                                 MIGRATION: Values >2 auto-clamped to 2 on save */}
                             <select
+                              aria-label={`Unit size for ${chartConfig?.title || chart.chartId}`}
                               value={unitSize}
                               onChange={(e) => {
                                 // WHAT: Parse immediately for dropdowns (not text input)
@@ -2384,6 +2407,7 @@ export default function VisualizationPage() {
                             </select>
 
                             <select
+                              aria-label={`Aspect ratio for ${chartConfig?.title || chart.chartId}`}
                               value={aspectRatio}
                               onChange={(e) => updateChartAspectRatio(block, index, e.target.value as LayoutAspectRatio)}
                               className="chart-select"
@@ -2397,6 +2421,9 @@ export default function VisualizationPage() {
                             </select>
                             
                             <button
+                              type="button"
+                              aria-label={`Remove ${chartConfig?.title || chart.chartId} from block`}
+                              title="Remove chart from block"
                               onClick={() => removeChartFromBlock(block, index)}
                               className="btn btn-small btn-danger"
                             >

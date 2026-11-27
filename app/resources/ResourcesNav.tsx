@@ -31,6 +31,9 @@ export default function ResourcesNav({ active }: ResourcesNavProps) {
         </div>
 
         <nav className={styles.navLinks} aria-label="Resource collections">
+          <Link href="/" className={styles.navLink}>
+            ← messmass.com
+          </Link>
           <Link
             href="/resources"
             className={`${styles.navLink} ${active === 'hub' ? styles.navLinkActive : ''}`}

@@ -36,6 +36,19 @@ export const partnersEntityConfig: AdminEntityConfig<PartnerResponse> = {
         getHref: (partner) => `/admin/partners/${partner._id}/reports`,
       },
     },
+    {
+      id: 'partner-detail',
+      label: 'Overview',
+      mobileLabel: 'Overview',
+      icon: 'open_in_new',
+      variant: 'secondary',
+      priority: 'secondary',
+      requiredPermissions: ['admin'],
+      execution: {
+        kind: 'route',
+        getHref: (partner) => `/admin/partners/${partner._id}`,
+      },
+    },
     /* The 'partner-open-editor' action was removed here (messmass#244 Phase E,
      * "remove Open Editor dependency from list views after parity is proven").
      *

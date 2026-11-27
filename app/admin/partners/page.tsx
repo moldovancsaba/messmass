@@ -1366,14 +1366,12 @@ export default function PartnersAdminPageUnified() {
           </button>
         </div>
 
-        {/* Inline Connect + Pull/Push */}
-          </>
-        )}
+        {/* Inline Connect + Pull/Push (Step 2 only, below Google Sheets URL) */}
         <div className="form-group mb-4">
           <button
             type="button"
             className="btn btn-secondary mr-2"
-            onClick={async () => {
+            onClick={async (clickEvent) => {
               try {
                 const raw = editPartnerData.googleSheetsUrl || '';
                 const m = raw.match(/\/d\/([a-zA-Z0-9-_]+)/);
@@ -1384,7 +1382,7 @@ export default function PartnersAdminPageUnified() {
                 }
                 
                 // Show loading state
-                const btn = event?.target as HTMLButtonElement;
+                const btn = clickEvent.currentTarget;
                 const originalText = btn?.textContent || '';
                 if (btn) btn.textContent = '⏳ Setting up...';
                 if (btn) btn.disabled = true;
@@ -1473,6 +1471,8 @@ export default function PartnersAdminPageUnified() {
           </button>
           <p className="form-hint">Adds the partner UUID to the beginning of the spreadsheet title.</p>
         </div>
+          </>
+        )}
       </FormModal>
       
       {/* Manual Sports Data Entry Modal */}

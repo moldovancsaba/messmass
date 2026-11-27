@@ -103,7 +103,23 @@ export default function UnifiedListView<T extends { _id: string }>({
                       ${isSortable ? styles.sortable : ''}
                       ${isSorted ? styles.sorted : ''}
                     `}
+                    tabIndex={isSortable ? 0 : undefined}
+                    aria-sort={
+                      isSortable
+                        ? isSorted
+                          ? sortOrder === 'asc'
+                            ? 'ascending'
+                            : 'descending'
+                          : 'none'
+                        : undefined
+                    }
                     onClick={() => isSortable && handleColumnClick(column)}
+                    onKeyDown={(e) => {
+                      if (isSortable && (e.key === 'Enter' || e.key === ' ')) {
+                        e.preventDefault();
+                        handleColumnClick(column);
+                      }
+                    }}
                     // WHAT: Dynamic column width from adapter configuration
                     // WHY: Each column can specify custom width/minWidth in adapter
                     // eslint-disable-next-line react/forbid-dom-props
@@ -115,7 +131,7 @@ export default function UnifiedListView<T extends { _id: string }>({
                     <div className={styles.headerContent}>
                       <span>{column.label}</span>
                       {isSorted && (
-                        <span className={styles.sortIndicator}>
+                        <span className={styles.sortIndicator} aria-hidden="true">
                           {sortOrder === 'asc' ? '▲' : '▼'}
                         </span>
                       )}

@@ -124,20 +124,6 @@ export const adminNavSections: AdminNavSection[] = [
         description: 'Consolidate duplicate club and team detections into canonical partner records.',
         accentColor: navAccent.secondary,
       },
-      {
-        label: 'Global Report',
-        path: '/admin/global/reports',
-        icon: 'public',
-        description: 'Everything Messmass collects, in the same interactive report as a hashtag, partner or event: variants, page password and sharing.',
-        accentColor: navAccent.primaryStrong,
-      },
-      {
-        label: 'Fanmass Proof Review',
-        path: '/admin/fanmass-evidence',
-        icon: 'fact_check',
-        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
-        accentColor: navAccent.primary,
-      },
     ],
   },
   {
@@ -179,34 +165,41 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
-        label: 'Chart Algorithms',
+        label: 'Charts & KPI Formulas',
         path: '/admin/charts',
         icon: 'trending_up',
-        description: 'Configure chart logic, formulas, and calculation behavior.',
+        description: 'Configure chart logic, KPI formulas, and calculation behavior.',
         accentColor: navAccent.warning,
         showInAdminWorkspace: false,
+      },
+      {
+        label: 'Global Report',
+        path: '/admin/global/reports',
+        icon: 'public',
+        description: 'Everything Messmass collects, in the same interactive report as a hashtag, partner or event: variants, page password and sharing.',
+        accentColor: navAccent.primaryStrong,
       },
     ],
   },
   {
     key: 'data',
     title: 'Data',
-    description: 'Control variables, clicker sets, links, and supporting data plumbing.',
+    description: 'Control tracked metrics, live counter layouts, links, and supporting data plumbing.',
     items: [
       {
-        label: 'KYC Variables',
+        label: 'Metrics & Fields',
         path: '/admin/kyc',
-        icon: 'lock',
-        description: 'Manage tracked variables, aliases, and input-field definitions.',
+        icon: 'tune',
+        description: 'Manage tracked event metrics, aliases, and input-field definitions.',
         tourDescription: 'The master dictionary of every metric messmass can track — VIP guests, merch sold, and so on. Define a variable once here, and it becomes usable in data entry and report formulas.',
         accentColor: navAccent.primary,
       },
       {
-        label: 'Clicker Sets',
+        label: 'Live Counter Layouts',
         path: '/admin/clicker-manager',
         icon: 'swap_horiz',
-        description: 'Manage clicker-mode groupings and partner-level variable-set assignment.',
-        tourDescription: 'A Clicker Set is a reusable layout for fast, tap-to-count data entry at live events. Assign a set to a partner and every one of their events uses that same counter layout.',
+        description: 'Manage live event counter groupings and partner-level layout assignment.',
+        tourDescription: 'A Live Counter Layout is a reusable layout for fast, tap-to-count data entry at live events. Assign a layout to a partner and every one of their events uses that same counter layout.',
         accentColor: navAccent.secondary,
       },
       {
@@ -293,7 +286,14 @@ export const adminNavSections: AdminNavSection[] = [
         showInAdminWorkspace: false,
       },
       {
-        label: 'Combined Insights',
+        label: 'Fanmass Proof Review',
+        path: '/admin/fanmass-evidence',
+        icon: 'fact_check',
+        description: 'Check, confirm, reject, correct or add the proof behind every brand and club figure Fanmass produces; the decisions train the whole system.',
+        accentColor: navAccent.primary,
+      },
+      {
+        label: 'Automated Insights',
         path: '/admin/analytics/combined-insights',
         icon: 'merge',
         description: 'Both insight pipelines -- Executive Dashboard and Analytics Insights -- merged into one feed.',
@@ -367,7 +367,7 @@ export function getReportingWorkspaceItems(): AdminNavItem[] {
   const reportingItems = getReportingNavItems().filter((item) => item.path !== '/admin/reports');
   const dataItems = adminNavSections.find((section) => section.key === 'data')?.items || [];
   const reportingDependencies = dataItems.filter((item) =>
-    item.label === 'KYC Variables' || item.label === 'Clicker Sets'
+    item.path === '/admin/kyc' || item.path === '/admin/clicker-manager'
   );
 
   return [...reportingItems, ...reportingDependencies];

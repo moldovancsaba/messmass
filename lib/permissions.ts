@@ -46,10 +46,13 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Report Themes': ['admin', 'superadmin'],
   'Content Library': ['admin', 'superadmin'],
   'Chart Algorithms': ['admin', 'superadmin'],
+  'Charts & KPI Formulas': ['admin', 'superadmin'],
 
   // WHAT: Data
   'KYC Variables': ['admin', 'superadmin'],
+  'Metrics & Fields': ['admin', 'superadmin'],
   'Clicker Sets': ['admin', 'superadmin'],
+  'Live Counter Layouts': ['admin', 'superadmin'],
   'Bitly Links': ['admin', 'superadmin'],
   'Filters': ['user', 'admin', 'superadmin'],
   'Hashtags': ['superadmin'],
@@ -69,6 +72,7 @@ export const MENU_PERMISSIONS: Record<string, UserRole[]> = {
   'Marketing Dashboard': ['admin', 'superadmin'],
   'Operations Dashboard': ['admin', 'superadmin'],
   'Combined Insights': ['superadmin'],
+  'Automated Insights': ['superadmin'],
   'Fanmass': ['admin', 'superadmin'],
 
   // WHAT: System

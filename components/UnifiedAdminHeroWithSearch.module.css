@@ -6,17 +6,17 @@
 .heroContainer {
   width: 100%;
   background: var(--mm-color-primary-600);
-  padding: var(--mm-space-6) var(--mm-space-8);
+  padding: var(--mm-space-4) var(--mm-space-5);
   border-radius: var(--mm-radius-lg);
-  margin-bottom: var(--mm-space-6);
-  box-shadow: var(--mm-shadow-md);
+  margin-bottom: var(--mm-space-4);
+  box-shadow: var(--mm-shadow-sm);
 }
 
 .heroContent {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--mm-space-6);
+  align-items: center;
+  gap: var(--mm-space-4);
   min-width: 0;
   flex-wrap: wrap;
 }
@@ -24,21 +24,21 @@
 /* WHAT: Left section - Title and search */
 /* WHY: Primary content grouping */
 .heroLeft {
-  flex: 1;
+  flex: 1 1 320px;
   min-width: 0; /* Allow text truncation */
-  display: flex;
-  flex-direction: column;
-  gap: var(--mm-space-4);
-}
-
-.heroTitleGroup {
   display: flex;
   flex-direction: column;
   gap: var(--mm-space-2);
 }
 
+.heroTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--mm-space-1);
+}
+
 .heroTitle {
-  font-size: var(--mm-font-size-3xl);
+  font-size: var(--mm-font-size-xl);
   font-weight: var(--mm-font-weight-bold);
   color: var(--mm-white);
   margin: 0;
@@ -46,7 +46,7 @@
 }
 
 .heroSubtitle {
-  font-size: var(--mm-font-size-base);
+  font-size: var(--mm-font-size-sm);
   color: var(--mm-color-primary-100);
   margin: 0;
   line-height: var(--mm-line-height-md);
@@ -56,19 +56,20 @@
 /* WHY: Prominent search with icon */
 .searchContainer {
   position: relative;
-  max-width: 500px;
+  max-width: 440px;
   width: 100%;
 }
 
 .searchInput {
   width: 100%;
-  padding: var(--mm-space-3) var(--mm-space-4);
-  padding-left: var(--mm-space-10);
-  border: 2px solid var(--mm-color-primary-300);
+  padding: var(--mm-space-2) var(--mm-space-3);
+  padding-left: var(--mm-space-9);
+  border: 1px solid var(--mm-color-primary-300);
   border-radius: var(--mm-radius-md);
   background: var(--mm-white);
-  font-size: var(--mm-font-size-base);
+  font-size: var(--mm-font-size-sm);
   color: var(--mm-gray-900);
+  min-height: 36px;
   transition: border-color var(--transition-base), box-shadow var(--transition-base);
 }
 
@@ -164,21 +165,9 @@
   white-space: normal;
 }
 
-@media (max-width: 1440px) {
-  .heroRight {
-    width: 100%;
-    justify-content: flex-start;
-  }
-
-  .actionButtons {
-    width: 100%;
-    justify-content: flex-start;
-  }
-}
-
 /* WHAT: Responsive adjustments for tablets */
-/* WHY: Stack controls vertically on medium screens */
-@media (max-width: 1024px) {
+/* WHY: Stack controls vertically on narrow screens only (keep desktop 1280-1440px on one row) */
+@media (max-width: 960px) {
   .heroContent {
     flex-direction: column;
     align-items: stretch;

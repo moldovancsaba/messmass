@@ -2,21 +2,20 @@
    Why: Clean, professional header without gradients or heavy shadows */
 
 .topHeader {
-  /* What: Fixed top header with flat design
-     Why: TailAdmin V2 aesthetic - white background, subtle border */
+  /* What: Sticky top header inside .mainWrapper (which already offsets --mm-sidebar-width) */
   position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  height: 72px;
+  height: 56px;
   background: var(--mm-white);
   border-bottom: 1px solid var(--mm-border-color-default);
   z-index: calc(var(--z-sticky) + 1);
   display: flex;
   align-items: center;
-  /* WHAT: Ensure full width minus sidebar on desktop
-     WHY: Prevent header content overflow by calculating available width */
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .headerContent {
@@ -128,31 +127,18 @@
   
   .logoutButton {
     padding: var(--mm-space-2);
-    min-width: 40px;
+    min-width: 44px;
+    min-height: 44px;
     justify-content: center;
   }
   
   .headerContent {
-    padding: 0 var(--mm-space-4);
+    padding: 0 var(--mm-space-4) 0 calc(var(--mm-space-12) + var(--mm-space-4));
   }
 }
 
-/* What: Account for fixed sidebar (OPS-ADMIN-01: token) */
-@media (min-width: 768px) {
-  .topHeader {
-    margin-left: var(--mm-sidebar-width);
-    width: calc(100% - var(--mm-sidebar-width));
-  }
-}
-
-/* ponytail: removed the tablet-only collapsed-width override so the header offset matches
-   desktop across all widths ≥768px (the ≥768px rule above governs). */
-
-/* What: No left margin on mobile
-   Why: Sidebar is overlay, not shifting content */
 @media (max-width: 767px) {
-  .topHeader {
-    margin-left: 0;
-    width: 100%; /* Full width on mobile */
+  .headerContent {
+    padding-left: calc(var(--mm-space-12) + var(--mm-space-4));
   }
 }

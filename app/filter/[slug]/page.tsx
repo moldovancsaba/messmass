@@ -255,9 +255,8 @@ export default function FilterReportPage() {
   // (see hooks/useReportExport.ts and app/api/export/pdf/route.ts).
   // WHY: showExport was already true here with no onExportPDF handler wired, so the
   // button silently no-opped (ReportHero's own fallback just console.warns). This is
-  // the live route (/hashtag/* permanently redirects to /filter/* — next.config.js —
-  // so app/hashtag/[hashtag]/page.tsx, wired earlier, is unreachable by normal
-  // navigation; this file is where the fix actually needed to land).
+  // the canonical route for hashtag and filter reports (/hashtag/* permanently redirects
+  // to /filter/* in next.config.js).
   const handlePDFExport = () => {
     const filename = (reportData?.project?.eventName || filterSlug || 'report').replace(/[^a-zA-Z0-9]/g, '_');
     void exportReportToPDF({

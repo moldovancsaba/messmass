@@ -5,10 +5,11 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 
 interface UnifiedNumberInputProps {
   label?: string;
+  ariaLabel?: string;
   value: number;
   onSave: (value: number) => void;
   placeholder?: string;
@@ -43,6 +44,7 @@ interface UnifiedNumberInputProps {
  */
 export default function UnifiedNumberInput({
   label,
+  ariaLabel,
   value,
   onSave,
   placeholder,
@@ -56,6 +58,7 @@ export default function UnifiedNumberInput({
   allowDecimal = false,
   showValueDisplay = false
 }: UnifiedNumberInputProps) {
+  const inputId = useId();
   // WHAT: Store input value as string to allow empty state during editing
   // WHY: Prevents aggressive parsing that resets empty string to 0 immediately
   // HOW: Only parse and validate on blur, not on every keystroke
@@ -110,13 +113,15 @@ export default function UnifiedNumberInput({
   return (
     <div className="form-group">
       {label && (
-        <label className="form-label-block">
+        <label htmlFor={inputId} className="form-label-block">
           {label} {required && <span className="text-error">*</span>}
-          {isSaving && <span className="text-muted mx-2">💾 Saving...</span>}
+          {isSaving && <span className="text-muted mx-2" role="status" aria-live="polite">Saving...</span>}
         </label>
       )}
       
       <input
+        id={inputId}
+        aria-label={label ? undefined : ariaLabel || placeholder || 'Numeric value'}
         type="number"
         value={tempValue}
         onChange={(e) => setTempValue(e.target.value)}

@@ -44,11 +44,18 @@ export default function Sidebar() {
     fetchUserRole();
   }, []);
   
+  const mobileToggleRef = useRef<HTMLButtonElement | null>(null);
+
   const isActive = (path: string) => {
-    if (path === '/admin' || path === '/admin/analytics') {
+    if (
+      path === '/admin' ||
+      path === '/admin/analytics' ||
+      path === '/admin/reports' ||
+      path === '/admin/analytics/sponsorship'
+    ) {
       return pathname === path;
     }
-    return pathname.startsWith(path);
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   const isGroupActive = (path: string, childrenPaths: string[]) => {
@@ -62,7 +69,11 @@ export default function Sidebar() {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isMobileOpen) {
+        e.preventDefault();
         setIsMobileOpen(false);
+        requestAnimationFrame(() => {
+          mobileToggleRef.current?.focus();
+        });
       }
     };
     
@@ -112,6 +123,7 @@ export default function Sidebar() {
   return (
     <>
       <ActionIcon
+        ref={mobileToggleRef}
         className={styles.mobileToggle}
         onClick={() => setIsMobileOpen(!isMobileOpen)}
         aria-label="Toggle navigation menu"
@@ -119,7 +131,7 @@ export default function Sidebar() {
         aria-controls="sidebar"
         color="gray"
         radius="md"
-        size="lg"
+        size={44}
         variant="default"
       >
         {isMobileOpen ? <IconX size={20} stroke={1.8} /> : <IconMenu2 size={20} stroke={1.8} />}
@@ -142,17 +154,18 @@ export default function Sidebar() {
           color="gray"
           onClick={() => setIsCollapsed(!isCollapsed)}
           aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-expanded={!isCollapsed}
+          aria-controls="sidebar"
           title={isCollapsed ? 'Expand' : 'Collapse'}
         >
-          {isCollapsed ? '»' : '«'}
+          <span aria-hidden="true">{isCollapsed ? '»' : '«'}</span>
         </ActionIcon>
       </div>
       
       <aside
         id="sidebar"
         className={`${styles.sidebar} ${isCollapsed ? styles.collapsed : ''} ${isMobileOpen ? styles.mobileOpen : ''}`}
-        role="navigation"
-        aria-label="Main navigation"
+        aria-label="Sidebar"
       >
         <div className={styles.sidebarHeader}>
           <Link href="/admin" className={styles.logo}>
@@ -165,7 +178,31 @@ export default function Sidebar() {
         </div>
         
         <ScrollArea className={styles.sidebarNav}>
-        <nav>
+        <nav aria-label="Main navigation">
+          {!loadingRole && userRole && (
+            <div className={styles.navSection}>
+              <ul className={styles.navList}>
+                <li className={styles.navItem} data-tour-id="nav-/admin">
+                  <MantineNavLink
+                    component={Link}
+                    href="/admin"
+                    className={`${styles.navLink} ${pathname === '/admin' ? styles.active : ''}`}
+                    label={!isCollapsed ? 'Overview' : undefined}
+                    leftSection={
+                      <span className={styles.navIcon}>
+                        <MaterialIcon name="home" variant="outlined" className={styles.materialIcon} />
+                      </span>
+                    }
+                    rightSection={pathname === '/admin' && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
+                    active={pathname === '/admin'}
+                    title={isCollapsed ? 'Overview' : undefined}
+                    aria-label={isCollapsed ? 'Overview' : undefined}
+                    aria-current={pathname === '/admin' ? 'page' : undefined}
+                  />
+                </li>
+              </ul>
+            </div>
+          )}
           {adminNavSections.map((section) => {
             const visibleItems = section.items.filter(item => 
               !loadingRole && canAccessMenuItem(userRole, item.label)
@@ -206,23 +243,24 @@ export default function Sidebar() {
                             />
                           </span>
                         }
-                        rightSection={groupActive && !isCollapsed ? <span className={styles.activeIndicator} aria-label="Current page" /> : undefined}
+                        rightSection={groupActive && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
                         active={groupActive}
                         title={isCollapsed ? group.parent.label : undefined}
+                        aria-label={isCollapsed ? group.parent.label : undefined}
                         aria-current={isActive(group.parent.path) ? 'page' : undefined}
                       />
-                      {!isCollapsed && group.children.length > 0 && (
-                        <ul className={styles.childList} aria-label={`${group.parent.label} submenu`}>
+                      {group.children.length > 0 && (
+                        <ul className={`${styles.childList} ${isCollapsed ? styles.childListCollapsed : ''}`} aria-label={`${group.parent.label} submenu`}>
                           {group.children.map((child) => (
                             <li key={child.path} data-tour-id={`nav-${child.path}`}>
                               <MantineNavLink
                                 component={Link}
                                 href={child.path}
                                 className={`${styles.childLink} ${isActive(child.path) ? styles.childLinkActive : ''}`}
-                                label={child.label}
+                                label={!isCollapsed ? child.label : undefined}
                                 leftSection={
                                   <>
-                                    <span className={styles.childLinkLine} aria-hidden="true" />
+                                    {!isCollapsed && <span className={styles.childLinkLine} aria-hidden="true" />}
                                     <span className={styles.navIcon}>
                                       <MaterialIcon
                                         name={child.icon}
@@ -232,8 +270,10 @@ export default function Sidebar() {
                                     </span>
                                   </>
                                 }
-                                rightSection={isActive(child.path) ? <span className={styles.activeIndicator} aria-label="Current page" /> : undefined}
+                                rightSection={isActive(child.path) && !isCollapsed ? <span className={styles.activeIndicator} aria-hidden="true" /> : undefined}
                                 active={isActive(child.path)}
+                                title={isCollapsed ? child.label : undefined}
+                                aria-label={isCollapsed ? child.label : undefined}
                                 aria-current={isActive(child.path) ? 'page' : undefined}
                               />
                             </li>

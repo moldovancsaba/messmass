@@ -28,13 +28,15 @@
 }
 .skipToContent:focus {
   clip-path: none;
-  outline: none;
+  outline: 2px solid var(--mm-border-color-focus);
+  outline-offset: 2px;
 }
 
 .mainWrapper {
   /* What: Content wrapper that accounts for sidebar
      Why: Flexbox layout for header, content, footer */
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -51,10 +53,16 @@
 .mainContent {
   /* What: Main content area (OPS-ADMIN-02: uses token + .content-surface for --content-bg) */
   flex: 1;
-  padding: var(--mm-space-8);
+  min-width: 0;
+  padding: var(--mm-space-5) var(--mm-space-6);
   max-width: var(--mm-admin-content-max-width);
   width: 100%;
   margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.mainContent :global(.page-container) {
+  padding: 0;
 }
 
 /* What: Responsive max-widths for better readability

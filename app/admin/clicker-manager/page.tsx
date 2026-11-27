@@ -543,17 +543,25 @@ export default function ClickerManagerPage() {
             setSaving(false);
           }
         }}
-        title="➕ New Clicker Set"
-        submitText="Create Set"
+        title="New Live Counter Layout"
+        submitText="Create Layout"
         cancelText="Cancel"
         size="md"
       >
-        <UnifiedTextInput
-          label="Set Name"
-          value={setNameInput}
-          onSave={(val) => setSetNameInput(val)}
-          placeholder="e.g., Partner A Clicker"
-        />
+        <div className="form-group">
+          <label htmlFor="new-clicker-set-name" className="form-label-block">
+            Layout Name
+          </label>
+          <input
+            id="new-clicker-set-name"
+            type="text"
+            className="form-input"
+            value={setNameInput}
+            onChange={(e) => setSetNameInput(e.target.value)}
+            placeholder="e.g., Partner A Matchday Counter"
+            required
+          />
+        </div>
         <div className="mt-3 flex items-center gap-2">
           <input
             id="clone-current-set"
@@ -563,10 +571,10 @@ export default function ClickerManagerPage() {
             onChange={(e) => setCloneCurrentSet(e.target.checked)}
           />
           <label htmlFor="clone-current-set" className="text-sm">
-            Clone groups from currently selected set
+            Clone groups from currently selected layout
           </label>
         </div>
-        <p className="form-hint mt-2">New sets start empty by default. Check to copy groups from the currently selected set.</p>
+        <p className="form-hint mt-2">New layouts start empty by default. Check to copy groups from the currently selected layout.</p>
       </FormModal>
 
       {/* Rename Clicker Set Modal */}
@@ -587,17 +595,25 @@ export default function ClickerManagerPage() {
             setSaving(false);
           }
         }}
-        title="✏️ Rename Clicker Set"
+        title="Rename Live Counter Layout"
         submitText="Rename"
         cancelText="Cancel"
         size="md"
       >
-        <UnifiedTextInput
-          label="New Name"
-          value={setNameInput}
-          onSave={(val) => setSetNameInput(val)}
-          placeholder="Enter new name"
-        />
+        <div className="form-group">
+          <label htmlFor="rename-clicker-set-name" className="form-label-block">
+            New Name
+          </label>
+          <input
+            id="rename-clicker-set-name"
+            type="text"
+            className="form-input"
+            value={setNameInput}
+            onChange={(e) => setSetNameInput(e.target.value)}
+            placeholder="Enter new name"
+            required
+          />
+        </div>
       </FormModal>
     </div>
   );
@@ -699,7 +715,7 @@ function GroupForm({
 
   const availableVars = variables.filter(
     (v) =>
-      v.flags?.visibleInClicker &&
+      (v.flags?.visibleInClicker || v.flags?.editableInManual) &&
       !form.variables.includes(v.name) &&
       (v.name.toLowerCase().includes(search.toLowerCase()) ||
         v.label.toLowerCase().includes(search.toLowerCase()))

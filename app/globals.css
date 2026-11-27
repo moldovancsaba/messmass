@@ -225,16 +225,27 @@ img {
    WHY: Not used after AdminHero standardization
    USE INSTEAD: Standard layout utilities from admin.css */
 
-/* Simple badge styles mapped to variants */
+/* Simple badge styles mapped to WCAG AA variants */
 .badge { padding: var(--mm-space-1) var(--mm-space-3); border-radius: var(--mm-radius-lg); font-size: var(--mm-font-size-sm); font-weight: 600; white-space: nowrap; }
-.badge-primary { background: var(--mm-color-primary-500); color: var(--mm-white); }
-.badge-secondary { background: var(--mm-gray-500); color: var(--mm-white); }
-.badge-success { background: var(--mm-color-success-500); color: var(--mm-white); }
-.badge-warning { background: var(--mm-color-warning-500); color: var(--mm-white); }
-.badge-danger { background: var(--mm-color-error-500); color: var(--mm-white); }
+.badge-primary { background: var(--mm-color-primary-600); color: var(--mm-white); }
+.badge-secondary { background: var(--mm-gray-600); color: var(--mm-white); }
+.badge-success { background: var(--mm-color-success-700); color: var(--mm-white); }
+.badge-warning { background: var(--mm-color-warning-700); color: var(--mm-white); }
+.badge-danger { background: var(--mm-color-error-600); color: var(--mm-white); }
 /* .badge-info completes the set: .btn-info already exists, so markup reasonably
    reached for the badge equivalent and got an unstyled span instead (#413). */
-.badge-info { background: var(--mm-color-info-500); color: var(--mm-white); }
+.badge-info { background: var(--mm-color-info-600); color: var(--mm-white); }
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 
 /* WHAT: Alert banners.
    WHY: `<div className="alert alert-danger">` is used for the error and success

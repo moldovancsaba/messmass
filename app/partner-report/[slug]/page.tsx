@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import getDb from '@/lib/db';
 import { resolvePartnerIdentifier } from '@/lib/partnerIdentifier';
-import { hasPageAccess, isPageProtected } from '@/lib/pageAccess';
+import { isPageProtected, requirePageAccessDecision } from '@/lib/pageAccess';
 import { PartnerReportView } from '../PartnerReportView';
 import ServerPageGate from '@/components/ServerPageGate';
 
@@ -33,10 +33,15 @@ export default async function PartnerReportPage({
   //     so the check happens before any partner data is fetched or streamed; there
   //     is no client gate to bypass because the data never leaves the server on the
   //     unauthorised path. A partner with no password configured is unaffected.
-  if (await isPageProtected('partner-report', canonicalSlug)) {
-    if (!(await hasPageAccess('partner-report', canonicalSlug))) {
-      return <ServerPageGate pageId={canonicalSlug} pageType="partner-report" />;
-    }
+  const variantPageId = variant ? `${canonicalSlug}::variant=${variant}` : null;
+  const candidateIds = variantPageId ? [variantPageId, canonicalSlug] : [canonicalSlug];
+  const decision = await requirePageAccessDecision('partner-report', candidateIds);
+  if (!decision.allowed) {
+    const gatePageId =
+      variantPageId && (await isPageProtected('partner-report', variantPageId))
+        ? variantPageId
+        : canonicalSlug;
+    return <ServerPageGate pageId={gatePageId} pageType="partner-report" />;
   }
 
   return <PartnerReportView slug={canonicalSlug} variant={variant || null} />;

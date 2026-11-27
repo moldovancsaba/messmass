@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Button, SimpleGrid, Stack, Text } from '@mantine/core';
+import { SimpleGrid, Stack, Text, UnstyledButton } from '@mantine/core';
 import AnalyticsSectionCard from './AnalyticsSectionCard';
 import styles from './AnalyticsToolbar.module.css';
 
@@ -36,20 +36,18 @@ export default function AnalyticsToolbar({
         {presets.length > 0 && (
           <SimpleGrid cols={{ base: 1, sm: 2, lg: 3 }} spacing="md" className={styles.presets}>
             {presets.map((preset) => (
-              <Button
+              <UnstyledButton
                 key={preset.key}
                 type="button"
+                aria-pressed={Boolean(preset.active)}
                 className={`${styles.preset} ${preset.active ? styles.presetActive : ''}`.trim()}
                 onClick={preset.onClick}
-                variant={preset.active ? 'light' : 'default'}
-                justify="flex-start"
-                fullWidth
               >
                 <Stack gap={2} align="flex-start">
                   <Text className={styles.presetLabel}>{preset.label}</Text>
                   {preset.description ? <Text className={styles.presetDescription}>{preset.description}</Text> : null}
                 </Stack>
-              </Button>
+              </UnstyledButton>
             ))}
           </SimpleGrid>
         )}

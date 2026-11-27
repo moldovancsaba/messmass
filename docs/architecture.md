@@ -145,7 +145,7 @@ it drifts. Do not edit between the markers.
 | **Hooks** | 13 | `hooks/` |
 | **Design Tokens** | 410 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
-| **App routes (pages)** | 93 | `app/**/page.tsx` |
+| **App routes (pages)** | 89 | `app/**/page.tsx` |
 | **API routes** | 255 | `app/api/**/route.ts` |
 
 The modules with the most importers — the ones whose change radius is
@@ -159,15 +159,15 @@ largest, and the ones to read first:
 | `lib/logger.ts` | 96 | 392 |
 | `lib/apiGuards.ts` | 93 | 390 |
 | `lib/fanmassIntegration.ts` | 46 | 331 |
-| `components/ColoredCard.tsx` | 43 | 52 |
 | `lib/apiClient.ts` | 43 | 258 |
 | `lib/db.ts` | 43 | 17 |
-| `components/MaterialIcon.tsx` | 34 | 119 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 192 |
+| `components/ColoredCard.tsx` | 39 | 52 |
+| `components/MaterialIcon.tsx` | 35 | 119 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 203 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
-| `lib/permissions.ts` | 19 | 147 |
-| `lib/report-calculator.ts` | 19 | 995 |
+| `lib/permissions.ts` | 19 | 151 |
+| `hooks/useAdminAuth.ts` | 18 | 65 |
 
 Importers are counted by resolved import specifier, not by symbol name, so
 a re-export through a barrel file counts for the barrel. A module missing
@@ -1025,7 +1025,7 @@ shows up here on the next regeneration, which is the point.
 
 <!-- GENERATED:routes -->
 
-### Pages (93)
+### Pages (89)
 
 | Route | File |
 |-------|------|
@@ -1053,7 +1053,6 @@ shows up here on the next regeneration, which is the point.
 | `/admin/club-clusters` | `app/admin/club-clusters/page.tsx` |
 | `/admin/club-logos` | `app/admin/club-logos/page.tsx` |
 | `/admin/content-library` | `app/admin/content-library/page.tsx` |
-| `/admin/cookie-test` | `app/admin/cookie-test/page.tsx` |
 | `/admin/dashboard` | `app/admin/dashboard/page.tsx` |
 | `/admin/design` | `app/admin/design/page.tsx` |
 | `/admin/events` | `app/admin/events/page.tsx` |
@@ -1096,9 +1095,7 @@ shows up here on the next regeneration, which is the point.
 | `/dashboard/hashtag/[hashtag]` | `app/dashboard/hashtag/[hashtag]/page.tsx` |
 | `/dashboard/partner/[partnerId]` | `app/dashboard/partner/[partnerId]/page.tsx` |
 | `/edit/[slug]` | `app/edit/[slug]/page.tsx` |
-| `/examples/password-gate-demo` | `app/examples/password-gate-demo/page.tsx` |
 | `/filter/[slug]` | `app/filter/[slug]/page.tsx` |
-| `/hashtag/[hashtag]` | `app/hashtag/[hashtag]/page.tsx` |
 | `/interactive-report` | `app/interactive-report/page.tsx` |
 | `/interactive-report/[partnerSlug]` | `app/interactive-report/[partnerSlug]/page.tsx` |
 | `/interactive-report/[partnerSlug]/map` | `app/interactive-report/[partnerSlug]/map/page.tsx` |
@@ -1120,7 +1117,6 @@ shows up here on the next regeneration, which is the point.
 | `/resources/icons` | `app/resources/icons/page.tsx` |
 | `/resources/partners` | `app/resources/partners/page.tsx` |
 | `/terms` | `app/terms/page.tsx` |
-| `/test-csrf` | `app/test-csrf/page.tsx` |
 | `/whats-new` | `app/whats-new/page.tsx` |
 
 ### API routes (255)

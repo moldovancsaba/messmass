@@ -353,9 +353,10 @@ export function validateStyle(style: Partial<ReportStyle>): { valid: boolean; er
  * WHAT: Apply style to document root
  * WHY: Make colors available to all report components
  */
-export function injectStyleAsCSS(rawStyle: ReportStyle): void {
+export function injectStyleAsCSS(rawStyle: ReportStyle, options?: { previewOnly?: boolean }): void {
   const root = document.documentElement;
   const style = guardReportStyle(rawStyle);
+  const previewOnly = Boolean(options?.previewOnly);
   
   // WHAT: Inject font family if specified, converting name to CSS font-family value
   // WHY: Report styles store font name (e.g., "Aquatic"), but CSS needs full value (e.g., '"Aquatic", sans-serif')
@@ -384,8 +385,9 @@ export function injectStyleAsCSS(rawStyle: ReportStyle): void {
   // the fallback so styles saved before that field existed keep their current
   // look. Sets both the CSS var (page canvas + PDF, which has no browser chrome)
   // and <meta name="theme-color"> (browser title bar / tab strip).
+  // Skip document-level --page-bg and <meta name="theme-color"> when previewing inside Admin shell
   const pageBg = style.pageBackground || style.heroBackground;
-  if (pageBg) {
+  if (pageBg && !previewOnly) {
     const bg = normalizeHexColor(pageBg);
     root.style.setProperty('--page-bg', bg);
     let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');

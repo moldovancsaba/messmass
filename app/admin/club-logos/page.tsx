@@ -411,6 +411,9 @@ export default function ClubLogosAdminPage() {
         </div>
 
         <div className={styles.headerActions}>
+          <Link href="/resources/partners" target="_blank" className={styles.secondaryBtn}>
+            🌐 Public Catalog ↗
+          </Link>
           <Link href="/admin/brand-assets" className={styles.secondaryBtn}>
             🏷️ Brand Logos
           </Link>

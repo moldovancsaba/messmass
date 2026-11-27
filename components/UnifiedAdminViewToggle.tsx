@@ -37,7 +37,7 @@ export default function UnifiedAdminViewToggle({
   className = '',
 }: UnifiedAdminViewToggleProps) {
   const buttonClass = (view: ViewMode) =>
-    `btn btn-small ${currentView === view ? 'btn-secondary' : styles.inactive}`;
+    `${styles.toggleBtn} ${currentView === view ? styles.active : styles.inactive}`;
 
   return (
     <Group

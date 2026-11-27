@@ -168,7 +168,7 @@
   --mm-border-primary:    var(--mm-color-primary-200);
   --mm-text-primary:      var(--mm-gray-900);
   --mm-text-secondary:    var(--mm-gray-600);
-  --mm-text-tertiary:     var(--mm-gray-400);
+  --mm-text-tertiary:     var(--mm-gray-600);
   --mm-transition-fast:   150ms ease;
 
   /* OrganizationActivitiesList legacy vars — map to canonical tokens */
@@ -661,14 +661,11 @@
 }
 
 /* ========================================
-   DARK MODE VARIABLES (Optional Future Enhancement)
+   COLOR SCHEME (Light Surface System)
 ======================================== */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Dark mode overrides can be added here in the future */
-    color-scheme: dark;
-  }
+:root {
+  color-scheme: light;
 }
 
 /* ========================================

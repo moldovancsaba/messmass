@@ -459,6 +459,9 @@ export default function BrandAssetsAdminPage() {
             )}
           </div>
 
+          <Link href="/resources/brands" target="_blank" className={styles.refreshBtn}>
+            🌐 Public Catalog ↗
+          </Link>
           <Link href="/admin/club-logos" className={styles.refreshBtn}>
             🛡️ Club Logos
           </Link>

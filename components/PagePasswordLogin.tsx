@@ -163,24 +163,30 @@ export default function PagePasswordLogin({
         return 'Event Report';
       case 'partner-report':
         return 'Partner Report';
+      case 'organization-report':
+        return 'Organization Report';
+      case 'global-report':
+        return 'Global Report';
       case 'edit':
         return 'Editor';
+      case 'partner-edit':
+        return 'Partner Editor';
       case 'organization-edit':
         return 'Organization Editor';
       case 'filter':
-        return 'Filter';
+        return 'Report';
       default:
-        return 'Page';
+        return 'Report';
     }
   };
 
   const defaultTitle = title || `${getPageTypeDisplay()} Access Required`;
-  const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} page is password protected. Please enter the page-specific password to continue, or use an authenticated admin session.`;
+  const defaultDescription = description || `This ${getPageTypeDisplay().toLowerCase()} is password protected. Enter your access password to continue.`;
 
   return (
     <div className={`login-container ${styles.container}`}>
       <div className={styles.card}>
-        <div className={styles.icon}>🔐</div>
+        <div className={styles.icon} aria-hidden="true">🔐</div>
         
         <h1 className={styles.title}>
           {defaultTitle}
@@ -192,7 +198,12 @@ export default function PagePasswordLogin({
 
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.inputWrapper}>
+            <label htmlFor="page-password-input" className="sr-only">
+              Access password
+            </label>
             <input
+              id="page-password-input"
+              aria-label="Access password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -203,7 +214,7 @@ export default function PagePasswordLogin({
           </div>
 
           {error && (
-            <div className={styles.error}>
+            <div className={styles.error} role="alert" aria-live="assertive">
               {error}
             </div>
           )}
@@ -213,15 +224,9 @@ export default function PagePasswordLogin({
             disabled={isLoading || !password.trim()}
             className={styles.submitBtn}
           >
-            {isLoading ? '🔄 Checking...' : '🔓 Access Page'}
+            {isLoading ? 'Checking...' : 'Unlock Report'}
           </button>
         </form>
-
-        <div className={styles.hint}>
-          <p className="m-0 mb-2 font-semibold">💡 Access Modes:</p>
-          <p className="m-0 mb-1">• <strong>Admin Session:</strong> Signed-in admin access bypasses the prompt</p>
-          <p className="m-0">• <strong>Page Password:</strong> Access to this specific page only</p>
-        </div>
       </div>
     </div>
   );

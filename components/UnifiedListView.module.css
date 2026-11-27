@@ -39,7 +39,7 @@
   /* was nowrap: a 9-column table could not shrink below the sum of its header
      widths, which is what pushed the users table off-screen */
   white-space: normal;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .headerContent {
@@ -222,10 +222,14 @@
   }
   
   /* WHAT: Stack table cells vertically */
-  /* WHY: Mobile card layout pattern */
+  /* WHY: Mobile card layout pattern — reset desktop max-width: 1px / nowrap truncation */
   .table tbody td {
     display: block;
     width: 100% !important;
+    max-width: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
     padding: 0;
     border: none;
   }

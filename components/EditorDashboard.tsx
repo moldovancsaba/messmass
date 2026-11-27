@@ -1059,13 +1059,28 @@ function EditorStatCard({
 }) {
   return (
     <div
+      role={readOnly ? undefined : 'button'}
+      tabIndex={readOnly ? undefined : 0}
+      aria-label={readOnly ? undefined : `${label}: ${value}. Activate to add 1`}
       className={`stat-card stat-card-accent ${readOnly ? 'stat-card-readonly' : 'stat-card-clickable'}`}
       onClick={readOnly ? undefined : onIncrement}
+      onKeyDown={
+        readOnly
+          ? undefined
+          : (e) => {
+              if (e.target !== e.currentTarget) return;
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onIncrement();
+              }
+            }
+      }
     >
       <div className="stat-label">{label}</div>
       <div className="stat-value">{value}</div>
       <button
         type="button"
+        aria-label={`Subtract 1 from ${label}`}
         onClick={(e) => {
           e.stopPropagation();
           onDecrement();
@@ -1097,6 +1112,7 @@ function EditorNumberCard({
   return (
     <div className="input-card flex-row gap-4">
       <UnifiedNumberInput
+        ariaLabel={label}
         value={value}
         onSave={onSave}
         className="form-input w-120"
@@ -1284,6 +1300,20 @@ export default function EditorDashboard({
   const [accessBlocked, setAccessBlocked] = useState<boolean>(false);
   const [saveQueue, setSaveQueue] = useState<SaveQueue<EditorSavePayload> | null>(null);
   const [editMode, setEditMode] = useState<'clicker' | 'manual' | 'builder'>('clicker'); // Edit mode: clicker, manual, or builder
+  const [hasAdminSession, setHasAdminSession] = useState<boolean>(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/admin/auth', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data?.user) setHasAdminSession(true);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Relationship / Organization management state
   const [showRelationshipModal, setShowRelationshipModal] = useState<boolean>(false);
@@ -2529,22 +2559,24 @@ export default function EditorDashboard({
                   {project.partner2.emoji || '🏒'} Away: {project.partner2.name}
                 </span>
               )}
-              <button
-                type="button"
-                onClick={() => {
-                  setRelOrgId(project.organization?._id || project.organizationId || '');
-                  setRelCompType(project.competitionType || '');
-                  setRelPartner1Id(project.partner1?._id || project.partner1Id || '');
-                  setRelPartner2Id(project.partner2?._id || project.partner2Id || '');
-                  setRelMessage(null);
-                  setRelError(null);
-                  setShowRelationshipModal(true);
-                }}
-                className={relStyles.editButton}
-                title="Edit relationships between events, partners, and organizations"
-              >
-                ⚙️ Edit Hierarchy &amp; Relationships
-              </button>
+              {hasAdminSession && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRelOrgId(project.organization?._id || project.organizationId || '');
+                    setRelCompType(project.competitionType || '');
+                    setRelPartner1Id(project.partner1?._id || project.partner1Id || '');
+                    setRelPartner2Id(project.partner2?._id || project.partner2Id || '');
+                    setRelMessage(null);
+                    setRelError(null);
+                    setShowRelationshipModal(true);
+                  }}
+                  className={relStyles.editButton}
+                  title="Edit relationships between events, partners, and organizations"
+                >
+                  ⚙️ Edit Hierarchy &amp; Relationships
+                </button>
+              )}
             </div>
             
             {/* Beautiful hashtag display - showing all hashtags including categorized ones */}
@@ -2565,23 +2597,24 @@ export default function EditorDashboard({
               <p className="admin-role">📅 {new Date(project.eventDate).toLocaleDateString()}</p>
               <p className="admin-level">🎯 Editor Mode</p>
               <EditorSaveStatusLine queue={saveQueue} readOnly={readOnly} />
-              {/* Mode Toggle Button - cycles through 3 modes */}
-              <button
-                onClick={() => {
-                  if (editMode === 'clicker') setEditMode('manual');
-                  else if (editMode === 'manual') setEditMode('builder');
-                  else setEditMode('clicker');
-                }}
-                className={`btn btn-small ${
-                  editMode === 'clicker' ? 'btn-primary' :
-                  editMode === 'manual' ? 'btn-success' :
-                  'btn-warning'
-                } btn-full mt-2`}
-              >
-                {editMode === 'clicker' && '🖱️ Clicker'}
-                {editMode === 'manual' && '✏️ Manual'}
-                {editMode === 'builder' && '🏗️ Builder'}
-              </button>
+              {/* Explicit 3-way Mode Switcher */}
+              <div className="flex gap-1 mt-2" role="group" aria-label="Editor input mode">
+                {([
+                  { key: 'clicker', label: 'Clicker' },
+                  { key: 'manual', label: 'Manual' },
+                  { key: 'builder', label: 'Builder' },
+                ] as const).map((m) => (
+                  <button
+                    key={m.key}
+                    type="button"
+                    aria-pressed={editMode === m.key}
+                    onClick={() => setEditMode(m.key)}
+                    className={`btn btn-small ${editMode === m.key ? 'btn-primary' : 'btn-secondary'}`}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
               {sheetSyncConnected === true && (
                 <div className="mt-2">
                   <button

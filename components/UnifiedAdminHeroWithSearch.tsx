@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Badge as MantineBadge, Button, Group, Stack, Text, TextInput, Title } from '@mantine/core';
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react';
 import UnifiedAdminViewToggle, { ViewMode } from './UnifiedAdminViewToggle';
+import MaterialIcon from './MaterialIcon';
 import styles from './UnifiedAdminHeroWithSearch.module.css';
 
 interface ActionButton {
@@ -154,6 +155,7 @@ export default function UnifiedAdminHeroWithSearch({
           {actionButtons.length > 0 && (
             <Group gap="sm" className={styles.actionButtons}>
               {actionButtons.map((btn, idx) => {
+                const isMaterialLigature = Boolean(btn.icon && /^[a-z0-9_]+$/.test(btn.icon));
                 return (
                   <Button
                     key={idx}
@@ -163,8 +165,17 @@ export default function UnifiedAdminHeroWithSearch({
                     className={actionButtonClass(btn.variant)}
                     variant="filled"
                     size="sm"
+                    leftSection={
+                      btn.icon ? (
+                        isMaterialLigature ? (
+                          <MaterialIcon name={btn.icon} variant="outlined" style={{ fontSize: '1rem' }} />
+                        ) : (
+                          <span aria-hidden="true">{btn.icon}</span>
+                        )
+                      ) : undefined
+                    }
                   >
-                    {btn.icon ? `${btn.icon} ${btn.label}` : btn.label}
+                    {btn.label}
                   </Button>
                 );
               })}

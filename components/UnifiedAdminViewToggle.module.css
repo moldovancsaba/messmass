@@ -4,22 +4,36 @@
    DESIGN SYSTEM: Consistent with hero buttons across admin pages */
 
 .toggleContainer {
-  /* WHAT: Flex container for button group
-     WHY: Group buttons with small gap */
   display: inline-flex;
-  gap: var(--mm-space-2);
+  padding: 2px;
+  border-radius: var(--mm-radius-md);
+  background: rgba(var(--mm-black-rgb), 0.18);
+  gap: 2px;
 }
 
-/* WHAT: Inactive button state (when not selected)
-   WHY: Match inactive state styling without gradients */
-.inactive {
+.toggleBtn {
+  border-radius: var(--mm-radius-sm);
+  font-weight: var(--mm-font-weight-semibold);
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.active {
   background: var(--mm-white);
-  color: var(--mm-gray-700);
-  border: 1px solid var(--mm-border-color-default);
+  color: var(--mm-color-primary-700);
+  box-shadow: var(--mm-shadow-sm);
+}
+
+.active:hover {
+  background: var(--mm-white);
+  color: var(--mm-color-primary-800);
+}
+
+.inactive {
+  background: transparent;
+  color: var(--mm-white);
 }
 
 .inactive:hover {
-  background: var(--mm-gray-100);
-  color: var(--mm-gray-900);
-  border-color: var(--mm-border-color-hover);
+  background: rgba(var(--mm-white-rgb), 0.16);
+  color: var(--mm-white);
 }

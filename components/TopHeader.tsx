@@ -128,6 +128,8 @@ export default function TopHeader({ user }: TopHeaderProps) {
                 onClick={handleBellClick}
                 title="View notifications"
                 aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : 'Notifications'}
+                aria-expanded={showNotifications}
+                aria-haspopup="dialog"
               >
                 <IconBell size={18} stroke={1.8} />
               </ActionIcon>
@@ -169,6 +171,7 @@ export default function TopHeader({ user }: TopHeaderProps) {
             className={styles.logoutButton}
             onClick={handleLogout}
             title="Logout"
+            aria-label="Logout"
           >
             <span className={styles.logoutText}>Logout</span>
           </Button>

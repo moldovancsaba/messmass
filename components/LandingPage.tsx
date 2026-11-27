@@ -282,6 +282,7 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
           <Link href="/admin/login" className="btn btn-primary">Start using the system</Link>
           <p className={styles.footerSite}>messmass.com</p>
           <nav className={styles.footerLegal} aria-label="Legal">
+            <Link href="/resources">Brand &amp; Icon Resources</Link>
             <Link href="/privacy">Privacy Policy</Link>
             <Link href="/terms">Terms &amp; Conditions</Link>
             {version ? <span className={styles.footerVersion} aria-label="App version">v{version}</span> : null}

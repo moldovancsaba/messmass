@@ -228,50 +228,46 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
     return null;
   }
 
-  // A-R-13: Wrap chart rendering in error boundary to catch rendering errors
-  const ChartContent = () => {
-  // Render based on chart type
-    // WHAT: blockHeight prop removed - now centrally managed via --block-height CSS custom property on row
-    // WHY: Eliminates per-chart inline styles, better maintainability
+  // A-R-13: Render chart directly inside error boundary (avoid nested component declaration inside render)
+  let chartElement: React.ReactNode;
   switch (result.type) {
     case 'kpi':
-        return <KPIChart result={result} className={className} allowNA={allowNA} isMixedRow={isMixedRow} />;
-    
+      chartElement = <KPIChart result={result} className={className} allowNA={allowNA} isMixedRow={isMixedRow} />;
+      break;
     case 'pie':
-        return <PieChart result={result} className={className} />;
-    
+      chartElement = <PieChart result={result} className={className} />;
+      break;
     case 'bar':
-        return <BarChart result={result} className={className} />;
-    
+      chartElement = <BarChart result={result} className={className} />;
+      break;
     case 'text':
-        return <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
-    
+      chartElement = <TextChart result={result} unifiedTextFontSize={unifiedTextFontSize} className={className} />;
+      break;
     case 'image':
-        return <ImageChart result={result} className={className} isImageOnlyRow={isImageOnlyRow} />;
-    
+      chartElement = <ImageChart result={result} className={className} isImageOnlyRow={isImageOnlyRow} />;
+      break;
     case 'table':
-        return <TableChart result={result} className={className} />;
-    
+      chartElement = <TableChart result={result} className={className} />;
+      break;
     case 'value':
       // VALUE charts render KPI + BAR together
-      return (
+      chartElement = (
         <div className={`${styles.valueComposite} ${className || ''}`}>
-            <KPIChart result={result} className={className} allowNA={allowNA} />
-            <BarChart result={result} />
+          <KPIChart result={result} className={className} allowNA={allowNA} />
+          <BarChart result={result} />
         </div>
       );
-    
+      break;
     case 'valuechain':
-      return <ValueChainChart result={result} className={className} />;
-    
+      chartElement = <ValueChainChart result={result} className={className} />;
+      break;
     default:
-      return (
+      chartElement = (
         <div className={`${styles.chart} ${styles.unknown} ${className || ''}`}>
           <span>Unknown chart type: {result.type}</span>
         </div>
       );
   }
-  };
 
   // Wrap in error boundary for graceful degradation
   return (
@@ -290,7 +286,7 @@ export default function ReportChart({ result, chart, width, blockHeight, unified
         </CellWrapper>
       }
     >
-      <ChartContent />
+      {chartElement}
     </ChartErrorBoundary>
   );
 }
@@ -563,7 +559,7 @@ function PieChart({ result, className }: { result: ChartResult; className?: stri
         ref={pieGridRef}
         className={styles.pieBodyLayout}
       >
-        <div ref={pieChartContainerRef} className={styles.pieChartContainer}>
+        <div ref={pieChartContainerRef} className={styles.pieChartContainer} aria-hidden="true">
           <Doughnut ref={chartRef} data={chartData} options={options} />
           {total > 0 && (
             <div className={styles.pieCenterLabel} aria-hidden="true">
