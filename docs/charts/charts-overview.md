@@ -3,7 +3,7 @@ Status: Active
 Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Frontend / Architecture
-Version: 12.3.51
+Version: 12.4.0
 
 ## Purpose
 

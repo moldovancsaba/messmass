@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
+import type { AdminResourceState as GdsAdminResourceState } from '@sovereignsquad/gds-admin';
 import { AdminPageAdapter, clientSideSearch, clientSideSort } from '@/lib/adminDataAdapters';
 import { useViewModeWithUrlSync } from '@/lib/adminViewState';
 import { useDebouncedValue } from '@/hooks/useDebouncedValue';
@@ -61,6 +62,8 @@ interface UnifiedAdminPageProps<T extends { _id: string }> {
   sortField?: string | null;
   /** External sort order (for server-side sorting) */
   sortOrder?: 'asc' | 'desc' | null;
+  /** Optional governed GDS resource state */
+  resourceState?: GdsAdminResourceState;
   /** External sort change handler (for server-side sorting) */
   onSortChange?: (field: string) => void;
 }

@@ -4,7 +4,7 @@ Last Updated: 2026-11-20T16:00:00.000Z
 Canonical: Yes
 Owner: Architecture
 
-Version: 12.3.51
+Version: 12.4.0
 
 > **Scope.** This file describes how messmass works *now*: the modules that exist,
 > the routes that are served, the contracts between them. It is not a changelog,
@@ -143,7 +143,7 @@ it drifts. Do not edit between the markers.
 | **UI Components** | 139 | `components/` |
 | **Utility Modules** | 266 | `lib/` |
 | **Hooks** | 13 | `hooks/` |
-| **Design Tokens** | 410 | `app/styles/theme.css` |
+| **Design Tokens** | 422 | `app/styles/theme.css` |
 | **Utility CSS classes** | 192 | `app/styles/utilities.css` |
 | **App routes (pages)** | 89 | `app/**/page.tsx` |
 | **API routes** | 255 | `app/api/**/route.ts` |
@@ -163,7 +163,7 @@ largest, and the ones to read first:
 | `lib/db.ts` | 43 | 17 |
 | `components/ColoredCard.tsx` | 39 | 52 |
 | `components/MaterialIcon.tsx` | 35 | 119 |
-| `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 203 |
+| `components/UnifiedAdminHeroWithSearch.tsx` | 28 | 202 |
 | `components/theme/interactive-report/types.ts` | 23 | 255 |
 | `lib/mongoose-v3.ts` | 21 | 66 |
 | `lib/permissions.ts` | 19 | 151 |
@@ -4123,5 +4123,5 @@ When working with the hashtag categories system:
 ---
 
 *Last Updated: 2026-09-09*
-*Version: 12.3.51*
+*Version: 12.4.0*
 *Status: Production-Ready — Enterprise Event Analytics Platform with Advanced Analytics Infrastructure*

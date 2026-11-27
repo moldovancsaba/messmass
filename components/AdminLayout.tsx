@@ -4,6 +4,7 @@ import React from 'react';
 import { usePathname } from 'next/navigation';
 import { Box } from '@mantine/core';
 import { OverlayManagerProvider } from '@sovereignsquad/gds-core/client';
+import type { AppShellProps as GdsAppShellContract } from '@sovereignsquad/gds-admin';
 import Sidebar from './Sidebar';
 import TopHeader from './TopHeader';
 import styles from './AdminLayout.module.css';
@@ -16,8 +17,7 @@ const PUBLIC_AUTH_PATHS = new Set([
   '/admin/unauthorized',
 ]);
 
-interface AdminLayoutProps {
-  children: React.ReactNode;
+interface AdminLayoutProps extends Pick<GdsAppShellContract, 'children'> {
   user?: {
     name: string;
     email: string;

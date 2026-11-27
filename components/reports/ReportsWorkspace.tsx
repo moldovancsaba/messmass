@@ -207,17 +207,17 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
           <p className={styles.eyebrow}>{config.eyebrow}</p>
           <h1 className={styles.title}>{ownerName} Reports</h1>
           <p className={styles.subtitle}>
-            `DEFAULT` always stays the canonical all-time report. Every custom report variant starts as a duplicate of `DEFAULT`.
+            Manage both <strong>Classic Custom Reports</strong> (editable KPI, chart, and media blocks with PDF export) and <strong>AI Photo Dashboards</strong> (automated brand/club exposure, opt-in funnel, and EMV analytics).
           </p>
         </div>
         <div className={styles.headerActions}>
           {config.interactiveReportHref && (
-            <Link href={config.interactiveReportHref(publicSlug)} className={styles.secondaryButton} target="_blank">
-              ⚡ Interactive Dashboard
+            <Link href={config.interactiveReportHref(publicSlug)} className={styles.secondaryButton} target="_blank" title="Open automated Fanmass AI photo & brand exposure dashboard">
+              📸 AI Photo Dashboard
             </Link>
           )}
-          <Link href={config.reportHref(publicSlug)} className={styles.secondaryButton} target="_blank">
-            Open Default Report
+          <Link href={config.reportHref(publicSlug)} className={styles.secondaryButton} target="_blank" title="Open customizable LayoutV2 block report">
+            📊 Classic Report (Default)
           </Link>
           <button type="button" className={styles.primaryButton} onClick={() => setCreateOpen(true)}>
             + Create Report Variant
@@ -270,6 +270,10 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
                       <span className={variant.isDefault ? styles.defaultBadge : styles.variantBadge}>
                         {variant.isDefault ? 'DEFAULT' : 'CUSTOM'}
                       </span>
+                      <span className={styles.engineClassicBadge}>Classic Report</span>
+                      {config.interactiveReportHref && (
+                        <span className={styles.engineAiBadge}>AI Dashboard</span>
+                      )}
                       <span className={styles.statusBadge}>{variant.status}</span>
                     </div>
                     <h2 className={styles.variantTitle}>{variant.name}</h2>
@@ -281,12 +285,18 @@ export default function ReportsWorkspace({ id, config }: { id: string; config: O
                         href={config.interactiveReportHref(publicSlug, slug)}
                         className={styles.secondaryButton}
                         target="_blank"
+                        title="Open automated Fanmass AI photo & brand exposure dashboard"
                       >
-                        ⚡ Interactive
+                        📸 AI Dashboard
                       </Link>
                     )}
-                    <Link href={reportHref} className={styles.secondaryButton} target="_blank">
-                      Open Report
+                    <Link
+                      href={reportHref}
+                      className={styles.secondaryButton}
+                      target="_blank"
+                      title="Open customizable Classic block report"
+                    >
+                      📊 Classic Report
                     </Link>
                     {editorHref && (
                       <Link href={editorHref} className={styles.secondaryButton} target="_blank">

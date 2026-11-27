@@ -25,6 +25,8 @@ const CONFIG: OwnerConfig = {
   },
   reportHref: (slug, variant) =>
     variant ? `/partner-report/${slug}?variant=${encodeURIComponent(variant)}` : `/partner-report/${slug}`,
+  interactiveReportHref: (slug, variant) =>
+    variant ? `/interactive-report/partner/${slug}?variant=${encodeURIComponent(variant)}` : `/interactive-report/partner/${slug}`,
   editorHref: (slug, variant) =>
     variant ? `/partner-edit/${slug}?variant=${encodeURIComponent(variant)}` : `/partner-edit/${slug}`,
 };

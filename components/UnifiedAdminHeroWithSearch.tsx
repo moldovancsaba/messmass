@@ -9,6 +9,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Badge as MantineBadge, Button, Group, Stack, Text, TextInput, Title } from '@mantine/core';
 import { IconArrowLeft, IconSearch } from '@tabler/icons-react';
+import type { PageHeaderProps as GdsPageHeaderContract } from '@sovereignsquad/gds-admin';
 import UnifiedAdminViewToggle, { ViewMode } from './UnifiedAdminViewToggle';
 import MaterialIcon from './MaterialIcon';
 import styles from './UnifiedAdminHeroWithSearch.module.css';
@@ -27,9 +28,7 @@ interface Badge {
   variant: 'primary' | 'secondary' | 'success' | 'warning' | 'danger';
 }
 
-interface UnifiedAdminHeroWithSearchProps {
-  /** Page title */
-  title: string;
+interface UnifiedAdminHeroWithSearchProps extends Pick<GdsPageHeaderContract, 'title'> {
   /** Optional subtitle/description */
   subtitle?: string;
   /** Optional back link URL */

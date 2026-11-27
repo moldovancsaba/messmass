@@ -110,7 +110,7 @@ function LandingPageStatic({
 
   const stats = snapshot.projectStats as Record<string, unknown> | undefined;
   const rawFooter = stats?.reportTextFooterTitle;
-  const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together.");
+  const footerTitle = replaceEmDashes(typeof rawFooter === 'string' ? rawFooter : 'Turn every matchday, fan photo, and sponsor activation into verified impact.');
 
   const blocks = useMemo(() => {
     const list = Array.isArray(snapshot.blocks) ? snapshot.blocks : [];
@@ -149,16 +149,16 @@ function LandingPageStatic({
             <Image src="/messmass-logo-white.png" alt="" width={160} height={48} priority />
             <span className={styles.heroSiteName}>messmass</span>
           </div>
-          <h1 className={styles.heroTitle}>Sovereign Decision Intelligence for Regulated Data</h1>
+          <h1 className={styles.heroTitle}>Sports Sponsorship &amp; Live Fan Engagement Intelligence</h1>
           <p className={styles.heroSub}>
-            Private, governed AI workflows that turn KYC/PII-heavy datasets into decisions and actions, without sending data to public cloud models.
+            Unify live event telemetry, opted-in fan photography, AI brand &amp; club logo detection, and shareable sponsor reports across every match, partner, and league.
           </p>
           <div className={styles.heroCtas}>
             <Link href="/admin/login" className="btn btn-primary">Go to Dashboard</Link>
-            <a href="#how-it-works" className={`btn ${styles['btn-outline-light']}`}>See how it works</a>
+            <a href="#how-it-works" className={`btn ${styles['btn-outline-light']}`}>See live report</a>
           </div>
           <p className={styles.heroMicrocopy}>
-            Built for teams handling KYC, onboarding, fraud, compliance, and sensitive customer intelligence.
+            Built for sports federations, leagues, clubs, venues, and commercial sponsorship partners.
           </p>
         </div>
       </header>
@@ -193,45 +193,43 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
           <h2 className={styles.sectionTitle}>Pricing</h2>
           <div className={styles.pricingGrid}>
             <div className={styles.pricingCard}>
-              <h3 className={styles.pricingCardTitle}>Welcome</h3>
-              <p className={styles.pricingCardPrice}>Free <span className={styles.pricingCardPriceSub}>forever</span></p>
-              <p className={styles.pricingCardSubhead}>For individuals testing sovereign workflows</p>
+              <h3 className={styles.pricingCardTitle}>Club &amp; Venue</h3>
+              <p className={styles.pricingCardPrice}>Starter <span className={styles.pricingCardPriceSub}>matchday</span></p>
+              <p className={styles.pricingCardSubhead}>For single clubs, arenas, and recurring matchday activations</p>
               <ul className={styles.pricingCardFeatures}>
-                <li>1 personal profile</li>
-                <li>1 public workspace</li>
-                <li>10 public reports</li>
-                <li>Basic KYC dataset (POC required)</li>
+                <li>Live matchday counter &amp; manual metrics</li>
+                <li>Branded event &amp; partner recap reports</li>
+                <li>Official club &amp; sponsor crest library</li>
+                <li>Password-protected client report sharing &amp; PDF export</li>
               </ul>
               <div className={styles.pricingCardCta}>
-                <Link href="/#contact" className="btn btn-secondary">Start free</Link>
+                <Link href="/#contact" className="btn btn-secondary">Get started</Link>
               </div>
             </div>
             <div className={`${styles.pricingCard} ${styles.pricingCardFeatured}`}>
-              <h3 className={styles.pricingCardTitle}>Business</h3>
-              <p className={styles.pricingCardPrice}>$99 <span className={styles.pricingCardPriceSub}>USD / month</span></p>
-              <p className={styles.pricingCardSubhead}>For teams shipping decisions with private AI</p>
+              <h3 className={styles.pricingCardTitle}>Sponsor &amp; Partner</h3>
+              <p className={styles.pricingCardPrice}>Pro <span className={styles.pricingCardPriceSub}>portfolio</span></p>
+              <p className={styles.pricingCardSubhead}>For brands and rights-holders measuring multi-venue ROI</p>
               <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Welcome, plus:</li>
-                <li>1 organisation profile</li>
-                <li>1 private workspace</li>
-                <li>Unlimited public workspaces</li>
-                <li>10 private reports</li>
-                <li>Unlimited public reports</li>
-                <li>Advanced KYC dataset (Consultancy required)</li>
+                <li>Everything in Club &amp; Venue, plus:</li>
+                <li>AI photo brand, jersey &amp; crest exposure analytics</li>
+                <li>Earned Media Value (EMV) &amp; opt-in funnel tracking</li>
+                <li>Custom time-window &amp; campaign hashtag report variants</li>
+                <li>Interactive territory map &amp; multi-sport benchmarks</li>
               </ul>
               <div className={styles.pricingCardCta}>
                 <Link href="/#contact" className="btn btn-primary">Contact us</Link>
               </div>
             </div>
             <div className={styles.pricingCard}>
-              <h3 className={styles.pricingCardTitle}>Organisation</h3>
-              <p className={styles.pricingCardPrice}>Custom</p>
-              <p className={styles.pricingCardSubhead}>For regulated environments and scaled governance</p>
+              <h3 className={styles.pricingCardTitle}>Federation &amp; League</h3>
+              <p className={styles.pricingCardPrice}>Enterprise</p>
+              <p className={styles.pricingCardSubhead}>For national federations, international leagues, and multi-org hierarchies</p>
               <ul className={styles.pricingCardFeatures}>
-                <li>Everything in Business, plus:</li>
-                <li>Unlimited private workspaces</li>
-                <li>Unlimited private reports</li>
-                <li>Unlimited KYC datasets (Training required)</li>
+                <li>Everything in Sponsor &amp; Partner, plus:</li>
+                <li>National, league, and domestic club rollup reports</li>
+                <li>Human-verified AI proof review &amp; canonical clustering</li>
+                <li>Google Sheets sync, Camera integration &amp; SSO access</li>
               </ul>
               <div className={styles.pricingCardCta}>
                 <Link href="/#contact" className="btn btn-secondary">Contact us</Link>
@@ -242,30 +240,30 @@ function PricingAndFooter({ footerTitle, version }: { footerTitle: string; versi
       </section>
       <section id="faq" className={styles.sectionAlt} aria-label="Frequently asked questions">
         <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>Faq</h2>
+          <h2 className={styles.sectionTitle}>FAQ</h2>
           <dl className={styles.faqList}>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>Does any data leave our environment?</dt>
+              <dt className={styles.faqQuestion}>What types of reports does Messmass generate?</dt>
               <dd className={styles.faqAnswer}>
-                Under our architecture, data processing occurs within your controlled environment. You decide what, if anything, is exported.
+                Messmass delivers both Classic Custom Reports (tailored KPI, bar, pie, image, and editorial blocks with PDF export) and Interactive AI Photo Dashboards aggregating brand exposure, EMV, opt-in funnels, and territory maps.
               </dd>
             </div>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>Do you train models on customer data?</dt>
+              <dt className={styles.faqQuestion}>How are fan privacy and photo opt-ins handled?</dt>
               <dd className={styles.faqAnswer}>
-                No. Customer data is not used to train public models.
+                Analytics run on identity-free visual detections and per-photo consent records, with full GDPR right-to-erasure propagation across connected Camera and Fanmass pipelines.
               </dd>
             </div>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>What gets audited?</dt>
+              <dt className={styles.faqQuestion}>How are sponsor and club figures verified?</dt>
               <dd className={styles.faqAnswer}>
-                Queries, access events, agent actions, and outputs, so activity can be reviewed and traced.
+                Every detected brand mark and club crest is linked to auditable visual proof, confidence scores, and human review workflows so sponsors receive transparent, defensible numbers.
               </dd>
             </div>
             <div className={styles.faqItem}>
-              <dt className={styles.faqQuestion}>Who is this for?</dt>
+              <dt className={styles.faqQuestion}>Who uses Messmass?</dt>
               <dd className={styles.faqAnswer}>
-                Teams working with KYC/PII-heavy workflows: onboarding, compliance, fraud, and customer intelligence.
+                Sports federations, leagues, clubs, event operators, and commercial sponsors tracking fan engagement, activation delivery, and brand visibility across live events.
               </dd>
             </div>
           </dl>
@@ -381,13 +379,13 @@ function LandingPageLive({ slug, version }: { slug: string; version?: string | n
 
   const rawFooter = stats && (stats as Record<string, unknown>).reportTextFooterTitle;
   const footerTitle = replaceEmDashes(
-    typeof rawFooter === 'string' ? rawFooter : "Let's build the era of sovereign enterprise AI together."
+    typeof rawFooter === 'string' ? rawFooter : 'Turn every matchday, fan photo, and sponsor activation into verified impact.'
   );
 
-  const heroLabel = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sovereign Decision Intelligence');
-  const heroTitle = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Agentic AI that reads and understands your data at scale, and delivers actionable dashboards without compromising privacy.');
+  const heroLabel = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroLabel'] as string || 'Sports Sponsorship & Fan Engagement');
+  const heroTitle = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroTitle'] as string || 'Live event telemetry, AI photo brand detection, and sponsor-ready impact reports in one platform.');
   const heroSub = replaceEmDashes((stats as Record<string, unknown>)?.['reportTextHeroSub'] as string ||
-    'The platform that restores the freedom and security of decision-making to data-driven companies.');
+    'Measure attendance, opt-in fan engagement, club crests, and sponsor exposure across every game, venue, and campaign.');
 
   function renderReportSection() {
     if (loadTimedOut) {

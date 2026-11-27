@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { ActionIcon, Avatar, Badge, Box, Button, Group, Paper, Stack, Text } from '@mantine/core';
 import { IconBell, IconDoorExit } from '@tabler/icons-react';
+import type { WorkspaceHeaderProps as GdsWorkspaceHeaderContract } from '@sovereignsquad/gds-admin';
 import NotificationPanel from './NotificationPanel';
 import TourMenu from './tour/TourMenu';
 import styles from './TopHeader.module.css';
@@ -13,7 +14,7 @@ import styles from './TopHeader.module.css';
    
    No breadcrumbs (explicitly prohibited by policy) */
 
-interface TopHeaderProps {
+interface TopHeaderProps extends Partial<Pick<GdsWorkspaceHeaderContract, 'eyebrow' | 'description'>> {
   user?: {
     name: string;
     email: string;

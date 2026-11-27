@@ -3,6 +3,7 @@
 import React from 'react';
 import { ActionIcon, Modal } from '@mantine/core';
 import { IconX } from '@tabler/icons-react';
+import type { AdminOverlayState as GdsAdminOverlayState } from '@sovereignsquad/gds-admin';
 import styles from './BaseModal.module.css';
 
 /**
@@ -57,6 +58,9 @@ export interface BaseModalProps {
   
   /** ID of element describing the modal */
   ariaDescribedBy?: string;
+
+  /** Optional governed GDS overlay state */
+  overlayState?: GdsAdminOverlayState;
 }
 
 export default function BaseModal({

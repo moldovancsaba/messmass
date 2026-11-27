@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Button, Group, Stack, Text, Title } from '@mantine/core';
+import type { AdminCrudFormProps as GdsAdminCrudFormContract } from '@sovereignsquad/gds-admin';
 import BaseModal from './BaseModal';
 import SaveStatusIndicator, { SaveStatus } from '../SaveStatusIndicator';
 import styles from './FormModal.module.css';
@@ -26,7 +27,7 @@ import styles from './FormModal.module.css';
  * - Standard Cancel/Submit button layout
  */
 
-export interface FormModalProps {
+export interface FormModalProps extends Pick<GdsAdminCrudFormContract, 'children'> {
   /** Whether the modal is open */
   isOpen: boolean;
   
@@ -50,9 +51,6 @@ export interface FormModalProps {
   
   /** Modal size variant */
   size?: 'md' | 'lg' | 'xl';
-  
-  /** Form content */
-  children: React.ReactNode;
   
   /** Optional subtitle/description below title */
   subtitle?: string;

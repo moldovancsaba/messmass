@@ -6,6 +6,7 @@
 'use client';
 
 import React from 'react';
+import type { AdminTableState as GdsAdminTableState } from '@sovereignsquad/gds-admin';
 import { ListColumnConfig, ListViewConfig } from '@/lib/adminDataAdapters';
 import AdminActionRail from '@/components/admin/AdminActionRail';
 import styles from './UnifiedListView.module.css';
@@ -29,6 +30,8 @@ interface UnifiedListViewProps<T> {
   emptyIcon?: string;
   /** Optional CSS class */
   className?: string;
+  /** Optional governed GDS table state */
+  tableState?: GdsAdminTableState;
 }
 
 /**

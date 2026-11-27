@@ -7,6 +7,7 @@
 
 import React from 'react';
 import Image from 'next/image';
+import type { AdminResourceRecord as GdsAdminResourceRecord } from '@sovereignsquad/gds-admin';
 import { CardViewConfig, getNestedValue } from '@/lib/adminDataAdapters';
 import AdminActionRail from '@/components/admin/AdminActionRail';
 import ColoredCard from './ColoredCard';
@@ -27,6 +28,8 @@ interface UnifiedCardViewProps<T> {
   className?: string;
   /** Optional accent color for all cards */
   accentColor?: string;
+  /** Optional governed GDS resource record mapper */
+  toResourceRecord?: (item: T) => GdsAdminResourceRecord;
 }
 
 /**

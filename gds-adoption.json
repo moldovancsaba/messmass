@@ -34,15 +34,15 @@
     { "contract": "ChoiceChip", "path": "components/ColoredHashtagBubble.tsx", "status": "active" },
     { "contract": "ChoiceChip", "path": "components/HashtagMultiSelect.tsx", "status": "active" },
     { "contract": "MetricCard", "path": "components/analytics/MetricCard.tsx", "status": "active" },
-    { "contract": "AppShell", "path": "components/AdminLayout.tsx", "status": "planned" },
-    { "contract": "AdminResourceManager", "path": "components/UnifiedAdminPage.tsx", "status": "planned" },
-    { "contract": "AdminDataTable", "path": "components/UnifiedListView.tsx", "status": "planned" },
-    { "contract": "AdminResourceGrid", "path": "components/UnifiedCardView.tsx", "status": "planned" },
-    { "contract": "PageHeader", "path": "components/UnifiedAdminHeroWithSearch.tsx", "status": "planned" },
-    { "contract": "AdminCrudForm", "path": "components/modals/FormModal.tsx", "status": "planned" },
-    { "contract": "AdminModal", "path": "components/modals/BaseModal.tsx", "status": "planned" },
-    { "contract": "ActionBar", "path": "components/admin/AdminActionRail.tsx", "status": "planned" },
-    { "contract": "WorkspaceHeader", "path": "components/TopHeader.tsx", "status": "planned" }
+    { "contract": "AppShell", "path": "components/AdminLayout.tsx", "status": "active" },
+    { "contract": "AdminResourceManager", "path": "components/UnifiedAdminPage.tsx", "status": "active" },
+    { "contract": "AdminDataTable", "path": "components/UnifiedListView.tsx", "status": "active" },
+    { "contract": "AdminResourceGrid", "path": "components/UnifiedCardView.tsx", "status": "active" },
+    { "contract": "PageHeader", "path": "components/UnifiedAdminHeroWithSearch.tsx", "status": "active" },
+    { "contract": "AdminCrudForm", "path": "components/modals/FormModal.tsx", "status": "active" },
+    { "contract": "AdminModal", "path": "components/modals/BaseModal.tsx", "status": "active" },
+    { "contract": "ActionBar", "path": "components/admin/AdminActionRail.tsx", "status": "active" },
+    { "contract": "WorkspaceHeader", "path": "components/TopHeader.tsx", "status": "active" }
   ],
   "approvedExceptions": [],
   "compliance": {
@@ -50,7 +50,7 @@
     "protectedSurfacePaths": ["app/styles/theme.css"],
     "strictMode": false
   },
-  "migrationStatus": "partial",
+  "migrationStatus": "active",
   "owner": "moldovancsaba",
-  "lastReviewedAt": "2026-09-08"
+  "lastReviewedAt": "2026-11-27"
 }

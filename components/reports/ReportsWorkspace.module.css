@@ -120,7 +120,9 @@
 
 .defaultBadge,
 .variantBadge,
-.statusBadge {
+.statusBadge,
+.engineClassicBadge,
+.engineAiBadge {
   display: inline-flex;
   align-items: center;
   min-height: 28px;
@@ -128,6 +130,18 @@
   border-radius: 999px;
   font-size: 0.8rem;
   font-weight: 700;
+}
+
+.engineClassicBadge {
+  background: var(--mm-gray-100);
+  color: var(--mm-gray-700);
+  border: 1px solid var(--mm-gray-300);
+}
+
+.engineAiBadge {
+  background: var(--mm-color-secondary-50);
+  color: var(--mm-color-secondary-800);
+  border: 1px solid var(--mm-color-secondary-200);
 }
 
 .defaultBadge {

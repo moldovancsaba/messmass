@@ -5,6 +5,7 @@
 'use client';
 
 import React from 'react';
+import type { ActionBarProps as GdsActionBarContract } from '@sovereignsquad/gds-core';
 import type { AdminSurfaceAction } from '@/lib/adminDataAdapters';
 import MaterialIcon from '@/components/MaterialIcon';
 import styles from './AdminActionRail.module.css';
@@ -18,6 +19,7 @@ interface AdminActionRailProps<T> {
   maxVisibleActions?: number;
   emptyStateLabel?: string;
   className?: string;
+  gdsGap?: GdsActionBarContract['gap'];
 }
 
 function resolveValue<T, V>(

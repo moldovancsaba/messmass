@@ -80,7 +80,8 @@ const CONTENT_GUARDRAILS = [
       'lib/adminNavigation.ts',
       'components/AdminDashboard.tsx',
       'components/AnalyticsWorkspaceNav.tsx',
-      'components/ReportingWorkspaceNav.tsx'
+      'components/ReportingWorkspaceNav.tsx',
+      'components/theme/interactive-report/interactive-report.module.css'
     ]
   },
   {

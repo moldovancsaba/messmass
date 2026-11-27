@@ -236,6 +236,20 @@
   --exportButtonText: var(--mm-color-primary-600);
   --exportButtonHoverBackground: var(--mm-gray-50);
 
+  /* Interactive Report semantic surface & brand palette tokens (GDS#81 / INV-005) */
+  --ir-surface-canvas:  #eef3fb;
+  --ir-border-subtle:   #dde7f5;
+  --ir-ink-navy:        #102242;
+  --ir-ink-navy-mid:    #0f2c4a;
+  --ir-ink-navy-deep:   #0a264e;
+  --ir-ink-navy-rgb:    16, 34, 66;
+  --ir-brand-blue:      #1b79df;
+  --ir-brand-blue-rgb:  27, 121, 223;
+  --ir-brand-teal:      #03ad9f;
+  --ir-brand-teal-rgb:  3, 173, 159;
+  --ir-slate-500:       #64748b;
+  --ir-slate-rgb:       100, 116, 139;
+
   /* ========================================
      LEGACY GRADIENTS (Deprecated for TailAdmin V2)
   ======================================== */
